@@ -6,7 +6,8 @@ import { IAttachment, IInboxDescriptor, IMessage } from 'wegas-ts-api';
 import {
   bolder,
   defaultMarginBottom,
-  defaultMarginTop, defaultPadding,
+  defaultMarginTop,
+  defaultPadding,
   expandWidth,
   flex,
   flexBetween,
@@ -23,7 +24,6 @@ import { instantiate } from '../../data/scriptable';
 import { Player } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
 import { useStore } from '../../data/Stores/store';
-import { wwarn } from '../../Helper/wegaslog';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
@@ -36,8 +36,8 @@ import { useTranslate } from '../Hooks/useTranslate';
 import { themeVar } from '../Theme/ThemeVars';
 import { TranslatableText } from './HTMLText';
 import { fileURL } from '../../API/files.api';
-import {languagesCTX} from "../Contexts/LanguagesProvider";
-import {translate} from "../../data/i18n";
+import { languagesCTX } from '../Contexts/LanguagesProvider';
+import { translate } from '../../data/i18n';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -58,14 +58,16 @@ const readLabelStyle = cx(
       boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
     },
   }),
-  'wegas-inbox--read');
+  'wegas-inbox--read',
+);
 
 const unreadLabelStyle = cx(
   css({
     fontWeight: 'bold',
   }),
   unreadSignalStyle,
-  'wegas-inbox--unread');
+  'wegas-inbox--unread',
+);
 
 const labelTitleStyle = css({
   overflow: 'hidden',
@@ -102,15 +104,41 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedDate = useTranslate(message.date);
 
   return (
-    <div className={cx(flex, expandWidth, itemCenter, messageLabel, defaultPadding)}>
+    <div
+      className={cx(
+        flex,
+        expandWidth,
+        itemCenter,
+        messageLabel,
+        defaultPadding,
+      )}
+    >
       <div className={cx(flex, flexColumn, expandWidth)}>
-        <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>{translatedLabel}</div>
+        <div className={cx(labelTitleStyle, 'wegas-inbox__label-subject')}>
+          {translatedLabel}
+        </div>
         <div className={cx(flex, flexRow, flexBetween)}>
           {translatedFrom && (
-            <div className={cx(defaultMarginTop, labelSenderStyle, 'wegas-inbox__label-from')}>{translatedFrom}</div>
+            <div
+              className={cx(
+                defaultMarginTop,
+                labelSenderStyle,
+                'wegas-inbox__label-from',
+              )}
+            >
+              {translatedFrom}
+            </div>
           )}
           {translatedDate && (
-            <div className={cx(defaultMarginTop, labelDateStyle, 'wegas-inbox__label-date')}>&nbsp;{translatedDate}</div>
+            <div
+              className={cx(
+                defaultMarginTop,
+                labelDateStyle,
+                'wegas-inbox__label-date',
+              )}
+            >
+              &nbsp;{translatedDate}
+            </div>
           )}
         </div>
       </div>
@@ -118,23 +146,25 @@ function MessageLabel({ message }: MessageLabelProps) {
   );
 }
 
-function customLabelStyle(m: IMessage): string | undefined {
-  try {
-    const isUnread = instantiate(m).getUnread();
-    return isUnread ? unreadLabelStyle : readLabelStyle;
-  } catch (m) {
-    wwarn(m);
-    return undefined;
-  }
-}
-
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   const message = props.entity;
+  const unreadSelector = React.useCallback(() => {
+    return {
+      isUnread: instantiate(message).getUnread(),
+    };
+  }, [message]);
+  const { isUnread } = useStore(unreadSelector);
 
   return (
-    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+    <DefaultEntityChooserLabel {...props}>
       <div
-        className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}
+        className={cx(
+          flex,
+          flexRow,
+          itemCenter,
+          'wegas-inbox__choice',
+          isUnread ? unreadLabelStyle : readLabelStyle,
+        )}
         onClick={() => editingStore.dispatch(readMessage(message))}
       >
         {props.mobile && (
@@ -156,12 +186,17 @@ interface AttachmentsDisplayProps {
 
 function AttachmentsDisplay({ attachments }: AttachmentsDisplayProps) {
   const { lang, availableLang } = React.useContext(languagesCTX);
-  const files = attachments.map(attachment => translate(attachment.file, lang, availableLang));
+  const files = attachments.map(attachment =>
+    translate(attachment.file, lang, availableLang),
+  );
 
   return (
     <div className={cx(attachmentDisplay, 'wegas-inbox__attachments-list')}>
       {files.map((file, index) => (
-        <span className={cx(css({ marginLeft: '5px' }), 'wegas-inbox__attachment')} key={index}>
+        <span
+          className={cx(css({ marginLeft: '5px' }), 'wegas-inbox__attachment')}
+          key={index}
+        >
           <a href={fileURL(file)} target="_blank" rel="noreferrer">
             {file.slice(1)}
           </a>
@@ -177,7 +212,9 @@ interface MessageDisplayProps {
 }
 
 function MessageDisplay({ entity }: MessageDisplayProps) {
-  const i18nComponentValues = useInternalPlayerLangTranslate(componentsTranslations);
+  const i18nComponentValues = useInternalPlayerLangTranslate(
+    componentsTranslations,
+  );
 
   const subject = useTranslate(entity.subject);
   const date = useTranslate(entity.date);
@@ -186,9 +223,24 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
   return (
     <div className={cx(defaultEntityDisplay, 'wegas-inbox__display')}>
-      <div className={cx(flex, flexColumn, toolboxHeaderStyle, 'wegas-inbox__header')}>
+      <div
+        className={cx(
+          flex,
+          flexColumn,
+          toolboxHeaderStyle,
+          'wegas-inbox__header',
+        )}
+      >
         {subject && (
-          <div className={cx(bolder, defaultMarginBottom, 'wegas-inbox__display-subject')}>{subject}</div>
+          <div
+            className={cx(
+              bolder,
+              defaultMarginBottom,
+              'wegas-inbox__display-subject',
+            )}
+          >
+            {subject}
+          </div>
         )}
         {date && (
           <div className={cx(displayDateStyle, 'wegas-inbox__display-date')}>
@@ -196,18 +248,18 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
           </div>
         )}
         {from && (
-          <div className='wegas-inbox__display-from'>
+          <div className="wegas-inbox__display-from">
             {i18nComponentValues.inbox.sender}: {from}
           </div>
         )}
         {attachments.length > 0 && (
-          <div className={cx(flex, flexRow, css({whiteSpace: 'nowrap'}))}>
+          <div className={cx(flex, flexRow, css({ whiteSpace: 'nowrap' }))}>
             {i18nComponentValues.inbox.attachments}:
-            <AttachmentsDisplay attachments={attachments}/>
+            <AttachmentsDisplay attachments={attachments} />
           </div>
         )}
       </div>
-      <TranslatableText content={entity.body} className='wegas-inbox__body'/>
+      <TranslatableText content={entity.body} className="wegas-inbox__body" />
     </div>
   );
 }
@@ -233,7 +285,9 @@ export function InboxDisplay({
   }, [inbox]);
 
   const messages = useStore(messagesSelector);
-  const i18nComponentValues = useInternalPlayerLangTranslate(componentsTranslations);
+  const i18nComponentValues = useInternalPlayerLangTranslate(
+    componentsTranslations,
+  );
 
   return (
     <EntityChooser
