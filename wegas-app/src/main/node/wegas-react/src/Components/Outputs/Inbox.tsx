@@ -33,7 +33,6 @@ import {
   EntityChooserLabelProps,
 } from '../EntityChooser';
 import { useTranslate } from '../Hooks/useTranslate';
-import { themeVar } from '../Theme/ThemeVars';
 import { TranslatableText } from './HTMLText';
 import { fileURL } from '../../API/files.api';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
@@ -52,13 +51,7 @@ const messageLabel = css({
 const readLabelStyle = cx(
   css({
     fontWeight: 'normal',
-    backgroundColor: themeVar.colors.HeaderColor,
-    color: themeVar.colors.DarkTextColor,
-    '&:hover': {
-      boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
-    },
   }),
-  'wegas-inbox--read',
 );
 
 const unreadLabelStyle = cx(
@@ -102,6 +95,12 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   const translatedFrom = useTranslate(message.from);
   const translatedDate = useTranslate(message.date);
+  const unreadSelector = React.useCallback(() => {
+    return {
+      isUnread: instantiate(message).getUnread(),
+    };
+  }, [message]);
+  const { isUnread } = useStore(unreadSelector);
 
   return (
     <div
@@ -111,6 +110,7 @@ function MessageLabel({ message }: MessageLabelProps) {
         itemCenter,
         messageLabel,
         defaultPadding,
+        isUnread ? unreadLabelStyle : readLabelStyle,
       )}
     >
       <div className={cx(flex, flexColumn, expandWidth)}>
@@ -148,23 +148,11 @@ function MessageLabel({ message }: MessageLabelProps) {
 
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   const message = props.entity;
-  const unreadSelector = React.useCallback(() => {
-    return {
-      isUnread: instantiate(message).getUnread(),
-    };
-  }, [message]);
-  const { isUnread } = useStore(unreadSelector);
 
   return (
     <DefaultEntityChooserLabel {...props}>
       <div
-        className={cx(
-          flex,
-          flexRow,
-          itemCenter,
-          'wegas-inbox__choice',
-          isUnread ? unreadLabelStyle : readLabelStyle,
-        )}
+        className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}
         onClick={() => editingStore.dispatch(readMessage(message))}
       >
         {props.mobile && (
