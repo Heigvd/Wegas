@@ -37,6 +37,8 @@ import { TranslatableText } from './HTMLText';
 import { fileURL } from '../../API/files.api';
 import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { translate } from '../../data/i18n';
+import { wwarn } from '../../Helper/wegaslog';
+import { themeVar } from '../Theme/ThemeVars';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -51,6 +53,8 @@ const messageLabel = css({
 const readLabelStyle = cx(
   css({
     fontWeight: 'normal',
+    backgroundColor: themeVar.colors.HeaderColor,
+    color: themeVar.colors.DarkTextColor,
   }),
 );
 
@@ -95,12 +99,6 @@ function MessageLabel({ message }: MessageLabelProps) {
   const translatedLabel = useTranslate(message.subject);
   const translatedFrom = useTranslate(message.from);
   const translatedDate = useTranslate(message.date);
-  const unreadSelector = React.useCallback(() => {
-    return {
-      isUnread: instantiate(message).getUnread(),
-    };
-  }, [message]);
-  const { isUnread } = useStore(unreadSelector);
 
   return (
     <div
@@ -110,7 +108,6 @@ function MessageLabel({ message }: MessageLabelProps) {
         itemCenter,
         messageLabel,
         defaultPadding,
-        isUnread ? unreadLabelStyle : readLabelStyle,
       )}
     >
       <div className={cx(flex, flexColumn, expandWidth)}>
@@ -146,15 +143,32 @@ function MessageLabel({ message }: MessageLabelProps) {
   );
 }
 
+function customLabelStyle(m: IMessage): string | undefined {
+  try {
+    const isUnread = instantiate(m).getUnread();
+    return isUnread ? unreadLabelStyle : readLabelStyle;
+  } catch (m) {
+    wwarn(m);
+    return undefined;
+  }
+}
+
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   const message = props.entity;
+  const handleClick = () => {
+    props.onClick();
+    if (!props.disabled) {
+      editingStore.dispatch(readMessage(message));
+    }
+  };
 
   return (
-    <DefaultEntityChooserLabel {...props}>
-      <div
-        className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}
-        onClick={() => editingStore.dispatch(readMessage(message))}
-      >
+    <DefaultEntityChooserLabel
+      {...props}
+      customLabelStyle={customLabelStyle}
+      onClick={handleClick}
+    >
+      <div className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}>
         {props.mobile && (
           <FontAwesomeIcon
             className={css({ marginRight: '5px' })}
