@@ -177,12 +177,6 @@ export function QuestionLabel({
   editing,
   onFinishEditing,
 }: QuestionLabelProps) {
-  const unreadSelector = React.useCallback(() => {
-    return {
-      isUnread: instantiate(questionD).getInstance(Player.self()).isUnread(),
-    };
-  }, [questionD]);
-  const { isUnread } = useStore(unreadSelector);
   const label = React.useRef<HTMLDivElement>(null);
   const { lang } = React.useContext(languagesCTX);
   useOnClickOutside(label, () => onFinishEditing && onFinishEditing());
@@ -218,7 +212,6 @@ export function QuestionLabel({
         itemCenter,
         css({ justifyContent: 'space-between', width: '100%' }),
         'wegas-question__item',
-        isUnread && cx(unreadSignalStyle, 'wegas-question__item-unread'),
       )}
     >
       {/*{isUnread && <div className={cx(unreadSpaceStyle, unreadSignalStyle)} />}*/}
@@ -298,14 +291,25 @@ function QuestionLabelAnswerIndicator({
 function QuestionChooser(
   props: EntityChooserLabelProps<IQuestionDescriptor | IWhQuestionDescriptor>,
 ) {
+  const handleClick = () => {
+    props.onClick();
+    if (!props.disabled) {
+      editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+    }
+  };
+
   return (
-    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
+    <DefaultEntityChooserLabel
+      {...props}
+      customLabelStyle={customLabelStyle}
+      onClick={handleClick}
+    >
       <div
         className={cx(flex, flexRow, itemCenter, defaultPadding)}
-        onClick={() => {
+        /* onClick={() => {
           !props.disabled &&
           editingStore.dispatch(read(instantiate(props.entity).getEntity()));
-        }}
+        }}*/
       >
         {props.mobile && (
           <FontAwesomeIcon
@@ -314,7 +318,7 @@ function QuestionChooser(
             size="1x"
           />
         )}
-        <QuestionLabel questionD={props.entity}/>
+        <QuestionLabel questionD={props.entity} />
       </div>
     </DefaultEntityChooserLabel>
   );
@@ -324,10 +328,19 @@ function customLabelStyle(
   e: IWhQuestionDescriptor | IQuestionDescriptor,
 ): string | undefined {
   try {
-    const isReplied = instantiate(e).isReplied(
-      instantiate(Player.selectCurrent()),
-    );
-    return isReplied ? repliedLabelStyle : labelStyle;
+    const player = instantiate(Player.selectCurrent());
+    const isUnread = instantiate(e).getInstance(player).isUnread();
+    const isReplied = instantiate(e).isReplied(player);
+
+    let style = labelStyle;
+    if (isReplied) {
+      style = repliedLabelStyle;
+    }
+    if (isUnread) {
+      style += cx(style, unreadSignalStyle, ' wegas-question__item-unread');
+    }
+
+    return style;
   } catch (e) {
     wwarn(e);
     return undefined;
