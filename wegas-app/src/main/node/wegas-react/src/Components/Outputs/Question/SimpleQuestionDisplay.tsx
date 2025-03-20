@@ -136,7 +136,7 @@ function SimpleChoiceDisplay({
       ? undefined
       : choiceI?.replies?.length;
   return (
-    <>
+    <div className={'wegas-question__choice-container'}>
       <ChoiceContainer
         active={active}
         descriptor={choiceD}
@@ -145,10 +145,10 @@ function SimpleChoiceDisplay({
         hasBeenSelected={hasBeenValidated}
         editMode={editMode}
         replyCount={replyCount}
-        className='wegas-question__choice'
+        className="wegas-question__choice"
       />
       <RepliesDisplay replies={replies} />
-    </>
+    </div>
   );
 }
 
