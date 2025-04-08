@@ -31,7 +31,7 @@ import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
-import { NumberSlider } from '../../Inputs/Number/NumberSlider';
+import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -139,16 +139,10 @@ function WhChoiceDisplay({
             readOnly={readOnly}
           />
         ) : choiceD['@class'] === 'NumberDescriptor' ? (
-          <NumberSlider
+          <NumberInput
             value={(choiceI as INumberInstance).value}
-            min={
-              (choiceD as INumberDescriptor).minValue ||
-              Math.min(0, (choiceI as INumberInstance).value)
-            }
-            max={
-              (choiceD as INumberDescriptor).maxValue ||
-              Math.max(100, (choiceI as INumberInstance).value)
-            }
+            min={(choiceD as INumberDescriptor).minValue ?? undefined}
+            max={(choiceD as INumberDescriptor).maxValue ?? undefined}
             onChange={v => {
               const newChoiceI = cloneDeep(choiceI as INumberInstance);
               newChoiceI.value = v;
@@ -156,7 +150,6 @@ function WhChoiceDisplay({
             }}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
-            displayValues="NumberInput"
           />
         ) : choiceD['@class'] === 'StringDescriptor' ? (
           <SimpleInput

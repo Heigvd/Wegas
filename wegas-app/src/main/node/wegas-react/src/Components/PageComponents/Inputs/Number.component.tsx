@@ -31,8 +31,8 @@ interface PlayerNumberInputProps extends WegasComponentProps {
    */
   script?: IScript;
   /**
-  * placeholder - the grey text inside the box when nothing is written
-  */
+   * placeholder - the grey text inside the box when nothing is written
+   */
   placeholder?: IScript;
   onVariableChange?: OnVariableChange;
 }
@@ -87,6 +87,16 @@ function PlayerNumberInput({
   ) : (
     <NumberInput
       value={value}
+      min={
+        entityIs(number, 'NumberDescriptor')
+          ? (number as SNumberDescriptor).getMinValue() ?? undefined
+          : undefined
+      }
+      max={
+        entityIs(number, 'NumberDescriptor')
+          ? (number as SNumberDescriptor).getMaxValue() ?? undefined
+          : undefined
+      }
       className={className}
       style={style}
       id={id}
