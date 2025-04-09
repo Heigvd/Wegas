@@ -39,7 +39,7 @@ export function NumberInput(props: NumberInputProps) {
           const vN = Number(v);
           if (!isNaN(vN)) {
             setInput(vN);
-            if (vN > min && vN < max) {
+            if (vN >= min && vN <= max) {
               props.onChange && props.onChange(vN);
             }
           }
