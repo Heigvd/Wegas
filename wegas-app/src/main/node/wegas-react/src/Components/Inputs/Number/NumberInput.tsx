@@ -3,7 +3,7 @@ import { omit } from 'lodash-es';
 import * as React from 'react';
 import { InputProps, SimpleInput } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
-import { flexColumn } from '../../../css/classes';
+import { expandWidth, flexColumn } from '../../../css/classes';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -27,7 +27,7 @@ export function NumberInput(props: NumberInputProps) {
   }, [value]);
 
   return (
-    <div className={cx(flexColumn, css({ width: '100%' }))}>
+    <div className={cx(flexColumn, expandWidth)}>
       {(props.min !== undefined || props.max !== undefined) && (
         <CheckMinMax min={min} max={max} value={input} />
       )}
