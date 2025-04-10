@@ -13,6 +13,7 @@ interface NumberInputProps extends InputProps<number> {
   placeholder?: string;
   min?: number;
   max?: number;
+  toggleFormError?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function NumberInput(props: NumberInputProps) {
@@ -21,6 +22,19 @@ export function NumberInput(props: NumberInputProps) {
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
   const [input, setInput] = React.useState<number | undefined>(undefined);
+
+  const onChange = (newValue: string | number) => {
+    const numberValue = Number(newValue);
+    if (!isNaN(numberValue)) {
+      setInput(numberValue);
+      if (numberValue >= min && numberValue <= max) {
+        props.toggleFormError && props.toggleFormError(false);
+        props.onChange && props.onChange(numberValue);
+      } else {
+        props.toggleFormError && props.toggleFormError(true);
+      }
+    }
+  };
 
   React.useEffect(() => {
     setInput(value);
@@ -35,15 +49,7 @@ export function NumberInput(props: NumberInputProps) {
         {...omit(props, 'onChange')}
         value={input}
         className={numberInputStyle}
-        onChange={v => {
-          const vN = Number(v);
-          if (!isNaN(vN)) {
-            setInput(vN);
-            if (vN > min && vN < max) {
-              props.onChange && props.onChange(vN);
-            }
-          }
-        }}
+        onChange={newValue => onChange(newValue)}
         inputType="number"
         placeholder={placeholder}
       />

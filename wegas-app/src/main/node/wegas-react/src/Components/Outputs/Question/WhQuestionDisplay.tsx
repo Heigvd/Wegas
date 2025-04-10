@@ -103,6 +103,7 @@ interface WhChoiceDisplayProps extends DisabledReadonly {
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
   onChange: (choiceI: IWhChoiceInstance) => void;
+  toggleFormError: React.Dispatch<React.SetStateAction<boolean>>;
   editMode?: boolean;
 }
 
@@ -111,6 +112,7 @@ function WhChoiceDisplay({
   choiceI,
   questionI,
   onChange,
+  toggleFormError,
   disabled,
   readOnly,
   editMode,
@@ -148,6 +150,7 @@ function WhChoiceDisplay({
               newChoiceI.value = v;
               onChange(newChoiceI);
             }}
+            toggleFormError={toggleFormError}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
           />
@@ -207,6 +210,8 @@ export function WhQuestionDisplay({
   const [choicesValues, setChoicesValues] =
     React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
 
+  const [formError, setFormError] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     setChoicesValues(choicesI);
   }, [choicesI]);
@@ -239,6 +244,7 @@ export function WhQuestionDisplay({
                 return newValues;
               })
             }
+            toggleFormError={setFormError}
             questionI={questionI}
             choiceD={choiceD}
             choiceI={choiceI}
@@ -254,12 +260,12 @@ export function WhQuestionDisplay({
           className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
-            dispatch(validateQuestion(questionD));
             choicesValues.forEach(
               choiceI => choiceI && dispatch(updateInstance(choiceI)),
             );
+            dispatch(validateQuestion(questionD));
           }}
-          disabled={questionI.validated || disabled}
+          disabled={questionI.validated || disabled || formError}
           readOnly={readOnly}
         />
       </div>
