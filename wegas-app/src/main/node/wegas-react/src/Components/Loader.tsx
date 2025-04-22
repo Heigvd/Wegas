@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/css';
+import { css, cx, keyframes } from '@emotion/css';
 import * as React from 'react';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -64,7 +64,7 @@ const tumbleLoaderStyle = css({
 
 export function TumbleLoader() {
   const container = React.useRef<HTMLDivElement>(null);
-  return <div ref={container} className={tumbleLoaderStyle}></div>;
+  return <div ref={container} className={cx(tumbleLoaderStyle, 'wegas-loader-tumble')}></div>;
 }
 
 const dotLoaderAnimation1 = keyframes({
