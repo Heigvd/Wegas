@@ -31,7 +31,7 @@ import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
-import { NumberSlider } from '../../Inputs/Number/NumberSlider';
+import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -103,6 +103,7 @@ interface WhChoiceDisplayProps extends DisabledReadonly {
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
   onChange: (choiceI: IWhChoiceInstance) => void;
+  toggleInputDataError: React.Dispatch<React.SetStateAction<boolean>>;
   editMode?: boolean;
 }
 
@@ -111,6 +112,7 @@ function WhChoiceDisplay({
   choiceI,
   questionI,
   onChange,
+  toggleInputDataError,
   disabled,
   readOnly,
   editMode,
@@ -139,24 +141,18 @@ function WhChoiceDisplay({
             readOnly={readOnly}
           />
         ) : choiceD['@class'] === 'NumberDescriptor' ? (
-          <NumberSlider
+          <NumberInput
             value={(choiceI as INumberInstance).value}
-            min={
-              (choiceD as INumberDescriptor).minValue ||
-              Math.min(0, (choiceI as INumberInstance).value)
-            }
-            max={
-              (choiceD as INumberDescriptor).maxValue ||
-              Math.max(100, (choiceI as INumberInstance).value)
-            }
+            min={(choiceD as INumberDescriptor).minValue ?? undefined}
+            max={(choiceD as INumberDescriptor).maxValue ?? undefined}
             onChange={v => {
               const newChoiceI = cloneDeep(choiceI as INumberInstance);
               newChoiceI.value = v;
               onChange(newChoiceI);
             }}
+            toggleInputDataError={toggleInputDataError}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
-            displayValues="NumberInput"
           />
         ) : choiceD['@class'] === 'StringDescriptor' ? (
           <SimpleInput
@@ -214,6 +210,8 @@ export function WhQuestionDisplay({
   const [choicesValues, setChoicesValues] =
     React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
 
+  const [inputDataError, setInputDataError] = React.useState<boolean>(false);
+
   React.useEffect(() => {
     setChoicesValues(choicesI);
   }, [choicesI]);
@@ -246,6 +244,7 @@ export function WhQuestionDisplay({
                 return newValues;
               })
             }
+            toggleInputDataError={setInputDataError}
             questionI={questionI}
             choiceD={choiceD}
             choiceI={choiceI}
@@ -261,12 +260,12 @@ export function WhQuestionDisplay({
           className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
-            dispatch(validateQuestion(questionD));
             choicesValues.forEach(
               choiceI => choiceI && dispatch(updateInstance(choiceI)),
             );
+            dispatch(validateQuestion(questionD));
           }}
-          disabled={questionI.validated || disabled}
+          disabled={questionI.validated || disabled || inputDataError}
           readOnly={readOnly}
         />
       </div>
