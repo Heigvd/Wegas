@@ -1,42 +1,39 @@
 import * as React from 'react';
 
-interface ErrorBoundaryProps {
+interface Props {
+    fallback?: React.ReactNode;
+    children: React.ReactNode;
+}
+
+interface State {
+    hasError: boolean;
     message?: string;
 }
-export class ErrorBoundary extends React.Component<
-    ErrorBoundaryProps,
-    { info?: React.ErrorInfo; error?: Error }
-> {
-    static defaultProps: ErrorBoundaryProps = {
-        message: 'Something went wrong.',
+
+class ErrorBoundary extends React.Component<Props, State> {
+    
+    public state: State = {
+        hasError: false,
     };
-    constructor(props: ErrorBoundaryProps) {
-        super(props);
-        this.state = { error: undefined, info: undefined };
+
+    public static getDerivedStateFromError(error: Error): State {
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true, message: `[${error.name}]: ${error.message}` };
     }
-    componentWillReceiveProps() {
-        this.setState(() => ({ error: undefined, info: undefined }));
-    }
-    componentDidCatch(error: Error, info: React.ErrorInfo) {
-        this.setState(() => ({
-            error,
-            info,
-        }));
-    }
-    render() {
-        if (this.state.error && this.state.info) {
-            return (
-                <div>
-                    <h3>{this.props.message}</h3>
-                    <span />
-                    <details style={{ whiteSpace: 'pre-wrap' }}>
-                        {this.state.error && this.state.error.toString()}
-                        <br />
-                        {this.state.info.componentStack}
-                    </details>
-                </div>
-            );
+
+    public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {}
+
+    public render(): React.ReactNode {
+        if (this.state.hasError) {
+            if (this.props.fallback) {
+                return this.props.fallback;
+            } else {
+                return <h1>Sorry.. there was an error</h1>;
+            }
+        } else {
+            return this.props.children;
         }
-        return this.props.children;
     }
 }
+
+export default ErrorBoundary;

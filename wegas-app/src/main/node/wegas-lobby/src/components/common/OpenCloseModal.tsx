@@ -8,7 +8,7 @@
 
 import { IconProp } from '@fortawesome/fontawesome-svg-core';
 import * as React from 'react';
-import { NavLink, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { NavLink, Route, Routes, useNavigate } from 'react-router-dom';
 import { linkStyle } from '../styling/style';
 import { cardSecButtonStyle } from './Card';
 import IconButton from './IconButton';
@@ -38,43 +38,48 @@ export default function OptionCloseModal({
   showCloseButton = false,
   illustration = 'ICON_black-blue_cogs_fa',
 }: Props): JSX.Element {
-  const history = useHistory();
-  const location = useLocation();
-  const match = useRouteMatch();
+  const navigate = useNavigate();
 
   const onClose = React.useCallback(() => {
-    match;
     if (route != null) {
-      history.push(match.url);
+      navigate('./');
     }
-  }, [history, route, match]);
+  }, [navigate, route]);
 
   if (route != null) {
     return (
-      <Switch>
-        <Route path={`${match.path}${route}`}>
-          <IconButton className={iconClassName} title={iconTitle} icon={icon}>
-            {iconChildren}
-          </IconButton>
-          {location.pathname.startsWith(`${match.path}${route}`) ? (
-            <Modal
-              title={title}
-              illustration={illustration}
-              onClose={onClose}
-              showCloseButton={showCloseButton}
-            >
-              {onCloseModal => children(onCloseModal)}
-            </Modal>
-          ) : null}
-        </Route>
-        <Route>
-          <NavLink className={linkStyle} to={`${match.url}${route}`}>
-            <IconButton className={iconClassName} title={iconTitle} icon={icon}>
-              {iconChildren}
-            </IconButton>
-          </NavLink>
-        </Route>
-      </Switch>
+      <Routes>
+        <Route
+          path={`${route}`}
+          element={
+            <>
+              <IconButton className={iconClassName} title={iconTitle} icon={icon}>
+                {iconChildren}
+              </IconButton>
+                <Modal
+                  title={title}
+                  illustration={illustration}
+                  onClose={onClose}
+                  showCloseButton={showCloseButton}
+                >
+                  {onCloseModal => children(onCloseModal)}
+                </Modal>
+            </>
+          }
+        />
+        <Route
+          path='*'
+          element={
+            <>
+              <NavLink className={linkStyle} to={route}>
+                <IconButton className={iconClassName} title={iconTitle} icon={icon}>
+                  {iconChildren}
+                </IconButton>
+              </NavLink>
+            </>
+          }
+        />
+      </Routes>
     );
   } else {
     return (

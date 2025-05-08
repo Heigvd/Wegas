@@ -23,12 +23,12 @@ import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.view.I18nStringView;
 import java.io.IOException;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import jdk.nashorn.api.scripting.JSObject;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import org.openjdk.nashorn.api.scripting.JSObject;
 import org.eclipse.persistence.annotations.Customizer;
 
 /**

@@ -51,8 +51,8 @@ public class TriggerTest {
         System.out.println("OneShotTrigger");
         this.triggerDescriptor.setOneShot(true);
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
-        assertTrue(this.triggerDescriptor.getStates().get(2L).getTransitions().size() == 1);
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getInternalTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().get(2L).getInternalTransitions().size() == 1);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(this.triggerDescriptor.getPostTriggerEvent()));
         //testing onLoad method
@@ -72,7 +72,7 @@ public class TriggerTest {
         System.out.println("LoopTrigger");
         this.triggerDescriptor.setOneShot(false);
         this.triggerDescriptor.buildStateMachine();
-        assertTrue(this.triggerDescriptor.getStates().get(1L).getTransitions().get(0).getNextStateId() == 2L);
+        assertTrue(this.triggerDescriptor.getStates().get(1L).getInternalTransitions().get(0).getNextStateId() == 2L);
         assertTrue(this.triggerDescriptor.getStates().size() == 2);
         assertTrue(this.triggerDescriptor.getDefaultInstance().getCurrentStateId() == 1L);
         assertTrue(triggerDescriptor.getStates().get(2L).getOnEnterEvent().equals(scriptEntity));

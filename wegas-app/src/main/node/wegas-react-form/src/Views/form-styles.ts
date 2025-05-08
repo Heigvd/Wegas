@@ -1,10 +1,10 @@
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 // tslint:disable-next-line:no-namespace
 export namespace FormStyles {
-    export const labelColor: string = '#888'; // was bluish '#6A95B6';
-    export const labelFontSize: string = '15px';
-    export const labelBigFontSize: string = '15px'; // = labelFontSize * 115%
+    export const labelColor = '#888'; // was bluish '#6A95B6';
+    export const labelFontSize = '15px';
+    export const labelBigFontSize = '15px'; // = labelFontSize * 115%
 
     export const unselectable = css({
         userSelect: 'none',

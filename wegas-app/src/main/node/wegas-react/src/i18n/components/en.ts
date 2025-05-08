@@ -5,9 +5,16 @@ export const EN: ComponentsTranslations = {
     subject: 'Subject',
     sender: 'From',
     date: 'Date',
+    attachments: 'Attachment(s)',
     noSelectionMessage: 'Choose a message to display',
   },
   question: {
     validate: 'Validate',
+    result: 'Result',
+    results: 'Results'
   },
+  select: {
+    plzChooseValue: 'Make a choice',
+    noChoiceInfo: 'There is no available choice',
+  }
 };

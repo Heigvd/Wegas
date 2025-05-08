@@ -14,9 +14,9 @@ import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 /**
  *

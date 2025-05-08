@@ -22,13 +22,13 @@ import com.wegas.editor.ValueGenerators.EmptyMap;
 import com.wegas.editor.view.Hidden;
 import java.util.*;
 import java.util.Map.Entry;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.MapKeyColumn;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToMany;
 
 /**
  * @author Cyril Junod (cyril.junod at gmail.com)
@@ -61,6 +61,20 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     @WegasEntityProperty(ignoreNull = true, protectionLevel = ProtectionLevel.INHERITED,
         optional = false, nullable = false, proposal = EmptyMap.class,
         view = @View(label = "", value = Hidden.class))
+    /*
+     * // DON'T DO THAT:
+     * private Set<T> states = new HashSet<>();
+     *
+     * `this#states` should be of type `Set<T>`, nonetheless, such a typing leads to very
+     * unexpected behaviour.
+     *
+     * For instance, regarding `TriggerDescriptor`, the `states` field would always be null.
+     * It seems JPA is unable to load data from database (despite data exists in DB) if the relation
+     * is defined with `T`.
+     *
+     * Workaround:
+     * Defining `states` as a set of `AbstractState` is working well:
+     */
     private Set<AbstractState<U>> states = new HashSet<>();
 
     /**
@@ -88,11 +102,13 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     @JsonView(Views.ExtendedI.class)
     public Map<Long, T> getStates() {
-        Map<Long, T> map = new HashMap<>();
-        for (T state : (Set<T>) this.states) {
-            map.put(state.getIndex(), state);
-        }
-        return map;
+        Map<Long, T> tMap = new TreeMap<>();
+
+        ((Set<T>) this.states).forEach(state -> {
+            tMap.put(state.getIndex(), state);
+        });
+
+        return tMap;
     }
 
     public T addState(Long index, T state) {
@@ -114,7 +130,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
     }
 
     @JsonIgnore
-    public AbstractState getState(Long currentStateId) {
+    public AbstractState<U> getState(Long currentStateId) {
         for (AbstractState<U> state : this.states) {
             if (state.getIndex().equals(currentStateId)) {
                 return state;
@@ -170,7 +186,7 @@ public abstract class AbstractStateMachineDescriptor< T extends AbstractState<U>
 
     private U getTransitionById(Long id) {
         for (T state : this.getInternalStates()) {
-            for (U transition : state.getTransitions()) {
+            for (U transition : state.getInternalTransitions()) {
                 if (transition != null && transition.getId().equals(id)) {
                     return transition;
                 }

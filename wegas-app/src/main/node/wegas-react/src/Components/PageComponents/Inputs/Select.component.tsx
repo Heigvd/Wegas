@@ -19,7 +19,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -36,6 +36,14 @@ interface PlayerSelectInputProps extends WegasComponentProps {
    * choices - the allowed choices
    */
   choices?: Choice[] | IScript;
+  /**
+   * placeholder - the grey text inside the box when nothing is selected
+   */
+  placeholder?: IScript;
+  /**
+   * noOptionsMessage - the text to inform that there is no available choice
+   */
+  noOptionsMessage?: IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -50,6 +58,8 @@ function PlayerSelectInput({
   onVariableChange,
   pageId,
   path,
+  placeholder,
+  noOptionsMessage,
 }: PlayerSelectInputProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const descriptor = useScript<SStringDescriptor | SNumberDescriptor | string>(
@@ -62,15 +72,19 @@ function PlayerSelectInput({
     context,
   );
 
-  const value = useStore(
-    () =>
-      (descriptor != null && typeof descriptor === 'object'
+  const value = useStore(() => {
+    const v =
+      descriptor != null && typeof descriptor === 'object'
         ? descriptor.getValue(Player.self())
-        : descriptor) || '',
-  );
+        : descriptor;
+    return v == undefined ? '' : v;
+  });
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
+  const placeholderText = useScript<string>(placeholder, context) || undefined;
+  const noOptionsMessageText =
+    useScript<string>(noOptionsMessage, context) || undefined;
 
   if (descriptor == null) {
     return (
@@ -106,6 +120,8 @@ function PlayerSelectInput({
       id={id}
       value={String(value)}
       choices={computedChoices}
+      placeholder={placeholderText}
+      noOptionsMessage={noOptionsMessageText}
       onChange={v => {
         const newValue = v;
         if (handleOnChange) {
@@ -154,18 +170,29 @@ registerComponent(
           label: 'Choices',
           scriptProps: {
             language: 'TypeScript',
-            returnType: ['{label:string, value: string}[]'],
+            returnType: [
+              '{label:string, value: string, disabled?: boolean}[] | undefined',
+            ],
           },
           literalSchema: schemaProps.array({
             itemSchema: {
               label: schemaProps.string({ label: 'Label' }),
               value: schemaProps.string({ label: 'Value' }),
+              disabled: schemaProps.boolean({ label: 'Disabled' }),
             },
           }),
         },
       },
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: false,
+      }),
+      noOptionsMessage: schemaProps.scriptString({
+        label: 'No options message',
+        richText: false,
+      }),
       onVariableChange: onVariableChangeSchema('On text change action'),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['StringDescriptor', 'NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

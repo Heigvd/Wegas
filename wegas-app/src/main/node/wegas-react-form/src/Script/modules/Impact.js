@@ -3,7 +3,7 @@ import React from 'react';
 import Form from 'jsoninput';
 import { isEqualWith, cloneDeep } from 'lodash-es';
 import { print, parse, types } from 'recast';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 // import classNames from 'classnames';
 import { schema as variableSchema, varExist, buildExpression } from './Variable';
 // import ArgForm from './ArgForm';

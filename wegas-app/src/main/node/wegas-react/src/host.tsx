@@ -1,6 +1,6 @@
 /* global module*/
 import * as React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { DefaultDndProvider } from './Components/Contexts/DefaultDndProvider';
@@ -16,11 +16,13 @@ import './css/global.css';
 import './data/Stores/store';
 import { PageContextProvider } from './Editor/Components/Page/PageEditor';
 import HostLayout from './Host/HostLayout';
+import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 
 importPageComponents();
 
 function mount() {
-  render(
+  const root = createRoot(document.getElementById('root')!);
+  root.render(
     <AuthorizationProvider>
       <FeaturesProvider>
         <FullscreenProvider>
@@ -32,7 +34,9 @@ function mount() {
                     <PopupManager>
                       <DefaultDndProvider>
                         <PageContextProvider>
-                          <HostLayout />
+                          <EventInstanceManager>
+                            <HostLayout />
+                          </EventInstanceManager>
                         </PageContextProvider>
                       </DefaultDndProvider>
                     </PopupManager>
@@ -44,7 +48,6 @@ function mount() {
         </FullscreenProvider>
       </FeaturesProvider>
     </AuthorizationProvider>,
-    document.getElementById('root'),
   );
 }
 mount();

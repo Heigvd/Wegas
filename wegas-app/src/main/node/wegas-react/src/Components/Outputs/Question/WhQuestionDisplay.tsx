@@ -1,4 +1,4 @@
-import { cx } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -31,7 +31,7 @@ import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
-import { NumberSlider } from '../../Inputs/Number/NumberSlider';
+import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -103,13 +103,16 @@ interface WhChoiceDisplayProps extends DisabledReadonly {
   choiceI: IWhChoiceInstance;
   questionI: IWhQuestionInstance;
   onChange: (choiceI: IWhChoiceInstance) => void;
+  toggleInputDataError: React.Dispatch<React.SetStateAction<boolean>>;
   editMode?: boolean;
 }
+
 function WhChoiceDisplay({
   choiceD,
   choiceI,
   questionI,
   onChange,
+  toggleInputDataError,
   disabled,
   readOnly,
   editMode,
@@ -123,71 +126,68 @@ function WhChoiceDisplay({
       hasBeenSelected={false}
       editMode={editMode}
       validateButton={false}
+      className={'wegas-question__choice'}
     >
-      {choiceD['@class'] === 'BooleanDescriptor' ? (
-        <CheckBox
-          value={(choiceI as IBooleanInstance).value}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IBooleanInstance);
-            newChoiceI.value = v;
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      ) : choiceD['@class'] === 'NumberDescriptor' ? (
-        <NumberSlider
-          value={(choiceI as INumberInstance).value}
-          min={
-            (choiceD as INumberDescriptor).minValue ||
-            Math.min(0, (choiceI as INumberInstance).value)
-          }
-          max={
-            (choiceD as INumberDescriptor).maxValue ||
-            Math.max(100, (choiceI as INumberInstance).value)
-          }
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as INumberInstance);
-            newChoiceI.value = v;
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-          displayValues="NumberInput"
-        />
-      ) : choiceD['@class'] === 'StringDescriptor' ? (
-        <SimpleInput
-          value={translate((choiceI as IStringInstance).trValue, lang)}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue = createTranslatableContent(
-              lang,
-              String(v),
-              newChoiceI.trValue,
-            );
+      <div className={css({ padding: '15px' })}>
+        {choiceD['@class'] === 'BooleanDescriptor' ? (
+          <CheckBox
+            value={(choiceI as IBooleanInstance).value}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IBooleanInstance);
+              newChoiceI.value = v;
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        ) : choiceD['@class'] === 'NumberDescriptor' ? (
+          <NumberInput
+            value={(choiceI as INumberInstance).value}
+            min={(choiceD as INumberDescriptor).minValue ?? undefined}
+            max={(choiceD as INumberDescriptor).maxValue ?? undefined}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as INumberInstance);
+              newChoiceI.value = v;
+              onChange(newChoiceI);
+            }}
+            toggleInputDataError={toggleInputDataError}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        ) : choiceD['@class'] === 'StringDescriptor' ? (
+          <SimpleInput
+            value={translate((choiceI as IStringInstance).trValue, lang)}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IStringInstance);
+              newChoiceI.trValue = createTranslatableContent(
+                lang,
+                String(v),
+                newChoiceI.trValue,
+              );
 
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      ) : (
-        <HTMLEditor
-          value={translate((choiceI as IStringInstance).trValue, lang)}
-          onChange={v => {
-            const newChoiceI = cloneDeep(choiceI as IStringInstance);
-            newChoiceI.trValue = createTranslatableContent(
-              lang,
-              String(v),
-              newChoiceI.trValue,
-            );
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        ) : (
+          <HTMLEditor
+            value={translate((choiceI as IStringInstance).trValue, lang)}
+            onChange={v => {
+              const newChoiceI = cloneDeep(choiceI as IStringInstance);
+              newChoiceI.trValue = createTranslatableContent(
+                lang,
+                String(v),
+                newChoiceI.trValue,
+              );
 
-            onChange(newChoiceI);
-          }}
-          disabled={questionI.validated || disabled}
-          readOnly={readOnly}
-        />
-      )}
+              onChange(newChoiceI);
+            }}
+            disabled={questionI.validated || disabled}
+            readOnly={readOnly}
+          />
+        )}
+      </div>
     </ChoiceContainer>
   );
 }
@@ -209,6 +209,8 @@ export function WhQuestionDisplay({
 }: WhQuestionDisplayProps) {
   const [choicesValues, setChoicesValues] =
     React.useState<(IWhChoiceInstance | undefined)[]>(choicesI);
+
+  const [inputDataError, setInputDataError] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setChoicesValues(choicesI);
@@ -242,6 +244,7 @@ export function WhQuestionDisplay({
                 return newValues;
               })
             }
+            toggleInputDataError={setInputDataError}
             questionI={questionI}
             choiceD={choiceD}
             choiceI={choiceI}
@@ -252,17 +255,17 @@ export function WhQuestionDisplay({
         );
       })}
       {editMode && <AddChoiceMenu questionD={questionD} />}
-      <div className={cx(choiceInputStyle)}>
+      <div className={cx(choiceInputStyle, 'wegas-question__choice-button')}>
         <Button
           className={autoMargin}
           label={questionI.validated ? 'Validated' : 'Validate'}
           onClick={() => {
-            dispatch(validateQuestion(questionD));
             choicesValues.forEach(
-              choiceI => choiceI != null && dispatch(updateInstance(choiceI)),
+              choiceI => choiceI && dispatch(updateInstance(choiceI)),
             );
+            dispatch(validateQuestion(questionD));
           }}
-          disabled={questionI.validated || disabled}
+          disabled={questionI.validated || disabled || inputDataError}
           readOnly={readOnly}
         />
       </div>

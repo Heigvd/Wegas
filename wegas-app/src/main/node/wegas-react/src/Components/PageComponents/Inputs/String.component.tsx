@@ -21,7 +21,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -31,7 +31,7 @@ import {
 
 interface PlayerStringInput
   extends WegasComponentProps,
-    ValidatorComponentProps {
+  ValidatorComponentProps {
   onVariableChange?: OnVariableChange;
   /**
    * script - the script that returns the variable to display and modify
@@ -79,14 +79,14 @@ function PlayerStringInput({
   const { disabled, readOnly, locked } = options;
 
   const onChange = React.useCallback(
-    (v: React.ReactText) => {
+    (newValue: React.ReactText) => {
       if (handleOnChange) {
-        handleOnChange(v);
+        handleOnChange(newValue);
       } else if (typeof text === 'object') {
         editingStore.dispatch(
           runScript(
             `Variable.find(gameModel,"${text.getName()}").setValue(self, ${JSON.stringify(
-              v,
+              newValue,
             )});`,
           ),
         );
@@ -150,19 +150,19 @@ registerComponent(
       }),
       placeholder: schemaProps.scriptString({
         label: 'Placeholder',
-        richText: true,
+        richText: false,
       }),
       onVariableChange: onVariableChangeSchema('On text change action'),
       rows: {
         type: ['number', 'null'],
         view: {
           label: 'multiline',
-          type:'number',
+          type: 'number',
           placeholder: '1',
-        }
+        },
       },
       ...validatorSchema,
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['StringDescriptor'],
     getComputedPropsFromVariable: v => ({

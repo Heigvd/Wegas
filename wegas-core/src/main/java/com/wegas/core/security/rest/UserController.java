@@ -1,7 +1,7 @@
 /**
  * Wegas
  * http://wegas.albasim.ch
- *
+ * <p>
  * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
@@ -23,6 +23,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Populatable;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.rest.util.Email;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.aai.AaiConfigInfo;
 import com.wegas.core.security.aai.AaiLoginResponse;
@@ -39,27 +41,23 @@ import com.wegas.core.security.util.AuthenticationInformation;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.core.security.util.Sudoer;
 import com.wegas.core.security.util.TokenInfo;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.mail.internet.AddressException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.mail.internet.AddressException;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
@@ -137,6 +135,19 @@ public class UserController {
     }
 
     /**
+     * Get paginated users
+     *
+     * @param pageable requested pagination
+     * @return
+     */
+    @POST
+    @Path("Paginated")
+    @RequiresPermissions("User:Edit")
+    public Page<User> paginatedUsers(Pageable pageable) {
+        return accountFacade.findAllRegisteredUsersPaginated(new Pageable(pageable.getPage(), pageable.getSize(), pageable.getQuery()));
+    }
+
+    /**
      * Get a specific user
      *
      * @param entityId user id to look for
@@ -162,7 +173,7 @@ public class UserController {
         SecurityUtils.getSubject().checkPermission("User:Edit");
 
         return ids.stream()
-            .map(id -> userFacade.find(id)).collect(Collectors.toList());
+                .map(id -> userFacade.find(id)).collect(Collectors.toList());
     }
 
     /**
@@ -375,8 +386,8 @@ public class UserController {
     @POST
     @Path("Authenticate")
     public User login(AuthenticationInformation authInfo,
-        @Context HttpServletRequest request,
-        @Context HttpServletResponse response) throws ServletException, IOException {
+                      @Context HttpServletRequest request,
+                      @Context HttpServletResponse response) throws ServletException, IOException {
         return userFacade.authenticate(authInfo);
     }
 
@@ -401,7 +412,7 @@ public class UserController {
     @POST
     @Path("AuthenticateWithToken")
     public User loginWithDisposableToken(TokenInfo tokenInfo,
-        @Context HttpServletRequest request
+                                         @Context HttpServletRequest request
     ) throws ServletException, IOException, URISyntaxException {
         return userFacade.authenticateFromToken(tokenInfo);
     }
@@ -486,7 +497,7 @@ public class UserController {
     @POST
     @Path("Signup")
     public Response signup(JpaAccount account,
-        @Context HttpServletRequest request) {
+                           @Context HttpServletRequest request) {
         WegasErrorMessage error;
 
         try {
@@ -518,7 +529,7 @@ public class UserController {
      * @return void
      */
     public void create(AaiAccount account,
-        @Context HttpServletRequest request) {
+                       @Context HttpServletRequest request) {
         if (!this.checkExistingPersistentId(account.getPersistentId())) {
             User user = new User(account);
             userFacade.create(user);
@@ -538,8 +549,8 @@ public class UserController {
     @POST
     @Path("AaiLogin")
     public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
-        @Context HttpServletRequest request,
-        @Context HttpServletResponse response) throws ServletException, IOException {
+                                     @Context HttpServletRequest request,
+                                     @Context HttpServletResponse response) throws ServletException, IOException {
 
         // Check if the invocation is by HTTPS. @TODO: verify certificate.
         if (!request.isSecure()) {
@@ -618,7 +629,7 @@ public class UserController {
     @POST
     @Path("SendNewPassword")
     public void requestPasswordReset(AuthenticationInformation authInfo,
-        @Context HttpServletRequest request) {
+                                     @Context HttpServletRequest request) {
         accountFacade.requestPasswordReset(authInfo.getLogin(), request);
     }
 
@@ -654,7 +665,7 @@ public class UserController {
         }
 
         String body = "<!DOCTYPE html><html><head></head><body>"
-            + email.getBody();
+                + email.getBody();
         body += "<br /><br /><hr /><i> Sent by " + name + " from albasim.ch</i></body></html>";
         email.setBody(body);
 
@@ -713,12 +724,12 @@ public class UserController {
         User currentUser = userFacade.getCurrentUser();
         final List<Player> players = currentUser.getPlayers();
 
-        try ( Sudoer root = requestManager.sudoer()) {
+        try (Sudoer root = requestManager.sudoer()) {
             List<DatedEntity> queue = populatorFacade.getQueue();
 
             for (Player p : players) {
                 if (p.getStatus().equals(Populatable.Status.WAITING)
-                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                        || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
                     p.setQueueSize(queue.indexOf(p) + 1);
                 }
                 teamsToReturn.add(p.getTeam());
@@ -744,12 +755,12 @@ public class UserController {
         final List<Player> rawPlayers = currentUser.getPlayers();
         Collection<PlayerToGameModel> players = new ArrayList<>();
 
-        try ( Sudoer root = requestManager.sudoer()) {
+        try (Sudoer root = requestManager.sudoer()) {
             List<DatedEntity> queue = populatorFacade.getQueue();
 
             for (Player p : rawPlayers) {
                 if (p.getStatus().equals(Populatable.Status.WAITING)
-                    || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
+                        || p.getStatus().equals(Populatable.Status.RESCHEDULED)) {
                     p.setQueueSize(queue.indexOf(p) + 1);
                 }
                 players.add(PlayerToGameModel.build(p));
@@ -773,7 +784,7 @@ public class UserController {
         Player thePlayer = playerFacade.findPlayerInTeam(teamId, currentUser.getId());
 
         if (thePlayer != null) {
-            try ( ActAsPlayer a = requestManager.actAsPlayer(thePlayer)) {
+            try (ActAsPlayer a = requestManager.actAsPlayer(thePlayer)) {
                 return thePlayer.getTeam();
             }
         } else {
@@ -825,7 +836,7 @@ public class UserController {
     @POST
     @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void shareGame(@PathParam("gameId") Long gameId,
-        @PathParam("accountId") Long accountId) {
+                          @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
@@ -836,7 +847,7 @@ public class UserController {
     @DELETE
     @Path("ShareGame/{gameId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void unshareGame(@PathParam("gameId") Long gameId,
-        @PathParam("accountId") Long accountId) {
+                            @PathParam("accountId") Long accountId) {
 
         User coTrainer = accountFacade.find(accountId).getUser();
 
@@ -852,10 +863,10 @@ public class UserController {
      * @param accountId   user accountId
      */
     @POST
-    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
+    @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{permission: (?:View|Edit|Delete|Duplicate|Instantiate|Translate-[A-Z]*|,)*}/{accountId : [1-9][0-9]*}")
     public void shareGameModel(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("permission") String permission,
-        @PathParam("accountId") Long accountId) {
+                               @PathParam("permission") String permission,
+                               @PathParam("accountId") Long accountId) {
 
         User user = accountFacade.find(accountId).getUser();
 
@@ -865,7 +876,7 @@ public class UserController {
     @DELETE
     @Path("ShareGameModel/{gameModelId : [1-9][0-9]*}/{accountId : [1-9][0-9]*}")
     public void unshareGameModel(@PathParam("gameModelId") Long gameModelId,
-        @PathParam("accountId") Long accountId) {
+                                 @PathParam("accountId") Long accountId) {
 
         User coScenarist = accountFacade.find(accountId).getUser();
 
@@ -926,8 +937,8 @@ public class UserController {
     @RequiresRoles("Administrator")
     @Path("{userId : [1-9][0-9]*}/Add/{roleId : [1-9][0-9]*}")
     public User addUser(
-        @PathParam("roleId") Long roleId,
-        @PathParam("userId") Long userId) {
+            @PathParam("roleId") Long roleId,
+            @PathParam("userId") Long userId) {
         return userFacade.addRole(userId, roleId);
     }
 
@@ -935,8 +946,8 @@ public class UserController {
     @RequiresRoles("Administrator")
     @Path("{userId : [1-9][0-9]*}/Remove/{roleId : [1-9][0-9]*}")
     public User kickUser(
-        @PathParam("roleId") Long roleId,
-        @PathParam("userId") Long userId) {
+            @PathParam("roleId") Long roleId,
+            @PathParam("userId") Long userId) {
         return userFacade.removeRole(userId, roleId);
     }
 }

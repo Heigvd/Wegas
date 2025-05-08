@@ -14,11 +14,11 @@ import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.util.AaiAuthentication;
 import com.wegas.core.security.util.AuthenticationMethod;
 import com.wegas.editor.view.StringView;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.NamedQuery;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.NamedQuery;
 
 /**
  * @author Created by jarle.hulaas@heig-vd.ch on 07.03.2017.
@@ -41,6 +41,18 @@ public class AaiAccount extends AbstractAccount {
         )
     )
     private String persistentId;
+
+    @WegasEntityProperty(ignoreNull = true,
+        optional = false, nullable = false,
+        view = @View(
+                label = "Persistent Id for EduId OIDC",
+                readOnly = true,
+                value = StringView.class
+        )
+    )
+    @JsonIgnore
+    private String eduIdPairwiseId;
+
 
     @WegasEntityProperty(view = @View(label = "Organization", readOnly = true, value = StringView.class),
         optional = false, nullable = false)
@@ -71,6 +83,21 @@ public class AaiAccount extends AbstractAccount {
         return aaiAccount;
     }
 
+    public static AaiAccount buildForEduIdPairwiseId(AaiUserDetails userDetails) {
+        AaiAccount aaiAccount = new AaiAccount();
+        aaiAccount.setPersistentId(null);
+        aaiAccount.setEduIdPairwiseId(userDetails.getEduIdPairwiseId());
+        aaiAccount.setEmail(userDetails.getEmail());
+        // This information is very useful, e.g. for filtering, but should maybe not be stored as a username ...
+        aaiAccount.setUsername("AAI: " + userDetails.getFirstname() + " " + userDetails.getLastname());
+        aaiAccount.setFirstname(userDetails.getFirstname());
+        aaiAccount.setLastname(userDetails.getLastname());
+        aaiAccount.setHomeOrg(userDetails.getHomeOrg());
+
+        return aaiAccount;
+    }
+
+
     // This attribute should not be sent to the client side, hence the JsonIgnore:
     @JsonIgnore
     public String getPersistentId() {
@@ -79,6 +106,15 @@ public class AaiAccount extends AbstractAccount {
 
     public void setPersistentId(String persistentId) {
         this.persistentId = persistentId;
+    }
+
+    @JsonIgnore
+    public String getEduIdPairwiseId() {
+        return eduIdPairwiseId;
+    }
+
+    public void setEduIdPairwiseId(String eduIdPairwiseId) {
+        this.eduIdPairwiseId = eduIdPairwiseId;
     }
 
     public String getHomeOrg() {

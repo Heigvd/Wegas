@@ -381,14 +381,14 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
   }, [handleChange, srcModel]);
 
   const handleBlur = React.useCallback(
-    val => {
+    (val: string | undefined) => {
       trimFunctionToScript(val, onBlur);
     },
     [onBlur, trimFunctionToScript],
   );
 
   const handleSave = React.useCallback(
-    val => trimFunctionToScript(val, onSave),
+    (val: string | undefined) => trimFunctionToScript(val, onSave),
     [onSave, trimFunctionToScript],
   );
 
@@ -399,7 +399,7 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
       {error && <MessageString value={error} type="error" />}
       {resizable ? (
         <ResizeHandle
-          minSize={100}
+          minSize={125}
           textContent={value + '\n\n' || '\n\n\n\n\n'}
         >
           <SrcEditor

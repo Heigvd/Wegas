@@ -18,6 +18,8 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.rest.util.pagination.Page;
+import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.aai.AaiAccount;
 import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.guest.GuestJpaAccount;
@@ -39,21 +41,17 @@ import com.wegas.survey.persistence.SurveyDescriptor;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.ejb.EJBException;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.mail.Message;
-import javax.mail.MessagingException;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 import javax.naming.NamingException;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
@@ -109,14 +107,44 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        if (!(account instanceof AaiAccount) && !Helper.isNullOrEmpty(account.getUsername())) {
-            try {
-                AbstractAccount a = this.findByUsername(account.getUsername());
-                if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
-                    throw WegasErrorMessage.error("This username is already in use");// throw an exception
+        try (Sudoer su = requestManager.sudoer()) {
+            if (account != null && !(account instanceof AaiAccount)) {
+                // find current account from database
+                var targetedAccount = this.find(entityId);
+
+                var newUsername = account.getUsername();
+                if (!Helper.isNullOrEmpty(newUsername)) {
+                    // check if user want to change its username
+                    if (!newUsername.equals(targetedAccount.getUsername())) {
+                        // and make sure this new username is not already in use
+                        try {
+                            // DISCLAIMER: reverse-exception-cheesy-pattern
+                            // attempt to find an account which already use newUsername
+                            this.findByUsername(newUsername);
+                            // No exception thrown means such an account has been found
+                            throw WegasErrorMessage.error("This username is already in use", "ACCOUNT-UPDATE-USERNAME-DUPLICATE");
+                        } catch (WegasNoResultException e) { //NOPMD
+                            // no-result exception means there is no account with such newUsername
+                        }
+                    }
                 }
-            } catch (WegasNoResultException e) { //NOPMD
-                // GOTCHA no username could be found, do not use
+
+                // newEmail from posted account
+                var newEmail = account.getEmail();
+                if (!Helper.isNullOrEmpty(newEmail)) {
+                    // check if user want to change its email address
+                    if (!newEmail.equals(targetedAccount.getEmail())) {
+                        // Validate email address uniqueness case-insensitive
+                        // using list to avoid NonUniqueResultException from singleResult()
+                        this.findAllByEmailOrUsername(newEmail).stream()
+                            // ignore other-type account (eg. LocalAccount & AaiAccount with very same newEmail address)
+                            .filter(foundAccount -> foundAccount.getClass().equals(targetedAccount.getClass()))
+                            .findAny()
+                            .ifPresent(present -> {
+                                throw WegasErrorMessage.error("This email address is already in use", "ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE");
+                            });
+                    }
+                }
             }
         }
 
@@ -217,6 +245,69 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         final TypedQuery<AbstractAccount> query = getEntityManager()
             .createNamedQuery("AbstractAccount.findAllNonGuests", AbstractAccount.class);
         return query.getResultList();
+    }
+
+    /**
+     * Get all registered accounts (excluding Guest accounts) with pagination
+     *
+     * @return all registered accounts
+     */
+    public Page<User> findAllRegisteredUsersPaginated(Pageable pageable) {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+
+        //execute query for total count (can be more than 1 page)
+        final CriteriaQuery<Long> cquery = criteriaBuilder.createQuery(Long.class);
+        Root<AbstractAccount> abstractAccountRoot = cquery.from(AbstractAccount.class);
+        abstractAccountRoot.fetch("user", JoinType.INNER);
+        cquery.select(criteriaBuilder.count(abstractAccountRoot.get("id")));
+
+        Expression<String> exp1 = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountRoot.<String>get("firstname"), "")), " ");
+        exp1 = criteriaBuilder.concat(exp1, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountRoot.<String>get("lastname"), "")));
+
+        ListIterator<String> queryParamsIterator = pageable.getSplitQuery().listIterator();
+        Predicate whereClause = criteriaBuilder.notEqual(abstractAccountRoot.type(), GuestJpaAccount.class);
+        Map<ParameterExpression<String>, String> parameterMap = new HashMap<>();
+
+        while(queryParamsIterator.hasNext()) {
+            String param = queryParamsIterator.next();
+            ParameterExpression<String> queryParameter = criteriaBuilder.parameter( String.class );
+            if (!param.isEmpty()) {
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.like(exp1, queryParameter));
+                parameterMap.put(queryParameter, "%" + param.toLowerCase() + "%");
+            }
+        }
+        cquery.where(whereClause);
+        TypedQuery<Long> countQuery = getEntityManager().createQuery(cquery);
+        for(Map.Entry<ParameterExpression<String>,String> entry : parameterMap.entrySet())
+            countQuery.setParameter(entry.getKey(), entry.getValue());
+        Long totalCount = countQuery.getSingleResult();
+
+        //execute query for page results
+        final CriteriaQuery<User> lquery = criteriaBuilder.createQuery(User.class);
+        Root<AbstractAccount> abstractAccountlistRoot = lquery.from(AbstractAccount.class);
+        abstractAccountlistRoot.fetch("user", JoinType.INNER);
+        lquery.select(abstractAccountlistRoot.get("user"));
+
+        Expression<String> exp2 = criteriaBuilder.concat(criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountlistRoot.<String>get("firstname"), "")), " ");
+        exp2 = criteriaBuilder.concat(exp2, criteriaBuilder.lower(criteriaBuilder.coalesce(abstractAccountlistRoot.<String>get("lastname"), "")));
+
+        queryParamsIterator = pageable.getSplitQuery().listIterator();
+        whereClause = criteriaBuilder.notEqual(abstractAccountlistRoot.type(), GuestJpaAccount.class);
+        parameterMap = new HashMap<ParameterExpression<String>, String>();
+        while(queryParamsIterator.hasNext()) {
+            String param = queryParamsIterator.next();
+            ParameterExpression<String> queryParameter = criteriaBuilder.parameter( String.class );
+            if (!param.isEmpty()) {
+                whereClause = criteriaBuilder.and(whereClause, criteriaBuilder.like(exp2, queryParameter));
+                parameterMap.put(queryParameter, "%" + param.toLowerCase() + "%");
+            }
+        }
+        lquery.where(whereClause);
+        lquery.orderBy(criteriaBuilder.desc(abstractAccountlistRoot.get("user").get("lastSeenAt")));
+        TypedQuery<User> listQuery = pageable.paginateQuery(getEntityManager().createQuery(lquery));
+        for(Map.Entry<ParameterExpression<String>,String> entry : parameterMap.entrySet())
+            listQuery.setParameter(entry.getKey(), entry.getValue());
+        return new Page<User>(totalCount, pageable.getPage(), pageable.getSize(), listQuery.getResultList());
     }
 
     /**
@@ -344,6 +435,30 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     /**
+     * Return a user based on his persistentID.
+     *
+     * @param eduIdPairwiseId
+     *
+     * @return the user who owns an account with the given username
+     *
+     * @throws WegasNoResultException if no such a user exists
+     * NamedQuery(name = "AaiAccount.findByPersistentId", query = "SELECT a FROM AaiAccount a WHERE TYPE(a) = AaiAccount AND a.persistentId = :persistentId")
+     */
+    public AaiAccount findByEduIdPairwiseId(String eduIdPairwiseId) throws WegasNoResultException {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        CriteriaQuery<AaiAccount> criteriaQuery = criteriaBuilder.createQuery(AaiAccount.class);
+        Root<AaiAccount> root = criteriaQuery.from(AaiAccount.class);
+        criteriaQuery.select(root);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("eduIdPairwiseId"), eduIdPairwiseId));
+        TypedQuery<AaiAccount> query = getEntityManager().createQuery(criteriaQuery);
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
+    }
+
+    /**
      * Updates local AAI account with any modified data received at login.
      *
      * @param userDetails the freshest version of user details
@@ -358,6 +473,29 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
 
                 a.merge(AaiAccount.build(userDetails)); //HAZARDOUS!!!!
+                update(a.getId(), a);
+            }
+        } catch (WegasNoResultException ex) {
+            // Ignore
+            logger.error("AAIAccount does not exist");
+        }
+    }
+
+    /**
+     * Updates local EduID account with any modified data received at login.
+     *
+     * @param userDetails the freshest version of user details
+     */
+    public void refreshEduIDAccount(AaiUserDetails userDetails) {
+        try {
+            AaiAccount a = findByEduIdPairwiseId(userDetails.getEduIdPairwiseId());
+
+            if (!a.getFirstname().equals(userDetails.getFirstname())
+                    || !a.getLastname().equals(userDetails.getLastname())
+                    || !a.getHomeOrg().equals(userDetails.getHomeOrg())
+                    || !a.getDetails().getEmail().equals(userDetails.getEmail())) {
+
+                a.merge(AaiAccount.buildForEduIdPairwiseId(userDetails)); //HAZARDOUS!!!!
                 update(a.getId(), a);
             }
         } catch (WegasNoResultException ex) {
@@ -625,7 +763,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             throw WegasErrorMessage.error("Please log in to consume token");
         }
 
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             Token token = this.findToken(tokenId);
             AbstractAccount account = token.getAccount();
 
@@ -799,7 +937,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public void requestPasswordReset(String email, HttpServletRequest request) {
         // as the subject who requires such a lin is unauthenticated, we have to promote it
-        try ( Sudoer su = requestManager.sudoer()) {
+        try (Sudoer su = requestManager.sudoer()) {
             JpaAccount account = this.findJpaByEmail(email);
             if (account != null) {
 

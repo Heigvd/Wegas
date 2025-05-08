@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { css, keyframes } from 'glamor';
+import { css, keyframes } from '@emotion/css';
 
 const scale = keyframes({
     '0%': {
@@ -19,4 +19,4 @@ const loaderStyle = css({
     margin: 'auto',
     animation: `${scale} 1s infinite ease-in-out`,
 });
-export const SimpleLoader = () => <div {...loaderStyle} />;
+export const SimpleLoader = () => <div className={loaderStyle} />;

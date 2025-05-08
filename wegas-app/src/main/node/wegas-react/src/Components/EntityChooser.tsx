@@ -2,32 +2,34 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import {
-  autoScroll,
-  expandWidth,
-  flex,
-  flexColumn,
-  flexRow,
-  grow,
-  halfOpacity,
-  justifyCenter,
-  justifyStart,
+    autoScroll,
+    expandWidth,
+    flex,
+    flexColumn,
+    flexRow,
+    grow,
+    halfOpacity,
+    justifyCenter,
+    justifyStart, textJustify,
 } from '../css/classes';
+import { classNameOrEmpty } from '../Helper/className';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { themeVar } from './Theme/ThemeVars';
 
 const entityChooser = css({
   width: '100%',
   overflow: 'hidden',
+  gap: '10px',
 });
 
 const entityContainer = css({
-  flex: '50%',
+  flex: '70%',
   padding: '10px',
   overflow: 'auto',
 });
 
 const labelList = css({
-  flex: '50%',
+  flex: '30%',
   padding: '10px',
   minWidth: '90px',
   overflow: 'auto',
@@ -39,11 +41,26 @@ const labelListMobile = css({
   overflow: 'auto',
 });
 
+export const defaultEntityDisplay = cx(
+    textJustify,
+    css(
+        {
+            flexGrow: 1,
+            width: 'auto',
+            marginRight: 'auto',
+            marginLeft: 'auto',
+            minWidth: '50ch',
+            maxWidth: '75ch',
+            overflowWrap: 'break-word', // Prevents <75ch text from overflowing
+            hyphens: 'auto',
+        }
+    )
+);
+
 export const entityChooserLabelStyle = (disabled?: boolean) =>
   cx(
     css({
       position: 'relative',
-      padding: '10px',
       color: themeVar.colors.DarkTextColor,
       borderRadius: themeVar.dimensions.BorderRadius,
       marginTop: '5px',
@@ -53,7 +70,7 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
         ? {
             '&:hover': {
               cursor: 'pointer',
-              boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
+              boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.4)`,
               zIndex: 1,
             },
           }
@@ -70,12 +87,12 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
 export const entityChooserLabelContainer = css({
   // marginBottom: '10px',
   /* [`&>.${labelArrow}`]: {
-      borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
-    }, */
+        borderLeft: `20px solid ${themeVar.colors.DisabledColor}`,
+      }, */
 });
 
-export const activeEntityChooserLabel = css(
-  {
+export const activeEntityChooserLabel = cx(
+  css({
     backgroundColor: themeVar.colors.PrimaryColor,
     color: themeVar.colors.LightTextColor,
     boxShadow: `2px 2px 6px 2px rgba(0, 0, 0, 0.2)`,
@@ -83,12 +100,12 @@ export const activeEntityChooserLabel = css(
     borderBottomColor: themeVar.colors.PrimaryColor,
   },
   /*
-    borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
- */
+      borderLeft: `20px solid ${themeVar.colors.PrimaryColor}`,
+   */
   /*
-      borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
-  */
-);
+        borderLeft: `20px solid ${themeVar.colors.ActiveColor}`,
+    */
+  ), 'wegas-entity-chooser--active');
 
 interface LabelGeneratorProps<E extends IAbstractEntity> {
   entity: E;
@@ -111,7 +128,7 @@ function LabelGenerator<E extends IAbstractEntity>(
           if (deepDifferent(props.entity, oldEntity)) {
             return props.entity;
           } else {
-            return null;
+            return props.mobile ? null : oldEntity;
           }
         })
       }
@@ -122,7 +139,8 @@ function LabelGenerator<E extends IAbstractEntity>(
 type childrenType<E> = { entity: E } & DisabledReadonly;
 
 interface EntityChooserProps<E extends IAbstractEntity>
-  extends DisabledReadonly {
+  extends DisabledReadonly,
+    ClassStyleId {
   entities: E[];
   children: (props: childrenType<E>) => React.ReactNode; //React.FunctionComponent<{ entity: E } & DisabledReadonly> ;
   // entityLabel: (entity: E) => React.ReactNode;
@@ -145,6 +163,8 @@ export function EntityChooser<E extends IAbstractEntity>({
   readOnly,
   addComponent,
   noSelectionMessage,
+  className,
+  style,
 }: EntityChooserProps<E>) {
   const [entity, setEntity] = React.useState<E | null>();
   const [mobile, setMobile] = React.useState<boolean>();
@@ -201,9 +221,12 @@ export function EntityChooser<E extends IAbstractEntity>({
   if (mobile) {
     return (
       <div
-        className={cx(flex, flexColumn, entityChooser, autoScroll, {
-          [halfOpacity]: disabled,
-        })}
+        className={
+          cx(flex, flexColumn, entityChooser, autoScroll, {
+            [halfOpacity]: disabled,
+          }) + classNameOrEmpty(className)
+        }
+        style={style}
         ref={setRef}
       >
         {entity == undefined ? (
@@ -241,12 +264,18 @@ export function EntityChooser<E extends IAbstractEntity>({
   } else {
     return (
       <div
-        className={cx(flex, flexRow, entityChooser, {
-          [halfOpacity]: disabled,
-        })}
+        className={
+          cx(flex, flexRow,
+            entityChooser,
+            {
+              [halfOpacity]: disabled,
+            },
+            classNameOrEmpty(className),
+            'wegas-entity-chooser')}
+        style={style}
         ref={setRef}
       >
-        <div className={cx(flex, flexColumn, labelList)}>
+        <div className={cx(flex, flexColumn, labelList, 'wegas-entity-chooser__list')}>
           {entities.map(e => (
             <LabelGenerator
               key={e.id}
@@ -259,11 +288,11 @@ export function EntityChooser<E extends IAbstractEntity>({
           {addComponent}
         </div>
         {entity != null ? (
-          <div className={cx(flex, entityContainer, justifyStart)}>
+          <div className={cx(flex, entityContainer, justifyStart, 'wegas-entity-chooser__display')}>
             {children({ entity, disabled, readOnly })}
           </div>
         ) : (
-          <div className={cx(flex, entityContainer, justifyCenter)}>
+          <div className={cx(flex, entityContainer, justifyCenter, 'wegas-entity-chooser__no-selection')}>
             {noSelectionMessage}
           </div>
         )}
@@ -310,7 +339,7 @@ export function DefaultEntityChooserLabel<T extends IAbstractEntity>({
           {
             [activeEntityChooserLabel]: selected,
           },
-        )}
+        'wegas-entity-chooser__choice')}
       >
         {children}
       </div>

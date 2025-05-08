@@ -32,7 +32,11 @@ import {
 } from './OptionsComponent';
 
 const emptyPath: number[] = [];
-const emptyObject: any = {};
+const emptyObject: Record<string | number | symbol, never> = {};
+
+const emptyWegasComponentProps: WegasComponent['props'] = {
+  children: undefined,
+};
 
 export function getComponentFromPath(page: WegasComponent, path: number[]) {
   const newPath = [...path];
@@ -60,9 +64,8 @@ export type ChildrenDeserializerProps<P = UnknownValuesObject> = P & {
   pageId?: string;
   uneditable?: boolean;
   containerPropsKeys?: string[];
-  // the content of context can be any because it's set at runtime by the user
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  context?: { [exposeAs: string]: any };
+  // the content of context is unknown because it's set at runtime by the user
+  context?: { [exposeAs: string]: unknown };
   /**  Options' state inherited from the parent */
   inheritedOptionsState: HeritableOptionsState;
 };
@@ -73,7 +76,7 @@ function DefaultChildren(_: ChildrenDeserializerProps) {
 
 export const DummyContainer: ItemContainer = React.forwardRef<
   HTMLDivElement,
-  WegasComponentItemProps
+  React.PropsWithChildren<WegasComponentItemProps>
 >(
   (
     {
@@ -172,18 +175,24 @@ export function PageDeserializer({
   const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
   const componentSeletor = React.useCallback(
-    (s: PageComponentsState) => ({
-      ...s[(wegasComponent && wegasComponent.type) || ''],
-      // As we use 2 hooks with use effect here, the return off the second one will be done after a first render.
-      // We must store and use the wegasComponent given here in order to avoid giving old props to a new component.
-      currentWegasComponent: wegasComponent,
-    }),
+    (state: PageComponentsState) => {
+      // explicit cast because component maybe undefined
+      // TODO: add noUncheckedIndexedAccess (https://www.typescriptlang.org/tsconfig#noUncheckedIndexedAccess)
+      const c = state[(wegasComponent && wegasComponent.type) || ''] as
+        | PageComponent
+        | undefined;
+
+      return {
+        // ...state[(wegasComponent && wegasComponent.type) || ''],
+        ...c,
+        // As we use 2 hooks with use effect here, the return off the second one will be done after a first render.
+        // We must store and use the wegasComponent given here in order to avoid giving old props to a new component.
+        currentWegasComponent: wegasComponent,
+      };
+    },
     [wegasComponent],
   );
-  const component = usePageComponentStore(
-    componentSeletor,
-    shallowDifferent,
-  ) as PageComponent & { currentWegasComponent: WegasComponent | undefined };
+  const component = usePageComponentStore(componentSeletor, shallowDifferent);
 
   const {
     WegasComponent,
@@ -191,10 +200,11 @@ export function PageDeserializer({
     componentId,
     obsoleteComponent,
     currentWegasComponent,
-  } = component || emptyObject;
+  } = component;
 
   const { children, ...restProps } =
-    (currentWegasComponent && currentWegasComponent.props) || emptyObject;
+    (currentWegasComponent && currentWegasComponent.props) ||
+    emptyWegasComponentProps;
 
   const optionsState = useOptions(
     pick(restProps, defaultOptionsKeys),
@@ -210,7 +220,8 @@ export function PageDeserializer({
   if (!currentWegasComponent) {
     return <pre>JSON error in page</pre>;
   }
-  if (!component) {
+
+  if (!component || !WegasComponent || !componentId) {
     if (nbRendering.current === 1) {
       return (
         <div className={grow}>

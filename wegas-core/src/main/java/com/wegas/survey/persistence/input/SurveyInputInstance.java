@@ -13,9 +13,9 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators;
 import com.wegas.editor.view.Hidden;
 import static java.lang.Boolean.FALSE;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 
 /**
  *

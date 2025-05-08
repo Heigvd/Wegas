@@ -83,7 +83,7 @@ export interface SimpleInputProps extends InputProps<string | number> {
   autoFocus?: boolean;
 
   /**
-   * onFocus - event that fires when te input is focused
+   * onFocus - event that fires when the input is focused
    */
   onFocus?: (
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -119,32 +119,32 @@ export function SimpleInput({
   inputType = 'text',
   debouncingTime = 400,
 }: SimpleInputProps) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const textAeraRef = React.useRef<HTMLTextAreaElement>(null);
+  const elementRef = React.useRef<HTMLInputElement | HTMLTextAreaElement | null>(null);
 
   React.useEffect(() => {
     if (autoFocus) {
-      inputRef.current?.focus();
-      textAeraRef.current?.focus();
+      elementRef.current?.focus();
     }
   }, [autoFocus]);
 
-  const { currentValue, debouncedOnChange, flush } = useDebouncedOnChange(
+  const { currentValue, debouncedOnChange, } = useDebouncedOnChange(
     value,
     onChange,
     debouncingTime,
   );
 
   const onInputChange = React.useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      debouncedOnChange(ev.currentTarget.value),
+    (ev: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      debouncedOnChange(ev.currentTarget.value);
+    }
+      ,
     [debouncedOnChange],
   );
 
   if (typeof rows === 'number') {
     return (
       <textarea
-        ref={textAeraRef}
+        ref={e => elementRef.current = e}
         className={inputStyle + classNameOrEmpty(className)}
         style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
         id={id}
@@ -152,7 +152,6 @@ export function SimpleInput({
         rows={rows}
         onChange={onInputChange}
         placeholder={placeholder}
-        onBlur={flush}
         disabled={disabled}
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
@@ -162,7 +161,7 @@ export function SimpleInput({
   }
   return (
     <input
-      ref={inputRef}
+      ref={e => elementRef.current = e}
       type={inputType}
       className={inputStyle + classNameOrEmpty(className)}
       style={{ ...(fullWidth ? { width: '100%' } : {}), ...style }}
@@ -170,7 +169,6 @@ export function SimpleInput({
       value={undefToEmpty(currentValue)}
       onChange={onInputChange}
       placeholder={placeholder}
-      onBlur={flush}
       disabled={disabled}
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}

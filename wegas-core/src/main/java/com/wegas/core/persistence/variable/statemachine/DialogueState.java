@@ -12,9 +12,9 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.editor.ValueGenerators.EmptyI18n;
 import com.wegas.editor.view.I18nHtmlView;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 
 /**
  *
@@ -39,7 +39,7 @@ public class DialogueState extends AbstractState<DialogueTransition> {
         super.setStateMachine(stateMachine);
         if (this.getStateMachine() != null) {
             this.setText(this.text);
-            for (DialogueTransition t : this.getTransitions()) {
+            for (DialogueTransition t : this.getInternalTransitions()) {
                 t.setActionText(t.getActionText());
             }
         }

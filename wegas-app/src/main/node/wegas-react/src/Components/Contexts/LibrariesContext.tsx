@@ -892,9 +892,11 @@ export function LibrariesLoader(
         strict: true,
         allowNonTsExtensions: true,
         checkJs: true,
-        // allowJs: forceJS,
-        lib: ['es2019'],
+        lib: ['esnext'],
         target: reactMonaco.languages.typescript.ScriptTarget.ESNext,
+        forceConsistentCasingInFileNames: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
       });
       reactMonaco.languages.typescript.javascriptDefaults.setCompilerOptions({
         strict: true,
@@ -1066,6 +1068,8 @@ export function LibrariesLoader(
                 acc[gmc.persisted.contentKey] = gmc.persisted.content;
                 return acc;
               }, {});
+              // Since dispatchLibrariesState is asnyc (presumably since React 18) let's override edited library with new version
+              clientScripts[library.contentKey] = library.content;
 
               execAllScripts(Object.entries(clientScripts), setErrorCb);
             }

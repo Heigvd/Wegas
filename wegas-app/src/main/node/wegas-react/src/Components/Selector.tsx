@@ -3,8 +3,8 @@ import * as React from 'react';
 import Select from 'react-select';
 import CreatableSelect from 'react-select/creatable';
 import { classNameOrEmpty } from '../Helper/className';
-import { commonTranslations } from '../i18n/common/common';
-import { useInternalTranslate } from '../i18n/internalTranslator';
+import { componentsTranslations } from '../i18n/components/components';
+import { useInternalPlayerLangTranslate } from '../i18n/internalTranslator';
 import { inputStyleCSS } from './Inputs/SimpleInput';
 import { themeVar } from './Theme/ThemeVars';
 
@@ -18,6 +18,7 @@ export interface Choice {
   };
   children?: Choice[];
 }
+
 export type Choices = (string | Choice)[];
 
 const selectStyle = css({
@@ -134,6 +135,13 @@ export const selectStyles: SelectProps['styles'] = {
       return { ...provided };
     }
   },
+  placeholder: (provided) => {
+    return {
+      ...provided,
+      color: themeVar.colors.DarkTextColor,
+      opacity: '0.3',
+    }
+  }
 };
 
 // interface SelectorProps extends ClassStyleId, DisabledReadonly {
@@ -151,6 +159,8 @@ interface SelectorProps<
     DisabledReadonly {
   choices: Choices;
   value: string | undefined;
+  placeholder?: string | undefined;
+  noOptionsMessage?: string | undefined;
   onChange?: (value: R) => void;
   allowUndefined?: T;
   allowAnyValue?: boolean;
@@ -163,6 +173,8 @@ export function Selector<T extends true | false>({
   className,
   /*style,*/
   value,
+  placeholder,
+  noOptionsMessage,
   onChange,
   allowUndefined,
   clearable,
@@ -170,8 +182,7 @@ export function Selector<T extends true | false>({
   readOnly,
   disabled,
 }: SelectorProps<T>): JSX.Element {
-  const i18nValues = useInternalTranslate(commonTranslations);
-  const placeholder = i18nValues.plzChooseValue;
+  const i18nValues = useInternalPlayerLangTranslate(componentsTranslations).select;
 
   const options = buildOptions(choices);
 
@@ -201,10 +212,13 @@ export function Selector<T extends true | false>({
       id={id}
       isDisabled={readOnly || disabled}
       className={selectStyle + classNameOrEmpty(className)}
+      classNamePrefix={'wegas-select'}
       isClearable={clearable}
       options={options}
-      placeholder={placeholder}
-      value={currentOption}
+      placeholder={placeholder ?? i18nValues.plzChooseValue}
+      noOptionsMessage={() => noOptionsMessage ?? i18nValues.noChoiceInfo}
+      // Providing an empty object overrides the placeholder
+      value={currentOption.value?.length === 0 ? null : currentOption}
       onChange={onChangeCb}
       styles={selectStyles}
       menuPosition="fixed"

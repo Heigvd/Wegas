@@ -11,12 +11,12 @@ package com.wegas.app.jsf.controllers;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.RequestScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.faces.context.ExternalContext;
+import jakarta.faces.context.FacesContext;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /*
  * Copyright (c) AlbaSim, School of Management and Engineering Vaud of Western Switzerland
@@ -87,6 +87,9 @@ public class AaiController {
             cookieP.put("maxAge", sessionMaxAge);
             cookieP.put("path", path);
             cookieP.put("httpOnly", Boolean.TRUE);
+            //Samesite is not supported yet, we have to wait for mojarra 4.0.4
+            //cookieP.put("SameSite", "Lax");
+
             externalContext.addResponseCookie(cookieName, this.cookieValue, cookieP);
             externalContext.addResponseCookie(jsessionName, jsessionValue, cookieP);
 

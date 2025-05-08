@@ -15,9 +15,9 @@ import com.wegas.editor.ValueGenerators.EmptyArray;
 import com.wegas.editor.view.Hidden;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 /**
  * @author Maxence Laurent (maxence.laurent at gmail.com)

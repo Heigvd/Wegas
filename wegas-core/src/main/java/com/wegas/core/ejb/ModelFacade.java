@@ -61,9 +61,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,7 +230,7 @@ public class ModelFacade {
 
                         if (mState.getIndex().equals(state.getIndex())) {
                             // the state exists in the model and in the scenario
-                            for (Iterator<Transition> itTransition = state.getTransitions().iterator(); itTransition.hasNext();) {
+                            for (Iterator<Transition> itTransition = state.getInternalTransitions().iterator(); itTransition.hasNext();) {
                                 AbstractTransition t = itTransition.next();
                                 t.getDependencies().clear();
                                 itTransition.remove();
@@ -828,7 +828,7 @@ public class ModelFacade {
                                     VariableDescriptor parent = variableDescriptorFacade.find(scenario, parentName);
                                     VariableDescriptor clone;
                                     clone = (VariableDescriptor) vd.shallowClone();
-                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false, false);
+                                    variableDescriptorFacade.createChild(scenario, (DescriptorListI<VariableDescriptor>) parent, clone, false, false, null);
 
                                     logger.info(" CREATE AT as {} child", parent);
                                     it.remove();
@@ -839,7 +839,7 @@ public class ModelFacade {
                             } else {
                                 logger.info(" CREATE AT ROOL LEVEL");
                                 VariableDescriptor clone = (VariableDescriptor) vd.shallowClone();
-                                variableDescriptorFacade.createChild(scenario, scenario, clone, false, false);
+                                variableDescriptorFacade.createChild(scenario, scenario, clone, false, false, null);
                                 clone.setName(vd.getName()); // force the new variable name
                                 it.remove();
                                 restart = true;

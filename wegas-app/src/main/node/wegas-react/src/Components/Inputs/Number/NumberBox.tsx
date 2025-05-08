@@ -12,9 +12,9 @@ import {
 } from '../../../css/classes';
 import { CheckMinMax } from './numberComponentHelper';
 import { InputProps } from '../SimpleInput';
-import { Value } from '../../Outputs/Value';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { themeVar } from '../../Theme/ThemeVars';
+import { MessageString } from '../../../Editor/Components/MessageString';
 
 const numberBoxStyle = css({
   padding: '10px',
@@ -55,7 +55,7 @@ interface NumberSquareProps extends ClassStyleId {
   active?: boolean;
   disabled?: boolean;
   readOnly?: boolean;
-  hideValue?: boolean;
+  numberedBox?: boolean;
 }
 
 function NumberSquare({
@@ -64,7 +64,7 @@ function NumberSquare({
   active,
   disabled,
   readOnly,
-  hideValue,
+  numberedBox,
   className,
   style,
 }: NumberSquareProps) {
@@ -82,7 +82,7 @@ function NumberSquare({
       }
       style={style}
     >
-      {hideValue ? null : value}
+      {numberedBox ? value : null}
     </div>
   );
 }
@@ -97,17 +97,9 @@ export interface NumberBoxProps extends InputProps<number> {
    */
   maxValue?: number;
   /**
-   * hideBoxValue - hide the value in the box
+   * numberedBoxes - number each individual box
    */
-  hideBoxValue?: boolean;
-  /**
-   * showLabelValue - show the value of the number in the label
-   */
-  showLabelValue?: boolean;
-  /**
-   * showQuantity - the boxes start from 1 event with min value lower or higher
-   */
-  showQuantity?: boolean;
+  numberedBoxes?: boolean;
   /**
    * boxClassName - the class to apply on the boxes
    */
@@ -115,32 +107,23 @@ export interface NumberBoxProps extends InputProps<number> {
 }
 
 export function NumberBox({
-  value,
+  value = 0,
   minValue,
   maxValue,
   onChange,
-  label,
   disabled,
   readOnly,
-  hideBoxValue,
-  showLabelValue,
-  showQuantity,
+  numberedBoxes,
   boxClassName,
   className,
   id,
 }: NumberBoxProps) {
-  const [currentValue, setCurrentValue] = React.useState(value || 0);
+  const [currentValue, setCurrentValue] = React.useState(value);
 
-  const computedMinValue = showQuantity
-    ? 1
-    : minValue !== undefined
-    ? minValue
-    : 0;
-  const computedMaxValue = maxValue !== undefined ? maxValue : currentValue + 1;
   const readonly = readOnly || !onChange;
 
   React.useEffect(() => {
-    setCurrentValue(value || 0);
+    setCurrentValue(value);
   }, [value]);
 
   const debouncedOnChange = React.useCallback(
@@ -152,27 +135,36 @@ export function NumberBox({
 
   const squares: JSX.Element[] = [];
 
-  for (
-    let i = computedMinValue;
-    i < computedMaxValue + (readonly ? 0 : 1);
-    ++i
-  ) {
-    squares.push(
-      <NumberSquare
-        key={i}
-        value={i}
-        onClick={() => {
-          setCurrentValue(i);
-          debouncedOnChange(i);
-        }}
-        active={i <= currentValue}
-        disabled={disabled}
-        readOnly={readonly}
-        hideValue={hideBoxValue}
-        // activeClassName={activeClassName}
-        className={boxClassName}
-      />,
-    );
+  if (minValue !== undefined && maxValue !== undefined) {
+
+    // We do not want to display more than 100 boxes
+    if (maxValue - minValue > 100) {
+      return (
+        <MessageString
+          value={`Component cannot display values bigger than 100`}
+          type={'error'}
+        />
+      );
+    }
+
+    // Do not display a box for when value is 0
+    for (let i = minValue === 0 ? 1 : minValue; i <= currentValue + (readonly ? 0 : 1); ++i) {
+      squares.push(
+        <NumberSquare
+          key={i}
+          value={i}
+          onClick={() => {
+            setCurrentValue(i);
+            debouncedOnChange(i);
+          }}
+          active={i <= currentValue}
+          disabled={disabled}
+          readOnly={readonly}
+          numberedBox={numberedBoxes}
+          className={boxClassName}
+        />,
+      );
+    }
   }
 
   return (
@@ -183,14 +175,7 @@ export function NumberBox({
         classNameOrEmpty(className)
       }
     >
-      {label && (
-        <Value value={label + (showLabelValue ? ` : ${currentValue}` : '')} />
-      )}
-      <CheckMinMax
-        min={computedMinValue}
-        max={computedMaxValue}
-        value={currentValue}
-      />
+      <CheckMinMax min={minValue} max={maxValue} value={currentValue} />
       <div
         className={
           'wegas wegas-numberBox ' +

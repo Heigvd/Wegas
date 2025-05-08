@@ -31,21 +31,18 @@ public class StateMachineEventCounter {
     }
 
     public int count(StateMachineInstance instance, String event) {
-        if (!smEvents.containsKey(instance)) {
-            smEvents.put(instance, new HashMap<>());
-        }
-        if (smEvents.get(instance).containsKey(event)) {
+        if (smEvents.containsKey(instance) && smEvents.get(instance).containsKey(event)) {
             return smEvents.get(instance).get(event);
         } else {
             return 0;
         }
     }
 
-    public void increase(StateMachineInstance instance, String event) {
+    private void increaseBy(StateMachineInstance instance, String event, Integer value) {
         if (!smEvents.containsKey(instance)) {
             smEvents.put(instance, new HashMap<>());
         }
-        smEvents.get(instance).put(event, this.count(instance, event) + 1);
+        smEvents.get(instance).put(event, this.count(instance, event) + value);
     }
 
     public void clear() {
@@ -60,9 +57,8 @@ public class StateMachineEventCounter {
     public void acceptCurrent(StateMachineInstance instance) {
         for (Entry<String, Integer> entry : currentEventsCounter.entrySet()) {
             Integer count = entry.getValue();
-            while (count > 0) {
-                count--;
-                this.increase(instance, entry.getKey());
+            if(count > 0){
+                increaseBy(instance, entry.getKey(), count);
             }
         }
         this.clearCurrents();

@@ -55,6 +55,7 @@ export default function OnBlurInput({
         value={state}
         onChange={onInternalChangeCb}
         onBlur={onInternalBlurCb}
+        autoComplete='off'
       />
     </Flex>
   );

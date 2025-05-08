@@ -20,43 +20,38 @@ const hasOwn = Object.prototype.hasOwnProperty;
 /**
  * kind of shallowEquals, but use shallowEqual to compare first-level-nested arrays
  */
-export const customStateEquals = (a: unknown, b: unknown): boolean => {
+export const customStateEquals = <T,>(a: T, b: T): boolean => {
   if (Object.is(a, b)) {
     return true;
   }
 
   if (typeof a === 'object' && a != null && typeof b === 'object' && b != null) {
-    const aKeys = Object.keys(a).sort();
-    const bKeys = Object.keys(b).sort();
-
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
     if (aKeys.length !== bKeys.length) {
-      // keysets mismatch
       return false;
     }
 
     for (const key in a) {
       if (hasOwn.call(b, key)) {
-        if (key in a) {
-          const aValue = (a as { [key: string]: unknown })[key];
-          const bValue = (b as { [key: string]: unknown })[key];
+        const aValue = a[key];
+        const bValue = b[key];
 
-          if (!Object.is(aValue, bValue)) {
-            // values mismatch
-            if (Array.isArray(aValue) && Array.isArray(bValue)) {
-              // but values are arrays so they may match anyway
-              if (!shallowEqual(aValue, bValue)) {
-                // nope, array does not match
-                return false;
-              }
-            } else {
-              // not arrays => no match
+        if (!Object.is(aValue, bValue)) {
+          // values mismatch
+          if (Array.isArray(aValue) && Array.isArray(bValue)) {
+            // but values are arrays so they may match anyway
+            if (!shallowEqual(aValue, bValue)) {
+              // nope, array does not match
               return false;
             }
+          } else {
+            // not arrays => no match
+            return false;
           }
         }
-      } else {
-        return false;
       }
+
     }
     return true;
   } else {

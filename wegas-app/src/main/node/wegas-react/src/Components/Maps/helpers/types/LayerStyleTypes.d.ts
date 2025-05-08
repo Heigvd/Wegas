@@ -62,7 +62,7 @@ type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
 
 interface IconStyleObject extends SharedImageStyleProperties {
   type: 'IconStyle';
-  achor?: PointLikeObject;
+  anchor?: PointLikeObject;
   anchorOrigin?: AnchorPositionStyleObject;
   anchorXUnits?: AnchorUnitsStyleObject;
   anchorYUnits?: AnchorUnitsStyleObject;
@@ -83,7 +83,7 @@ type ImageStyleObject =
 
 interface TextStyleObject extends Partial<SharedImageStyleProperties> {
   type: 'TextStyle';
-  font?: 'string';
+  font?: string;
   maxAngle?: number;
   offsetX?: number;
   offsetY?: number;

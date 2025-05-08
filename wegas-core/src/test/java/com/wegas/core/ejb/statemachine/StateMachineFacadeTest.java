@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -89,6 +89,37 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.remove(number.getId());
         variableDescriptorFacade.remove(trigger.getId());
     }
+
+    /**
+     * Test that writing to DB and deserialization from DB works properly
+     */
+    @Test
+    public void testTriggerPersistence() {
+
+         // Create a trigger
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new StateMachineInstance());
+        trigger.setTriggerEvent(new Script("Hello"));
+        trigger.setPostTriggerEvent(new Script("World"));
+        variableDescriptorFacade.create(scenario.getId(), trigger);
+
+        assertTrue("Trigger event should not be null after DB persistence", trigger.getTriggerEvent().getContent() != null);
+        assertTrue("Trigger post event should not be null after DB persistence", trigger.getPostTriggerEvent().getContent() != null);
+
+        // empty caches to enforce loading from the database
+        jpaCacheHelper.clearCacheLocal("all");
+
+        // Fetch a fresh copy from DB
+        TriggerDescriptor reloaded = (TriggerDescriptor)variableDescriptorFacade.find(trigger.getId());
+
+        assertTrue("Trigger event should not be null", reloaded.getTriggerEvent() != null);
+        assertTrue("Trigger post event should not be null", reloaded.getPostTriggerEvent() != null);
+
+        assertTrue("Loaded trigger event doesn't match the created model", trigger.getTriggerEvent().getContent().equals(reloaded.getTriggerEvent().getContent()));
+        assertTrue("Loaded trigger post event doesn't match created model", trigger.getPostTriggerEvent().getContent().equals(reloaded.getPostTriggerEvent().getContent()));
+
+    }
+
 
     /**
      * Same as above, but with a different script
@@ -218,6 +249,52 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
         stateMachineFacade.doTransition(scenario.getId(), player.getId(), dial.getId(), s1ToS2.getId());
         assertEquals("World", (((DialogueState) ((StateMachineInstance) variableInstanceFacade.find(dial.getId(), player.getId())).getCurrentState()).getText().translateOrEmpty(player)));
     }
+
+
+    /**
+     * Test that writing to DB and deserialization from DB works properly
+     */
+    @Test
+    public void testDialogueTransitionsPersistence() {
+        DialogueDescriptor dial = new DialogueDescriptor();
+        dial.setName("dial");
+        StateMachineInstance dialI = new StateMachineInstance();
+        dialI.setCurrentStateId(1L);
+        dial.setDefaultInstance(dialI);
+        dial.setScope(new PlayerScope());
+
+        DialogueState ds1 = new DialogueState();
+        DialogueState ds2 = new DialogueState();
+        ds1.setText(TranslatableContent.build("en", "Hello"));
+        ds2.setText(TranslatableContent.build("en", "World"));
+        dial.setStates(toMap(toList(1L, 2L), toList(ds1, ds2)));
+
+        String actionText = "action-text";
+        String triggerCond = "trigger-condition";
+        DialogueTransition s1ToS2 = new DialogueTransition();
+        s1ToS2.setTriggerCondition(new Script(triggerCond));
+        s1ToS2.setNextStateId(2L);
+        s1ToS2.setActionText(TranslatableContent.build("en", actionText));
+        ds1.setTransitions(toList(s1ToS2));
+        variableDescriptorFacade.create(scenario.getId(), dial);
+
+        // empty caches to enforce loading from the database
+        jpaCacheHelper.clearCacheLocal("all");
+
+        DialogueDescriptor reloaded = (DialogueDescriptor) variableDescriptorFacade.find(dial.getId());
+
+        DialogueState ds1r = (DialogueState) reloaded.getState(1L);
+
+        assertTrue("Reloaded state should not be null", ds1r != null);
+
+        ds1r.getTransitions().forEach((t) -> {
+            assertTrue("Should not be null", t != null);
+            String loadedTranslation = t.getActionText().getTranslation("en").getTranslation();
+            assertTrue("Action texts do not match", loadedTranslation.equals(actionText));
+            assertTrue("Trigger conditions do not match", t.getTriggerCondition().getContent().equals(triggerCond));
+        });
+    }
+
 
     @Test
     public void testEventTransition() throws NamingException, WegasScriptException {
@@ -792,7 +869,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
             "Variable.find(gameModel, \"x\").getValue(self) > 5");
 
         // transition has a dependency
-        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         Set<TransitionDependency> dependencies = transition.getDependencies();
         assertEquals(1l, dependencies.size());
         TransitionDependency tDep = dependencies.iterator().next();
@@ -809,7 +886,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // reload fsm
         myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
-        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         assertTrue(transition.getDependencies().isEmpty());
     }
 
@@ -822,7 +899,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
             "Variable.find(gameModel, \"x\").getValue(self)>5");
 
         // transition has a dependency
-        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        AbstractTransition transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         Set<TransitionDependency> dependencies = transition.getDependencies();
         assertEquals(1l, dependencies.size());
         TransitionDependency tDep = dependencies.iterator().next();
@@ -840,7 +917,7 @@ public class StateMachineFacadeTest extends AbstractArquillianTest {
 
         // reload fsm
         myFsm = (StateMachineDescriptor) variableDescriptorFacade.find(myFsm.getId());
-        transition = (AbstractTransition) myFsm.getState(1l).getTransitions().get(0);
+        transition = (AbstractTransition) myFsm.getState(1l).getInternalTransitions().get(0);
         assertTrue(transition.getDependencies().isEmpty());
         // reload x
         x = (NumberDescriptor) variableDescriptorFacade.find(x.getId());

@@ -9,7 +9,6 @@
 import { isEqual, uniq } from 'lodash';
 import {
   IGame,
-  IGameModel,
   IGameModelWithId,
   IGameWithId,
   IPermission,
@@ -116,14 +115,20 @@ export const useTeams = (gameId?: number) => {
   }, customStateEquals);
 };
 
-export const useGame = (gameId?: number) => {
-  return useAppSelector(state => {
+export type IGameStoreInfo = IGameWithId | 'LOADING' | undefined;
+
+// TODO 5.x syntax 
+//export const useGame = (gameId?: number, compareFunc = customStateEquals<IGameStoreInfo>) => {
+const gameStateEquals = (a: IGameStoreInfo, b: IGameStoreInfo) => customStateEquals<IGameStoreInfo>(a,b);
+
+export const useGame = (gameId?: number, compareFunc = gameStateEquals) => {
+  return useAppSelector<IGameStoreInfo>(state => {
     if (gameId != null) {
       return state.games.games[gameId];
     } else {
       return undefined;
     }
-  }, customStateEquals);
+  }, compareFunc);
 };
 
 export const useUserPlayerInGame = (gameId: number | undefined, userId: number | undefined) => {
@@ -244,7 +249,7 @@ function getGameModels(
   permissionTypes: PermissionType[],
   gmType: IGameModelWithId['type'][],
   gmStatus: IGameModelWithId['status'][],
-) {
+): IGameModelWithId[] {
   let gameModels: IGameModelWithId[] = [];
   const regex = new RegExp(`GameModel:(.*(${permissionTypes.join('|')}).*|\\*):(gm\\d+|\\*)`);
 
@@ -287,6 +292,12 @@ function getGameModels(
   );
 }
 
+function getGameModelsById(state: WegasLobbyState, gameModelsIds: number[]): IGameModelWithId[] {
+  return Object.values(state.gameModels.gameModels)
+    .flatMap(gm => entityIs(gm, 'GameModel') ? [gm] : [])
+    .filter(gm => gameModelsIds.includes(gm.id));
+}
+
 export const useInstantiableGameModels = (userId: number | undefined) => {
   return useAppSelector(
     state => {
@@ -317,37 +328,34 @@ export const useInstantiableGameModels = (userId: number | undefined) => {
   );
 };
 
-export const useEditableGameModels = (
-  userId: number | undefined,
-  gameModelType: IGameModel['type'],
-  gameModelStatus: IGameModel['status'],
-  mine: MINE_OR_ALL,
-) => {
+export const useGameModelsById = (gameModelsIds: number[]): {
+  gamemodels: IGameModelWithId[]
+} => {
   return useAppSelector(
     state => {
-      if (userId != null) {
-        return {
-          gamemodels: getGameModels(
-            state,
-            userId,
-            mine,
-            ['Edit', 'Translate'],
-            [gameModelType],
-            [gameModelStatus],
-          ),
-          status: state.gameModels.status,
-        };
-      }
-
       return {
-        gamemodels: [],
-        status: state.gameModels.status,
+        gamemodels: getGameModelsById(
+          state,
+          gameModelsIds,
+        ).sort((a: IGameModelWithId, b: IGameModelWithId) => b.createdTime - a.createdTime),
       };
     },
     (a, b) => {
-      return shallowEqual(a.gamemodels, b.gamemodels) && isEqual(a.status, b.status);
+      return shallowEqual(a.gamemodels, b.gamemodels);
     },
   );
+};
+
+/**
+ * To detect changes that automatically occurred on the game models in the store.
+ * It can be used to force to refresh a list of paginated game models
+ * otherwise the list would not change if game models are added or removed
+ */
+export const useGameModelStoreNoticeableChangesCount = (): number => {
+  return useAppSelector(
+    state => {
+      return state.gameModels.nbGameModelsChanges;
+    });
 };
 
 export const useDuplicatableGameModels = (userId: number | undefined) => {
@@ -428,7 +436,7 @@ export const useGames = (
             }
           }
           return [];
-        });
+        }).sort((a, b) => b.game.createdTime - a.game.createdTime);
 
         return {
           gamesAndGameModels: gamesAndGameModels,
@@ -460,6 +468,29 @@ export const useGames = (
     },
   );
 };
+
+export const useGamesByIds = (
+  status: IGame['status'],
+  userId: number | undefined,
+  mine: MINE_OR_ALL,
+  gamesIds: number[],
+) => {
+  const games = useGames(status, userId, mine);
+
+  return {gamesAndGameModels: games.gamesAndGameModels.filter(ggm => gamesIds.includes(ggm.game.id))};
+};
+
+/**
+ * To detect changes that automatically occurred on the games in the store.
+ * It can be used to force to refresh a list of paginated games
+ * otherwise the list would not change if games are added or removed
+ */
+export const useGameStoreNoticeableChangesCount = (): number => {
+  return useAppSelector(
+    state => {
+      return state.games.nbGameChanges;
+    });
+}
 
 export const useModelInstances = (userId: number | undefined, modelId: number) => {
   return useAppSelector(

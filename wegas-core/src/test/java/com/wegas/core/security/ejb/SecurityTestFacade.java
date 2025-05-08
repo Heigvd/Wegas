@@ -10,9 +10,9 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.security.persistence.User;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

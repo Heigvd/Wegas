@@ -15,10 +15,10 @@ import com.wegas.core.persistence.variable.primitive.Enumeration;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 
 /**
  * Define an evaluation as a categorisation. For instance : [ very bad ; bad ;

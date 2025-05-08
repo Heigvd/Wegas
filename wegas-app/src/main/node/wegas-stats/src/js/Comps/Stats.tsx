@@ -7,16 +7,11 @@ import Graph from './Graph';
 import {shallowEqual, useAppDispatch, useAppSelector} from '../Store/hooks';
 
 interface StatsProps {
-  match: {
-    params: {
-      LogId: string;
-    };
-  };
+  logId: string;
 }
 
-export default function Stats({match}: StatsProps) {
+export default function Stats({logId}: StatsProps) {
   const dispatch = useAppDispatch();
-  const logId = match.params.LogId;
 
   const [currentQuestion, setCurrentQuestion] = React.useState<string | null>(null);
   const [groups, setGroups] = React.useState<GameOption[][]>([]);
@@ -33,18 +28,6 @@ export default function Stats({match}: StatsProps) {
     dispatch(fetchVariables(gameId));
   }, [dispatch]);
 
-  //  const genAll = React.useCallback(() => {
-  //    dispatch(showOverlay());
-  //    this.refs.graph
-  //      .genAll()
-  //      .catch(err => {
-  //        alert(err);
-  //      })
-  //      .then(() => {
-  //        dispatch(hideOverlay());
-  //      });
-  //  }, []);
-
   return (
     <div>
       <h2>
@@ -59,7 +42,6 @@ export default function Stats({match}: StatsProps) {
         onSelect={setCurrentQuestion}
         value={currentQuestion}
       />
-      {/*<button onClick={genAll}>Generate all</button>*/}
       <Graph
         groups={groups}
         logId={logId}

@@ -10,8 +10,8 @@ package com.wegas.core.rest.util;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import java.io.IOException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

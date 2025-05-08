@@ -23,7 +23,6 @@ import com.wegas.core.persistence.WithPermission;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -62,20 +61,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import javax.script.ScriptContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import jdk.nashorn.api.scripting.ScriptUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response;
+import org.openjdk.nashorn.api.scripting.ScriptUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -2007,7 +2006,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Is the current user an administrator ?
      *
-     * @return whether or not the currentUser is an administrator
+     * @return whether the currentUser is an administrator
      */
     public boolean isAdmin() {
         return this.hasRole("Administrator");
@@ -2018,7 +2017,7 @@ public class RequestManager implements RequestManagerI {
      *
      * @param game the game the currentUser want to read
      *
-     * @return whether or not the currentUser can read the game
+     * @return whether the currentUser can read the game
      */
     public boolean hasGameReadRight(final Game game) {
         return this.hasPermission(game.getAssociatedReadPermission());
@@ -2405,8 +2404,7 @@ public class RequestManager implements RequestManagerI {
      */
     public static RequestManager lookup() {
         try {
-            return Helper.lookupBy(RequestManager.class
-            );
+            return Helper.lookupBy(RequestManager.class);
         } catch (NamingException ex) {
             return null;
         }

@@ -12,12 +12,12 @@ import fish.payara.micro.cdi.Inbound;
 import fish.payara.micro.cdi.Outbound;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.persistence.Cache;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.persistence.Cache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

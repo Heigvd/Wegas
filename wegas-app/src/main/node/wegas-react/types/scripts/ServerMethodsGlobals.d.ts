@@ -30,10 +30,11 @@ interface ServerGlobalMethodPayload {
 }
 
 /**
- * Register a server method that can be used in wysywig
+ * Register a server method that can be used in wysiwyg
  * @param objects - the objects containing the method (ex: PMGHelper.MailMethods.<method> => ["PMGHelper","MailMethods"])
  * @param method - the method to add
- * @param schema - method's schema including : label, return type (optionnal) and the parameter's shemas
+ * @param schema - method's schema including : label, return type (optional)
+ * and the parameter's schemas where the type and the required are mandatory
  */
 type ServerGlobalMethodRegister = (
   objects: [string, ...string[]],
@@ -41,8 +42,14 @@ type ServerGlobalMethodRegister = (
   schema: {
     label: string;
     returns?: string;
-    parameters: { type: string; required: boolean }[];
-  },
+    parameters: {
+      type: string;
+      required: boolean;
+      view?: object;
+      value?: any;
+      items?: object;
+    }[];
+  }
 ) => void;
 
 interface ServerVariableMethod {

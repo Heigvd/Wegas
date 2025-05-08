@@ -3,9 +3,16 @@ export interface ComponentsTranslations {
     subject: string;
     sender: string;
     date: string;
+    attachments: string;
     noSelectionMessage: string;
   };
   question: {
     validate: string;
+    result: string;
+    results: string;
+  };
+  select: {
+    plzChooseValue: string;
+    noChoiceInfo: string;
   };
 }

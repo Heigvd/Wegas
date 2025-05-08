@@ -21,7 +21,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import {
   OnVariableChange,
@@ -43,6 +43,10 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
    * Can be a boolean or a formatting function that takes the value and return a string
    */
   displayValues?: DisplayMode;
+  /**
+  * placeholder - the grey text inside the box when nothing is written
+  */
+  placeholder?: IScript;
   onVariableChange?: OnVariableChange;
 }
 
@@ -58,6 +62,7 @@ function PlayerNumberSlider({
   className,
   style,
   id,
+  placeholder,
   onVariableChange,
   options,
   ...restProps
@@ -69,6 +74,8 @@ function PlayerNumberSlider({
     script,
     context,
   );
+  const placeholderText = useScript<string>(placeholder, context);
+
 
   const value = useStore(() =>
     entityIs(number, 'NumberDescriptor')
@@ -133,6 +140,7 @@ function PlayerNumberSlider({
       }
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
+      placeholder={placeholderText}
     />
   );
 }
@@ -159,8 +167,12 @@ registerComponent(
         label: 'Display value',
         values: displayModes,
       }),
+      placeholder: schemaProps.scriptString({
+        label: 'Placeholder',
+        richText: false,
+      }),
       onVariableChange: onVariableChangeSchema('On number change action'),
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({

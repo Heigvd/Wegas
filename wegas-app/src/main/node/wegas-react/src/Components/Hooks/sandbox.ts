@@ -43,9 +43,11 @@ export interface GlobalClasses {
   gameModel?: Readonly<SGameModel>;
   teams?: Readonly<Readonly<STeam>[]>;
   self?: Readonly<SPlayer>;
+  currentUserName?: string;
   schemaProps: SchemaPropsType;
   CurrentGame: IGame;
   API_VIEW: View;
+  APP_CONTEXT: AppContext;
   Variable: GlobalVariableClass;
   Editor: GlobalEditorClass;
   ClientMethods: GlobalClientMethodClass;

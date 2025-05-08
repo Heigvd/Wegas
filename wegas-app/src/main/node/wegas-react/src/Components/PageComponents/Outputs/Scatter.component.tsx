@@ -8,9 +8,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import 'chartjs-plugin-dragdata';
-
 import ZoomPlugin from 'chartjs-plugin-zoom';
-
 import * as React from 'react';
 import { Scatter } from 'react-chartjs-2';
 import { ChartJSOrUndefined } from 'react-chartjs-2/dist/types';
@@ -23,7 +21,11 @@ import { classOrNothing } from '../../../Helper/className';
 //////////////////////////////////////////////////////
 import { wlog } from '../../../Helper/wegaslog';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
-import { ScriptCallback, useScript, useScriptCallback } from '../../Hooks/useScript';
+import {
+  ScriptCallback,
+  useScript,
+  useScriptCallback,
+} from '../../Hooks/useScript';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { IconButton } from '../../Inputs/Buttons/IconButton';
 import {
@@ -31,7 +33,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface DoubleClickOptions {
@@ -155,8 +157,11 @@ function useScales(
 export interface PlayerScatterChartProps extends WegasComponentProps {
   height?: number;
   series: IScript;
+  legendPosition: 'top' | 'right' | 'bottom' | 'left';
+  legendAlign: 'start' | 'center' | 'end';
   showLine: boolean;
   allowZoom: boolean;
+  responsive: boolean;
   allowDoubleClick: boolean;
   onDblClickCallback?: ScriptCallback;
   allowDrag?: boolean;
@@ -170,7 +175,10 @@ function PlayerScatterChart({
   height,
   showLine,
   allowZoom,
+  responsive,
   series,
+  legendPosition,
+  legendAlign,
   allowDoubleClick,
   onDblClickCallback,
   allowDrag,
@@ -191,7 +199,10 @@ function PlayerScatterChart({
 
   const dblCb = useScriptCallback<ValueCb>(onDblClickCallback, contextRef);
 
-  const dragStartCb = useScriptCallback<DragCb>(onDragStartCallback, contextRef);
+  const dragStartCb = useScriptCallback<DragCb>(
+    onDragStartCallback,
+    contextRef,
+  );
   const dragCb = useScriptCallback<DragCb>(onDragCallback, contextRef);
   const dragEndCb = useScriptCallback<DragCb>(onDragEndCallback, contextRef);
 
@@ -217,14 +228,19 @@ function PlayerScatterChart({
   };
 
   const chartOptions: ChartOptionsWithPlugins = {
-    responsive: false,
+    responsive: responsive,
     showLine: showLine,
     animation: false,
-    plugins: {},
+    plugins: {
+      legend: {
+        position: legendPosition,
+        align: legendAlign,
+      },
+    },
     scales: scales,
   };
 
-  const chartRef = React.useRef<ChartJSOrUndefined<"scatter">>();
+  const chartRef = React.useRef<ChartJSOrUndefined<'scatter'>>();
   const [zoomEnabled, setZoomEnabled] = React.useState(false);
 
   const toggleZoomCb = React.useCallback(() => {
@@ -242,12 +258,12 @@ function PlayerScatterChart({
       zoom: {
         wheel: {
           enabled: zoomEnabled,
-        }
+        },
       },
       pan: {
         enabled: true,
-      }
-    }
+      },
+    };
   }
 
   if (allowDrag) {
@@ -269,19 +285,34 @@ function PlayerScatterChart({
 
   return (
     <div
-      id={ id }
+      id={id}
       className={
         className +
         classOrNothing(halfOpacity, options.disabled || options.locked)
       }
-      style={ style }
+      style={style}
     >
-      <Scatter ref={ chartRef } data={ chartData } options={ memoChartOptions } height={ height } />
-      <div className={ flex }>
-        { allowZoom ? <>
-          <IconButton icon='undo' tooltip='reset zoom' onClick={ resetZoomCb } />
-          <CheckBox value={ zoomEnabled } onChange={ toggleZoomCb } label='enable zoom' />
-        </> : null }
+      <Scatter
+        ref={chartRef}
+        data={chartData}
+        options={memoChartOptions}
+        height={height}
+      />
+      <div className={flex}>
+        {allowZoom ? (
+          <>
+            <IconButton
+              icon="undo"
+              tooltip="reset zoom"
+              onClick={resetZoomCb}
+            />
+            <CheckBox
+              value={zoomEnabled}
+              onChange={toggleZoomCb}
+              label="enable zoom"
+            />
+          </>
+        ) : null}
       </div>
     </div>
   );
@@ -306,6 +337,18 @@ registerComponent(
           ],
         },
       },
+      legendPosition: schemaProps.select({
+        label: 'Legend Position',
+        value: 'top',
+        values: ['top', 'right', 'bottom', 'left'],
+        required: false,
+      }),
+      legendAlign: schemaProps.select({
+        label: 'Legend Alignment',
+        value: 'center',
+        values: ['start', 'center', 'end'],
+        required: false,
+      }),
       allowDoubleClick: {
         type: 'boolean',
         value: false,
@@ -325,9 +368,7 @@ registerComponent(
           label: 'onDblClick callback',
           type: 'callback',
           callbackProps: {
-            args: [
-              ["value", ["{ x: number; y: number }"]]
-            ],
+            args: [['value', ['{ x: number; y: number }']]],
           },
         },
         visible: (_value, formValue) => {
@@ -353,13 +394,13 @@ registerComponent(
           type: 'callback',
           callbackProps: {
             args: [
-              ["e", ["MouseEvent"]],
-              ["datasetIndex", ["number"]],
-              ["index", ["number"]],
-              ["value", ["{ x: number; y: number }"]],
+              ['e', ['MouseEvent']],
+              ['datasetIndex', ['number']],
+              ['index', ['number']],
+              ['value', ['{ x: number; y: number }']],
             ],
-            returnType: ['boolean']
-          }
+            returnType: ['boolean'],
+          },
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -377,13 +418,13 @@ registerComponent(
           type: 'callback',
           callbackProps: {
             args: [
-              ["e", ["MouseEvent"]],
-              ["datasetIndex", ["number"]],
-              ["index", ["number"]],
-              ["value", ["{ x: number; y: number }"]],
+              ['e', ['MouseEvent']],
+              ['datasetIndex', ['number']],
+              ['index', ['number']],
+              ['value', ['{ x: number; y: number }']],
             ],
-            returnType: ['boolean']
-          }
+            returnType: ['boolean'],
+          },
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -401,13 +442,13 @@ registerComponent(
           type: 'callback',
           callbackProps: {
             args: [
-              ["e", ["MouseEvent"]],
-              ["datasetIndex", ["number"]],
-              ["index", ["number"]],
-              ["value", ["{ x: number; y: number }"]],
+              ['e', ['MouseEvent']],
+              ['datasetIndex', ['number']],
+              ['index', ['number']],
+              ['value', ['{ x: number; y: number }']],
             ],
-            returnType: ['boolean']
-          }
+            returnType: ['boolean'],
+          },
         },
         visible: (_value, formValue) => {
           return formValue?.componentProperties?.allowDrag;
@@ -424,6 +465,10 @@ registerComponent(
       }),
       allowZoom: schemaProps.boolean({
         label: 'Allow zoom',
+        value: false,
+      }),
+      responsive: schemaProps.boolean({
+        label: 'Responsive',
         value: false,
       }),
       scales: {
@@ -469,7 +514,7 @@ registerComponent(
           },
         },
       },
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
   }),
 );

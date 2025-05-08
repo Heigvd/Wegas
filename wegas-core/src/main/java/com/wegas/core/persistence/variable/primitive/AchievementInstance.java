@@ -12,7 +12,7 @@ import ch.albasim.wegas.annotations.WegasEntityProperty;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.False;
 import com.wegas.editor.Visible;
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  *

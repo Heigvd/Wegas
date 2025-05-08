@@ -248,6 +248,9 @@ export function WindowedEditor<T extends IMergeable>({
               ? (entity as { editorTag?: string }).editorTag
               : undefined,
             name: getClassLabel(pathEntity),
+            index: entity
+              ? (entity as { index?: string }).index
+              : undefined,
           })}
         </>
       }
@@ -483,26 +486,14 @@ export function editionActions<T extends IVariableDescriptor>(
   return actions;
 }
 
-interface VariableFormProps {
-  editing: Edition | undefined;
-  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
-  events: WegasEvent[];
-  readOnly?: boolean;
-  localDispatch: EditingStoreDispatch | undefined;
-}
-
-export function VariableForm({
-  editing,
-  entity,
-  events,
-  readOnly,
-  localDispatch,
-}: VariableFormProps) {
-  const highlightInstance =
-    editing?.highlight &&
-    (editing?.type === 'Variable' || editing?.type === 'VariableFSM') &&
-    editing?.instanceEditing?.editedInstance != null &&
-    !editing.instanceEditing.editedInstance.saved;
+function VariableEditionPanel({
+                                editing,
+                                entity,
+                                events,
+                                readOnly,
+                                localDispatch,
+                                highlightInstance
+                              }: VariableFormProps & {highlightInstance: boolean | undefined}) {
 
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
@@ -565,35 +556,71 @@ export function VariableForm({
     return null;
   }
 
+  return (<ErrorBoundary>
+      <WindowedEditor
+        path={path}
+        getConfig={config}
+        update={update}
+        actions={editionActions(editing, dispatch)}
+        entity={entity}
+        onChange={newEntity => {
+          (localDispatch || editingStore.dispatch)(
+            EditingActionCreator.EDITION_CHANGES({
+              newEntity: newEntity as IAbstractEntity,
+            }),
+          );
+        }}
+        error={parseEventFromIndex(events)}
+        highlight={editing?.highlight && !highlightInstance}
+        readOnly={readOnly}
+        localDispatch={localDispatch}
+      />
+    </ErrorBoundary>
+  );
+}
+
+interface VariableFormProps {
+  editing: Edition | undefined;
+  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
+  events: WegasEvent[];
+  readOnly?: boolean;
+  localDispatch: EditingStoreDispatch | undefined;
+}
+
+export function VariableForm({
+  editing,
+  entity,
+  events,
+  readOnly,
+  localDispatch,
+}: VariableFormProps) {
+  const highlightInstance =
+    editing?.highlight &&
+    (editing?.type === 'Variable' || editing?.type === 'VariableFSM') &&
+    editing?.instanceEditing?.editedInstance != null &&
+    !editing.instanceEditing.editedInstance.saved;
+
+  if (!editing) {
+    return null;
+  }
+
   const instanceEditing =
     isEditingVariable(editing) && editing.instanceEditing != null;
 
-  return (
-    <ReflexContainer orientation="vertical">
-      <ReflexElement flex={1000}>
-        <ErrorBoundary>
-          <WindowedEditor
-            path={path}
-            getConfig={config}
-            update={update}
-            actions={editionActions(editing, dispatch)}
+  if (instanceEditing) {
+    return (
+      <ReflexContainer orientation="vertical">
+        <ReflexElement flex={1000}>
+          <VariableEditionPanel
+            editing={editing}
             entity={entity}
-            onChange={newEntity => {
-              (localDispatch || editingStore.dispatch)(
-                EditingActionCreator.EDITION_CHANGES({
-                  newEntity: newEntity as IAbstractEntity,
-                }),
-              );
-            }}
-            error={parseEventFromIndex(events)}
-            highlight={editing?.highlight && !highlightInstance}
+            events={events}
             readOnly={readOnly}
             localDispatch={localDispatch}
+            highlightInstance={highlightInstance}
           />
-        </ErrorBoundary>
-      </ReflexElement>
-      {instanceEditing && <ReflexSplitter />}
-      {instanceEditing && (
+        </ReflexElement>
+        <ReflexSplitter />
         <ReflexElement flex={1000}>
           <InstanceProperties
             editing={editing}
@@ -603,8 +630,19 @@ export function VariableForm({
             readOnly={readOnly}
           />
         </ReflexElement>
-      )}
-    </ReflexContainer>
+      </ReflexContainer>
+    )
+  }
+
+  return (
+        <VariableEditionPanel
+          editing={editing}
+          entity={entity}
+          events={events}
+          readOnly={readOnly}
+          localDispatch={localDispatch}
+          highlightInstance={highlightInstance}
+        />
   );
 }
 

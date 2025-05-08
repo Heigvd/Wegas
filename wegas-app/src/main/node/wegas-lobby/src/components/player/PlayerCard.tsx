@@ -206,7 +206,7 @@ export default function PlayerCard({ player, team }: PlayerCardProps): JSX.Eleme
             title={teamName}
             illustration={gameModel.properties.iconUri}
             showCloseButton={true}
-            route={`/${player.id}/team`}
+            route={`${player.id}/team`}
           >
             {() => <TeamDetails team={team} />}
           </OpenCloseModal>

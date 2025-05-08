@@ -185,7 +185,7 @@ export function removeLayoutInLocal(
   }
 }
 
-interface LinearLayoutItemComponent {
+export interface LinearLayoutItemComponent {
   tabId: string;
   content: React.ReactNode;
 }
@@ -195,10 +195,12 @@ interface LinearLayoutContentComponent {
   items: LinearLayoutComponents;
 }
 
-export type LinearLayoutComponents = (
-  | LinearLayoutItemComponent
-  | LinearLayoutContentComponent
-)[];
+export type LinearLayoutComponent = LinearLayoutItemComponent | LinearLayoutContentComponent;
+export type LinearLayoutComponents = LinearLayoutComponent[];
+
+export function isLinearLayoutItemComponent(comp: LinearLayoutComponent): comp is LinearLayoutItemComponent {
+  return (comp as LinearLayoutItemComponent).content !== undefined;
+}
 
 function visitLinearLayoutComponents(
   data: LinearLayoutComponents,

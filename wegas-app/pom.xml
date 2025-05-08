@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
         <groupId>ch.albasim.wegas</groupId>
@@ -128,7 +128,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-ts-api</artifactId>
             <version>${project.version}</version>
-            <type>war</type>
             <scope>provided</scope>
         </dependency>
 
@@ -199,15 +198,17 @@
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
+            <classifier>jakarta</classifier>
         </dependency>
 
         <!-- cdi
         <dependency>
-            <groupId>javax.enterprise</groupId>
+            <groupId>jakarta.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
         </dependency>-->
@@ -247,11 +248,11 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.jboss.arquillian.extension</groupId>
             <artifactId>arquillian-persistence-dbunit</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.eu.ingwar.tools</groupId>
@@ -259,7 +260,7 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>javax.enterprise</groupId>
+                    <groupId>jakarta.enterprise</groupId>
                     <artifactId>cdi-api</artifactId>
                 </exclusion>
             </exclusions>
@@ -270,13 +271,6 @@
         <dependency>
             <groupId>fish.payara.extras</groupId>
             <artifactId>payara-embedded-all</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- required by arq-suite-ext -->
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -295,12 +289,6 @@
             <artifactId>jtidy</artifactId>
             <type>jar</type>
         </dependency>
-        <!--<dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -532,7 +520,7 @@
                     <systemPropertiesFile>${project.basedir}/../wegas-core/src/test/resources/db.properties</systemPropertiesFile>
                     <systemProperties>
                         <java.util.logging.config.file>${project.basedir}/../wegas-core/src/test/resources/logging.properties</java.util.logging.config.file>
-                        <arquillian.launch>glassfish-embedded</arquillian.launch>
+                        <arquillian.launch>payara-embedded</arquillian.launch>
                     </systemProperties>
                     <!--<excludedGroups>com.wegas.unit.PrivateRelatedTest</excludedGroups>-->
                     <excludedGroups>${skip.surefire.category}</excludedGroups>

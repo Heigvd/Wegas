@@ -44,6 +44,33 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.buji</groupId>
+            <artifactId>buji-pac4j</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.pac4j</groupId>
+                    <artifactId>pac4j-javaee</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.shiro</groupId>
+                    <artifactId>shiro-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>jakartaee-pac4j</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-jakartaee</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.pac4j</groupId>
+            <artifactId>pac4j-oidc</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ch.albasim.wegas</groupId>
             <artifactId>wegas-annotations</artifactId>
             <version>${project.version}</version>
@@ -56,7 +83,6 @@
         <dependency>
             <groupId>gov.adlnet</groupId>
             <artifactId>jxapi</artifactId>
-            <version>2.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -76,10 +102,12 @@
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-core</artifactId>
+            <classifier>jakarta</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
             <artifactId>shiro-web</artifactId>
+            <classifier>jakarta</classifier>
         </dependency>
 
         <!-- Does not work with our runAs
@@ -135,10 +163,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>io.dropwizard.metrics</groupId>
-            <artifactId>metrics-core</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>io.dropwizard.metrics</groupId>-->
+<!--            <artifactId>metrics-core</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver-legacy</artifactId>
@@ -177,12 +205,6 @@
         <dependency>
             <groupId>fish.payara.arquillian</groupId>
             <artifactId>arquillian-payara-server-embedded</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.extension</groupId>
-            <artifactId>arquillian-persistence-dbunit</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -335,6 +357,11 @@
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>${nashorn.version}</version>
         </dependency>
     </dependencies>
     <build>

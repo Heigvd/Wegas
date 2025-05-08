@@ -1,6 +1,6 @@
 /* global module*/
 import * as React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
@@ -18,12 +18,14 @@ import './data/Stores/store';
 import { ErrorBoundary } from './Editor/Components/ErrorBoundary';
 import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
+import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 // import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
 
 importPageComponents();
 
 function mount() {
-  render(
+  const root = createRoot(document.getElementById('root')!);
+  root.render(
   <ErrorBoundary>
     <AuthorizationProvider>
       <FeaturesProvider>
@@ -36,7 +38,9 @@ function mount() {
                     <ThemeProvider contextName="editor">
                       <PopupManager>
                         <ModalProvider>
-                          <Layout />
+                          <EventInstanceManager>
+                            <Layout />
+                          </EventInstanceManager>
                         </ModalProvider>
                       </PopupManager>
                     </ThemeProvider>
@@ -49,8 +53,6 @@ function mount() {
       </FeaturesProvider>
     </AuthorizationProvider>
   </ErrorBoundary>
-    ,
-    document.getElementById('root'),
   );
 }
 mount();

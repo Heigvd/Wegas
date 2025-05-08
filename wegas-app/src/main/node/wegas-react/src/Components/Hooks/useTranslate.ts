@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
+import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { translate } from '../../data/i18n';
 
 export function useTranslate(

@@ -14,11 +14,10 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.ActAsPlayer;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.naming.NamingException;
-import javax.persistence.EntityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

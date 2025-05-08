@@ -261,7 +261,7 @@ export function RoleCard({ role }: { role: IRoleWithId }): JSX.Element {
           title={role.name}
           illustration={'ICON_grey_users_fa'}
           showCloseButton={true}
-          route={`/${role.id}/settings`}
+          route={`${role.id}/settings`}
         >
           {close => <RoleSettings role={role} onClose={close} />}
         </OpenCloseModal>
@@ -275,7 +275,7 @@ export function RoleCard({ role }: { role: IRoleWithId }): JSX.Element {
         title={role.name}
         illustration={'ICON_dark-blue_users_fa'}
         showCloseButton={true}
-        route={`/${role.id}/members`}
+        route={`${role.id}/members`}
       >
         {() => <RoleMembers role={role} />}
       </OpenCloseModal>
@@ -286,7 +286,7 @@ export function RoleCard({ role }: { role: IRoleWithId }): JSX.Element {
         title={role.name}
         illustration={'ICON_dark-blue_users_fa'}
         showCloseButton={true}
-        route={`/${role.id}/permissions`}
+        route={`${role.id}/permissions`}
       >
         {() => <RolePermissions role={role} />}
       </OpenCloseModal>

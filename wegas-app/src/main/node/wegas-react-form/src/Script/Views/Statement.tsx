@@ -1,4 +1,4 @@
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import React from 'react';
 
 const style = css({
@@ -7,7 +7,7 @@ const style = css({
     position: 'relative',
 });
 export default function Statement(props: {
-    children: (React.ComponentClass<any> | React.SFC<any>)[];
+    children: React.ReactNode;
 }) {
     return <div className={style.toString()}>{props.children}</div>;
 }

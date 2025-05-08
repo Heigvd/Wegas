@@ -73,19 +73,19 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -199,7 +199,7 @@ public class UpdateController {
                 StateMachineDescriptor fsm = (StateMachineDescriptor) vd;
                 for (Map.Entry<Long, State> s : fsm.getStates().entrySet()) {
                     replaceAll(s.getValue().getOnEnterEvent(), keys, values);
-                    for (Transition t : s.getValue().getTransitions()) {
+                    for (Transition t : s.getValue().getInternalTransitions()) {
                         replaceAll(t.getPreStateImpact(), keys, values);
                         replaceAll(t.getTriggerCondition(), keys, values);
                     }
@@ -704,7 +704,7 @@ public class UpdateController {
                 ListDescriptor newChild = new ListDescriptor(childrenPrefix + i);
                 newChild.setDefaultInstance(new ListInstance());
                 newChild.setScope(new GameModelScope());
-                descriptorFacade.createChild(gameModel, parent, newChild, false, false);
+                descriptorFacade.createChild(gameModel, parent, newChild, false, false, null);
                 if (i < parent.size()) {
                     // move new folder at the right place
                     descriptorFacade.move(newChild.getId(), parent.getId(), i - 1);

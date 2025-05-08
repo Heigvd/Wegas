@@ -18,6 +18,7 @@ export interface Props {
   onChange: (newValue: string) => void;
   placeholder?: string;
   delay?: number;
+  autofocus?: boolean
 }
 
 export default function DebouncedInput({
@@ -27,6 +28,7 @@ export default function DebouncedInput({
   size = 'LARGE',
   placeholder = 'no value',
   delay = 500,
+  autofocus = false
 }: Props): JSX.Element {
   const [state, setState] = React.useState<string>(value || '');
 
@@ -58,10 +60,12 @@ export default function DebouncedInput({
     <Flex>
       <div>{label}</div>
       <input
+        autoFocus={autofocus}
         className={size === 'LARGE' ? inputStyle : smallInputStyle}
         placeholder={placeholder}
         value={state}
         onChange={onInternalChangeCb}
+        autoComplete='off'
       />
     </Flex>
   );

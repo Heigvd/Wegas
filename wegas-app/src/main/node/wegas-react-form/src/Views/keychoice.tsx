@@ -4,7 +4,7 @@ import commonView from '../HOC/commonView';
 import labeled from '../HOC/labeled';
 import IconButton from '../Components/IconButton';
 import Select from './select';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 function filterChildren<P extends { editKey: string }>(
     properties: string[],

@@ -9,60 +9,65 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IUserWithId } from 'wegas-ts-api';
-import { getAllUsers } from '../../API/api';
-import { match } from '../../helper';
+import { getPaginatedUsers } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
-import InlineLoading from '../common/InlineLoading';
-import SortBy, { SortByOption } from '../common/SortBy';
 import { panelPadding } from '../styling/style';
 import UserCard from './UserCard';
+import InlineLoading from '../common/InlineLoading';
+import IconButton from '../common/IconButton';
+import Checkbox from '../common/Checkbox';
+export class SearchForm {
+  page: number;
+  size: number;
+  query: string;
 
-const matchSearch = (search: string) => (data: IUserWithId) => {
-  return match(search, regex => {
-    return data.name != null && data.name.match(regex) != null;
-  });
-};
+  constructor (page: number, size: number, query: string){
+    this.page = page;
+    this.size = size;
+    this.query = query;
+  }
+}
 
 export default function Users(): JSX.Element {
   const dispatch = useAppDispatch();
   const i18n = useTranslations();
 
-  const users = useAppSelector(state => {
+  let users = useAppSelector(state => {
     return {
       users: Object.values(state.users.users),
       status: state.admin.userStatus,
+      totalResults: state.users.totalResults
     };
   }, shallowEqual);
 
+  const [filter, setFilter] = React.useState('');
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(20);
+
   React.useEffect(() => {
     if (users.status === 'NOT_INITIALIZED') {
-      dispatch(getAllUsers());
+      dispatch(getPaginatedUsers(new SearchForm(page, pageSize, filter)));
     }
-  }, [users.status, dispatch]);
+  }, []);
 
-  const [sortBy, setSortBy] = React.useState<{ key: keyof IUserWithId; asc: boolean }>({
-    key: 'lastSeenAt',
-    asc: false,
-  });
+  React.useEffect(() => {
+    if (page !== 1)
+      setPage(1);
+    else
+      dispatch(getPaginatedUsers(new SearchForm(page, pageSize, filter)));
+  }, [filter, pageSize]);
 
-  const sortOptions: SortByOption<IUserWithId>[] = [
-    { key: 'lastSeenAt', label: i18n.lastSeenAtKey },
-    { key: 'name', label: i18n.name },
-  ];
+  React.useEffect(() => {    
+    dispatch(getPaginatedUsers(new SearchForm(page, pageSize, filter)));
+  }, [page]);
 
-  const onSortChange = React.useCallback(
-    ({ key, asc }: { key: keyof IUserWithId; asc: boolean }) => {
-      setSortBy({ key, asc });
-    },
-    [],
-  );
-
-  const [filter, setFilter] = React.useState('');
+  const onNextPage = () => setPage(page<users.totalResults/pageSize?page + 1: page);
+  const onPreviousPage = () => setPage(page>1?page - 1:1);
 
   const createCardCb = React.useCallback(
     (user: IUserWithId) => <UserCard size="SMALL" showEmail key={user.id} user={user} />,
@@ -77,27 +82,6 @@ export default function Users(): JSX.Element {
       </div>
     );
   } else {
-    const mUsers = users.users.flatMap(user => {
-      if (user != 'LOADING') {
-        return [user.user];
-      } else {
-        return [];
-      }
-    });
-
-    const filtered = filter ? mUsers.filter(matchSearch(filter)) : mUsers;
-
-    const theUsers = filtered.sort((a, b) => {
-      const reverse = sortBy.asc ? 1 : -1;
-      if (sortBy.key === 'lastSeenAt') {
-        return reverse * ((a.lastSeenAt || 0) - (b.lastSeenAt || 0));
-      } else if (sortBy.key === 'name') {
-        return reverse * (a.name || '').localeCompare(b.name || '');
-      } else {
-        return 0;
-      }
-    });
-
     return (
       <FitSpace
         direction="column"
@@ -113,18 +97,51 @@ export default function Users(): JSX.Element {
           })}
         >
           <h3>
-            {Object.keys(theUsers).length} {i18n.users}
+            {users.totalResults} {i18n.users}
           </h3>
-          <SortBy options={sortOptions} current={sortBy} onChange={onSortChange} />
           <DebouncedInput
+            autofocus = {true}
             size="SMALL"
             value={filter}
             placeholder={i18n.search}
             onChange={setFilter}
           />
         </Flex>
-
-        <WindowedContainer emptyMessage={<i>{i18n.noUsers}</i>} items={theUsers}>
+        <Flex
+          justify="space-between"
+          align="center"
+          className={css({
+            flexShrink: 0,
+            height: '20px',
+          })}
+        >
+          <div className={css({
+            display: "flex",
+            alignContent: "flex-start"
+          })}>
+            <h3>
+            <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+            {page}/{users.totalResults > 0 ? Math.ceil(users.totalResults/pageSize) : 1} 
+            <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+            </h3>
+          </div>
+          <div className={css({
+            display: "flex",
+            alignContent: "flex-end",
+            flexDirection: "row"
+          })}>
+            <Checkbox label="20" value={pageSize === 20} onChange={(newValue: boolean) => setPageSize(newValue?20:pageSize)} />
+            <Checkbox label="50" value={pageSize === 50} onChange={(newValue: boolean) => setPageSize(newValue?50:pageSize)} />
+            <Checkbox label="100" value={pageSize === 100} onChange={(newValue: boolean) => setPageSize(newValue?100:pageSize)} />
+          </div>
+        </Flex>
+        <WindowedContainer emptyMessage={<i>{i18n.noUsers}</i>} items={users.users.flatMap(user => {
+      if (user != 'LOADING' && user.visible) {
+        return [user.user];
+      } else {
+        return [];
+      }
+    }).sort((a,b) => (a.lastSeenAt && b.lastSeenAt && a.lastSeenAt > b.lastSeenAt) ? -1 : 1)}>
           {createCardCb}
         </WindowedContainer>
       </FitSpace>

@@ -1,116 +1,152 @@
-Cypress.Commands.add("gotoPage", (page) => {
-  cy.log("Going to " + page + " page...");
-  cy.react("MainMenu").click({
-    force: true,
+Cypress.Commands.add('gotoPage', page => {
+  cy.log('Going to ' + page + ' page...');
+  cy.react('MainMenu').should('have.length', 1).click();
+
+  cy.react('MainMenu').within(() => {
+    cy.react('MainMenuLink', { props: { to: '/' + page } })
+      .should('have.length', 1)
+      .click();
   });
-  cy.react("MainMenuLink", { props: { to: "/" + page } }).click({
-    force: true,
-  });
 });
 
-Cypress.Commands.add("createEmptyModel", () => {
-  cy.gotoPage("admin");
-  cy.react("ConfirmIconButton", {
-    props: {
-      title: "Create an empty Model",
-    },
-  }).click();
-  cy.react("Clickable", {
-    props: {
-      title: "confirm Create an empty Model",
-    },
-  }).click();
-  cy.react("ConfirmIconButton", {
-    props: {
-      title: "Create an empty React Model",
-    },
-  }).click();
-  cy.react("Clickable", {
-    props: {
-      title: "confirm Create an empty React Model",
-    },
-  }).click();
-  cy.simulatePusher();
-});
+Cypress.Commands.add('createEmptyModel', () => {
+  cy.gotoPage('admin');
 
-Cypress.Commands.add("deleteEmptyModel", () => {
-  cy.gotoPage("modeler");
-  cy.removeScenario("_EmptyModel (en)");
-  cy.wait(1000);
-  cy.removeScenario("_EmptyReactModel (en)");
-  cy.wait(1000);
-});
+  // Create a model
+  cy.log('Create a model!');
+  cy.get('div[title="Create an empty Model"]').should('have.length', 1).click();
 
-Cypress.Commands.add("createScenario", (scenarioName, basedOn, model) => {
-  cy.react("IconButton", {
-    props: {
-      title: model ? "Create a model" : "Create scenario",
-    },
-  }).click();
-  cy.react("Input", {
-    props: { placeholder: "Scenario name" },
-  }).type(scenarioName);
+  cy.log('Create a model: confirm!');
+  cy.intercept('POST', '/Wegas/rest/Lobby/Update/CreateEmpty*Model').as('create-empty');
 
-  cy.react("SelectContainer", {}).type(basedOn);
-
-  cy.react("Clickable", {
-    props: { title: "create" },
-  }).click();
-
-  cy.simulatePusher();
-});
-
-Cypress.Commands.add("createTestModel", () => {
-  cy.gotoPage("modeler");
-  cy.createScenario("Test model", "_EmptyModel\n", true);
-  cy.createScenario("Test react model", "_EmptyReactModel\n", true);
-});
-
-Cypress.Commands.add("createTestScenario", () => {
-  cy.gotoPage("scenarist");
-  cy.createScenario("Test scenario", "_EmptyModel\n");
-  cy.createScenario("Test react scenario", "_EmptyReactModel\n");
-});
-
-Cypress.Commands.add("removeScenario", (scenarioName) => {
-  cy.react("GameModelCard", {
-    props: {
-      gameModel: {
-        "@class": "GameModel",
-        name: scenarioName,
-      },
-    },
-  })
-    .nthNode(0)
-    .find("div[title='move to archives']")
+  cy.get('div[title="Create an empty Model"]')
+    .should('have.length', 1)
+    .get('span[title="confirm Create an empty Model"]')
+    .should('have.length', 1)
     .click();
 
-  cy.react("Clickable", {
+  cy.log('Create a model: wait');
+  cy.wait('@create-empty').then(interception => {
+    cy.log('intercepted create-empty');
+  });
+
+  cy.get('div[title="Create an empty Model"]').should('have.length', 1);
+
+  // Create a react model
+  cy.log('Create a model!');
+  cy.get('div[title="Create an empty React Model"]').should('have.length', 1).click();
+
+  cy.log('Create a model: confirm!');
+  cy.get('div[title="Create an empty React Model"]')
+    .should('have.length', 1)
+    .get('span[title="confirm Create an empty React Model"]')
+    .should('have.length', 1)
+    .click();
+
+  cy.log('Create react a model: wait');
+  cy.wait('@create-empty').then(interception => {
+    cy.log('intercepted create-empty (react)');
+  });
+  cy.get('div[title="Create an empty React Model"]').should('have.length', 1);
+
+  cy.simulatePusher();
+});
+
+Cypress.Commands.add('deleteEmptyModel', () => {
+  cy.gotoPage('modeler');
+  cy.removeScenario('_EmptyModel (en)');
+  cy.removeScenario('_EmptyReactModel (en)');
+});
+
+Cypress.Commands.add('createScenario', (scenarioName, basedOn, model) => {
+  cy.log('Create scenario....');
+  cy.react('IconButton', {
     props: {
-      title: "confirm move to archives",
+      title: model ? 'Create a model' : 'Create scenario',
     },
-  }).click();
+  })
+    .should('have.length', 1)
+    .click();
+  cy.react('Input', {
+    props: { placeholder: 'Scenario name' },
+  }).type(scenarioName);
+
+  cy.react('SelectContainer', {}).type(basedOn);
+
+  cy.intercept('POST', '/Wegas/rest/Lobby/GameModel/**').as('create-scenario');
+  cy.react('Clickable', {
+    props: { title: 'create' },
+  })
+    .should('have.length', 1)
+    .click();
+
+  cy.wait('@create-scenario').then(interception => {
+    cy.log('intercepted create');
+  });
+
+  cy.simulatePusher();
 });
 
-Cypress.Commands.add("removeTestModel", () => {
-  cy.visitWegas("/#/modeler");
-  cy.removeScenario("Test model");
-  cy.wait(1000);
-  cy.removeScenario("Test react model");
-  cy.wait(1000);
+Cypress.Commands.add('createTestModel', () => {
+  cy.gotoPage('modeler');
+  cy.createScenario('Test model', '_EmptyModel\n', true);
+  cy.createScenario('Test react model', '_EmptyReactModel\n', true);
 });
 
-Cypress.Commands.add("removeTestScenario", () => {
-  cy.gotoPage("scenarist");
-  cy.removeScenario("Test scenario");
-  cy.wait(1000);
-  cy.removeScenario("Test react scenario");
-  cy.wait(1000);
+Cypress.Commands.add('createTestScenario', () => {
+  cy.gotoPage('scenarist');
+  cy.createScenario('Test scenario', '_EmptyModel\n');
+  cy.createScenario('Test react scenario', '_EmptyReactModel\n');
 });
 
-Cypress.Commands.add("editScenario", (gameName) => {
-  cy.gotoPage("scenarist");
-  cy.react("GameModelCard", {
+Cypress.Commands.add('removeScenario', scenarioName => {
+  cy.react('DebouncedInput', {
+    props: {
+      placeholder: 'search...',
+    },
+  })
+    .find('input')
+    .clear()
+    .type(scenarioName);
+
+  cy.wait(650); // wait input to be debounced
+
+  cy.get('div')
+    .contains(scenarioName)
+    .nthNode(0)
+    .parent()
+    .parent()
+    .find("div[title='move to archives']")
+    .should('have.length', 1)
+    .click();
+
+  cy.log('clicked on move to archive');
+
+  cy.intercept('PUT', '/Wegas/rest/Lobby/GameModel/**').as('remove-scenario');
+
+  cy.get('span[title="confirm move to archives"]').should('have.length', 1).click();
+  cy.log('click on confirmation');
+
+  cy.wait('@remove-scenario').then(interception => {
+    cy.log('intercepted remove');
+  });
+});
+
+Cypress.Commands.add('removeTestModel', () => {
+  cy.visitWegas('/#/modeler');
+  cy.removeScenario('Test model');
+  cy.removeScenario('Test react model');
+});
+
+Cypress.Commands.add('removeTestScenario', () => {
+  cy.gotoPage('scenarist');
+  cy.removeScenario('Test scenario');
+  cy.removeScenario('Test react scenario');
+});
+
+Cypress.Commands.add('editScenario', gameName => {
+  cy.gotoPage('scenarist');
+  cy.react('GameModelCard', {
     props: {
       gameModel: {
         name: gameName,
@@ -119,7 +155,8 @@ Cypress.Commands.add("editScenario", (gameName) => {
   })
     .nthNode(0)
     .find("a[title='Edit scenario']")
-    .invoke("removeAttr", "target")
+    .invoke('removeAttr', 'target')
+    .should('have.length', 1)
     .click();
   cy.waitForReact();
 });

@@ -1,5 +1,6 @@
 interface GlobalHelpersClass {
   cloneDeep: <T>(className: T | Readonly<T>) => T;
+  isEqual: <T>(value: Readonly<T>, other: Readonly<T>) => boolean;
   uniq: <T>(array: T[] | null | undefined) => T[];
   escapeRegExp: (s?: string) => string;
   useRef: <T>(id: string, value: T) => { current: T };
@@ -23,4 +24,5 @@ interface GlobalHelpersClass {
   };
   downloadDataAsFile: (filename: string, data: string) => void;
   getWegasUrl: () => string;
+  scrollIntoView: (selector: string, options: ScrollIntoViewOptions) => void;
 }

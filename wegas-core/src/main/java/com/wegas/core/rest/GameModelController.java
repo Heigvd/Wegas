@@ -25,6 +25,8 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel.Status;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.pagination.GameModelPageable;
+import com.wegas.core.rest.util.pagination.Page;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.tools.FindAndReplacePayload;
 import java.io.IOException;
@@ -32,27 +34,18 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -641,6 +634,27 @@ public class GameModelController {
         @PathParam("type") final GameModel.GmType type,
         @PathParam("status") final GameModel.Status status) {
         return gameModelFacade.findByTypeStatusAndUser(type, status);
+    }
+
+    /**
+     * Get all gameModel of given type with given status paginated
+     *
+     * @param type
+     * @param status
+     * @param gameModelPageable pagination parameters
+     * @return given size of gameModel having type, status and matching query
+     */
+    @POST
+    @Path("type/{type: [A-Z]*}/status/{status: [A-Z]*}/Paginated")
+    public Page<GameModel> paginatedGameModels(
+            @PathParam("type") final GameModel.GmType type,
+            @PathParam("status") final GameModel.Status status,
+            GameModelPageable gameModelPageable
+    ) {
+        return gameModelFacade.findByTypeStatusPermissionAndUserPaginated(
+                type,
+                status,
+                gameModelPageable);
     }
 
     /**

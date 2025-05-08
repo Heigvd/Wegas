@@ -20,21 +20,21 @@ import {
   ITeam,
   IUserWithId,
 } from 'wegas-ts-api';
-import getLogger from '../logger';
+import { getLogger } from '../logger';
 import { hashPassword } from '../SecurityHelper';
 import { addNotification } from '../store/slices/notification';
 import { getStore, WegasLobbyState } from '../store/store';
 import { CHANNEL_PREFIX, getPusherClient, initPusherSocket } from '../websocket/websocket';
 import { entityIs, entityIsException } from './entityHelper';
 import {
-  IAccountWithPerm,
-  IAuthenticationInformation,
-  IGameAdminWithTeams,
-  IJpaAuthentication,
-  IRoleWithPermissions,
-  IUserWithAccounts,
-  PlayerToGameModel,
-  WegasLobbyRestClient,
+    IAccountWithPerm,
+    IAuthenticationInformation,
+    IGameAdminWithTeams,
+    IJpaAuthentication, IPage,
+    IRoleWithPermissions,
+    IUserWithAccounts,
+    PlayerToGameModel,
+    WegasLobbyRestClient,
 } from './restClient';
 
 const logger = getLogger('api');
@@ -204,7 +204,7 @@ export const signInWithJpaAccount = createAsyncThunk(
 export const signOut = createAsyncThunk('auth/signout', async () => {
   const client = getPusherClient();
   if (client != null) {
-    logger.info('API Sign out');
+    logger.log('API Sign out');
     client.unbindAllChannels();
   }
   return await restClient.Authentication.logout();
@@ -270,7 +270,7 @@ export const reloadCurrentUser = createAsyncThunk(
 
     const pusherClient = getPusherClient();
     const state = thunkApi.getState() as WegasLobbyState;
-    logger.info(
+    logger.log(
       'API reload current user',
       pusherClient != null ? 'client ok' : 'client n/a',
       'user: ',
@@ -357,6 +357,13 @@ export const getAllUsers = createAsyncThunk(
   'user/getAll',
   async (): Promise<IUserWithAccounts[]> => {
     return await restClient.UserController.getAllUsers();
+  },
+);
+
+export const getPaginatedUsers = createAsyncThunk(
+  'user/getPaginated',
+  async (payload: {page: number, size: number, query: string}): Promise<IPage<IUserWithAccounts>> => {
+    return await restClient.UserController.getPaginatedUsers(payload.page, payload.size, payload.query);
   },
 );
 
@@ -477,7 +484,7 @@ export const initPusher = createAsyncThunk(
     if (appId != null && cluster != null) {
       const socketId = initPusherSocket(appId, `${API_ENDPOINT}/Pusher/auth`, cluster).socketId;
       const pusherClient = getPusherClient();
-      logger.info(
+      logger.log(
         'API init pusher',
         pusherClient != null ? 'ok' : 'n/a',
         ' user id: ',
@@ -576,7 +583,7 @@ export const createGame = createAsyncThunk(
 
 export const getGameById = createAsyncThunk(
   'game/byId',
-  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' }) => {
+  async ({ id, view }: { id: number; view: 'Lobby' | 'Extended' | 'Editor'}) => {
     return await restClient.GameController.getById(id, view);
   },
 );
@@ -598,6 +605,10 @@ export const getGameModelByIds = createAsyncThunk('gameModel/byIds', async (ids:
 
 export const getGames = createAsyncThunk('game/getGames', async (status: IGameWithId['status']) => {
   return await restClient.GameController.getGames(status);
+});
+
+export const getGamesPaginated = createAsyncThunk('game/getGamesPaginated', async (payload: {status: IGameWithId['status'], page: number, size: number, query: string, mine: boolean}) => {
+    return await restClient.GameController.getGamesPaginated(payload.status, payload.page, payload.size, payload.query, payload.mine);
 });
 
 export const changeGameStatus = createAsyncThunk(
@@ -674,6 +685,13 @@ export const getGameModels = createAsyncThunk(
     return await restClient.GameModelController.getGameModels(payload.type, payload.status);
   },
 );
+
+export const getGameModelsPaginated = createAsyncThunk(
+    'gameModel/getGameModelsPaginated',
+    async (payload: { type: IGameModelWithId['type']; status: IGameModelWithId['status']; mine: boolean; permissions: string[]; page: number; size: number; query: string }) => {
+        return await restClient.GameModelController.getGameModelsPaginated(payload.type, payload.status, payload.mine, payload.permissions, payload.page, payload.size, payload.query);
+    }
+)
 
 export const duplicateGameModel = createAsyncThunk(
   'gameModel/duplicate',

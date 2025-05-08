@@ -1,11 +1,10 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import {
   IChoiceDescriptor,
   IChoiceInstance,
   IQuestionDescriptor,
   IQuestionInstance,
-  IReply,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
@@ -18,18 +17,22 @@ import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
+import { defaultEntityDisplay } from '../../EntityChooser';
 
 export interface QuestionInfo {
   questionD?: Readonly<IQuestionDescriptor>;
   questionI?: Readonly<IQuestionInstance> | undefined;
   choicesD: Readonly<IChoiceDescriptor>[];
   choicesI: (Readonly<IChoiceInstance> | undefined)[];
-  replies: Readonly<IReply[]>;
 }
 
-export const questionStyle = css({
-  width: '100%',
-});
+export const questionStyle = cx(
+  css({
+    marginRight: 'auto',
+    marginLeft: 'auto',
+  }),
+  'wegas-question',
+);
 
 /**
  * Query subtree / instance about a QuestionDescriptor
@@ -52,14 +55,6 @@ export function questionInfo(question: IQuestionDescriptor) {
       questionI: getInstance(question),
       choicesD: choicesD || [],
       choicesI,
-      replies: (choicesI || [])
-        .reduce<IReply[]>((c, i) => {
-          if (i == null) {
-            return c;
-          }
-          return c.concat(i.replies);
-        }, [])
-        .sort((a, b) => a.createdTime - b.createdTime),
     };
   };
 }
@@ -126,19 +121,23 @@ export function ConnectedQuestionDisplay({
   readOnly,
   editMode,
 }: ConnectedQuestionDisplayProps) {
-  return entityIs(entity, 'QuestionDescriptor') ? (
-    <ConnectedSimpleQuestionDisplay
-      entity={entity}
-      disabled={disabled}
-      readOnly={readOnly}
-      editMode={editMode}
-    />
-  ) : (
-    <ConnectedWhQuestionDisplay
-      entity={entity}
-      disabled={disabled}
-      readOnly={readOnly}
-      editMode={editMode}
-    />
+  return (
+    <div className={cx(defaultEntityDisplay)}>
+      {entityIs(entity, 'QuestionDescriptor') ? (
+        <ConnectedSimpleQuestionDisplay
+          entity={entity}
+          disabled={disabled}
+          readOnly={readOnly}
+          editMode={editMode}
+        />
+      ) : (
+        <ConnectedWhQuestionDisplay
+          entity={entity}
+          disabled={disabled}
+          readOnly={readOnly}
+          editMode={editMode}
+        />
+      )}
+    </div>
   );
 }

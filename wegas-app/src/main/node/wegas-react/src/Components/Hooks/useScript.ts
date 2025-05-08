@@ -142,8 +142,12 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
 
   globals.self = instantiate(player);
+  globals.currentUserName = store.global.currentUser.name ?? 'someone';
+
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
+  globals.APP_CONTEXT = APP_CONTEXT;
+
   globals.CurrentGame = CurrentGame;
   // Variable class
   globals.Variable = {
@@ -313,9 +317,9 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   };
 
   globals.Popups = {
-    addPopup: (id, message, duration) => {
+    addPopup: (id, message, duration, className) => {
       if (id != null && message != null) {
-        globalDispatch(addPopup(id, message, duration));
+        globalDispatch(addPopup(id, message, duration, className));
       }
     },
     removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
@@ -388,8 +392,13 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.APIMethods = APIScriptMethods;
 
+  const scrollIntoView = (selector: string, options: ScrollIntoViewOptions): void => {
+    document.querySelector(selector)?.scrollIntoView(options);
+  }
+
   globals.Helpers = {
     cloneDeep: cloneDeep,
+    isEqual: isEqual,
     uniq: uniq,
     escapeRegExp: escapeRegExp,
     useRef,
@@ -400,6 +409,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     downloadFile: downloadFile,
     downloadDataAsFile,
     getWegasUrl: getWegasUrl,
+    scrollIntoView: scrollIntoView,
   };
 
   globals.Roles = {

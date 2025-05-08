@@ -95,10 +95,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <scope>provided</scope>
@@ -150,6 +146,46 @@
 
     <build>
         <plugins>
+            <!-- Due to docker build context design (no way to copy files from parent directories),
+                 we have to copy required files to the docker directory ...-->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-resources-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>copy files to docker build context</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                    <outputDirectory>${basedir}/src/main/docker/wegas</outputDirectory>
+                    <resources>
+                      <resource>
+                        <directory>${basedir}</directory>
+                        <includes>
+                          <include>run</include>
+                          <include>as_prebootcmd</include>
+                        </includes>
+                    </resource>
+                      <resource>
+                          <directory>${basedir}/target</directory>
+                        <includes>
+                          <include>payara-micro.current.jar</include>
+                        </includes>
+                      </resource>
+                      <resource>
+                          <directory>${basedir}/../wegas-app/target</directory>
+                        <includes>
+                          <include>Wegas.war</include>
+                        </includes>
+                      </resource>
+                    </resources>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -222,7 +258,8 @@
                         <!-- want to debug ? add next line to cmdOptions and inpect the log to find
                         the HTTP port to connect to -->
                         <!-- -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n -->
-                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.db.port=5432 -Dwegas.db.user=user -Dwegas.db.password=1234 -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest </payara.cmdOptions>
+                        <!-- Adding  add-opens=java.base/java.io=ALL-UNNAMED as described in this bug: https://github.com/payara/Payara/issues/6337 -->
+                        <payara.cmdOptions>-Dwegas.http.threads=9 -Dwegas.db.name=wegas_test -Djcr.repository.URI= -Dhazelcast.startport=16900 -Dwegas.db.host=localhost -Dwegas.db.port=5432 -Dwegas.db.user=user -Dwegas.db.password=1234 -Dwegas.nb_populators=3 -Declipselink.cache.coordination.protocol=fish.payara.persistence.eclipselink.cache.coordination.HazelcastPublishingTransportManager -Declipselink.cache.coordination.channel=WegasLocalTest --add-opens=java.base/java.io=ALL-UNNAMED</payara.cmdOptions>
                         <payara.extraMicroOptions>--prebootcommandfile ${project.basedir}/as_prebootcmd --port 28080 --logproperties ${project.basedir}/../wegas-core/src/test/resources/logging.properties --interfaces 127.0.0.1 --clustermode tcpip:127.0.0.1:16900</payara.extraMicroOptions>
                     </systemProperties>
                 </configuration>

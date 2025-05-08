@@ -8,7 +8,7 @@
 package com.wegas.core.exception.client;
 
 import com.wegas.core.security.persistence.User;
-import javax.ejb.ApplicationException;
+import jakarta.ejb.ApplicationException;
 
 /**
  *

@@ -8,7 +8,7 @@
 import { escapeRegExp } from 'lodash';
 import { IAbstractAccount, IAbstractEntity } from 'wegas-ts-api';
 import { entityIs } from './API/entityHelper';
-import { logger } from './logger';
+import logger from './logger';
 
 export const getDisplayName = (account: IAbstractAccount | null | undefined): string => {
   if (account != null) {
@@ -56,6 +56,34 @@ export const merge = <T extends IAbstractEntity>(
   };
 };
 
+/**
+ * Merge entities by id within existing map, with version property check
+ *
+ * @param map original map
+ * @param entities entities to merge
+ * @returns new up-to-date map
+ */
+export const mergeVersionised = <T extends IAbstractEntity & { version: number }>(
+  map: Map<T>,
+  entities: (T | undefined)[],
+): Map<T> => {
+  return entities.reduce(
+    (newMap, entity) => {
+      const entityId = entity?.id;
+      if (entityId) {
+        const existing = newMap[entityId];
+        // do not replace entity if previous version has a newer version
+        // such cases may occur due to HTTP & websocket asynchrony
+        if (existing == null || entity.version >= existing.version) {
+          newMap[entityId] = entity;
+        }
+      }
+      return newMap;
+    },
+    { ...map },
+  );
+};
+
 //export const mapById = <T extends IAbstractEntity >(entities: T[]): {[id: number]: T} => {
 //  const map: {[id: number]: T} = {};
 //  entities.forEach(entity => {
@@ -69,7 +97,7 @@ export const merge = <T extends IAbstractEntity>(
 export const updateById = <T extends IAbstractEntity>(entities: T[], entity: T): void => {
   const index = entities.findIndex(item => entity.id === item.id);
   if (index >= 0) {
-    // entity exists in array:replace it
+    // entity exists in array: replace it
     entities.splice(index, 1, entity);
   } else {
     // entity not found, add it

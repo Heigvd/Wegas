@@ -9,13 +9,19 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Populatable.Status;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
+import com.wegas.core.rest.PlayerController;
+import com.wegas.core.rest.TeamController;
 import com.wegas.core.security.persistence.User;
 import com.wegas.test.arquillian.AbstractArquillianTest;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -30,6 +36,12 @@ import org.slf4j.LoggerFactory;
 public class PlayerFacadeTest extends AbstractArquillianTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacadeTest.class);
+
+    @Inject
+    private PlayerController playerController;
+
+    @Inject
+    private TeamController teamController;
 
     /**
      * Test registeredGames
@@ -51,7 +63,7 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
          */
         login(user);
         Assert.assertEquals(1, userFacade.getCurrentUser().getPlayers().size()); // user plays to game as player !
-        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam 
+        Assert.assertEquals(1, gameFacade.find(g.getId()).getTeams().size()); // debugTeam
 
         Team t = new Team("team");
         t.setGame(g);
@@ -180,6 +192,50 @@ public class PlayerFacadeTest extends AbstractArquillianTest {
             Assert.assertFalse(requestManager.hasGameModelWriteRight(p.getGameModel()));
         }
 
+    }
+
+    @Test
+    public void testControllerMethod() throws Exception {
+        login(user21);
+        Response create = playerController.create(null, this.team.getId());
+        Team team = (Team) create.getEntity();
+        Assert.assertEquals(2, team.getPlayers().size());
+    }
+
+    @Test
+    public void playerStatusTest() {
+        GameModel myGameModel = new GameModel("TESTGM");
+        gameModelFacade.create(myGameModel);
+
+        Game g = new Game("TESTGAME", "xxx");
+        gameFacade.create(myGameModel.getId(), g);
+        Team t1 = new Team();
+        t1.setName("test-team");
+
+        Team team1 = teamFacade.create(g.getId(), t1);
+        Assert.assertEquals(Status.LIVE, team1.getStatus());
+
+        Player player1 = gameFacade.joinTeam(team1.getId(), null);
+        Assert.assertEquals(Status.LIVE, player1.getStatus());
+    }
+
+    @Test
+    public void playerStatusTestThroughController() {
+        GameModel myGameModel = new GameModel("TESTGM");
+        gameModelFacade.create(myGameModel);
+
+        Game g = new Game("TESTGAME", "xxx");
+        gameFacade.create(myGameModel.getId(), g);
+        Team t1 = new Team();
+        t1.setName("test-team");
+
+        Team team1 = teamController.create(g.getId(), t1);
+        Assert.assertEquals(Status.LIVE, team1.getStatus());
+
+        Response create = playerController.create(null, team1.getId());
+        team1 = (Team) create.getEntity();
+        Player player1 = team1.getPlayers().get(0);
+        Assert.assertEquals(Status.LIVE, player1.getStatus());
     }
 
 }

@@ -18,8 +18,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.editor.view.I18nHtmlView;
 import java.util.Objects;
-import javax.persistence.Entity;
-import jdk.nashorn.api.scripting.JSObject;
+import jakarta.persistence.Entity;
+import org.openjdk.nashorn.api.scripting.JSObject;
 
 /**
  *

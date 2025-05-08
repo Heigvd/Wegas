@@ -16,11 +16,11 @@ import fish.payara.micro.cdi.Outbound;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
-import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Singleton;
+import jakarta.enterprise.event.Event;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

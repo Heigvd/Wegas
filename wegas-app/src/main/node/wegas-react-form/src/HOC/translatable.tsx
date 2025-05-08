@@ -2,7 +2,7 @@ import * as React from 'react';
 import { LangConsumer } from '../LangContext';
 import { Schema } from 'jsoninput';
 import { infoStyle } from './commonView';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 import IconButton from '../Components/IconButton';
 
 interface Translation {
@@ -31,8 +31,8 @@ interface EndProps {
  * @param Comp
  */
 export default function translatable<P extends EndProps>(
-    Comp: React.ComponentType<P>,
-): React.SFC<TranslatableProps & P> {
+{ Comp }: { Comp: React.ComponentType<P>; },
+): React.FunctionComponent<TranslatableProps & P> {
     function Translated(props: TranslatableProps) {
         if (!props.value) {
             return null;
@@ -67,7 +67,7 @@ export default function translatable<P extends EndProps>(
             for (const lang of allLanguages) {
                 newValue[lang.code] = {
                     translation: props.value[lang.code] ? props.value[lang.code].translation : '',
-                    status: 'outdated:' + code,
+                    status: `outdated:${  code}`,
                 };
             }
 
@@ -102,7 +102,7 @@ export default function translatable<P extends EndProps>(
                             <span>
                                 {(props.view || { label: '' }).label}{' '}
                                 <span className={String(infoStyle)}>
-                                    [{curCode.toLowerCase()}] {status ? '(' + status + ')' : ''}
+                                    [{curCode.toLowerCase()}] {status ? `(${  status  })` : ''}
                                 </span>
                             </span>
                         ),

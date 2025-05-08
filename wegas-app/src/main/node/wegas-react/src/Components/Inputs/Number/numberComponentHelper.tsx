@@ -12,6 +12,9 @@ export function CheckMinMax({
   max,
   value,
 }: CheckMinMaxProps): JSX.Element | null {
+  if (min === undefined && max === undefined) {
+    return <MessageString value={`Min and max value are undefined`} type={'error'} />;
+  }
   if (min === undefined) {
     return <MessageString value={`Min value is undefined`} type={'error'} />;
   }
@@ -19,7 +22,7 @@ export function CheckMinMax({
     return <MessageString value={`Max value is undefined`} type={'error'} />;
   }
   if (value === undefined) {
-    return <MessageString value={`Value value is undefined`} type={'error'} />;
+    return <MessageString value={`Value is undefined`} type={'error'} />;
   }
   if (max < min) {
     return (

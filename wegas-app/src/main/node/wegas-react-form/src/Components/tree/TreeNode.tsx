@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'classnames';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 const pointerStyle = css({
     cursor: 'pointer',
@@ -36,7 +36,7 @@ const treeNodeContainerStyle = css({
         position: 'relative',
 
         ':before': {
-            content: '',
+            content: '""',
             display: 'block',
             width: 0,
             position: 'absolute',
@@ -54,7 +54,7 @@ const treeNodeContainerStyle = css({
         position: 'relative',
 
         '&::before': {
-            content: '',
+            content: '""',
             display: 'block',
             width: '10px',
             height: 0,

@@ -12,6 +12,7 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerInboxProps extends WegasComponentProps {
@@ -23,6 +24,8 @@ export default function PlayerInbox({
   inbox,
   mobileDisplay,
   context,
+  className,
+  style,
   name,
   options,
   pageId,
@@ -47,6 +50,8 @@ export default function PlayerInbox({
       mobileDisplay={mobileDisplay}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
+      className={className}
+      style={style}
     />
   );
 }
@@ -69,6 +74,7 @@ registerComponent(
         label: 'Allow display to switch to mobile when needed',
         value: false,
       }),
+      ...classStyleIdSchema,
     },
     allowedVariables: ['InboxDescriptor'],
     getComputedPropsFromVariable: v => ({

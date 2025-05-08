@@ -12,15 +12,15 @@ import com.wegas.core.exception.client.WegasConflictException;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasUniqueConstraintException;
 import java.sql.SQLException;
-import javax.ejb.EJBException;
-import javax.enterprise.event.ObserverException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.transaction.RollbackException;
-import javax.transaction.TransactionRolledbackException;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.Response;
+import jakarta.ejb.EJBException;
+import jakarta.enterprise.event.ObserverException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.TransactionRolledbackException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
@@ -62,7 +62,7 @@ public abstract class AbstractExceptionMapper {
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
-                //                || exception instanceof javax.persistence.PersistenceException
+                //                || exception instanceof jakarta.persistence.PersistenceException
                 || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
 

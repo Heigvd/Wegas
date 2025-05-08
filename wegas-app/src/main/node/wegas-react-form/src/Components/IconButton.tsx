@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { css } from 'glamor';
+import { css } from '@emotion/css';
 
 interface Props {
     icon: IconValue;
@@ -60,7 +60,7 @@ function renderLabel(label?: string, labelClassName?: string) {
 
 type IconValue = string | IconArray;
 
-interface IconArray extends Array<IconValue> {}
+type IconArray = Array<IconValue>
 
 function renderIcon(icon: IconValue, key?: any) {
     if (Array.isArray(icon)) {

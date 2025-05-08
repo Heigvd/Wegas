@@ -35,13 +35,14 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 /**
  *
@@ -148,9 +149,7 @@ public class WegasFactory {
     public NumberDescriptor createNumberDescriptor(GameModel gameModel, DescriptorListI parent, String name, String label, Visibility visibility, Double min, Double max, Double defaultValue, Double... history) {
         NumberDescriptor desc = new NumberDescriptor();
         List<Double> hist = new ArrayList<>();
-        for (Double h : history) {
-            hist.add(h);
-        }
+        hist.addAll(Arrays.asList(history));
         desc.setName(name);
         desc.setLabel(TranslatableContent.build(gameModel.getLanguages().get(0).getCode(), label));
         desc.setVisibility(visibility);
@@ -204,6 +203,7 @@ public class WegasFactory {
      * @param parent     will add the new object to this parent. null means rootlevel descriptor
      * @param name       descriptor name
      * @param label      descriptor label, first language from the gameModel
+     * @param active     is the state machine active?
      * @param visibility descriptor visibility
      *
      * @return brand new persisted state machine
@@ -258,15 +258,15 @@ public class WegasFactory {
         for (Entry<Long, State> entry : fsmD.getStates().entrySet()) {
             State state = entry.getValue();
 
-            for (Iterator<Transition> it = state.getTransitions().iterator(); it.hasNext();) {
+            for (Iterator<Transition> it = state.getInternalTransitions().iterator(); it.hasNext();) {
                 Transition t = it.next();
-                if (t.getNextStateId() == index) {
+                if (t.getNextStateId().equals(index)) {
                     it.remove();
                 }
             }
         }
 
-        fsmD.getStates().remove(fsmD.getStates().get(index));
+        fsmD.getStates().remove(index);
 
         StateMachineDescriptor find = (StateMachineDescriptor) variableDescriptorFacade.find(fsmD.getId());
         find.merge(fsmD);

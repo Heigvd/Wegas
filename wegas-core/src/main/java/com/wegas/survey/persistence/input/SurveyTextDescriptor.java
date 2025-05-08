@@ -7,7 +7,7 @@
  */
 package com.wegas.survey.persistence.input;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 /**
  * define an evaluation as free text

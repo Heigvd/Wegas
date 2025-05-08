@@ -68,21 +68,23 @@ export interface NumberSliderProps
    * handleStyle - the style of the slider handle
    */
   handleStyle?: CSSInterpolation;
+  placeholder?: string,
 }
 
 const desinterpolate = (style?: CSSInterpolation) =>
   style
     ? Object.keys(style).reduce(
-        (o, k: keyof CSSInterpolation) => ({
-          ...o,
-          [k]: style[k],
-        }),
-        {},
-      )
+      (o, k: keyof CSSInterpolation) => ({
+        ...o,
+        [k]: style[k],
+      }),
+      {},
+    )
     : undefined;
 
 export function NumberSlider({
   value,
+  placeholder,
   onChange,
   max,
   min,
@@ -156,6 +158,7 @@ export function NumberSlider({
               }}
               disabled={disabled}
               readOnly={readOnly}
+              placeholder={placeholder}
             />
           );
           break;
@@ -168,16 +171,7 @@ export function NumberSlider({
       display = displayValues(internalValue, value);
     }
     return <div className={valueDisplayStyle}>{display}</div>;
-  }, [
-    disabled,
-    displayValues,
-    internalValue,
-    max,
-    min,
-    onNumberChange,
-    readOnly,
-    value,
-  ]);
+  }, [disabled, displayValues, internalValue, max, min, onNumberChange, placeholder, readOnly, value]);
 
   const computedSteps = Math.abs(max - min) / (steps ?? 100);
 
@@ -192,13 +186,13 @@ export function NumberSlider({
           active: leftPartStyle
             ? desinterpolate(leftPartStyle)
             : desinterpolate({
-                backgroundColor: themeVar.colors.PrimaryColor,
-              }),
+              backgroundColor: themeVar.colors.PrimaryColor,
+            }),
           thumb: handleStyle
             ? desinterpolate(handleStyle)
             : isActionAllowed({ readOnly, disabled })
-            ? desinterpolate({ cursor: 'pointer' })
-            : {},
+              ? desinterpolate({ cursor: 'pointer' })
+              : {},
           disabled: { opacity: 0.5 },
         }}
         axis="x"

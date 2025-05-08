@@ -10,7 +10,7 @@ import {
   ITeamWithId,
 } from 'wegas-ts-api';
 import { entityIs } from '../API/entityHelper';
-import getLogger from '../logger';
+import { getLogger } from '../logger';
 import { getStore, WegasLobbyState } from '../store/store';
 
 const logger = getLogger('websockets');
@@ -124,7 +124,7 @@ export const setPusherStatus = createAsyncThunk(
   async (payload: { status: string; socketId: string }, thunkApi) => {
     const pusherClient = getPusherClient();
     const state = thunkApi.getState() as WegasLobbyState;
-    logger.info(
+    logger.log(
       'WS API reload current user',
       pusherClient != null ? 'client ok' : 'client n/a',
       'user id: ',
@@ -189,7 +189,7 @@ export const processUpdatedEntities = createAsyncThunk(
       permissions: [],
     };
     payload.forEach(entity => {
-      logger.info('Updated entity: ', entity);
+      logger.log('Updated entity: ', entity);
       if (entity.id != null) {
         if (entityIs(entity, 'Player')) {
           bag.players.push(entity as IPlayerWithId);
@@ -274,7 +274,7 @@ export class WebSocketListener {
     this.socket.connection.bind('state_change', (state: { current: unknown }) => {
       this.status = state.current;
       this.socketId = this.socket!.connection.socket_id;
-      logger.info('Statechanged ', this.status, this.socketId);
+      logger.log('Statechanged ', this.status, this.socketId);
 
       getStore().dispatch(
         setPusherStatus({
@@ -287,7 +287,7 @@ export class WebSocketListener {
   }
 
   public bindChannel(channelId: string, socket: Pusher | null = this.socket) {
-    logger.info('subscribe to ', channelId);
+    logger.log('subscribe to ', channelId);
     socket!.subscribe(channelId).bind_global(async (event: string, data: {}) => {
       const processed = await processEvent(event, data);
       if (processed.event.startsWith('pusher:')) {
@@ -351,11 +351,11 @@ export class WebSocketListener {
     } else if (event === 'LifeCycleEvent') {
       const apiStatus = data as { status: 'UP' | 'DOWN' | 'OUTDATED' };
       getStore().dispatch(setApiStatus(apiStatus));
-      logger.info('Lifecycle: ', apiStatus);
+      logger.log('Lifecycle: ', apiStatus);
       return;
     } else if (event === 'populateQueue-dec') {
       const amount = data as number;
-      logger.info(`Population Queue -  ${amount}`);
+      logger.log(`Population Queue -  ${amount}`);
       getStore().dispatch(decQueue(amount));
       return;
     } else if (event === 'online-users') {

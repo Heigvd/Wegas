@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core">
 
     <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')}" />
     <f:event type="preRenderView" listener="#{facesContext.externalContext.response.setHeader('Pragma', 'no-cache')}" />
@@ -53,15 +53,15 @@
         <div>
             <div class="row">
                 <center>
-                    <h1><a href="http://www.albasim.ch"><img src="${request.contextPath}/wegas-app/images/albasim-logo.png" alt="Albasim" /></a>
-                        <a href="http://wegas.albasim.ch"><img src="${request.contextPath}/wegas-app/images/wegas-logo.png" alt="wegas" /></a></h1>
+                    <h1><a href="https://www.albasim.ch"><img src="${request.contextPath}/wegas-app/images/albasim-logo.png" alt="Albasim" /></a>
+                        <a href="${request.contextPath}/"><img src="${request.contextPath}/wegas-app/images/wegas-logo.png" alt="wegas" /></a></h1>
                 </center>
             </div>
             <div style="display: block; position: relative;color:white; width:100%; height:420px; background-image: url('${request.contextPath}/wegas-app/images/bg_slider.jpg')">
                 <div style="display: block; position: absolute; width: 100%; height:96px; text-align: center; top: 50%; margin-top: -48px;">
                     <h3><ui:insert name="title">You have been disconnected</ui:insert></h3>
                     <div>
-                      <a style="color:white; cursor: pointer; text-decoration: underline;" href="${request.contextPath}">Log back in !</a>
+                      <a style="color:white; cursor: pointer; text-decoration: underline;" href="${request.contextPath}/">Log back in !</a>
                     </div>
                 </div>
             </div>

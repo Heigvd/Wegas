@@ -8,9 +8,9 @@
 package com.wegas.test.mcq;
 
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
+import jakarta.ejb.LocalBean;
+import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 
 /**
  * TODO refactor/remove/moveToTest as this is only used by one test

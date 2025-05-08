@@ -49,7 +49,7 @@ public class DetachedCb implements WegasCallback {
                     logger.error("Failed to set data: {}", file);
                 }
             }
-        } else if (entity instanceof DetachedFileDescriptor) {
+        } else if (entity instanceof DetachedDirectoryDescriptor) {
             DetachedDirectoryDescriptor file = (DetachedDirectoryDescriptor) entity;
             DirectoryDescriptor jcrDirectory = file.getJcrDirectory();
             if (jcrDirectory != null) {

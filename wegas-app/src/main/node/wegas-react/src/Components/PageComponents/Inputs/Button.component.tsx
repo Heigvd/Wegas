@@ -16,7 +16,7 @@ import {
   onComponentClick,
   WegasComponentProps,
 } from '../tools/EditableComponent';
-import { classStyleIdShema } from '../tools/options';
+import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 
 export interface PlayerButtonProps extends WegasComponentProps {
@@ -83,15 +83,14 @@ function PlayerButton({
   const [loading, setLoading] = React.useState(false);
 
   const onClick = React.useMemo(() => {
-      return onComponentClick(
-        setLoading,
-        restProps,
-        context,
-        stopPropagation,
-        confirmClick,
-      );
+    return onComponentClick(
+      setLoading,
+      restProps,
+      context,
+      stopPropagation,
+      confirmClick,
+    );
   }, [confirmClick, context, restProps, stopPropagation]);
-
 
   return confirm ? (
     <ConfirmButton
@@ -101,12 +100,10 @@ function PlayerButton({
         }
       }}
       {...buttonProps}
-      loading={ loading }
+      loading={loading}
     />
   ) : (
-    <Button onClick={onClick} {...buttonProps}
-        loading={ loading}
-    />
+    <Button onClick={onClick} {...buttonProps} loading={loading} />
   );
 }
 
@@ -129,7 +126,7 @@ export const buttonSchema: Record<string, AvailableSchemas> = {
 
   prefixedLabel: schemaProps.boolean({ label: 'Prefixed label' }),
   confirm: schemaProps.boolean({ label: 'Ask confirmation' }),
-  ...classStyleIdShema,
+  ...classStyleIdSchema,
 };
 
 registerComponent(

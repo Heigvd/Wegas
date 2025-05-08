@@ -13,7 +13,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.test.arquillian.AbstractArquillianTest;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -27,7 +27,7 @@ export default function ScriptParserTester() {
   const transpiledModel = useTempModel(defaultValue, 'typescript');
 
   const onChange = React.useCallback(
-    newVal => {
+    (newVal: string) => {
       valueModel?.setValue(newVal);
       const functionalized = functionalizeScript(newVal, STR_RETURN_TYPES);
       const defunctionalized = defunctionalizeScript(functionalized);

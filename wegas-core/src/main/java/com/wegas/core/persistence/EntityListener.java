@@ -14,12 +14,12 @@ import com.wegas.core.jcr.jta.JCRClient;
 import com.wegas.core.jcr.jta.JCRConnectorProvider;
 import com.wegas.core.persistence.variable.Beanjection;
 import com.wegas.core.persistence.variable.ModelScoped;
-import javax.inject.Inject;
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
+import jakarta.inject.Inject;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreRemove;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

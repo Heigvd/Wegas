@@ -29,6 +29,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ModelScoped.Visibility;
 import com.wegas.core.persistence.variable.VariableDescriptor.Isolation;
+import com.wegas.core.persistence.variable.events.EventInboxInstance;
 import com.wegas.core.persistence.variable.primitive.AchievementInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
@@ -63,20 +64,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.QueryHint;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.QueryHint;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.CacheIndexes;
 import org.eclipse.persistence.annotations.OptimisticLocking;
@@ -148,6 +149,7 @@ import org.eclipse.persistence.config.QueryType;
     @JsonSubTypes.Type(name = "ListInstance", value = ListInstance.class),
     @JsonSubTypes.Type(name = "NumberInstance", value = NumberInstance.class),
     @JsonSubTypes.Type(name = "InboxInstance", value = InboxInstance.class),
+    @JsonSubTypes.Type(name = "EventInboxInstance", value = EventInboxInstance.class),
     @JsonSubTypes.Type(name = "FSMInstance", value = StateMachineInstance.class),
     @JsonSubTypes.Type(name = "QuestionInstance", value = QuestionInstance.class),
     @JsonSubTypes.Type(name = "WhQuestionInstance", value = WhQuestionInstance.class),
@@ -333,12 +335,13 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
 
     @Override
     public Map<String, List<AbstractEntity>> getEntities() {
+
         String audience = this.getAudience();
         if (audience != null) {
             Map<String, List<AbstractEntity>> map = new HashMap<>();
             ArrayList<AbstractEntity> entities = new ArrayList<>();
             entities.add(this);
-            map.put(this.getAudience(), entities);
+            map.put(audience, entities);
             return map;
         } else if (this.getDefaultDescriptor() != null) {
             // Default instance -> Propagate descriptor
