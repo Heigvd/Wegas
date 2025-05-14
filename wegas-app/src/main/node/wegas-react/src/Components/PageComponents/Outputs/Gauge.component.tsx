@@ -135,7 +135,7 @@ registerComponent(
           { backgroundColor: 'green', stopValue: 100 },
         ],
       },
-      ...classStyleIdShema,
+      ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
     getComputedPropsFromVariable: v => ({
