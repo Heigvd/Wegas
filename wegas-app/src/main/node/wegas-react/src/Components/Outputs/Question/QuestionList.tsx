@@ -479,6 +479,12 @@ export default function QuestionList({
 
   const entities = useStore(entitiesSelector);
 
+  React.useEffect(() => {
+    if (autoOpenFirst) {
+      editingStore.dispatch(read(instantiate(entities.questions[0]).getEntity()));
+    }
+  }, [autoOpenFirst, entities]);
+
   if (questionList === undefined) {
     return <pre>No selected list</pre>;
   }
