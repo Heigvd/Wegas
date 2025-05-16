@@ -28,14 +28,6 @@ interface PlayerGaugeProps extends WegasComponentProps {
    */
   followNeedle?: boolean;
   /**
-   * minValue - the minimum value displayable
-   */
-  minValue?: number;
-  /**
-   * maxValue - the maximum value displayable
-   */
-  maxValue?: number;
-  /**
    * colors - user defined color sections
    */
   colors?: [{ backgroundColor: string; stopValue: number }];
@@ -45,8 +37,6 @@ function PlayerGauge({
   script,
   label,
   followNeedle,
-  minValue,
-  maxValue,
   colors,
   className,
   style,
@@ -56,30 +46,16 @@ function PlayerGauge({
   pageId,
   path,
 }: PlayerGaugeProps) {
-  const [isValid, setIsValid] = React.useState<boolean>();
-  const [errorMessage, setErrorMessage] = React.useState<string>('');
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
   const { descriptor, instance, notFound } =
     useComponentScript<INumberDescriptor>(script, context);
 
-  React.useEffect(() => {
-    if (notFound) setErrorMessage(somethingIsUndefined('Number'));
-    if (!notFound && minValue && maxValue) {
-      const hasPositiveRange = maxValue > minValue;
-      const hasRangeOverlap =
-        Number(descriptor?.getMinValue) <= maxValue &&
-        minValue <= Number(descriptor?.getMaxValue());
-      setIsValid(!(hasPositiveRange && hasRangeOverlap));
-      setErrorMessage(
-        hasPositiveRange
-          ? 'Range has to be positive'
-          : 'Gauge range must overlap variable range',
-      );
-    }
-  }, [descriptor, maxValue, minValue, notFound, somethingIsUndefined]);
-
-  return notFound || isValid ? (
-    <UncompleteCompMessage message={errorMessage} pageId={pageId} path={path} />
+  return notFound ? (
+    <UncompleteCompMessage
+      message={somethingIsUndefined('Number')}
+      pageId={pageId}
+      path={path}
+    />
   ) : (
     <StandardGauge
       className={className}
@@ -87,8 +63,8 @@ function PlayerGauge({
       id={id}
       label={label}
       followNeedle={followNeedle}
-      min={minValue ?? descriptor!.getMinValue() ?? 0}
-      max={maxValue ?? descriptor!.getMaxValue() ?? 1}
+      min={descriptor!.getMinValue() ?? 0}
+      max={descriptor!.getMaxValue() ?? 1}
       colors={colors}
       value={instance!.getValue()}
       disabled={options.disabled || options.locked}
@@ -112,12 +88,6 @@ registerComponent(
       }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
-      minValue: schemaProps.number({
-        label: 'Display from',
-      }),
-      maxValue: schemaProps.number({
-        label: 'Display to',
-      }),
       colors: {
         view: { label: 'Color(s)', type: 'array' },
         items: schemaProps.object({

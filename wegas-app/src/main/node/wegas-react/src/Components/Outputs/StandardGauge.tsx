@@ -85,7 +85,8 @@ export function StandardGauge({
   const sectionColors = colors?.length ? colors : defaultSectionsColor;
   const maxValue = Math.max(...sectionColors.map(c => c.stopValue));
   const sections = sectionColors!.map(s => ({
-    ...s,
+    backgroundColor:
+      s.backgroundColor === undefined ? 'black' : s.backgroundColor, // Weird behaviour if undefined
     stopValue: (s.stopValue / maxValue) * deltaValue + min,
   }));
 
