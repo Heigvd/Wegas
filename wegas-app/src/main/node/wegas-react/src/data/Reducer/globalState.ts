@@ -121,7 +121,9 @@ export interface GlobalState {
   popups: { [id: string]: Popup };
   languages: {
     currentEditorLanguageCode: EditorLanguagesCode;
+    /* the languages known by Deepl */
     translatableLanguages: undefined | 'loading' | string[];
+    /* the languages the user is allowed to edit */
     editableLanguages: undefined | 'loading' | 'all' | string[];
   };
   logLevels: Record<string, LoggerLevel>;
@@ -446,6 +448,7 @@ export function setLock(data: LockEventData) {
     locked: data.status === 'lock',
   });
 }
+
 export function getEditorLanguage() {
   const savedLanguage = getSavedLanguage();
   const userLanguage = getUserLanguage();

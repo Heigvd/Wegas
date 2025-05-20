@@ -48,8 +48,8 @@ import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
-import { FontAwesome, IconComp } from './Views/FontAwesome';
 import ModelPropagator from './Modeler/ModelPropagation';
+import { FontAwesome, IconComp } from './Views/FontAwesome';
 
 /*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -371,8 +371,7 @@ export default function Header() {
                         >
                           <CheckBox
                             value={
-                              Actions.EditorActions.getEditorLanguage().payload
-                                .language === key
+                              userLanguage === key
                             }
                             onChange={() => {
                               dispatch(
