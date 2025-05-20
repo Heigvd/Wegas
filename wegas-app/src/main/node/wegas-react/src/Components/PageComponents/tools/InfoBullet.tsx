@@ -55,7 +55,7 @@ export function InfoBullet({ show, blink, message }: InfoBulletProps) {
           container.style.setProperty('top', `${top}px`);
         }
       }}
-      className={cx(infoBeamStyle, { [blinkStyle]: blink })}
+      className={cx(infoBeamStyle, { [blinkStyle]: blink }, 'wegas-info-bullet')}
     >
       {message}
     </span>
