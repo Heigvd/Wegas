@@ -6,8 +6,6 @@ import { IScript } from 'wegas-ts-api';
 
 const infoBeamStyle = css({
   position: 'absolute',
-  top: 0,
-  right: 0,
   padding: '3px',
   color: themeVar.colors.LightTextColor,
   backgroundColor: themeVar.colors.WarningColor,
@@ -48,6 +46,15 @@ export interface InfoBulletProps {
 export function InfoBullet({ show, blink, message }: InfoBulletProps) {
   return show !== false ? (
     <span
+      ref={container => {
+        if (container) {
+          const { width, height } = container.getBoundingClientRect();
+          const top = -(width / 4) - 1;
+          const right = -(height / 4) - 1;
+          container.style.setProperty('right', `${right}px`);
+          container.style.setProperty('top', `${top}px`);
+        }
+      }}
       className={cx(infoBeamStyle, { [blinkStyle]: blink }, 'wegas-info-bullet')}
     >
       {message}
