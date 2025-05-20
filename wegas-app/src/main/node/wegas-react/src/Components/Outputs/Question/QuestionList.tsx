@@ -479,9 +479,19 @@ export default function QuestionList({
 
   const entities = useStore(entitiesSelector);
 
+  const firstQuestionRead = React.useRef<boolean>(false);
+
   React.useEffect(() => {
-    if (autoOpenFirst) {
-      editingStore.dispatch(read(instantiate(entities.questions[0]).getEntity()));
+    const player = instantiate(Player.selectCurrent());
+    const questionInstance = instantiate(entities.questions[0]).getInstance(
+      player,
+    );
+
+    if (autoOpenFirst && questionInstance.isUnread()) {
+      editingStore.dispatch(
+        read(instantiate(entities.questions[0]).getEntity()),
+      );
+      firstQuestionRead.current = true;
     }
   }, [autoOpenFirst, entities]);
 
