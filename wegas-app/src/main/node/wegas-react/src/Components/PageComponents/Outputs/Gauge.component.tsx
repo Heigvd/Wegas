@@ -27,12 +27,17 @@ interface PlayerGaugeProps extends WegasComponentProps {
    * followNeedle - if true, only the sections behind the needle will be displayed
    */
   followNeedle?: boolean;
+  /**
+   * colors - user defined color sections
+   */
+  colors?: [{ backgroundColor: string; stopValue: number }];
 }
 
 function PlayerGauge({
   script,
   label,
   followNeedle,
+  colors,
   className,
   style,
   id,
@@ -60,6 +65,7 @@ function PlayerGauge({
       followNeedle={followNeedle}
       min={descriptor!.getMinValue() ?? 0}
       max={descriptor!.getMaxValue() ?? 1}
+      colors={colors}
       value={instance!.getValue()}
       disabled={options.disabled || options.locked}
     />
@@ -77,11 +83,28 @@ registerComponent(
     schema: {
       script: schemaProps.scriptVariable({
         label: 'Variable',
-        required: false,
+        required: true,
         returnType: ['SNumberDescriptor'],
       }),
       label: schemaProps.string({ label: 'Label' }),
       followNeedle: schemaProps.boolean({ label: 'Follow needle' }),
+      colors: {
+        view: { label: 'Color(s)', type: 'array' },
+        items: schemaProps.object({
+          properties: {
+            backgroundColor: { view: { label: 'Color', type: 'colorpicker' } },
+            stopValue: schemaProps.number({
+              label: 'Stop value',
+              required: true,
+            }),
+          },
+        }),
+        value: [
+          { backgroundColor: 'red', stopValue: 20 },
+          { backgroundColor: 'yellow', stopValue: 80 },
+          { backgroundColor: 'green', stopValue: 100 },
+        ],
+      },
       ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],

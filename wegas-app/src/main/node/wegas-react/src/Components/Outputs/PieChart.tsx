@@ -1,7 +1,7 @@
+import u from 'immer';
+import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { wwarn } from '../../Helper/wegaslog';
-import { cloneDeep } from 'lodash-es';
-import u from 'immer';
 import { useDeepChanges } from '../Hooks/useDeepChanges';
 
 const viewBox = {
@@ -305,7 +305,7 @@ function SvgBlurredPieceOfCake({
     maxAngle,
     explodeRatio,
   );
-  let middleAngle = (originalSection.angleTo + originalSection.minAngle) / 2;
+  let middleAngle = (originalSection?.angleTo + originalSection?.minAngle) / 2;
   const secondPart = maxAngle > middleAngle;
   middleAngle = secondPart ? middleAngle : maxAngle;
   return (
