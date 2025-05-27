@@ -4,7 +4,7 @@ import { MessageString } from '../../../Editor/Components/MessageString';
 interface CheckMinMaxProps {
   min?: number;
   max?: number;
-  value?: number;
+  value?: number | string;
 }
 
 export function CheckMinMax({
@@ -12,8 +12,15 @@ export function CheckMinMax({
   max,
   value,
 }: CheckMinMaxProps): JSX.Element | null {
+  const numberValue = Number(value);
+
+  if (isNaN(numberValue)) {
+    return <MessageString value={`Value is not a number`} type={'error'} />;
+  }
   if (min === undefined && max === undefined) {
-    return <MessageString value={`Min and max value are undefined`} type={'error'} />;
+    return (
+      <MessageString value={`Min and max value are undefined`} type={'error'} />
+    );
   }
   if (min === undefined) {
     return <MessageString value={`Min value is undefined`} type={'error'} />;
@@ -21,7 +28,7 @@ export function CheckMinMax({
   if (max === undefined) {
     return <MessageString value={`Max value is undefined`} type={'error'} />;
   }
-  if (value === undefined) {
+  if (numberValue === undefined) {
     return <MessageString value={`Value is undefined`} type={'error'} />;
   }
   if (max < min) {
@@ -32,7 +39,7 @@ export function CheckMinMax({
       />
     );
   }
-  if (value < min) {
+  if (numberValue < min) {
     return (
       <MessageString
         value={`Current value [${value}] is smaller than min value [${min}]`}
@@ -40,7 +47,7 @@ export function CheckMinMax({
       />
     );
   }
-  if (value > max) {
+  if (numberValue > max) {
     return (
       <MessageString
         value={`Current value [${value}] is greater than max value [${max}]`}

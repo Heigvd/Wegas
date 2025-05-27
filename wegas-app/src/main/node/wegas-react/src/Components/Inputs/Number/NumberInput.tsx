@@ -21,13 +21,14 @@ export function NumberInput(props: NumberInputProps) {
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
-  const [input, setInput] = React.useState<number | undefined>(undefined);
+  const [input, setInput] = React.useState<string | undefined>(undefined);
 
   const onChange = (newValue: string | number) => {
     const numberValue = Number(newValue);
-    if (!isNaN(numberValue)) {
-      setInput(numberValue);
-      if (numberValue >= min && numberValue <= max) {
+    const stringValue = String(newValue);
+    if (numberValue !== Number(input)) {
+      setInput(stringValue);
+      if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
       } else {
@@ -36,8 +37,11 @@ export function NumberInput(props: NumberInputProps) {
     }
   };
 
+  // Prevent wegas value from overriding current input
   React.useEffect(() => {
-    setInput(value);
+    if (value !== Number(input)) {
+      setInput(String(value));
+    }
   }, [value]);
 
   return (
@@ -50,7 +54,7 @@ export function NumberInput(props: NumberInputProps) {
         value={input}
         className={numberInputStyle}
         onChange={newValue => onChange(newValue)}
-        inputType="number"
+        inputType="text"
         placeholder={placeholder}
       />
     </div>
