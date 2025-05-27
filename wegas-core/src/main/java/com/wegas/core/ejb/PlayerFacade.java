@@ -89,7 +89,7 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      *
      * @param gameModel
-     * @param languages
+     * @param languages List of supported languages for the player (typically given by the HTTP request Accept-Language)
      *
      * @return language
      *
@@ -115,6 +115,25 @@ public class PlayerFacade extends BaseFacade<Player> {
             return gmLanguages.get(0);
         } else {
             throw new WegasErrorMessage("error", "No language");
+        }
+    }
+
+    /**
+     * Change the player language. But only if the given language is declared in the game model.
+     *
+     * @param playerId id of the player
+     * @param langCode code of the new language
+     *
+     * @return last version of the player
+     */
+    public Player changeLanguage(Long playerId, String langCode) {
+        Player player = find(playerId);
+        GameModelLanguage matchingGameModelLanguage = player.getGameModel().getLanguageByCode(langCode);
+        if (matchingGameModelLanguage != null) {
+            player.setLang(langCode);
+            return update(playerId, player);
+        } else {
+            throw WegasErrorMessage.warn("Lang " + langCode + " is not declared in the game model");
         }
     }
 

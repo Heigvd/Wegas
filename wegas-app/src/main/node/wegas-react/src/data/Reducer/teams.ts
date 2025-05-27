@@ -82,3 +82,18 @@ export function updateTeam(team: ITeam): ThunkResult {
     });
   };
 }
+
+/**
+ * Change the player language
+ */
+export function changePlayerLanguage(codeLang: string): ThunkResult {
+  return function () {
+    const gameModelId: number = store.getState().global.currentGameModelId;
+    const gameId: number = store.getState().global.currentGameId;
+    const teamId: number = store.getState().global.currentTeamId;
+    const playerId: number = store.getState().global.currentPlayerId;
+    return TeamAPI.changePlayerLanguage(gameModelId, gameId, teamId, playerId, codeLang).then(res => {
+      return store.dispatch(manageResponseHandler(res));
+    });
+  };
+}
