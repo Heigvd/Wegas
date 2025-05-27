@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
+import com.wegas.core.api.PlayerFacadeI;
 import com.wegas.core.async.PopulatorScheduler;
 import com.wegas.core.ejb.statemachine.StateMachineFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class PlayerFacade extends BaseFacade<Player> {
+public class PlayerFacade extends BaseFacade<Player> implements PlayerFacadeI {
 
     private static final Logger logger = LoggerFactory.getLogger(PlayerFacade.class);
 
