@@ -17,7 +17,7 @@ interface NumberInputProps extends InputProps<number> {
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value, placeholder } = props;
+  const { value } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
@@ -37,8 +37,8 @@ export function NumberInput(props: NumberInputProps) {
     }
   };
 
-  // Prevent wegas value from overriding current input
   React.useEffect(() => {
+    // Prevent wegas value from overriding current input
     if (value !== Number(input)) {
       setInput(String(value));
     }
@@ -50,13 +50,12 @@ export function NumberInput(props: NumberInputProps) {
         <CheckMinMax min={min} max={max} value={input} />
       )}
       <SimpleInput
-        {...omit(props, 'onChange')}
+        {...omit(props, 'onChange', 'value', 'className')}
         value={input}
-        className={numberInputStyle}
+        className={cx(numberInputStyle, props.className)}
         onChange={newValue => onChange(newValue)}
         inputType="text"
-        placeholder={placeholder}
-      />
+        />
     </div>
   );
 }
