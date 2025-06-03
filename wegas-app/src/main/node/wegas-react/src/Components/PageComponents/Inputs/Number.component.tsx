@@ -10,7 +10,6 @@ import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { useScript } from '../../Hooks/useScript';
 import { NumberInput } from '../../Inputs/Number/NumberInput';
-import { validatorSchema } from '../../Inputs/Validate';
 import { UncompleteCompMessage } from '../../UncompleteCompMessage';
 import {
   pageComponentFactory,
@@ -127,7 +126,6 @@ registerComponent(
         richText: false,
       }),
       onVariableChange: onVariableChangeSchema('On change action'),
-      ...validatorSchema,
       ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
