@@ -212,17 +212,11 @@ public class I18nController {
     }
 
     /**
-     *
-     * @param targetLangCode
-     * @param sourceLangCode
-     * @param text
-     *
-     * @return
+     * @return Deepl consumption for the current billing period
      */
     @GET
     @Path("Usage")
-    public DeeplUsage usage(@PathParam("target") String targetLangCode,
-        @PathParam("source") String sourceLangCode, String text) {
+    public DeeplUsage usage() {
         return i18nFacade.usage();
     }
 
