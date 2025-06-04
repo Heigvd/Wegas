@@ -8,7 +8,10 @@
 package com.wegas.core.i18n.deepl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Date;
 
 /**
  *
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author maxence
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DeeplUsage {
 
     @JsonProperty("character_count")
@@ -27,6 +31,11 @@ public class DeeplUsage {
     @JsonProperty("character_limit")
     private Long characterLimit;
 
+    @JsonProperty("start_time")
+    private Date startTime;
+
+    @JsonProperty("end_time")
+    private Date endTime;
 
     @JsonProperty("@class")
     public String getJSONClassName() {
@@ -47,6 +56,22 @@ public class DeeplUsage {
 
     public void setCharacterLimit(Long characterLimit) {
         this.characterLimit = characterLimit;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
     @JsonIgnore

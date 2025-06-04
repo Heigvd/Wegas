@@ -144,6 +144,8 @@ export interface GameModelVersion {
 export interface DeeplUsage {
   character_count: number;
   character_limit: number;
+  start_time?: number;
+  end_time?: number;
 }
 
 /** PatchDiff and changes */
