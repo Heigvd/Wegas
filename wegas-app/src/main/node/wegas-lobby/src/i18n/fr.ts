@@ -245,7 +245,8 @@ export const fr: WegasTranslations = {
   adminConsole: "Bienvenue dans la console d'administration",
   version: 'Version',
   deeplStatus: 'DeepL',
-  deeplUsage: 'Utilisation du service de traduction: ',
+  deeplUsage: 'Utilisation du service de traduction : ',
+  billingPeriod: 'Période de facturation : ',
   doAction: 'Effectuer une action',
 
   lastSeenAtKey: 'Vu pour la dernière fois',
