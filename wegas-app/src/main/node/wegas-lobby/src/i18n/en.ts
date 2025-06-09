@@ -243,7 +243,8 @@ export const en = {
   adminConsole: 'Welcome to admin console',
   version: 'Version',
   deeplStatus: 'DeepL status',
-  deeplUsage: 'Translation service usage: ',
+  deeplUsage: 'Translation service usage : ',
+  billingPeriod: 'Billing period : ',
   doAction: 'Perform an action',
 
   lastSeenAtKey: 'last seen',
