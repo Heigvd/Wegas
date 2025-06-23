@@ -125,7 +125,7 @@ public class PlayerFacade extends BaseFacade<Player> implements PlayerFacadeI {
      * @param playerId id of the player
      * @param langCode code of the new language
      *
-     * @return last version of the player
+     * @return updated player
      */
     public Player changeLanguage(Long playerId, String langCode) {
         Player player = find(playerId);
