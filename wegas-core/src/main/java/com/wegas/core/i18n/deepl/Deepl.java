@@ -7,7 +7,6 @@
  */
 package com.wegas.core.i18n.deepl;
 
-import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.ByteArrayOutputStream;
@@ -51,14 +50,13 @@ public class Deepl {
      * @param apiKey authentication key
      */
     public Deepl(String url, String apiKey) {
+        this.baseUrl = url;
         this.key = apiKey;
         this.client = HttpClientBuilder.create().build();
-        this.baseUrl = url;
-        Helper.getWegasProperty("deepl.base_url", "https://apideepl.com/v2/");
     }
 
     /**
-     * List of language supported by DeepL.
+     * List of languages supported by DeepL.
      */
     public enum Language {
         /**
@@ -163,7 +161,7 @@ public class Deepl {
     /**
      * Consume httpEntity to String.
      *
-     * @param entity HttpEntiy from the http response
+     * @param entity HttpEntity from the http response
      *
      * @return string representation of the given entity
      *
@@ -173,22 +171,10 @@ public class Deepl {
         if (entity != null) {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             entity.writeTo(baos);
-            return baos.toString("UTF-8");
+            return baos.toString(StandardCharsets.UTF_8);
         } else {
             return "";
         }
-    }
-
-    /**
-     * Retrieve your current consumption.
-     *
-     * @return DeepL usage response.
-     */
-    public DeeplUsage usage() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("auth_key=").append(this.key);
-
-        return this.post(sb.toString(), "/usage", DeeplUsage.class);
     }
 
     /**
@@ -202,8 +188,9 @@ public class Deepl {
      * @return
      */
     private <T> T post(String body, String url, Class<T> valueType) {
-
         HttpPost request = new HttpPost(baseUrl + url);
+
+        request.setHeader("Authorization", "DeepL-Auth-Key " + this.key);
 
         StringEntity entity = new StringEntity(body, StandardCharsets.UTF_8);
         entity.setContentType(MediaType.APPLICATION_FORM_URLENCODED + ";charset=UTF-8");
@@ -226,6 +213,15 @@ public class Deepl {
     }
 
     /**
+     * Retrieve your current consumption.
+     *
+     * @return DeepL usage response.
+     */
+    public DeeplUsage usage() {
+        return this.post("", "/usage", DeeplUsage.class);
+    }
+
+    /**
      * DeepL translate
      *
      * @param sourceLang texts are in this language. Null means autodetect
@@ -239,8 +235,7 @@ public class Deepl {
     public DeeplTranslations translate(Language sourceLang, Language targetLang, String... texts) throws UnsupportedEncodingException {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("auth_key=").append(this.key)
-            .append("&tag_handling=xml");
+        sb.append("&tag_handling=xml");
         if (sourceLang != null) {
             sb.append("&source_lang=").append(sourceLang);
         }

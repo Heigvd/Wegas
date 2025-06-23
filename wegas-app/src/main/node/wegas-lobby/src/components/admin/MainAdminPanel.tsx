@@ -208,9 +208,14 @@ export default function MainAdminPanel(): JSX.Element {
 
       <h4>{i18n.deeplStatus}</h4>
       {deeplUsage.status === 'READY' ? (
-        <div>
-          {i18n.deeplUsage} {deeplUsage.data.character_count} / {deeplUsage.data.character_limit}
-        </div>
+        <>
+          <div>
+            {i18n.deeplUsage} {deeplUsage.data.character_count.toLocaleString()} / {deeplUsage.data.character_limit.toLocaleString()}
+          </div>
+          <div>
+            {i18n.billingPeriod} {deeplUsage.data.start_time && new Date(deeplUsage.data.start_time).toLocaleDateString()} - {deeplUsage.data.end_time && new Date(deeplUsage.data.end_time).toLocaleDateString()}
+          </div>
+        </>
       ) : (
         <InlineLoading />
       )}
