@@ -17,17 +17,18 @@ interface NumberInputProps extends InputProps<number> {
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value, placeholder } = props;
+  const { value } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
-  const [input, setInput] = React.useState<number | undefined>(undefined);
+  const [input, setInput] = React.useState<string | undefined>(undefined);
 
   const onChange = (newValue: string | number) => {
     const numberValue = Number(newValue);
-    if (!isNaN(numberValue)) {
-      setInput(numberValue);
-      if (numberValue >= min && numberValue <= max) {
+    const stringValue = String(newValue);
+    if (numberValue !== Number(input)) {
+      setInput(stringValue);
+      if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
       } else {
@@ -37,7 +38,10 @@ export function NumberInput(props: NumberInputProps) {
   };
 
   React.useEffect(() => {
-    setInput(value);
+    // Prevent wegas value from overriding current input
+    if (value !== Number(input)) {
+      setInput(String(value));
+    }
   }, [value]);
 
   return (
@@ -46,13 +50,12 @@ export function NumberInput(props: NumberInputProps) {
         <CheckMinMax min={min} max={max} value={input} />
       )}
       <SimpleInput
-        {...omit(props, 'onChange')}
+        {...omit(props, 'onChange', 'value', 'className')}
         value={input}
-        className={numberInputStyle}
+        className={cx(numberInputStyle, props.className)}
         onChange={newValue => onChange(newValue)}
-        inputType="number"
-        placeholder={placeholder}
-      />
+        inputType="text"
+        />
     </div>
   );
 }
