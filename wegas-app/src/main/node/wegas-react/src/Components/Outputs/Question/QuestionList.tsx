@@ -479,20 +479,25 @@ export default function QuestionList({
 
   const entities = useStore(entitiesSelector);
 
-  const firstQuestionRead = React.useRef<boolean>(false);
+  const [firstQuestionRead, setFirstQuestionRead] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
-    if (autoOpenFirst && entities?.questions?.length > 0) {
+    if (
+      autoOpenFirst &&
+      entities?.questions?.length > 0 &&
+      !firstQuestionRead
+    ) {
       const player = instantiate(Player.selectCurrent());
       const questionInstance = instantiate(entities.questions[0]).getInstance(
         player,
       );
 
-      if (autoOpenFirst && questionInstance.isUnread()) {
+      if (questionInstance.isUnread()) {
         editingStore.dispatch(
           read(instantiate(entities.questions[0]).getEntity()),
         );
-        firstQuestionRead.current = true;
+        setFirstQuestionRead(true);
       }
     }
   }, [autoOpenFirst, entities]);
