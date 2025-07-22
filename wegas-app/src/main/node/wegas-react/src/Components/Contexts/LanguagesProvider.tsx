@@ -10,6 +10,7 @@ import { DropDownDirection } from '../DropDown';
 import { DropMenu, SelecteDropdMenuItem } from '../DropMenu';
 import { useGameModel } from '../Hooks/useGameModel';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
+import { expandWidth } from '../../css/classes';
 
 interface LanguagesProviderProps {
   children?: React.ReactNode;
@@ -125,18 +126,22 @@ export function useLangToggler() {
           <div
             onClick={e => {
               e.stopPropagation();
-              selectLang(language.code);
-              }}>
+              if (language.active) {
+                selectLang(language.code);
+              }
+            }}
+          className={expandWidth}>
             <CheckBox
               value={language.code === lang}
-              onChange={() => {selectLang(language.code);
+              onChange={() => {
+                selectLang(language.code);
               }}
               label={language.code + ' : ' + language.lang}
               horizontal
               disabled={!language.active}
             />
           </div>
-        ),
+        )
       })),
   };
 }
