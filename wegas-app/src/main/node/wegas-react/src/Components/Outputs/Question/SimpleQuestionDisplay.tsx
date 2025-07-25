@@ -23,7 +23,7 @@ import {
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
-import { ChoiceContainer } from './ChoiceContainer';
+import { ChoiceDisplay, choiceContainerStyle } from './ChoiceDisplay';
 import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import {
@@ -136,8 +136,10 @@ function SimpleChoiceDisplay({
       ? undefined
       : choiceI?.replies?.length;
   return (
-    <div className={'wegas-question__choice-container'}>
-      <ChoiceContainer
+    <div
+      className={cx(choiceContainerStyle, 'wegas-question__choice-container')}
+    >
+      <ChoiceDisplay
         active={active}
         descriptor={choiceD}
         canReply={canReply}
@@ -145,7 +147,6 @@ function SimpleChoiceDisplay({
         hasBeenSelected={hasBeenValidated}
         editMode={editMode}
         replyCount={replyCount}
-        className="wegas-question__choice"
       />
       <RepliesDisplay replies={replies} />
     </div>
