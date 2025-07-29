@@ -58,19 +58,6 @@ export const choiceStyle = css({
     cursor: 'cursor',
     pointerEvents: 'none',
   },
-  '&.no-desc': {
-    '&.no-label': {
-      boxShadow: 'none',
-      borderRadius: '0',
-      '&.disabled': {
-        display: 'none',
-      },
-    },
-    '&.selected': {
-      borderBottomLeftRadius: themeVar.dimensions.BorderRadius,
-      borderBottomRightRadius: themeVar.dimensions.BorderRadius,
-    },
-  },
 });
 export const choiceHeaderStyle = css({
   fontWeight: 'bold',
