@@ -146,6 +146,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
       pastel: 'Pastel',
       secondary: 'Secondaire',
       dark: 'Sombre',
+      disabled: 'Désactivé',
       'dark secondary': 'Secondaire sombre',
       'Accent color': "Couleur d'accentuation",
       'Disabled color': 'Couleurs désactivé',
