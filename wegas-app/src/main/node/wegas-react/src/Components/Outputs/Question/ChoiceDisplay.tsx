@@ -32,6 +32,7 @@ import { buttonFactory, handleStyle } from './QuestionList';
 
 export const choiceContainerStyle = css({
   position: 'relative',
+  overflow: 'hidden',
   margin: '1em 0',
   display: 'flex',
   flexDirection: 'column',
@@ -68,10 +69,6 @@ export const choiceHeaderStyle = css({
   '&.selected': {
     color: themeVar.colors.LightTextColor,
     backgroundColor: themeVar.colors.PrimaryColor,
-    '&.no-desc': {
-      borderBottomLeftRadius: themeVar.dimensions.BorderRadius,
-      borderBottomRightRadius: themeVar.dimensions.BorderRadius,
-    },
   },
 });
 export const choiceDescriptionStyle = css({
