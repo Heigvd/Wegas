@@ -56,5 +56,11 @@ export const TeamAPI = {
       `/GameModel/${gameModelId}/Game/${gameId}/Team/${teamId!}/Player/${player.id}`,
       { method: 'PUT', body: JSON.stringify(player) },
     );
+  },
+  changePlayerLanguage(teamId: number, playerId: number, langCode: string) {
+    return managedModeRequest(
+      `/GameModel/Game/Team/${teamId}/Player/${playerId}/Lang/${langCode}`,
+      { method: 'PUT' },
+    );
   }
 };

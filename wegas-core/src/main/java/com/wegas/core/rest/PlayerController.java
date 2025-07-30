@@ -143,6 +143,19 @@ public class PlayerController {
     }
 
     /**
+     * Change player language
+     *
+     * @param playerId id of the player
+     * @param langCode code of the new language
+     * @return just updated player
+     */
+    @PUT
+    @Path("{playerId: [1-9][0-9]*}/Lang/{code: [A-Z]+}")
+    public Player changeLanguage(@PathParam("playerId") Long playerId, @PathParam("code") String langCode) {
+        return playerFacade.changeLanguage(playerId, langCode);
+    }
+
+    /**
      * @param playerId
      *
      * @return just deleted player
