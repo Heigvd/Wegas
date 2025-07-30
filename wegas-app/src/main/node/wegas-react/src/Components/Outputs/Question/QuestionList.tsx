@@ -294,7 +294,13 @@ function QuestionChooser(
   const handleClick = () => {
     props.onClick();
     if (!props.disabled) {
-      editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+      const player = instantiate(Player.selectCurrent());
+      const questionDescriptor = instantiate(props.entity);
+      const questionInstance = questionDescriptor.getInstance(player);
+
+      if (questionInstance.isUnread()) {
+        editingStore.dispatch(read(questionDescriptor.getEntity()));
+      }
     }
   };
 
