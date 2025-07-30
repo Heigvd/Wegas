@@ -141,7 +141,8 @@ export function useLangToggler() {
               disabled={!language.active}
             />
           </div>
-        )
+        ),
+          disabled: !language.active
       })),
   };
 }
