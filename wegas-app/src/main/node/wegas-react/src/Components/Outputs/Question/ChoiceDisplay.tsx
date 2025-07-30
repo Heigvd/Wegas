@@ -82,7 +82,7 @@ export const choiceDescriptionStyle = css({
   },
 });
 export const choiceDescriptionContainerStyle = css({
-  width: 'calc(100% - 15px)',
+  marginRight: '15px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   '&:last-child': {
     borderBottom: 'none',

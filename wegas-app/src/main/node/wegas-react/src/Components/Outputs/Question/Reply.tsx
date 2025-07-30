@@ -23,6 +23,7 @@ const replyStyle = css({
   fontWeight: 'bold',
   choiceLabelStyle: choiceHeaderStyle,
   padding: '15px',
+  whiteSpace: 'nowrap',
 });
 
 const replyListStyle = css({
