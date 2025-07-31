@@ -13,18 +13,20 @@ import { CheckBox } from '../../Inputs/Boolean/CheckBox';
 import { Button } from '../../Inputs/Buttons/Button';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
-import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
+import {
+  ChoiceDisplay,
+  choiceInputStyle,
+  choiceContainerStyle,
+} from './ChoiceDisplay';
 import { QuestionInfo, questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import { RepliesDisplay } from './Reply';
 import { AddChoiceMenu } from './SimpleQuestionDisplay';
 
-const cbxChoiceContainerStyle = css({
-  cursor: 'pointer',
-  display: 'flex',
-});
 const cbxContainerStyle = css({
-  padding: 0,
+  padding: '0',
+  marginTop: '10px',
+  marginBottom: '10px',
   width: '3rem',
   backgroundColor: themeVar.colors.PrimaryColor,
   color: themeVar.colors.LightTextColor,
@@ -81,13 +83,14 @@ function CbxChoiceDisplay({
   }
 
   return (
-    <>
-      <ChoiceContainer
+    <div
+      className={cx(choiceContainerStyle, 'wegas-question__choice-container')}
+    >
+      <ChoiceDisplay
         active={active}
         descriptor={choiceD}
         canReply={!disabled}
         hasBeenSelected={questionChoosed}
-        className={cbxChoiceContainerStyle}
         inputClassName={cbxContainerStyle}
         onClick={async () => {
           if (enableValidate) {
@@ -111,9 +114,9 @@ function CbxChoiceDisplay({
             checkBoxClassName={cbxStyle}
           />
         }
-      </ChoiceContainer>
+      </ChoiceDisplay>
       <RepliesDisplay replies={replies} />
-    </>
+    </div>
   );
 }
 

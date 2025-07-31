@@ -4,28 +4,33 @@ import { IReply } from 'wegas-ts-api';
 import { themeVar } from '../../Theme/ThemeVars';
 import { TranslatableText } from '../HTMLText';
 import {
-  choiceContainerStyle,
+  choiceDescriptionContainerStyle,
   choiceDescriptionStyle,
   choiceHeaderStyle,
-} from './ChoiceContainer';
+} from './ChoiceDisplay';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { componentsTranslations } from '../../../i18n/components/components';
 
 const repliesContainer = css({
+  display: 'flex',
+  flexDirection: 'row',
+  width: '100%',
   marginTop: '5px',
-  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   fontSize: themeVar.others.TextFont2,
 });
 
 const replyStyle = css({
   fontWeight: 'bold',
   choiceLabelStyle: choiceHeaderStyle,
-  width: '100%',
   padding: '15px',
+  whiteSpace: 'nowrap',
 });
 
-const replyContainerStyle = css({
-  backgroundColor: themeVar.colors.HoverColor,
+const replyListStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  marginBottom: '1em',
 });
 
 const earlierReplyContainerStyle = css({
@@ -44,8 +49,7 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
   return (
     <div
       className={cx(
-        choiceContainerStyle,
-        replyContainerStyle,
+        choiceDescriptionContainerStyle,
         isEarlierReply ? earlierReplyContainerStyle : '',
         css({ flexDirection: 'column', alignItems: 'left' }),
         'wegas-question__reply-element',
@@ -53,7 +57,10 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
       )}
     >
       <TranslatableText
-        className={cx(choiceDescriptionStyle, 'wegas-question__reply-description')}
+        className={cx(
+          choiceDescriptionStyle,
+          'wegas-question__reply-description',
+        )}
         content={reply.ignored ? ignorationAnswer : answer}
       />
     </div>
@@ -88,11 +95,15 @@ export function RepliesDisplay({ replies }: RepliesDisplayProps) {
   const resultLabel =
     validatedReplies.length > 1 ? i18nValues.results : i18nValues.result;
   return (
-    <div className={cx(repliesContainer, 'wegas-question__reply-container')}>
-      <div className={cx(replyStyle, 'wegas-question__reply-label')}>{resultLabel}</div>
-      {validatedReplies.map((r, i) => (
-        <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
-      ))}
+    <div className={cx(repliesContainer, 'wegas-question__replies')}>
+      <div className={cx(replyStyle, 'wegas-question__reply-label')}>
+        {resultLabel}
+      </div>
+      <div className={cx(replyListStyle, 'wegas-question__reply-list')}>
+        {validatedReplies.map((r, i) => (
+          <ReplyDisplay key={r.id} reply={r} isEarlierReply={i !== 0} />
+        ))}
+      </div>
     </div>
   );
 }

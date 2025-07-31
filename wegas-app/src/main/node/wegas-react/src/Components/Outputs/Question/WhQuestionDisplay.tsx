@@ -35,7 +35,11 @@ import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { SimpleInput } from '../../Inputs/SimpleInput';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
-import { ChoiceContainer, choiceInputStyle } from './ChoiceContainer';
+import {
+  ChoiceDisplay,
+  choiceInputStyle,
+  choiceContainerStyle,
+} from './ChoiceDisplay';
 import { questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import { makeMenuFromClass } from './QuestionList';
@@ -119,14 +123,14 @@ function WhChoiceDisplay({
 }: WhChoiceDisplayProps) {
   const { lang } = React.useContext(languagesCTX);
   return (
-    <ChoiceContainer
+    <ChoiceDisplay
       active
       descriptor={choiceD}
       canReply={!questionI.validated && isActionAllowed({ disabled, readOnly })}
       hasBeenSelected={false}
       editMode={editMode}
       validateButton={false}
-      className={'wegas-question__choice'}
+      className={cx(choiceContainerStyle, 'wegas-question__choice-container')}
     >
       <div className={css({ padding: '15px' })}>
         {choiceD['@class'] === 'BooleanDescriptor' ? (
@@ -188,7 +192,7 @@ function WhChoiceDisplay({
           />
         )}
       </div>
-    </ChoiceContainer>
+    </ChoiceDisplay>
   );
 }
 
