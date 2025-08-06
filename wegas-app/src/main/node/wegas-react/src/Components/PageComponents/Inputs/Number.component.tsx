@@ -23,6 +23,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { NumberSeparator } from '../tools/numberSeparator';
 
 interface PlayerNumberInputProps extends WegasComponentProps {
   /**
@@ -33,6 +34,10 @@ interface PlayerNumberInputProps extends WegasComponentProps {
    * placeholder - the grey text inside the box when nothing is written
    */
   placeholder?: IScript;
+  /**
+   * separator - symbol to separate thousands values
+   */
+  separator: NumberSeparator;
   onVariableChange?: OnVariableChange;
 }
 
@@ -43,6 +48,7 @@ function PlayerNumberInput({
   style,
   id,
   placeholder,
+  separator,
   onVariableChange,
   options,
   pageId,
@@ -103,6 +109,7 @@ function PlayerNumberInput({
       disabled={disabled || locked}
       onChange={onChange}
       placeholder={placeholderText}
+      separator={separator}
     />
   );
 }
@@ -126,6 +133,12 @@ registerComponent(
         richText: false,
       }),
       onVariableChange: onVariableChangeSchema('On change action'),
+      separator: schemaProps.select({
+        label: 'Separator',
+        values: ['none', 'space', 'apostrophe', 'comma'],
+        value: 'none',
+        required: true,
+      }),
       ...classStyleIdSchema,
     },
     allowedVariables: ['NumberDescriptor'],
