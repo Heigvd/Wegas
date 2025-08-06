@@ -42,8 +42,8 @@ export interface WegasComponentOptionsAction {
 }
 
 export interface OpenPageAction {
-  pageLoaderName: IScript;
-  pageId: IScript;
+  pageLoaderName: string | IScript;
+  pageId: string | IScript;
   context?: PageComponentContext;
 }
 interface OpenURLAction {
@@ -113,15 +113,19 @@ export interface WegasComponentActions {
 
 export const wegasComponentActions: WegasComponentActions = {
   openPage: ({ pageLoaderName, pageId, context }) => {
-    const name = clientScriptEval<string>(
-      pageLoaderName.content,
-      context,
-      undefined,
-      undefined,
-    );
+    let name: string;
+    if (isScript(pageLoaderName)) {
+      name = clientScriptEval<string>(
+        pageLoaderName,
+        context,
+        undefined,
+        undefined,
+      )
+    } else {
+      name = pageLoaderName;
+    }
 
-    // whenever the given pageId is not a script (it may be a number or a string in some old scenarios), convert it to a script
-    const pageIdScript = isScript(pageId) ? pageId : createScript(JSON.stringify(String(pageId)));
+    const pageIdScript = isScript(pageId) ? pageId : createScript(JSON.stringify(pageId));
 
     if (name != null) {
       store.dispatch(
@@ -194,11 +198,32 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open Page',
         properties: {
-          pageLoaderName: schemaProps.pageLoaderSelect({
-            label: 'Page loader',
-            required: true,
-          }),
-          pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
+          pageLoaderName: {
+            type: ['string', 'object'],
+            view: {
+              type: 'scriptable',
+              label: 'Page loader',
+              scriptProps: {
+                language: 'TypeScript',
+                returnType: ['string'],
+              },
+              literalSchema: schemaProps.pageLoaderSelect({
+                required: true,
+              }),
+            },
+          },
+          pageId: {
+            type: ['string', 'object'],
+            view: {
+              type: 'scriptable',
+              label: 'Page',
+              scriptProps: {
+                language: 'TypeScript',
+                returnType: ['string'],
+              },
+              literalSchema: schemaProps.pageSelect({ required: true }),
+            },
+          },
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),
