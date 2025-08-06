@@ -22,7 +22,7 @@ import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
-import { createScript } from '../../../Helper/wegasEntites';
+import { createScript, isScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import {
   clientScriptEval,
@@ -119,11 +119,15 @@ export const wegasComponentActions: WegasComponentActions = {
       undefined,
       undefined,
     );
+
+    // whenever the given pageId is not a script (it may be a number or a string in some old scenarios), convert it to a script
+    const pageIdScript = isScript(pageId) ? pageId : createScript(JSON.stringify(String(pageId)));
+
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
           name,
-          pageId,
+          pageId: pageIdScript,
         }),
       );
     }
