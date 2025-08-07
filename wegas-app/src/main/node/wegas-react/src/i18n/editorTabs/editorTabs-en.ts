@@ -160,6 +160,7 @@ export const editorTabsTranslationsEN = {
       pastel: 'Pastel',
       secondary: 'Secondary',
       dark: 'Dark',
+      disabled: 'Disabled',
       'dark secondary': 'Dark Secondary',
       'Accent color': 'Accent color',
       'Disabled color': 'Disabled color',

@@ -101,7 +101,7 @@ const subMenuItemContainer = (
       userSelect: 'none',
       opacity: isDisabled ? 0.5 : 1,
       backgroundColor: isDisabled
-        ? '#E1E1E1'
+        ? themeVar.colors.DisabledBackgroundColor
         : isSelected
         ? themeVar.colors.HeaderColor
         : undefined,
@@ -110,7 +110,7 @@ const subMenuItemContainer = (
         margin: 0,
       },
       ':hover': {
-        backgroundColor: isDisabled ? '#E1E1E1' : themeVar.colors.HeaderColor,
+        backgroundColor: isDisabled ? themeVar.colors.DisabledBackgroundColor : themeVar.colors.HeaderColor,
         color: themeVar.colors.DarkTextColor,
       },
     }),
