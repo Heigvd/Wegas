@@ -41,8 +41,7 @@ export const PageAPIFactory = (gameModelId?: number) => {
       });
     },
     /**
-     * fetch a page
-     * @param pageId optional pageId
+     * fetch all pages
      */
     getAll(): Promise<AllPages> {
       return rest(PAGE_BASE(gameModelId)).then(res => {

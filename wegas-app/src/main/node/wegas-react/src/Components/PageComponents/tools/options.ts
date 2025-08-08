@@ -22,7 +22,7 @@ import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
-import { createScript } from '../../../Helper/wegasEntites';
+import { createScript, isScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import {
   clientScriptEval,
@@ -42,8 +42,8 @@ export interface WegasComponentOptionsAction {
 }
 
 export interface OpenPageAction {
-  pageLoaderName: IScript;
-  pageId: IScript;
+  pageLoaderName: string | IScript;
+  pageId: string | IScript;
   context?: PageComponentContext;
 }
 interface OpenURLAction {
@@ -113,17 +113,25 @@ export interface WegasComponentActions {
 
 export const wegasComponentActions: WegasComponentActions = {
   openPage: ({ pageLoaderName, pageId, context }) => {
-    const name = clientScriptEval<string>(
-      pageLoaderName.content,
-      context,
-      undefined,
-      undefined,
-    );
+    let name: string;
+    if (isScript(pageLoaderName)) {
+      name = clientScriptEval<string>(
+        pageLoaderName,
+        context,
+        undefined,
+        undefined,
+      )
+    } else {
+      name = pageLoaderName;
+    }
+
+    const pageIdScript = isScript(pageId) ? pageId : createScript(JSON.stringify(pageId));
+
     if (name != null) {
       store.dispatch(
         ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
           name,
-          pageId,
+          pageId: pageIdScript,
         }),
       );
     }
@@ -190,11 +198,32 @@ export const actionsChoices: HashListChoices = [
       schema: schemaProps.object({
         label: 'Open Page',
         properties: {
-          pageLoaderName: schemaProps.pageLoaderSelect({
-            label: 'Page loader',
-            required: true,
-          }),
-          pageId: schemaProps.pageSelect({ label: 'Page', required: true }),
+          pageLoaderName: {
+            type: ['string', 'object'],
+            view: {
+              type: 'scriptable',
+              label: 'Page loader',
+              scriptProps: {
+                language: 'TypeScript',
+                returnType: ['string'],
+              },
+              literalSchema: schemaProps.pageLoaderSelect({
+                required: true,
+              }),
+            },
+          },
+          pageId: {
+            type: ['string', 'object'],
+            view: {
+              type: 'scriptable',
+              label: 'Page',
+              scriptProps: {
+                language: 'TypeScript',
+                returnType: ['string'],
+              },
+              literalSchema: schemaProps.pageSelect({ required: true }),
+            },
+          },
           priority: schemaProps.number({ label: 'Priority' }),
         },
       }),

@@ -191,14 +191,12 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
       Object.entries(pageLoaders).reduce(
         (o, [name, script]) => ({
           ...o,
-          [name]: Number(
-            safeClientScriptEval(
-              script,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-            ),
+          [name]: safeClientScriptEval<string>(
+            script,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
           ),
         }),
         {},
