@@ -47,7 +47,7 @@ interface CircleStyleObject extends SharedImageStyleProperties {
 interface RegularShapeStyleObject {
   type: 'RegularShape';
   points: number;
-  radius?: number;
+  radius: number;
   radius1?: number;
   radius2?: number;
   angle?: number;
