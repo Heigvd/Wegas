@@ -50,7 +50,9 @@ async function fetchSource(
 }
 
 interface PlayerVectorLayerProps extends WegasComponentProps {
-  layerProps?: IScript | Omit<Options<VectorSource>, 'source' | 'style'>;
+  layerProps?:
+    | IScript
+    | Omit<Options<Feature<Geometry>, VectorSource>, 'source' | 'style'>;
   layerSource?: VectorLayerSourceObject;
   layerId?: string;
   layerStyle?: ScriptCallback | StyleObject;
