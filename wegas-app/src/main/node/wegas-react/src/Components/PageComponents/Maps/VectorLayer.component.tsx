@@ -36,6 +36,9 @@ import {
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import { StyleObject } from '../../Maps/helpers/types/LayerStyleTypes';
+import { VectorLayerSourceObject } from '../../Maps/helpers/types/LayerSourceTypes';
+import Feature from 'ol/Feature';
+import { Geometry } from 'ol/geom';
 
 async function fetchSource(
   pathOrData: string | object | undefined,
@@ -115,16 +118,16 @@ export default function PlayerVectorLayer({
           })
         : data;
 
-    let vectorSource: VectorSource | undefined = undefined;
+    let vectorSource: VectorSource<Feature<Geometry>> | undefined = undefined;
     if (data != null && layerSource != null) {
       if (layerSource.sourceProjection) {
         initializeProjection(layerSource.sourceProjection);
       }
-      vectorSource = new VectorSource({
+      vectorSource = new VectorSource<Feature<Geometry>>({
         features: new GeoJSON().readFeatures(parsedData, {
           dataProjection: layerSource.sourceProjection,
           featureProjection: projection,
-        }),
+        }) as Feature<Geometry>[],
         useSpatialIndex: layerSource.useSpatialIndex,
       });
     }

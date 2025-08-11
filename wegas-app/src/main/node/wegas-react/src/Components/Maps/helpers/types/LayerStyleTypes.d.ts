@@ -70,7 +70,6 @@ interface IconStyleObject extends SharedImageStyleProperties {
   offset?: PointLikeObject;
   offsetOrigin?: IconOrigin;
   size?: PointLikeObject;
-  imgSize?: PointLikeObject;
   src?: string;
 }
 
