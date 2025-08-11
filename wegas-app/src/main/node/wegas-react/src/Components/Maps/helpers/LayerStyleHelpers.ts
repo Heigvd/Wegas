@@ -11,6 +11,13 @@ import {
 } from 'ol/style';
 import { StyleLike } from 'ol/style/Style';
 import { fileURL } from '../../../API/files.api';
+import {
+  FillStyleObject,
+  ImageStyleObject,
+  LayerStyleObject,
+  StrokeStyleObject,
+  StyleObject,
+} from './types/LayerStyleTypes';
 
 function strokeObjectToOLStroke(stroke: StrokeStyleObject | undefined) {
   return stroke != null && Object.keys(stroke).length > 1

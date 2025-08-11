@@ -35,6 +35,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+import { StyleObject } from '../../Maps/helpers/types/LayerStyleTypes';
 
 async function fetchSource(
   pathOrData: string | object | undefined,

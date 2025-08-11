@@ -1,3 +1,5 @@
+import { IconOrigin } from 'ol/style/Icon';
+
 type ColorStyleObject = string | CanvasPattern | CanvasGradient;
 
 type FeatureGeometryType =
@@ -42,35 +44,31 @@ interface CircleStyleObject extends SharedImageStyleProperties {
   radius: number;
 }
 
-interface RegularShapeStyleObject
-  extends Omit<CircleStyleObject, 'type' | 'radius'> {
+interface RegularShapeStyleObject {
   type: 'RegularShape';
   points: number;
   radius?: number;
   radius1?: number;
   radius2?: number;
   angle?: number;
+  fill?: FillStyleObject;
+  stroke?: StrokeStyleObject;
 }
 
 type AnchorUnitsStyleObject = 'fraction' | 'pixels';
-type AnchorPositionStyleObject =
-  | 'bottom-left'
-  | 'bottom-right'
-  | 'top-left'
-  | 'top-right';
 type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
 
 interface IconStyleObject extends SharedImageStyleProperties {
   type: 'IconStyle';
   anchor?: PointLikeObject;
-  anchorOrigin?: AnchorPositionStyleObject;
+  anchorOrigin?: IconOrigin;
   anchorXUnits?: AnchorUnitsStyleObject;
   anchorYUnits?: AnchorUnitsStyleObject;
   color?: string;
   crossOrigin?: CrossOriginStyleObject;
   img?: HTMLImageElement | HTMLCanvasElement;
   offset?: PointLikeObject;
-  offsetOrigin?: PointLikeObject;
+  offsetOrigin?: IconOrigin;
   size?: PointLikeObject;
   imgSize?: PointLikeObject;
   src?: string;
