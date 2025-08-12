@@ -24,11 +24,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import {
-  SharedLayerProps,
-  TileLayerProps,
-  TileLayerSourceObject,
-} from '../../Maps/helpers/types/LayerSourceTypes';
 
 interface PlayerTileLayerProps extends WegasComponentProps {
   layerProps?: TileLayerProps | IScript;

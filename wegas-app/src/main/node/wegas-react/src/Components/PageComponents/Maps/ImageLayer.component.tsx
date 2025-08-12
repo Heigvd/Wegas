@@ -25,10 +25,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import {
-  ImageLayerSourceObject,
-  SharedLayerProps,
-} from '../../Maps/helpers/types/LayerSourceTypes';
 
 interface PlayerImageLayerProps extends WegasComponentProps {
   layerSource?: ImageLayerSourceObject;

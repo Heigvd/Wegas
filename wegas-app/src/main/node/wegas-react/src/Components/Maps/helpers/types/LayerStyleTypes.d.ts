@@ -1,5 +1,3 @@
-import { IconOrigin } from 'ol/style/Icon';
-
 type ColorStyleObject = string | CanvasPattern | CanvasGradient;
 
 type FeatureGeometryType =
@@ -56,19 +54,24 @@ interface RegularShapeStyleObject {
 }
 
 type AnchorUnitsStyleObject = 'fraction' | 'pixels';
+type AnchorPositionStyleObject =
+  | 'bottom-left'
+  | 'bottom-right'
+  | 'top-left'
+  | 'top-right';
 type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
 
 interface IconStyleObject extends SharedImageStyleProperties {
   type: 'IconStyle';
   anchor?: PointLikeObject;
-  anchorOrigin?: IconOrigin;
+  anchorOrigin?: AnchorPositionStyleObject;
   anchorXUnits?: AnchorUnitsStyleObject;
   anchorYUnits?: AnchorUnitsStyleObject;
   color?: string;
   crossOrigin?: CrossOriginStyleObject;
   img?: HTMLImageElement | HTMLCanvasElement;
   offset?: PointLikeObject;
-  offsetOrigin?: IconOrigin;
+  offsetOrigin?: AnchorPositionStyleObject;
   size?: PointLikeObject;
   src?: string;
 }

@@ -11,7 +11,6 @@ import {
   registerComponent,
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
-import { StyleObject } from '../../Maps/helpers/types/LayerStyleTypes';
 
 interface PlayerSelectProps extends WegasComponentProps {
   selectProps: {

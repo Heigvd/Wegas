@@ -35,8 +35,6 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
-import { StyleObject } from '../../Maps/helpers/types/LayerStyleTypes';
-import { VectorLayerSourceObject } from '../../Maps/helpers/types/LayerSourceTypes';
 import Feature from 'ol/Feature';
 import { Geometry } from 'ol/geom';
 

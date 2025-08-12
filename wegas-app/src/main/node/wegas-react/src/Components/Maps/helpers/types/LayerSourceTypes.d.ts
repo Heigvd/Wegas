@@ -1,6 +1,4 @@
 //////////// Tile layer
-import { Units } from 'ol/proj/Units';
-
 interface TiffSourceObject {
   type: 'Tiff';
   normalize?: boolean;
@@ -20,7 +18,14 @@ interface StaticSourceObject {
   url: IScript;
   projection: {
     code: string;
-    units: Units;
+    units:
+      | 'radians'
+      | 'degrees'
+      | 'ft'
+      | 'm'
+      | 'pixels'
+      | 'tile-pixels'
+      | 'us-ft';
     extent: ExtentLikeObject;
   };
   imageExtent: ExtentLikeObject;
