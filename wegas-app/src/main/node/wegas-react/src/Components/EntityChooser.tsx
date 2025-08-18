@@ -16,6 +16,8 @@ import { classNameOrEmpty } from '../Helper/className';
 import { deepDifferent } from './Hooks/storeHookFactory';
 import { themeVar } from './Theme/ThemeVars';
 
+const displayClassName = 'wegas-entity-chooser__display';
+
 const entityChooser = css({
   width: '100%',
   overflow: 'hidden',
@@ -123,15 +125,22 @@ function LabelGenerator<E extends IAbstractEntity>(
       entity={props.entity}
       selected={props.selected}
       mobile={props.mobile}
-      onClick={() =>
+      onClick={() => {
         props.setEntity((oldEntity: E) => {
           if (deepDifferent(props.entity, oldEntity)) {
             return props.entity;
           } else {
             return props.mobile ? null : oldEntity;
           }
-        })
-      }
+        });
+
+        if (document.querySelector('.' + displayClassName)?.scrollTop ?? 0 > 0) {
+          document.querySelector('.' + displayClassName + ' *:first-child')?.scrollIntoView({
+            block: 'start',
+            inline: 'start',
+          });
+        }
+      }}
     />
   );
 }
@@ -288,7 +297,7 @@ export function EntityChooser<E extends IAbstractEntity>({
           {addComponent}
         </div>
         {entity != null ? (
-          <div className={cx(flex, entityContainer, justifyStart, 'wegas-entity-chooser__display')}>
+          <div className={cx(flex, entityContainer, justifyStart, displayClassName)}>
             {children({ entity, disabled, readOnly })}
           </div>
         ) : (
