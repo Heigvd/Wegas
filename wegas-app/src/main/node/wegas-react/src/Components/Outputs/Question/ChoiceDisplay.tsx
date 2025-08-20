@@ -72,14 +72,15 @@ export const choiceHeaderStyle = css({
   },
 });
 export const choiceDescriptionStyle = css({
-  width: '100%',
   padding: '15px',
   '& p': {
     margin: '0',
   },
 });
 export const choiceDescriptionContainerStyle = css({
-  marginRight: '15px',
+  boxSizing: 'border-box',
+  margin: '15px 15px 0 15px',
+  paddingBottom: '15px',
   borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
   '&:last-child': {
     borderBottom: 'none',

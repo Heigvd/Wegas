@@ -67,6 +67,7 @@ export const entityChooserLabelStyle = (disabled?: boolean) =>
       borderRadius: themeVar.dimensions.BorderRadius,
       marginTop: '5px',
       marginBottom: '5px',
+        paddingLeft: '.35rem',
       boxShadow: `2px 2px 6px rgba(0, 0, 0, 0.2)`,
       ...(!disabled
         ? {
