@@ -96,7 +96,7 @@ function styleObjectsToOLStyle(
 }
 
 export function styleSourceToOlStyle(style: StyleObject | undefined) {
-  let olStyle: StyleLike | undefined = undefined;
+  let olStyle: StyleLike | undefined;
   if (typeof style === 'function') {
     olStyle = (feature: FeatureLike, resolution: number) => {
       return styleObjectsToOLStyle(style(feature, resolution));

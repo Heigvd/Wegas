@@ -6,9 +6,8 @@ import { createEmpty, extend } from 'ol/extent';
 import Feature from 'ol/Feature';
 import { fromExtent } from 'ol/geom/Polygon';
 import TileLayer from 'ol/layer/Tile';
-import Map from 'ol/Map';
+import Map, { MapOptions } from 'ol/Map';
 import 'ol/ol.css';
-import { MapOptions } from 'ol/PluggableMap';
 import { ProjectionLike } from 'ol/proj';
 import OSM from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
@@ -80,8 +79,8 @@ export function WegasMap({
   useResizeObserver(mapElementRef, debouncedMapResize);
 
   const displayMap =
-    React.useContext(authorizationsCTX).authorizations.allowExternalUrl
-    || !OSMLayer;
+    React.useContext(authorizationsCTX).authorizations.allowExternalUrl ||
+    !OSMLayer;
 
   React.useEffect(() => {
     if (typeof viewOptions?.projection === 'string') {
