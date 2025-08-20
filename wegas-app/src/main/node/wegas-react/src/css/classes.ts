@@ -357,7 +357,7 @@ export const unreadSignalStyle = css({
   '::before': {
     content: '""',
     position: 'absolute',
-    top: '1.2rem',
+    top: '50%',
     left: '0.35rem',
     width: '0.5rem',
     height: '0.5rem',
