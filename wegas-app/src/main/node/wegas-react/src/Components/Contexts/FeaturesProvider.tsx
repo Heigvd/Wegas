@@ -59,7 +59,7 @@ function FeaturesContext({
 
   const listener = React.useCallback(
     (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.code === 'Backquote') {
+      if (event.ctrlKey && event.key === '§') {
         toggleFeature(event.altKey ? 'INTERNAL' : 'ADVANCED');
       }
       if (event.ctrlKey && event.code === 'KeyS') {
