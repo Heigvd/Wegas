@@ -59,7 +59,8 @@ function FeaturesContext({
 
   const listener = React.useCallback(
     (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.code === 'Backquote') {
+      if (event.ctrlKey &&
+        (event.code === 'IntlBackslash' || event.code === 'Backquote')) { // The very left key on the second line from top (usually §). On August 2025, for Safari and Chrome, it is IntlBackslash. For FireFox, it is Backquote
         toggleFeature(event.altKey ? 'INTERNAL' : 'ADVANCED');
       }
       if (event.ctrlKey && event.code === 'KeyS') {
