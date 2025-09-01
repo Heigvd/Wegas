@@ -26,6 +26,7 @@ const transparentStyle = css({
 const listElementContainerStyle = css({
   display: 'flex',
   backgroundColor: themeVar.colors.HeaderColor,
+  border: '1px solid ' + themeVar.colors.BackgroundColor,
   padding: '4px',
   marginTop: '4px',
 });

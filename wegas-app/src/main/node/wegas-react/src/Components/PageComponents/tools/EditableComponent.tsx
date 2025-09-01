@@ -121,11 +121,22 @@ export function assembleStateAndContext(
   };
 }
 
-const asynExecute = createEditingAction(async ({actions, context}: {
-  actions: [keyof WegasComponentOptionsActions, WegasComponentOptionsAction][],
-  context?: PageComponentContext,
-}, dispatch, getState) => {
-     const sortedActions = actions.sort(
+const asynExecute = createEditingAction(
+  async (
+    {
+      actions,
+      context,
+    }: {
+      actions: [
+        keyof WegasComponentOptionsActions,
+        WegasComponentOptionsAction,
+      ][];
+      context?: PageComponentContext;
+    },
+    dispatch,
+    getState,
+  ) => {
+    const sortedActions = actions.sort(
       ([, v1], [, v2]) =>
         (v1.priority ? v1.priority : 0) - (v2.priority ? v2.priority : 0),
     );
@@ -161,7 +172,8 @@ const asynExecute = createEditingAction(async ({actions, context}: {
         });
       }
     }
-});
+  },
+);
 
 /**
  * onComponentClick - onClick factory that can be used by components and override classic onClick
@@ -200,7 +212,7 @@ export function onComponentClick(
       confirm(confirmClick)
     ) {
       return editingStore
-        .dispatch(asynExecute({actions: onClickActions, context}))
+        .dispatch(asynExecute({ actions: onClickActions, context }))
         .then(() => {
           setLoading(false);
         });
@@ -575,7 +587,7 @@ export interface PageComponentProps extends EmptyPageComponentProps {
    */
   path: number[];
   /**
-   * options - conditionnal states
+   * options - conditional states
    */
   options: OptionsState;
 }
@@ -796,9 +808,7 @@ export function ComponentContainer({
           dropPosition="AFTER"
         />
       )}
-      {(loading || options.locked === true) && (
-        <LockedOverlay locked />
-      )}
+      {(loading || options.locked === true) && <LockedOverlay locked />}
     </Container>
   ) : null;
 }

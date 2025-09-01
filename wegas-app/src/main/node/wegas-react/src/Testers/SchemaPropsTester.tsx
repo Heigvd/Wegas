@@ -109,7 +109,7 @@ const testSchema = {
     },
   }),
   objectArray: schemaProps.array({
-    label: 'Conditionnal classes',
+    label: 'Conditional classes',
     itemSchema: {
       className: schemaProps.string({ label: 'Class' }),
       condition: schemaProps.script({
