@@ -5,7 +5,7 @@ import {
   actionsChoices,
   decorationsChoices,
   layoutCommonChoices,
-  layoutConditionnalChoices,
+  layoutConditionalChoices,
 } from '../../../Components/PageComponents/tools/options';
 import { AvailableSchemas } from '../FormView';
 import { hashListChoicesToSchema } from '../FormView/HashList';
@@ -58,7 +58,7 @@ export function useJSONSchema() {
         ...childrenLayoutOptionSchema,
         ...layoutCommonChoices,
       ]),
-      ...hashListChoicesToSchema(layoutConditionnalChoices),
+      ...hashListChoicesToSchema(layoutConditionalChoices),
       ...hashListChoicesToSchema(actionsChoices),
       ...hashListChoicesToSchema(decorationsChoices),
     };
@@ -87,7 +87,7 @@ export function useJSONSchema() {
               ...childrenLayoutOptionSchema,
               ...layoutCommonChoices,
             ]),
-            ...hashListChoicesToSchema(layoutConditionnalChoices),
+            ...hashListChoicesToSchema(layoutConditionalChoices),
             ...hashListChoicesToSchema(actionsChoices),
             ...hashListChoicesToSchema(decorationsChoices),
           },

@@ -1,4 +1,3 @@
-// OPTIONS -> ACTIONS
 import {
   IScript,
   SDialogueDescriptor,
@@ -32,6 +31,11 @@ import {
 } from '../../Hooks/useScript';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { schemaProps } from './schemaProps';
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OPTIONS -> ON CLICK ACTIONS
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export interface PageComponentContext {
   [item: string]: unknown;
@@ -120,12 +124,14 @@ export const wegasComponentActions: WegasComponentActions = {
         context,
         undefined,
         undefined,
-      )
+      );
     } else {
       name = pageLoaderName;
     }
 
-    const pageIdScript = isScript(pageId) ? pageId : createScript(JSON.stringify(pageId));
+    const pageIdScript = isScript(pageId)
+      ? pageId
+      : createScript(JSON.stringify(pageId));
 
     if (name != null) {
       store.dispatch(
@@ -366,7 +372,11 @@ export const actionsChoices: HashListChoices = [
   },
 ];
 
-// OPTIONS -> LAYOUT COMMON
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OPTIONS -> LAYOUT OPTIONS
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export interface WegasComponentLayoutCommonOptions {
   tooltip?: string;
   themeMode?: string;
@@ -389,28 +399,40 @@ export const layoutCommonChoices: HashListChoices = [
   },
 ];
 
-export interface WegasConditionnalClassName {
-  className?: string;
-  applyOn?: 'Inside' | 'Outside';
-  condition?: IScript;
-}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OPTIONS -> LAYOUT CONDITIONS
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export type InsideOutside = 'Inside' | 'Outside';
 
 export interface WegasComputedAttribute {
   attrName: string;
   attrValue?: IScript;
 }
 
-// OPTIONS -> LAYOUT CONDITIONNAL
-export interface WegasComponentLayoutConditionnalOptions {
-  conditionnalClassNames?: WegasConditionnalClassName[];
+export interface WegasComputedClassName {
+  className: IScript;
+  applyOn?: InsideOutside;
+}
+
+export interface WegasConditionalClassName {
+  className?: string;
+  applyOn?: InsideOutside;
+  condition?: IScript;
+}
+
+export interface WegasComponentLayoutConditionalOptions {
   computedAttributes?: WegasComputedAttribute[];
+  computedClassNames?: WegasComputedClassName[];
+  conditionnalClassNames?: WegasConditionalClassName[];
   disableIf?: IScript;
   hideIf?: IScript;
   readOnlyIf?: IScript;
   lock?: string;
 }
 
-export const layoutConditionnalChoices: HashListChoices = [
+export const layoutConditionalChoices: HashListChoices = [
   {
     label: 'Computed attributes',
     value: {
@@ -425,11 +447,31 @@ export const layoutConditionnalChoices: HashListChoices = [
     },
   },
   {
-    label: 'Conditionnal classes',
+    label: 'Computed classes',
     value: {
-      prop: 'conditionnalClassNames',
+      prop: 'computedClassNames',
       schema: schemaProps.array({
-        label: 'Conditionnal classes',
+        label: 'Computed classes',
+        itemSchema: {
+          className: schemaProps.scriptString({
+            label: 'Class',
+            richText: false,
+          }),
+          applyOn: schemaProps.select({
+            label: 'Apply on',
+            values: ['Inside', 'Outside'],
+            value: 'Inside',
+          }),
+        },
+      }),
+    },
+  },
+  {
+    label: 'Conditional classes',
+    value: {
+      prop: 'conditionnalClassNames', // Yes there is a typo. Let it be, so the old pages are still understood
+      schema: schemaProps.array({
+        label: 'Conditional classes',
         itemSchema: {
           className: schemaProps.string({ label: 'Class' }),
           applyOn: schemaProps.select({
@@ -500,7 +542,11 @@ export function isActionAllowed({
   return !disabled && !readOnly && !locked;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // OPTIONS -> DECORATIONS
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export interface WegasComponentDecorations {
   infoBullet?: PlayerInfoBulletProps;
   unreadCount?: IScript;
@@ -674,17 +720,14 @@ export function useComputeUnreadCount(
     : undefined;
 }
 
-export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
-  WegasComponentLayoutConditionnalOptions &
-  WegasComponentDecorations;
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OPTIONS
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// export const layoutChoices = {
-//   FLEX: flexlayoutChoices,
-//   LINEAR: [],
-//   ABSOLUTE: absolutelayoutChoices,
-//   MENU: menuItemSchema,
-//   FOREACH: flexlayoutChoices,
-// };
+export type WegasComponentExtra = WegasComponentLayoutCommonOptions &
+  WegasComponentLayoutConditionalOptions &
+  WegasComponentDecorations;
 
 export const wegasComponentExtraSchema = (
   childrenSchema: HashListChoices = [],
@@ -696,7 +739,7 @@ export const wegasComponentExtraSchema = (
   }),
   layoutConditions: schemaProps.hashlist({
     label: 'Layout conditions',
-    choices: layoutConditionnalChoices,
+    choices: layoutConditionalChoices,
     objectViewStyle: true,
   }),
   actions: schemaProps.hashlist({
