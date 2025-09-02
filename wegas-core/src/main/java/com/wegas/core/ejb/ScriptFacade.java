@@ -12,6 +12,7 @@ import com.wegas.core.api.DelayedScriptEventFacadeI;
 import com.wegas.core.api.GameModelFacadeI;
 import com.wegas.core.api.I18nFacadeI;
 import com.wegas.core.api.IterationFacadeI;
+import com.wegas.core.api.PlayerFacadeI;
 import com.wegas.core.api.QuestionDescriptorFacadeI;
 import com.wegas.core.api.RequestManagerI;
 import com.wegas.core.api.ResourceFacadeI;
@@ -261,6 +262,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "I18nFacade", I18nFacadeI.class, i18nFacade);
 
         putBinding(bindings, "Team", TeamFacadeI.class, teamFacade);
+        putBinding(bindings, "PlayerFacade", PlayerFacadeI.class, playerFacade);
 
         putBinding(bindings, "Variable", VariableDescriptorFacadeI.class, variableDescriptorFacade);
         putBinding(bindings, "VariableDescriptorFacade", VariableDescriptorFacadeI.class, variableDescriptorFacade);

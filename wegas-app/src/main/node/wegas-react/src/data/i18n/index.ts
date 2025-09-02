@@ -16,9 +16,10 @@ export const EditorLanguageData = `EditorLanguageData.${ CurrentGM.id }`;
 
 export function getSavedLanguage() {
   return window.localStorage.getItem(
-    EditorLanguageData,
+    `EditorLanguageData.${ CurrentGM.id }`, // FIX : it does not work if we use the EditorLanguageData const
   ) as null | EditorLanguagesCode;
 }
+
 export function getUserLanguage(): EditorLanguagesCode {
   const wegasConfig = window.localStorage.getItem(`wegas-config`);
   if (wegasConfig == null) return 'EN';
@@ -111,7 +112,8 @@ export function orderGameModelLanguages(langs: IGameModelLanguage[]): IGameModel
 }
 
 /**
- * According to requested language, returns the most relevant translation found within the given translatable content
+ * According to requested language, returns the most relevant translation found within the given translatable content.
+ * If the language is not given, we use the Player language.
  */
 export function translate(
   translatable: ITranslatableContent | STranslatableContent | undefined | null,

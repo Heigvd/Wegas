@@ -32,13 +32,18 @@ import { buttonFactory, handleStyle } from './QuestionList';
 
 export const choiceContainerStyle = css({
   position: 'relative',
+  overflow: 'hidden',
   margin: '1em 0',
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   alignItems: 'center',
   boxShadow: '2px 2px 6px rgba(0, 0, 0, 0.2)',
   borderRadius: themeVar.dimensions.BorderRadius,
   backgroundColor: themeVar.colors.BackgroundColor,
+});
+export const choiceStyle = css({
+  width: '100%',
+  borderRadius: themeVar.dimensions.BorderRadius,
   '&.selected': {
     cursor: 'default',
   },
@@ -54,17 +59,6 @@ export const choiceContainerStyle = css({
     cursor: 'cursor',
     pointerEvents: 'none',
   },
-  '&.no-desc': {
-    '&.no-label': {
-      boxShadow: 'none',
-      borderRadius: '0',
-      paddingTop: '15px',
-      borderTop: `1px solid ${themeVar.colors.DisabledColor}`,
-      '&.disabled': {
-        display: 'none',
-      },
-    },
-  },
 });
 export const choiceHeaderStyle = css({
   fontWeight: 'bold',
@@ -78,8 +72,19 @@ export const choiceHeaderStyle = css({
   },
 });
 export const choiceDescriptionStyle = css({
-  width: '100%',
-  padding: '10px 15px 10px 15px',
+  padding: '15px',
+  '& p': {
+    margin: '0',
+  },
+});
+export const choiceDescriptionContainerStyle = css({
+  boxSizing: 'border-box',
+  margin: '15px 15px 0 15px',
+  paddingBottom: '15px',
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+  '&:last-child': {
+    borderBottom: 'none',
+  },
 });
 export const choiceButtonStyle = css({
   padding: '15px',
@@ -89,6 +94,7 @@ export const choiceButtonStyle = css({
   justifyContent: 'end',
 });
 export const choiceInputStyle = css({
+  width: '100%',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'center',
@@ -123,7 +129,7 @@ interface ChoiceContainerProps {
   validateButton?: boolean;
 }
 
-export function ChoiceContainer({
+export function ChoiceDisplay({
   descriptor,
   active,
   canReply,
@@ -235,9 +241,9 @@ export function ChoiceContainer({
   return (
     <div
       className={
-        cx(choiceContainerStyle, classNameOrEmpty(className)) +
+        cx(choiceStyle, classNameOrEmpty(className), 'wegas-question__choice') +
         (hasBeenSelected && !canReply ? ' selected' : '') +
-        (canReply ? '' : ' disabled') +
+        (hasBeenSelected || canReply ? '' : ' disabled') +
         (clicked ? ' loading' : '') +
         (isEditing ? ' editing' : '') +
         (label && labelText !== '' ? '' : ' no-label') +
@@ -334,6 +340,7 @@ export function ChoiceContainer({
                   choiceHeaderStyle,
                   stretch,
                   hasBeenSelected && !canReply ? ' selected' : '',
+                  !description || descriptionText === '' ? ' no-desc' : '',
                   'wegas-question__choice-label',
                 )}
                 text={labelText}

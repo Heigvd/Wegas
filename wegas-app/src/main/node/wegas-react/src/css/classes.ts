@@ -358,15 +358,12 @@ export const unreadSignalStyle = css({
     content: '""',
     position: 'absolute',
     top: '50%',
-    left: '0.5rem',
+    left: '0.35rem',
     width: '0.5rem',
     height: '0.5rem',
     transform: 'translateY(-50%)',
     backgroundColor: themeVar.colors.PrimaryColor,
     borderRadius: '100%',
-  },
-  '&> div': {
-    marginLeft: '1rem',
   },
 });
 

@@ -1,10 +1,7 @@
-import { css, cx } from '@emotion/css';
+import { cx } from '@emotion/css';
 import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
-import { IScript } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { useScript } from '../../../Components/Hooks/useScript';
-import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { flex, flexRow, grow } from '../../../css/classes';
 import { State } from '../../../data/Reducer/reducers';
 import { useStore } from '../../../data/Stores/store';
@@ -14,23 +11,14 @@ import {
   PageLoaderComponentProps,
   visitComponents,
 } from '../../../Helper/pages';
-import { createScript } from '../../../Helper/wegasEntites';
 import { MessageString } from '../MessageString';
-import { SrcEditorLanguages } from '../ScriptEditors/editorHelpers';
-import { TempScriptEditor } from '../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
-import { scriptEditStyle } from './Script/Script';
-
-const updateScript = (scriptContent: string, currentScript?: IScript) =>
-  currentScript
-    ? { ...currentScript, content: scriptContent }
-    : createScript(scriptContent, 'TypeScript');
 
 export interface PageSelectProps extends WidgetProps.BaseProps {
   view: CommonView & LabeledView;
-  value?: IScript;
-  onChange: (code: IScript) => void;
+  value?: string;
+  onChange: (code: string) => void;
 }
 
 function pageLoadersSelector(s: State) {
@@ -61,27 +49,16 @@ export default function PageLoaderSelect({
   errorMessage,
   value,
 }: PageSelectProps) {
-  const [loaderValue, setPageLoader] = React.useState<string>();
-  const [srcMode, setSrcMode] = React.useState(false);
   const pageLoaders = useStore(pageLoadersSelector);
-  const pageLoaderName = useScript<string>(loaderValue);
-
-  React.useEffect(() => {
-    setPageLoader(value ? value.content : '');
-  }, [value]);
 
   const onPageLoaderChange = React.useCallback(
-    (newValue?: string) => {
-      const content = updateScript(JSON.stringify(newValue || ''), value);
-      setPageLoader(content.content);
-      onChange(content);
+    (value?: string) => {
+      if (value != null) {
+        onChange(value);
+      }
     },
-    [onChange, value],
+    [onChange],
   );
-
-  const language = value
-    ? (value.language.toLowerCase() as SrcEditorLanguages)
-    : 'typescript';
 
   return (
     <CommonViewContainer view={view} errorMessage={errorMessage}>
@@ -93,42 +70,14 @@ export default function PageLoaderSelect({
               {pageLoaders.length === 0 ? (
                 <MessageString value="No page loader found" />
               ) : (
-                <>
-                  <Button
-                    icon="code"
-                    onClick={() => setSrcMode(sm => !sm)}
-                    className={css({ flex: '0 1 auto' })}
-                  />
-                  {srcMode ? (
-                    <div className={cx(scriptEditStyle, grow)}>
-                      <TempScriptEditor
-                        initialValue={loaderValue || ''}
-                        returnType={['string']}
-                        onChange={setPageLoader}
-                        onSave={newValue =>
-                          onChange(
-                            value
-                              ? { ...value, content: newValue }
-                              : createScript(newValue, 'TypeScript'),
-                          )
-                        }
-                        language={language}
-                        minimap={false}
-                        noGutter
-                        resizable
-                      />
-                    </div>
-                  ) : (
-                    <DropMenu
-                      items={pageLoaders}
-                      onSelect={item => {
-                        onPageLoaderChange(item.value.name);
-                      }}
-                      label={pageLoaderName}
-                      containerClassName={grow}
-                    />
-                  )}
-                </>
+                <DropMenu
+                  items={pageLoaders}
+                  onSelect={item => {
+                    onPageLoaderChange(item.value.name);
+                  }}
+                  label={value ?? 'Unknown page'}
+                  containerClassName={grow}
+                />
               )}
             </div>
           </>

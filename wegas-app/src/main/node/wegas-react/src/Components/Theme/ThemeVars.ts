@@ -52,6 +52,7 @@ export interface DefaultThemeColors {
   'Text color': ColorType;
   'Secondary text color': ColorType;
   'Disabled color': ColorType;
+  'Disabled background color': ColorType,
   'Error color': ColorType;
   'Warning color': ColorType;
   'Success color': ColorType;
@@ -75,6 +76,7 @@ export const backgroundColorsSection = {
   'Secondary background color': 'secondary',
   'Dark background color': 'dark',
   'Dark secondary background color': 'dark secondary',
+  'Disabled background color': 'disabled',
 };
 export const textColorsSection = {
   'Text color': 'main',
@@ -138,6 +140,7 @@ export type ModeValues = ModeComponent<
     DarkTextColor: ModeColor;
     LightTextColor: ModeColor;
     DisabledColor: ModeColor;
+    DisabledBackgroundColor: ModeColor;
     HighlightColor: ModeColor;
     HeaderColor: ModeColor;
     HoverColor: ModeColor;
@@ -189,6 +192,7 @@ export const defaultLightMode: Mode = {
       BackgroundColor: 'Background color',
       SecondaryBackgroundColor: 'Secondary background color',
       DisabledColor: 'Disabled color',
+      DisabledBackgroundColor: 'Disabled background color',
       HeaderColor: 'Primary color pastel',
       HighlightColor: 'Accent color',
       HoverColor: 'Primary color pastel',
@@ -221,6 +225,7 @@ export const defaultDarkMode: Mode = {
       BackgroundColor: 'Dark background color',
       SecondaryBackgroundColor: 'Dark secondary background color',
       DisabledColor: 'Disabled color',
+      DisabledBackgroundColor: 'Disabled background color',
       HeaderColor: 'Primary color shade',
       HighlightColor: 'Accent color',
       HoverColor: 'Primary color',
@@ -304,6 +309,7 @@ export const defaultThemeValues: ThemeValues = {
     'Text color': '#313131',
     'Secondary text color': '#FFF',
     'Disabled color': '#C5C5C5',
+    'Disabled background color': '#E1E1E1',
     'Error color': '#DC0000',
     'Warning color': '#FFC700',
     'Success color': '#00B73E',
@@ -342,6 +348,7 @@ export const lobbyThemeValues: ThemeValues = {
     'Text color': '#626262',
     'Secondary text color': '#fff',
     'Disabled color': '#EAEAEA',
+    'Disabled background color': '#E1E1E1',
     'Error color': '#DD1B1B',
     'Warning color': '#FFCD1A',
     'Success color': '#27AE60',

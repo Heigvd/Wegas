@@ -30,6 +30,7 @@ export const questionStyle = cx(
   css({
     marginRight: 'auto',
     marginLeft: 'auto',
+    paddingBottom: '2px',
   }),
   'wegas-question',
 );

@@ -294,7 +294,13 @@ function QuestionChooser(
   const handleClick = () => {
     props.onClick();
     if (!props.disabled) {
-      editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+      const player = instantiate(Player.selectCurrent());
+      const questionDescriptor = instantiate(props.entity);
+      const questionInstance = questionDescriptor.getInstance(player);
+
+      if (questionInstance.isUnread()) {
+        editingStore.dispatch(read(questionDescriptor.getEntity()));
+      }
     }
   };
 
@@ -478,6 +484,18 @@ export default function QuestionList({
   }, [questionList]);
 
   const entities = useStore(entitiesSelector);
+
+  React.useEffect(() => {
+    if (autoOpenFirst && entities?.questions?.length > 0) {
+      const player = instantiate(Player.selectCurrent());
+      const questionDescriptor = instantiate(entities.questions[0]);
+      const questionInstance = questionDescriptor.getInstance(player);
+
+      if (questionInstance.isUnread()) {
+        editingStore.dispatch(read(questionDescriptor.getEntity()));
+      }
+    }
+  }, [autoOpenFirst, entities]);
 
   if (questionList === undefined) {
     return <pre>No selected list</pre>;

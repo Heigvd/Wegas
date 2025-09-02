@@ -94,15 +94,14 @@ const subMenuItemContainer = (
     },
     itemCenter,
     css({
-      cursor: 'pointer',
+      cursor: isDisabled ? 'default' : 'pointer',
       padding: '8px 10px',
       height: '35px',
       width: '100%',
       userSelect: 'none',
-      pointerEvents: isDisabled ? 'none' : 'initial',
       opacity: isDisabled ? 0.5 : 1,
       backgroundColor: isDisabled
-        ? themeVar.colors.DisabledColor
+        ? themeVar.colors.DisabledBackgroundColor
         : isSelected
         ? themeVar.colors.HeaderColor
         : undefined,
@@ -111,7 +110,7 @@ const subMenuItemContainer = (
         margin: 0,
       },
       ':hover': {
-        backgroundColor: themeVar.colors.HeaderColor,
+        backgroundColor: isDisabled ? themeVar.colors.DisabledBackgroundColor : themeVar.colors.HeaderColor,
         color: themeVar.colors.DarkTextColor,
       },
     }),

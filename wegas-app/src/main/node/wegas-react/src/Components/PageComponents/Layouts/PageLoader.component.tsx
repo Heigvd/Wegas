@@ -138,12 +138,12 @@ registerComponent(
         type: ['object', 'string'],
         view: {
           type: 'scriptable',
-          label: 'Choices',
+          label: 'Initial page',
           scriptProps: {
             language: 'TypeScript',
             returnType: ['string'],
           },
-          literalSchema: schemaProps.pageSelect({ label: 'Page' }),
+          literalSchema: schemaProps.pageSelect({ }),
         },
       },
       exposePageSizeAs: {

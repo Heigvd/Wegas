@@ -231,7 +231,10 @@ public class GameFacade extends BaseFacade<Game> {
 
             List<GameModelLanguage> languages = game.getGameModel().getLanguages();
             if (languages != null && !languages.isEmpty()) {
-                testPlayer.setLang(languages.get(0).getCode());
+                GameModelLanguage preferredLanguage = languages.stream()
+                        .filter(GameModelLanguage::isActive).findFirst()
+                        .orElse(languages.get(0));
+                testPlayer.setLang(preferredLanguage.getCode());
             }
 
             teamFacade.create(debugTeam);

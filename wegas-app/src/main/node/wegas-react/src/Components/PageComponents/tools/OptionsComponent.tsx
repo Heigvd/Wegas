@@ -23,8 +23,9 @@ import { PageComponentContext, useComputeUnreadCount } from './options';
 interface OptionProps {
   tooltip: WegasComponentOptions['tooltip'];
   themeMode: WegasComponentOptions['themeMode'];
-  conditionnalClassNames: WegasComponentOptions['conditionnalClassNames'];
   computedAttributes: WegasComponentOptions['computedAttributes'];
+  computedClassNames: WegasComponentOptions['computedClassNames'];
+  conditionnalClassNames: WegasComponentOptions['conditionnalClassNames'];
   disableIf: WegasComponentOptions['disableIf'];
   hideIf: WegasComponentOptions['hideIf'];
   readOnlyIf: WegasComponentOptions['readOnlyIf'];
@@ -36,8 +37,9 @@ interface OptionProps {
 export const defaultOptionsKeys: (keyof OptionProps)[] = [
   'tooltip',
   'themeMode',
-  'conditionnalClassNames',
   'computedAttributes',
+  'computedClassNames',
+  'conditionnalClassNames',
   'disableIf',
   'hideIf',
   'readOnlyIf',
@@ -71,14 +73,6 @@ export interface OptionsState extends HeritableOptionsState {
   attributes: Record<string, string>;
 }
 
-// interface ComponentOptionsManagerProps {
-//   options: OptionProps;
-//   context?: PageComponentContext;
-//   setUpgradesState: (
-//     newState: (oldState: OptionsState) => OptionsState,
-//   ) => void;
-// }
-
 /**
  * UseOptions makes an easy-to-use and already computed OptionState specific to the context
  *
@@ -94,8 +88,9 @@ export function useOptions(
   const {
     tooltip,
     themeMode,
-    conditionnalClassNames = [],
     computedAttributes = [],
+    computedClassNames = [],
+    conditionnalClassNames = [],
     disableIf,
     hideIf,
     readOnlyIf,
@@ -123,7 +118,15 @@ export function useOptions(
       : themesState.themes[themesState.selectedThemes[currentContext]]
           .modeClasses[themeMode];
 
-  const conditionnalClasses = useScript<boolean[]>(
+  const computedClasses = useScript<string[]>(
+    computedClassNames.map(item => item.className),
+    context,
+  )!.map((className, i) => ({
+    applyOn: computedClassNames[i].applyOn,
+    className: className,
+  }));
+
+  const conditionalClasses = useScript<boolean[]>(
     conditionnalClassNames.map(item => item.condition),
     context,
   )!
@@ -134,11 +137,11 @@ export function useOptions(
     }))
     .filter(item => item.condition);
 
-  const innerClassName = conditionnalClasses
+  const innerClassName = [...computedClasses, ...conditionalClasses]
     .filter(item => item.applyOn == null || item.applyOn === 'Inside')
     .map(item => item.className)
     .join(' ');
-  const outerClassName = conditionnalClasses
+  const outerClassName = [ ...computedClasses, ...conditionalClasses]
     .filter(item => item.applyOn === 'Outside')
     .map(item => item.className)
     .join(' ');
@@ -171,83 +174,3 @@ export function useOptions(
     attributes,
   });
 }
-
-// export function ComponentOptionsManager({
-//   options,
-//   context,
-//   setUpgradesState,
-// }: ComponentOptionsManagerProps) {
-//   const {
-//     tooltip,
-//     disableIf,
-//     readOnlyIf,
-//     hideIf,
-//     unreadCount,
-//     infoBullet,
-//     themeMode,
-//     lock,
-//     conditionnalClassNames = [],
-//   } = options;
-
-//   const disabled = useScript<boolean>(disableIf, context);
-//   const hidden = useScript<boolean>(hideIf, context);
-//   const readOnly = useScript<boolean>(readOnlyIf, context);
-//   const lockedSelector = React.useCallback(
-//     (s: State) => lock != null && s.global.locks[lock] === true,
-//     [lock],
-//   );
-//   const locked = useStore(lockedSelector);
-
-//   const infoBulletProps = useComputeUnreadCount(unreadCount) || infoBullet;
-
-//   const { themesState, currentContext } = React.useContext(themeCTX);
-//   const themeModeClassName =
-//     themeMode == null
-//       ? undefined
-//       : themesState.themes[themesState.selectedThemes[currentContext]]
-//           .modeClasses[themeMode];
-
-//   const conditionnalClasses = useScript<boolean[]>(
-//     conditionnalClassNames.map(item => item.condition),
-//     context,
-//   )!
-//     .map((condition, i) => ({
-//       condition,
-//       applyOn: conditionnalClassNames[i].applyOn,
-//       className: conditionnalClassNames[i].className,
-//     }))
-//     .filter(item => item.condition);
-
-//   const innerClassName = conditionnalClasses
-//     .filter(item => item.applyOn == null || item.applyOn === 'Inside')
-//     .map(item => item.className)
-//     .join(' ');
-//   const outerClassName = conditionnalClasses
-//     .filter(item => item.applyOn === 'Outside')
-//     .map(item => item.className)
-//     .join(' ');
-
-//   const newUpgrades: OptionsState = {
-//     disabled,
-//     hidden,
-//     readOnly,
-//     locked,
-//     infoBulletProps,
-//     tooltip,
-//     themeModeClassName,
-//     innerClassName,
-//     outerClassName,
-//   };
-
-//   React.useEffect(() => {
-//     setUpgradesState(oldUpgrades => {
-//       if (deepDifferent(oldUpgrades, newUpgrades)) {
-//         return newUpgrades;
-//       } else {
-//         return oldUpgrades;
-//       }
-//     });
-//   }, [setUpgradesState, newUpgrades]);
-
-//   return null;
-// }

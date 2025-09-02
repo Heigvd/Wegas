@@ -18,7 +18,14 @@ interface StaticSourceObject {
   url: IScript;
   projection: {
     code: string;
-    units: string;
+    units:
+      | 'radians'
+      | 'degrees'
+      | 'ft'
+      | 'm'
+      | 'pixels'
+      | 'tile-pixels'
+      | 'us-ft';
     extent: ExtentLikeObject;
   };
   imageExtent: ExtentLikeObject;

@@ -20,7 +20,7 @@ import {
   WegasComponentDecorations,
   wegasComponentExtraSchema,
   WegasComponentLayoutCommonOptions,
-  WegasComponentLayoutConditionnalOptions,
+  WegasComponentLayoutConditionalOptions,
   WegasComponentOptionsActions,
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
@@ -116,8 +116,9 @@ const defaultLayoutOptionsKeys = [
   ...defaultLayoutCommonOptionsKeys,
 ];
 
-const defaultLayoutConditions: WegasComponentLayoutConditionnalOptions = {
+const defaultLayoutConditions: WegasComponentLayoutConditionalOptions = {
   computedAttributes: undefined,
+  computedClassNames: undefined,
   conditionnalClassNames: undefined,
   disableIf: undefined,
   hideIf: undefined,
@@ -157,7 +158,7 @@ interface WegasComponentForm {
   };
   layoutOptions: WegasComponentLayoutCommonOptions &
     (FlexItemLayoutProps | AbsoluteItemLayoutProps);
-  layoutConditions: WegasComponentLayoutConditionnalOptions;
+  layoutConditions: WegasComponentLayoutConditionalOptions;
   actions: WegasComponentOptionsActions & WegasComponentActionsProperties;
   decorations: WegasComponentDecorations;
 }
