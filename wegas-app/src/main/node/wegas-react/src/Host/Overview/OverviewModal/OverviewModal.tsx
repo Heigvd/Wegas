@@ -32,6 +32,12 @@ const modalContentStyle = css({
   },
 });
 
+const modalTitleStyle = css({
+  margin: '0 0 15px 0',
+  paddingBottom: '15px',
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
+});
+
 const modalInputsStyle = css({
   input: {
     fontFamily: themeVar.others.TextFont2,
@@ -73,12 +79,17 @@ export function OverviewModal({
   filterState,
   onNewFilterState,
 }: OverviewModalProps) {
+  const teamName = Array.isArray(team) ? team[0].getName() : team?.getName();
+
   return (
     <Modal
       onExit={onExit}
       className={modalStyle}
       innerClassName={cx(modalContentStyle, modalInputsStyle)}
     >
+      {modalState !== 'Filter' && teamName && (
+        <h3 className={modalTitleStyle}>Impact "{teamName}"</h3>
+      )}
       {modalState === 'Impacts' ? (
         <ImpactModalContent
           team={team}
