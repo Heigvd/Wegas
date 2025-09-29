@@ -7,6 +7,7 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';
 import {
+  autoMargin,
   autoScroll,
   expandWidth,
   flex,
@@ -14,6 +15,7 @@ import {
   flexDistribute,
   flexRow,
   grow,
+  textCenter,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
@@ -23,6 +25,9 @@ import { tabsLineStyle } from '../../HostLayout';
 import { ActionItem } from '../Overview';
 import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
+import { parseEvent } from '../../../Editor/Components/EntityEditor';
+import { classOrNothing } from '../../../Helper/className';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 
 const impactContainerStyle = css({
   //padding: '10px',
@@ -30,41 +35,16 @@ const impactContainerStyle = css({
   //boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
 });
 
-function recurscript(
-  functions: string[],
-  payloads: UnknownValuesObject[],
-  player: Readonly<IPlayer> | undefined,
-  team: STeam | undefined,
-  onExit: () => void,
-  refreshOverview: () => void,
-  index: number = 0,
-) {
-  if (index >= functions.length) {
-    refreshOverview();
-    onExit();
-  } else {
-    asyncRunLoadedScript(
-      Game.selectCurrent().id!,
-      functions[index],
-      player,
-      undefined,
-      {
-        team: team?.getEntity(),
-        payload: payloads[index],
-      },
-    ).finally(() => {
-      recurscript(
-        functions,
-        payloads,
-        player,
-        team,
-        onExit,
-        refreshOverview,
-        index + 1,
-      );
-    });
-  }
-}
+const errorMessageContainerStyle = css({
+  maxWidth: '300px',
+  display: 'flex',
+  width: 'auto',
+  color: themeVar.colors.ErrorColor,
+  transition: '.5s',
+  '&.hidden': {
+    display: 'none',
+  },
+});
 
 interface ImpactModalComputedContentProps {
   team: STeam | STeam[] | undefined;
@@ -81,6 +61,70 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
+  const [isErrorVisible, setIsErrorVisible] = React.useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = React.useState<string>('');
+
+  const recurscript = React.useCallback(
+    (
+      functions: string[],
+      payloads: UnknownValuesObject[],
+      player: Readonly<IPlayer> | undefined,
+      team: STeam | undefined,
+      onExit: () => void,
+      refreshOverview: () => void,
+      index: number = 0,
+    ) => {
+      if (index >= functions.length) {
+        refreshOverview();
+        onExit();
+      } else {
+        asyncRunLoadedScript(
+          Game.selectCurrent().id!,
+          functions[index],
+          player,
+          undefined,
+          {
+            team: team?.getEntity(),
+            payload: payloads[index],
+          },
+        )
+          .then(response => {
+            if (response.events.length > 0) {
+              const exceptionEvent: WegasEvent = {
+                ...response.events[0],
+                timestamp: new Date().getTime(),
+                unread: true,
+              };
+              setErrorMessage(parseEvent(exceptionEvent).message);
+              setIsErrorVisible(true);
+              onExit = () => {};
+            }
+          })
+          .finally(() => {
+            recurscript(
+              functions,
+              payloads,
+              player,
+              team,
+              onExit,
+              refreshOverview,
+              index + 1,
+            );
+          });
+      }
+    },
+    [isErrorVisible],
+  );
+
+  React.useEffect(() => {
+    const errorTimeout = setTimeout(() => {
+      setIsErrorVisible(false);
+      setErrorMessage('');
+    }, 3000);
+
+    return () => clearTimeout(errorTimeout);
+  }, [isErrorVisible]);
+
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
   });
@@ -91,7 +135,7 @@ export function ImpactModalComputedContent({
 
   return (
     <div className={cx(flex, flexColumn, expandWidth)}>
-      <div className={cx(flex, flexColumn, grow, autoScroll)}>
+      <div className={cx(flex, flexColumn, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
           const schema = globals.Function(`return (${schemaFn})()`)();
           return (
@@ -115,34 +159,45 @@ export function ImpactModalComputedContent({
         })}
       </div>
       <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
-        <Button
-          disabled={player == null}
-          tooltip={player == null ? 'No player in this team' : 'Apply impact'}
-          label="Apply impact"
-          onClick={() => {
-            if (Array.isArray(team) && Array.isArray(player)) {
-              team.map((t, i) => {
+        {isErrorVisible ? (
+          <div
+            className={cx(
+              errorMessageContainerStyle,
+              classOrNothing('hidden', !isErrorVisible),
+            )}
+          >
+            <div className={cx(textCenter, autoMargin)}>{errorMessage}</div>
+          </div>
+        ) : (
+          <Button
+            disabled={player == null}
+            tooltip={player == null ? 'No player in this team' : 'Apply impact'}
+            label="Apply impact"
+            onClick={() => {
+              if (Array.isArray(team) && Array.isArray(player)) {
+                team.map((t, i) => {
+                  recurscript(
+                    functions,
+                    payloads,
+                    player[i],
+                    t,
+                    onExit,
+                    refreshOverview,
+                  );
+                });
+              } else if (!Array.isArray(team) && !Array.isArray(player)) {
                 recurscript(
                   functions,
                   payloads,
-                  player[i],
-                  t,
+                  player,
+                  team,
                   onExit,
                   refreshOverview,
                 );
-              });
-            } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              recurscript(
-                functions,
-                payloads,
-                player,
-                team,
-                onExit,
-                refreshOverview,
-              );
-            }
-          }}
-        />
+              }
+            }}
+          />
+        )}
       </div>
     </div>
   );
