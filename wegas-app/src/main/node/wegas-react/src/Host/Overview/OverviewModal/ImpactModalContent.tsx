@@ -15,6 +15,7 @@ import {
   flexDistribute,
   flexRow,
   grow,
+  hidden,
   textCenter,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
@@ -26,8 +27,8 @@ import { ActionItem } from '../Overview';
 import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
 import { parseEvent } from '../../../Editor/Components/EntityEditor';
-import { classOrNothing } from '../../../Helper/className';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { classOrNothing } from '../../../Helper/className';
 
 const impactContainerStyle = css({
   //padding: '10px',
@@ -38,11 +39,15 @@ const impactContainerStyle = css({
 const errorMessageContainerStyle = css({
   maxWidth: '300px',
   display: 'flex',
-  width: 'auto',
+  width: '100%',
+  textAlign: 'center',
+  height: 'auto',
   color: themeVar.colors.ErrorColor,
-  transition: '.5s',
+  opacity: 1,
+  transition: 'opacity .5s',
   '&.hidden': {
-    display: 'none',
+    opacity: 0,
+    height: '0px',
   },
 });
 
@@ -61,6 +66,7 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
+  const [showError, setShowError] = React.useState<boolean>(false);
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
     undefined,
   );
@@ -96,6 +102,7 @@ export function ImpactModalComputedContent({
                 timestamp: new Date().getTime(),
                 unread: true,
               };
+              setShowError(true);
               setErrorMessage(parseEvent(exceptionEvent).message);
               return true;
             }
@@ -119,11 +126,11 @@ export function ImpactModalComputedContent({
 
   React.useEffect(() => {
     const errorTimeout = setTimeout(() => {
-      setErrorMessage(undefined);
+      setShowError(false);
     }, 3000);
 
     return () => clearTimeout(errorTimeout);
-  }, [errorMessage]);
+  }, [showError]);
 
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
@@ -158,46 +165,51 @@ export function ImpactModalComputedContent({
           );
         })}
       </div>
-      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
-        {errorMessage ? (
-          <div
-            className={cx(
-              errorMessageContainerStyle,
-              classOrNothing('hidden', !errorMessage),
-            )}
-          >
-            <div className={cx(textCenter, autoMargin)}>{errorMessage}</div>
-          </div>
-        ) : (
-          <Button
-            disabled={player == null}
-            tooltip={player == null ? 'No player in this team' : 'Apply impact'}
-            label="Apply impact"
-            onClick={() => {
-              if (Array.isArray(team) && Array.isArray(player)) {
-                team.map((t, i) => {
-                  recurscript(
-                    functions,
-                    payloads,
-                    player[i],
-                    t,
-                    onExit,
-                    refreshOverview,
-                  );
-                });
-              } else if (!Array.isArray(team) && !Array.isArray(player)) {
+      <div
+        className={cx(
+          errorMessageContainerStyle,
+          classOrNothing('hidden', !showError),
+        )}
+      >
+        <div className={cx(textCenter, autoMargin)}>{errorMessage}</div>
+      </div>
+      <div
+        className={cx(
+          flex,
+          flexRow,
+          flexDistribute,
+          modalButtonsContainer,
+          showError ? hidden : '',
+        )}
+      >
+        <Button
+          disabled={player == null}
+          tooltip={player == null ? 'No player in this team' : 'Apply impact'}
+          label="Apply impact"
+          onClick={() => {
+            if (Array.isArray(team) && Array.isArray(player)) {
+              team.map((t, i) => {
                 recurscript(
                   functions,
                   payloads,
-                  player,
-                  team,
+                  player[i],
+                  t,
                   onExit,
                   refreshOverview,
                 );
-              }
-            }}
-          />
-        )}
+              });
+            } else if (!Array.isArray(team) && !Array.isArray(player)) {
+              recurscript(
+                functions,
+                payloads,
+                player,
+                team,
+                onExit,
+                refreshOverview,
+              );
+            }
+          }}
+        />
       </div>
     </div>
   );
