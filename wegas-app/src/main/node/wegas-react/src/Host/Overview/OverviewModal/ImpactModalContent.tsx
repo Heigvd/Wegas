@@ -61,8 +61,9 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
-  const [isErrorVisible, setIsErrorVisible] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string>('');
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
+    undefined,
+  );
 
   const recurscript = React.useCallback(
     (
@@ -96,34 +97,33 @@ export function ImpactModalComputedContent({
                 unread: true,
               };
               setErrorMessage(parseEvent(exceptionEvent).message);
-              setIsErrorVisible(true);
-              onExit = () => {};
+              return true;
             }
+            return false;
           })
-          .finally(() => {
+          .then((errorOccurred: boolean) => {
             recurscript(
               functions,
               payloads,
               player,
               team,
-              onExit,
+              errorOccurred ? () => {} : onExit,
               refreshOverview,
               index + 1,
             );
           });
       }
     },
-    [isErrorVisible],
+    [errorMessage],
   );
 
   React.useEffect(() => {
     const errorTimeout = setTimeout(() => {
-      setIsErrorVisible(false);
-      setErrorMessage('');
+      setErrorMessage(undefined);
     }, 3000);
 
     return () => clearTimeout(errorTimeout);
-  }, [isErrorVisible]);
+  }, [errorMessage]);
 
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
@@ -159,11 +159,11 @@ export function ImpactModalComputedContent({
         })}
       </div>
       <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
-        {isErrorVisible ? (
+        {errorMessage ? (
           <div
             className={cx(
               errorMessageContainerStyle,
-              classOrNothing('hidden', !isErrorVisible),
+              classOrNothing('hidden', !errorMessage),
             )}
           >
             <div className={cx(textCenter, autoMargin)}>{errorMessage}</div>
