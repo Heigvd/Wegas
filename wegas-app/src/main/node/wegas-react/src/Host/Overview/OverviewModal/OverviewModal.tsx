@@ -12,7 +12,6 @@ import {
   ImpactModalContentProps,
 } from './ImpactModalContent';
 import { MailModalContent } from './MailModalContent';
-import { wlog } from '../../../Helper/wegaslog';
 
 const modalStyle = css({
   display: 'flex',
@@ -80,10 +79,6 @@ export function OverviewModal({
   filterState,
   onNewFilterState,
 }: OverviewModalProps) {
-  React.useEffect(() => {
-    wlog(team);
-  }, []);
-
   const teamName = Array.isArray(team)
     ? CurrentGame.name
     : `"${team?.getName()}"`;
