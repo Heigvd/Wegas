@@ -38,6 +38,7 @@ const impactContainerStyle = css({
 
 const errorMessageContainerStyle = css({
   maxWidth: '300px',
+  margin: 'auto',
   display: 'flex',
   width: '100%',
   textAlign: 'center',
@@ -48,6 +49,9 @@ const errorMessageContainerStyle = css({
   '&.hidden': {
     opacity: 0,
     height: '0px',
+  },
+  '&.success': {
+    color: themeVar.colors.SuccessColor,
   },
 });
 
@@ -66,10 +70,9 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
+  const [showToast, setShowToast] = React.useState<boolean>(false);
   const [showError, setShowError] = React.useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
-    undefined,
-  );
+  const [message, setMessage] = React.useState<string | undefined>(undefined);
 
   const recurscript = React.useCallback(
     (
@@ -103,9 +106,11 @@ export function ImpactModalComputedContent({
                 unread: true,
               };
               setShowError(true);
-              setErrorMessage(parseEvent(exceptionEvent).message);
+              setMessage(parseEvent(exceptionEvent).message);
               return true;
             }
+            setMessage('Impact successfully applied');
+            setShowToast(true);
             return false;
           })
           .then((errorOccurred: boolean) => {
@@ -114,15 +119,23 @@ export function ImpactModalComputedContent({
               payloads,
               player,
               team,
-              errorOccurred ? () => {} : onExit,
+              errorOccurred ? () => {} : () => setTimeout(onExit, 2000),
               refreshOverview,
               index + 1,
             );
           });
       }
     },
-    [errorMessage],
+    [message],
   );
+
+  React.useEffect(() => {
+    const toastTimeout = setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
+
+    return () => clearTimeout(toastTimeout);
+  }, [showToast]);
 
   React.useEffect(() => {
     const errorTimeout = setTimeout(() => {
@@ -168,10 +181,11 @@ export function ImpactModalComputedContent({
       <div
         className={cx(
           errorMessageContainerStyle,
-          classOrNothing('hidden', !showError),
+          classOrNothing('hidden', !showError && !showToast),
+          classOrNothing('success', showToast),
         )}
       >
-        <div className={cx(textCenter, autoMargin)}>{errorMessage}</div>
+        <div className={cx(textCenter, autoMargin)}>{message}</div>
       </div>
       <div
         className={cx(
@@ -179,7 +193,7 @@ export function ImpactModalComputedContent({
           flexRow,
           flexDistribute,
           modalButtonsContainer,
-          showError ? hidden : '',
+          showError || showToast ? hidden : '',
         )}
       >
         <Button
@@ -232,10 +246,59 @@ export function ImpactModalAdvancedContent({
   refreshOverview,
 }: ImpactModalAdvancedContentProps) {
   const [script, setScript] = React.useState('');
+  const [showToast, setShowToast] = React.useState<boolean>(false);
+  const [showError, setShowError] = React.useState<boolean>(false);
+  const [message, setMessage] = React.useState<string | undefined>(undefined);
 
   const player = Array.isArray(team)
     ? team.map(t => t?.getPlayers()[0].getEntity())
     : team?.getPlayers()[0].getEntity();
+
+  const runScript = React.useCallback(
+    (player: Readonly<IPlayer> | undefined) => {
+      asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
+        .then(response => {
+          if (response.events.length > 0) {
+            const exceptionEvent: WegasEvent = {
+              ...response.events[0],
+              timestamp: new Date().getTime(),
+              unread: true,
+            };
+            setShowError(true);
+            setMessage(parseEvent(exceptionEvent).message);
+            return true;
+          }
+          setMessage('Impact successfully applied');
+          setShowToast(true);
+          return false;
+        })
+        .then((errorOccurred: boolean) => {
+          if (!errorOccurred) {
+            setTimeout(() => {
+              onExit();
+              refreshOverview();
+            }, 2000);
+          }
+        });
+    },
+    [script, onExit, refreshOverview],
+  );
+
+  React.useEffect(() => {
+    const toastTimeout = setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
+
+    return () => clearTimeout(toastTimeout);
+  }, [showToast]);
+
+  React.useEffect(() => {
+    const errorTimeout = setTimeout(() => {
+      setShowError(false);
+    }, 3000);
+
+    return () => clearTimeout(errorTimeout);
+  }, [showError]);
 
   return (
     <div className={cx(flex, flexColumn, grow)}>
@@ -246,8 +309,24 @@ export function ImpactModalAdvancedContent({
           setScript(script);
         }}
       />
-
-      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
+      <div
+        className={cx(
+          errorMessageContainerStyle,
+          classOrNothing('hidden', !showError && !showToast),
+          classOrNothing('success', showToast),
+        )}
+      >
+        <div className={cx(textCenter, autoMargin)}>{message}</div>
+      </div>
+      <div
+        className={cx(
+          flex,
+          flexRow,
+          flexDistribute,
+          modalButtonsContainer,
+          showError || showToast ? hidden : '',
+        )}
+      >
         <Button
           disabled={player == null}
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
@@ -255,24 +334,10 @@ export function ImpactModalAdvancedContent({
           onClick={() => {
             if (Array.isArray(team) && Array.isArray(player)) {
               team.map((_t, i) => {
-                asyncRunLoadedScript(
-                  Game.selectCurrent().id!,
-                  script,
-                  player[i],
-                )
-                  .catch(wwarn)
-                  .finally(() => {
-                    onExit();
-                    refreshOverview();
-                  });
+                runScript(player[i]);
               });
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
-                .catch(wwarn)
-                .finally(() => {
-                  onExit();
-                  refreshOverview();
-                });
+              runScript(player);
             }
           }}
         />
