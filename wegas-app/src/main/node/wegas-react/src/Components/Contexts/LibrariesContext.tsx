@@ -35,6 +35,7 @@ import {
   setGlobals,
   useGlobalContexts,
 } from '../Hooks/useScript';
+import * as ts from 'typescript';
 
 const monacoLogger = getLogger('monaco');
 const contextLogger = getLogger('Libraries Context');
@@ -551,13 +552,75 @@ function execAllScripts(
   setReloadingStatus(true);
   clearEffects();
 
-  scripts.forEach(([libName, libContent]) => {
+  librariesLoaderLogger.setLevel('DEBUG');
+  let i = 0;
+  const orderedScripts = orderScripts(scripts);
+  //scripts.sort((a,b) => a[0].localeCompare(b[0]));
+  orderedScripts.forEach(([libName, libContent]) => {
+    librariesLoaderLogger.info('SCRIPT PATH ' + i++, libName);
     executeClientLibrary(libName, libContent, setErrorStatus);
   });
 
   runEffects();
   // resumes pagesStore status, hooks will be triggered
   setReloadingStatus(false);
+}
+
+function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
+  // build dependency tree
+  const dependencyTree : Record<string, string[]> = {};
+  const scriptMap : Record<string, ScriptEntry> = {};
+  scripts.forEach((se) => {
+    const scriptName = se[0];
+    const src = ts.createSourceFile(scriptName, se[1], ts.ScriptTarget.ESNext);
+    dependencyTree[scriptName] = [];
+    scriptMap[scriptName] = se;
+    src.statements.forEach(statement => {
+
+      if (ts.isImportDeclaration(statement)) {
+        const importPath = (statement.moduleSpecifier as ts.StringLiteral).text;
+        const absolutePath = new URL(importPath,"file:///" + scriptName).pathname.substring(1);
+        dependencyTree[scriptName].push(absolutePath);
+      }
+    });
+    librariesLoaderLogger.info(scriptName, dependencyTree[scriptName]);
+  });
+
+  // topological sort (follows dependency order)
+  const tempMark = new Set<string>();
+  const marked = new Set<string>();
+  const result : ScriptEntry[] = [];
+  let hasCycle = false;
+
+  function visitNode(scriptName: string): void {
+    if(marked.has(scriptName)){
+      return;
+    }
+    if(tempMark.has(scriptName)){
+      // cycle detected
+      hasCycle = true;
+      librariesLoaderLogger.warn('Detected cycle ', scriptName, dependencyTree[scriptName]);
+      return;
+    }
+    tempMark.add(scriptName);
+    if(!dependencyTree[scriptName]){
+      librariesLoaderLogger.warn('missing dep ', scriptName);
+    }
+    dependencyTree[scriptName].forEach(dependency => visitNode(dependency));
+    marked.add(scriptName);
+    result.push(scriptMap[scriptName]);
+  }
+  Object.keys(dependencyTree).forEach((scriptName) => {
+    visitNode(scriptName);
+  });
+
+  if(hasCycle){
+    librariesLoaderLogger.warn('Cycle detected, aborting smart evaluation order');
+    return scripts;
+  }else {
+    return result;
+  }
+
 }
 
 export function LibrariesLoader(
