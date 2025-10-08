@@ -1,4 +1,4 @@
-import {EditorTabsTranslations} from './editorTabs';
+import { EditorTabsTranslations } from './editorTabs';
 
 export const editorTabsTranslationsDE: EditorTabsTranslations = {
   miscellaneous: {
@@ -9,7 +9,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     Tester: 'Tester',
     Variables: 'Variablen',
     'State Machine': 'Zustandsmaschine',
-    'Variable Properties': 'Eigenschaften Variablen',
+    'Variable Properties': 'Variableinstellungen',
     Files: 'Dateien',
     Scripts: 'Skripte',
     Styles: 'Stile',
