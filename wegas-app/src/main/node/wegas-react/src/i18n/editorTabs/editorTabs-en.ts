@@ -22,7 +22,7 @@ export const editorTabsTranslationsEN = {
     Tester: 'Tester',
     Variables: 'Variables',
     'State Machine': 'State Machine',
-    'Variable Properties': 'Variables Properties',
+    'Variable Properties': 'Variable Settings',
     Files: 'Files',
     Scripts: 'Scripts',
     Styles: 'Styles',
