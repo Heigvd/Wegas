@@ -9,7 +9,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     Tester: 'Tester',
     Variables: 'Variablen',
     'State Machine': 'Zustandsmaschine',
-    'Variable Properties': 'Variableinstellungen',
+'Variable Properties': 'Variablenparameter',
     Files: 'Dateien',
     Scripts: 'Skripte',
     Styles: 'Stile',
