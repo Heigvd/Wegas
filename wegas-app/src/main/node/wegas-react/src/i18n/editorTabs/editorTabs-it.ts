@@ -37,8 +37,6 @@ export const editorTabsTranslationsIT: EditorTabsTranslations = {
     'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
-    selectVariable:
-      'Selezionare una macchina di stato o un dialogo da visualizzare',
     selectedNotStateMachine:
       'La variabile selezionata non è una specie di macchina di stato',
   },
