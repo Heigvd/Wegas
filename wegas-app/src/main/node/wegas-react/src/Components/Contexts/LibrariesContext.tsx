@@ -3,11 +3,7 @@ import u from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
-import {
-  ILibraries,
-  LibraryAPI,
-  ServerLibraryType,
-} from '../../API/library.api';
+import { ILibraries, LibraryAPI, ServerLibraryType } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
 import { ActionCreator, manageResponseHandler } from '../../data/actions';
@@ -29,13 +25,7 @@ import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { clearModule } from '../Hooks/sandbox';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
-import {
-  printWegasScriptError,
-  safeClientScriptEval,
-  setGlobals,
-  useGlobalContexts,
-} from '../Hooks/useScript';
-import * as ts from 'typescript';
+import { printWegasScriptError, safeClientScriptEval, setGlobals, useGlobalContexts } from '../Hooks/useScript';
 
 const monacoLogger = getLogger('monaco');
 const contextLogger = getLogger('Libraries Context');
@@ -555,7 +545,6 @@ function execAllScripts(
   librariesLoaderLogger.setLevel('DEBUG');
   let i = 0;
   const orderedScripts = orderScripts(scripts);
-  //scripts.sort((a,b) => a[0].localeCompare(b[0]));
   orderedScripts.forEach(([libName, libContent]) => {
     librariesLoaderLogger.info('SCRIPT PATH ' + i++, libName);
     executeClientLibrary(libName, libContent, setErrorStatus);
@@ -566,60 +555,45 @@ function execAllScripts(
   setReloadingStatus(false);
 }
 
+/**
+ * The scripts are ordered alphabetically on full path name by default.
+ * To modify that order, the EVALUATION_PRIORITY (X) pragma can be inserted as
+ * a single line comment at the beginning of the file content.
+ * X is an integer
+ * Example :
+ * // EVALUATION_PRIORITY 10
+ * A lower number means evaluation occurs before
+ * scripts that have the same priority or no priority are sorted alphabetically
+ * scripts that have no priority are evaluated after last
+ * @param scripts
+ */
 function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
-  // build dependency tree
-  const dependencyTree : Record<string, string[]> = {};
-  const scriptMap : Record<string, ScriptEntry> = {};
-  scripts.forEach((se) => {
-    const scriptName = se[0];
-    const src = ts.createSourceFile(scriptName, se[1], ts.ScriptTarget.ESNext);
-    dependencyTree[scriptName] = [];
-    scriptMap[scriptName] = se;
-    src.statements.forEach(statement => {
 
-      if (ts.isImportDeclaration(statement)) {
-        const importPath = (statement.moduleSpecifier as ts.StringLiteral).text;
-        const absolutePath = new URL(importPath,"file:///" + scriptName).pathname.substring(1);
-        dependencyTree[scriptName].push(absolutePath);
-      }
-    });
-    librariesLoaderLogger.info(scriptName, dependencyTree[scriptName]);
+  const regex = /\/\/\s*EVALUATION_PRIORITY\s+(-?\d+)/;
+  const pragmaPriority : Record<string, number> = {};
+  scripts.forEach(([name, content]: [string, string]) => {
+    // match on the beginning of the file only
+    const match = content?.substring(0,40).match(regex);
+    if(match){
+      librariesLoaderLogger.info('Found match on ', name, match);
+    }else {
+      librariesLoaderLogger.info('No match found');
+    }
+    if(match && !isNaN(Number(match[1]))){
+      pragmaPriority[name] = Number(match[1]);
+    }else{
+      pragmaPriority[name] = Number.MAX_SAFE_INTEGER / 2;
+    }
   });
 
-  // topological sort (follows dependency order)
-  const tempMark = new Set<string>();
-  const marked = new Set<string>();
-  const result : ScriptEntry[] = [];
-  let hasCycle = false;
-
-  function visitNode(scriptName: string): void {
-    if(marked.has(scriptName)){
-      return;
+  return scripts.sort(([aName, _a],[bName, _b]) => {
+    const prioA = pragmaPriority[aName];
+    const prioB = pragmaPriority[bName];
+    if(prioA === prioB) {
+      return aName.localeCompare(bName);
     }
-    if(tempMark.has(scriptName)){
-      // cycle detected
-      hasCycle = true;
-      librariesLoaderLogger.warn('Detected cycle ', scriptName, dependencyTree[scriptName]);
-      return;
-    }
-    tempMark.add(scriptName);
-    if(!dependencyTree[scriptName]){
-      librariesLoaderLogger.warn('missing dep ', scriptName);
-    }
-    dependencyTree[scriptName].forEach(dependency => visitNode(dependency));
-    marked.add(scriptName);
-    result.push(scriptMap[scriptName]);
-  }
-  Object.keys(dependencyTree).forEach((scriptName) => {
-    visitNode(scriptName);
+    return prioA - prioB;
   });
-
-  if(hasCycle){
-    librariesLoaderLogger.warn('Cycle detected, aborting smart evaluation order');
-    return scripts;
-  }else {
-    return result;
-  }
 
 }
 
