@@ -25,7 +25,6 @@ export function execAllScripts(libraries: ILibraries, logger: Logger, setErrorSt
   orderScripts(scripts);
 
   let i = 0;
-  logger.setLevel('DEBUG');
   scripts.forEach(([libName, libContent]) => {
     logger.debug('SCRIPT EVAL', i++, libName);
     executeClientLibrary(libName, libContent, logger, setErrorStatus);
@@ -66,14 +65,14 @@ function executeClientLibrary(
 
 /**
  * The scripts are ordered alphabetically on full path name by default.
- * To modify that order, the EVALUATION_PRIORITY (X) pragma can be inserted as
- * a single line comment at the beginning of the file content.
+ * This ordering can be overridden using the EVALUATION_PRIORITY (X) pragma
+ * which can be inserted as a single line comment at the beginning of the script content.
  * X is an integer
  * Example :
  * // EVALUATION_PRIORITY 10
- * A lower number means evaluation occurs before
- * scripts that have the same or no priority are sorted alphabetically
- * scripts that have no priority are evaluated after last
+ * The lower the number the earlier the evaluation occurs
+ * scripts that have equal or no priority are sorted alphabetically
+ * scripts that have no priority are evaluated after all the scripts with a defined priority
  * @param scripts
  */
 function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
