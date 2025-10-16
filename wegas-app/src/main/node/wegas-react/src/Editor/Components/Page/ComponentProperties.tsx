@@ -336,7 +336,7 @@ export default function ConnectedComponentProperties() {
     );
 
   if (!editedPath) {
-    return <pre className={defaultPadding}>No component selected yet</pre>;
+    return null;
   }
   if (!selectedPage) {
     return <pre className={defaultPadding}>No page selected yet</pre>;

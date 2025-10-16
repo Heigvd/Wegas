@@ -50,7 +50,6 @@ export const editorTabsTranslationsEN = {
     'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
-    selectVariable: 'Select a state-machine or a dialogue to display',
     selectedNotStateMachine:
       'The selected variable is not some kind of state machine',
   },
