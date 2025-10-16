@@ -358,6 +358,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
     @WegasEntityProperty(protectionLevel = ProtectionLevel.ALL,
         nullable = false,
         view = @View(
+                featureLevel = ADVANCED,
             label = "Visibility",
             value = VisibilitySelectView.class,
             index = -300
@@ -439,6 +440,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         proposal = TeamScopeVal.class,
         nullable = false,
         view = @View(
+                featureLevel = ADVANCED,
             label = "One variable for",
             value = SelectView.ScopeSelector.class,
             layout = shortInline,
@@ -452,6 +454,7 @@ public abstract class VariableDescriptor<T extends VariableInstance>
         proposal = TeamScopeVal.class,
         nullable = false,
         view = @View(
+                featureLevel = ADVANCED,
             label = "Variable is visible by ",
             value = SelectView.BScopeSelector.class,
             layout = shortInline,
