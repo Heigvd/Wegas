@@ -19,6 +19,7 @@ import Header from './Header';
 import {
   DndLinearLayout,
   isLinearLayoutItemComponent,
+  LinearLayoutComponent,
   LinearLayoutComponents,
   LinearLayoutItemComponent,
 } from './LinearTabLayout/LinearLayout';
@@ -33,6 +34,7 @@ import {
   PageLoader,
 } from './Page/PageLoader';
 import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
+import { featuresCTX, isFeatureEnabled } from '../../Components/Contexts/FeaturesProvider';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
@@ -79,7 +81,11 @@ const layout = css({
   color: themeVar.colors.DarkTextColor,
 });
 
-const availableLayoutTabs: LinearLayoutComponents = [
+interface TabsRestriction {
+  advanced?: boolean;
+}
+
+const availableLayoutTabs: (LinearLayoutComponent & TabsRestriction)[] = [
   /*{
     tabId: 'Tester',
     content: <Tester />,
@@ -102,6 +108,7 @@ const availableLayoutTabs: LinearLayoutComponents = [
   },
   {
     tabId: 'Libraries',
+    advanced: true,
     items: [
       {
         tabId: 'Client',
@@ -127,6 +134,7 @@ const availableLayoutTabs: LinearLayoutComponents = [
   },
   {
     tabId: 'Consoles',
+    advanced: true,
     items: [
       {
         tabId: 'Client Console',
@@ -140,6 +148,7 @@ const availableLayoutTabs: LinearLayoutComponents = [
   },
   {
     tabId: 'Theme Editor',
+    advanced: true,
     content: <ThemeEditor />,
   },
   {
@@ -217,6 +226,7 @@ function filterAndFlatten(
 }
 
 export default function Layout() {
+  const { currentFeatures } = React.useContext(featuresCTX);
   const timer = React.useRef<ReturnType<typeof setTimeout>>();
   const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
@@ -256,7 +266,7 @@ export default function Layout() {
   });
 
   const allLayoutPages = [
-    ...availableLayoutTabs,
+    ...(availableLayoutTabs.filter (tab => !tab.advanced || isFeatureEnabled(currentFeatures, 'ADVANCED'))),
     {
       tabId: 'Scenarist pages',
       items: [...customScenaristPageTabs],
