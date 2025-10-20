@@ -28,14 +28,20 @@ function RoleContext({
   children,
 }: React.PropsWithChildren<UnknownValuesObject>) {
   const defaultRoleId = useStore(s => s.global.roles.defaultRoleId);
-  const [currentRole, setRole] = React.useState<string>(
+  const availableRoles = useStore(s => s.global.roles.roles);
+
+  const [storedRole, setRole] = React.useState<string>(
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,
   );
 
   return (
     <roleCTX.Provider
       value={{
-        currentRole,
+        currentRole: Object.values(availableRoles).some(
+          role => role.id === storedRole,
+        )
+          ? storedRole
+          : defaultRoleId,
         setRole: role => {
           window.localStorage.setItem(EditorRoleData, role);
           setRole(role);
