@@ -1,6 +1,10 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IPeerReviewDescriptor } from 'wegas-ts-api';
+import {
+  featuresCTX,
+  isFeatureEnabled,
+} from '../../Components/Contexts/FeaturesProvider';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
@@ -11,6 +15,7 @@ import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
+import { GameModel } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
 import { visitIndex } from '../../Helper/pages';
 import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
@@ -34,7 +39,6 @@ import {
   PageLoader,
 } from './Page/PageLoader';
 import { AllLibraryEditor } from './ScriptEditors/LibraryEditors/AllLibraryEditor';
-import { featuresCTX, isFeatureEnabled } from '../../Components/Contexts/FeaturesProvider';
 
 const StateMachineEditor = React.lazy(
   () => import('./StateMachine/StateMachineEditor'),
@@ -156,7 +160,12 @@ const availableLayoutTabs: (LinearLayoutComponent & TabsRestriction)[] = [
     content: <FindAndReplace />,
   },
   {
+    tabId: 'Page Display',
+    content: <PageDisplay />,
+  },
+  {
     tabId: 'Pages',
+    advanced: GameModel.selectCurrent().basedOnId != undefined,
     items: [
       {
         tabId: 'Pages Layout',
@@ -166,10 +175,7 @@ const availableLayoutTabs: (LinearLayoutComponent & TabsRestriction)[] = [
         tabId: 'Component Palette',
         content: <ComponentPalette />,
       },
-      {
-        tabId: 'Page Display',
-        content: <PageDisplay />,
-      },
+
       { tabId: 'Source Editor', content: <SourceEditor /> },
       {
         tabId: 'Component Properties',
@@ -266,7 +272,9 @@ export default function Layout() {
   });
 
   const allLayoutPages = [
-    ...(availableLayoutTabs.filter (tab => !tab.advanced || isFeatureEnabled(currentFeatures, 'ADVANCED'))),
+    ...availableLayoutTabs.filter(
+      tab => !tab.advanced || isFeatureEnabled(currentFeatures, 'ADVANCED'),
+    ),
     {
       tabId: 'Scenarist pages',
       items: [...customScenaristPageTabs],
@@ -284,11 +292,13 @@ export default function Layout() {
 
   const initTabs =
     currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
-      ? [
-          ['Variables', 'Pages Layout'],
-          ['Variable Properties'],
-          ['Page Display'],
-        ]
+      ? GameModel.selectCurrent().basedOnId == undefined
+        ? [
+            ['Variables', 'Pages Layout'],
+            ['Variable Properties'],
+            ['Page Display'],
+          ]
+        : [['Variables'], ['Variable Properties'], ['Page Display']]
       : layoutPages.map(page => page.tabId);
 
   const initialLayout = filterAllowedInitTabs(initTabs, allowedPages);
