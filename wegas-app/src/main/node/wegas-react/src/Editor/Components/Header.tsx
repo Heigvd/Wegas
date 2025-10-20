@@ -245,7 +245,7 @@ function globalStoreSelector(s: State) {
 
 export default function Header() {
   const { currentFeatures } = React.useContext(featuresCTX);
-  const { currentRole } = React.useContext(roleCTX);
+  const { currentRole, hasSeveralRoles } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
   const { gameModel, user, userLanguage, currentPlayerId, currentTeamId } =
@@ -351,8 +351,10 @@ export default function Header() {
             <DropMenu
               label={<IconComp icon="cog" />}
               items={[
-                roleToggler,
-                featuresToggler,
+                ...(hasSeveralRoles ||
+                isFeatureEnabled(currentFeatures, 'ADVANCED')
+                  ? [roleToggler]
+                  : []),
                 {
                   label: i18nValues.language + ': ' + userLanguage,
                   items: Object.entries(editorLanguages).map(
@@ -370,9 +372,7 @@ export default function Header() {
                           className={cx(flex, flexRow, itemCenter)}
                         >
                           <CheckBox
-                            value={
-                              userLanguage === key
-                            }
+                            value={userLanguage === key}
                             onChange={() => {
                               dispatch(
                                 Actions.EditorActions.setEditorLanguage(
@@ -389,7 +389,7 @@ export default function Header() {
                     }),
                   ),
                 },
-                loggerLevelTogglers,
+                featuresToggler,
                 {
                   label: (
                     <div
@@ -407,7 +407,9 @@ export default function Header() {
                     </div>
                   ),
                 },
-                authorizationTogglers,
+                ...(isFeatureEnabled(currentFeatures, 'ADVANCED')
+                  ? [loggerLevelTogglers, authorizationTogglers]
+                  : []),
               ]}
               buttonClassName={cx(
                 defaultMarginLeft,

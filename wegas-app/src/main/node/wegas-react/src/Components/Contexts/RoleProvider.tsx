@@ -15,6 +15,7 @@ export const EditorRoleData = 'WEGAS_USER_ROLE';
 export interface RoleContext {
   currentRole: string;
   setRole: (role: string) => void;
+  hasSeveralRoles: boolean;
 }
 
 export const roleCTX = React.createContext<RoleContext>({
@@ -22,6 +23,7 @@ export const roleCTX = React.createContext<RoleContext>({
     window.localStorage.getItem(EditorRoleData) ||
     DEFAULT_ROLES.SCENARIO_EDITOR.id,
   setRole: () => {},
+  hasSeveralRoles: false,
 });
 
 function RoleContext({
@@ -37,11 +39,16 @@ function RoleContext({
   return (
     <roleCTX.Provider
       value={{
-        currentRole : Object.values(availableRoles).some(role => role.id === storedRole) ? storedRole : defaultRoleId,
+        currentRole: Object.values(availableRoles).some(
+          role => role.id === storedRole,
+        )
+          ? storedRole
+          : defaultRoleId,
         setRole: role => {
           window.localStorage.setItem(EditorRoleData, role);
           setRole(role);
         },
+        hasSeveralRoles: Object.values(availableRoles).length > 1,
       }}
     >
       {children}
