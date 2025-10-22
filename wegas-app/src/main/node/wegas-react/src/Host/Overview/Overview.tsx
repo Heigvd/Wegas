@@ -24,6 +24,7 @@ import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { OverviewRow } from './OverviewRow';
 
 export const trainerCellStyleI: CSSInterpolation = {
+  display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '#fff',
@@ -34,6 +35,9 @@ export const trainerCellStyleI: CSSInterpolation = {
   height: '48px',
   '&> p': {
     margin: 0,
+  },
+  '&> div': {
+    flexGrow: 1,
   },
 };
 
