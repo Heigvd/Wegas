@@ -7,4 +7,7 @@ export const trainerTranslationsFR: TrainerTranslations = {
   manageColumns: 'Gestion des colonnes',
   refreshData: 'Actualiser les données des équipes',
   exportTeamsData: 'Exporter les données des équipes',
+  selectAll: 'Tout sélectionner',
+  deselectAll: 'Tout désélectionner',
+  ok: 'OK',
 };
