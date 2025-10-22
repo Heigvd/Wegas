@@ -203,11 +203,19 @@ export default function Overview({
       }, {});
   }, deepDifferent);
 
-  const buildFilter = (structure: OverviewDataStructure[], value: boolean) => {
+  const buildFilter = (structure: OverviewDataStructure[], forcedValue?: boolean) => {
     const filtered: FilterState = {};
     for (const row of structure) {
       filtered[row.id] = {};
       for (const item of row.items) {
+        let value : boolean = false;
+        if (forcedValue != undefined) {
+          value = forcedValue;
+        } else if (isDataItem(item)) {
+          value = item.active;
+        } else {
+          value = true;
+        }
         filtered[row.id][item.id] = value;
       }
     }
@@ -238,7 +246,7 @@ export default function Overview({
           [],
         );
         setOverviewState({ header: structure, row, data });
-        setFilterState(o => (o == null ? buildFilter(structure, true) : o));
+        setFilterState(o => (o == null ? buildFilter(structure) : o));
       }
     });
   }, [dashboardName]);
