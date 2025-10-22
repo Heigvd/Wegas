@@ -1,11 +1,12 @@
 import { css } from '@emotion/css';
 import JoditEditor, { Jodit } from 'jodit';
-import 'jodit/build/jodit.min.css';
+import 'jodit/es2021/jodit.min.css';
 import { ButtonsGroups } from 'jodit/types/types';
 import React from 'react';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { themeVar } from '../Theme/ThemeVars';
+import { wlog } from '../../Helper/wegaslog';
 
 export interface JoditEditorProps {
   /**
@@ -75,6 +76,7 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         '|',
         'link',
         IMG_PLACEHOLDER,
+        'image',
         '|',
         SRC_PLACEHOLDER,
         'table',
@@ -110,13 +112,13 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
 }
 
 const disabledPlugins = [
-  'add-new-line',
+  /*'add-new-line',
   'drag-and-drop',
   'drag-and-drop-element',
   'iframe',
   'video',
   'print',
-  'media',
+  'media',*/
   'powered-by-jodit',
 ];
 
@@ -144,9 +146,16 @@ export default function JoditReactEditor({
         buttonsConfig[imgIndex] = {
           icon: 'image',
           exec: function (editor: JoditEditor.Jodit) {
+            const s = editor.selection;
+            s.focus();
+            s.restore();
             if (showFilePickerFunc) {
+              wlog(editor);
               showFilePickerFunc(path => {
-                editor.selection.insertImage(path);
+
+                s.insertImage(path);
+                wlog('inserted image');
+                //editor.selection.insertImage(path);
               });
             }
           },
@@ -192,13 +201,18 @@ export default function JoditReactEditor({
       (config as unknown as { placeholder: string }).placeholder =
         placeholder || '';
 
+
+      // @ts-ignore
       const j = Jodit.make(containerRef.current, config);
 
       // triggered on keyboard input
       // j.events.on('input', (value, oldValue) => { }, )
       jodit.current = j;
 
+      wlog('new instance created');
+
       return () => {
+        wlog('destruct')
         jodit.current?.destruct();
         jodit.current = undefined;
       };
@@ -221,7 +235,7 @@ export default function JoditReactEditor({
     jodit.current?.events.on('change', onChangeCallback);
     return () => {
       jodit.current?.events.off('change', onChangeCallback);
-    };
+    };x 
   }, [onChangeCallback]);
 
   React.useEffect(() => {

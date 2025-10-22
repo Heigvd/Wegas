@@ -134,11 +134,16 @@ export default function sanitize(html: string): string {
 * @param {string} content
 */
 export function toInjectorStyle(content: string) {
-  
+
+  let i = 0;
   return content
       .replace(
           new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)")', 'gi'),
-          'data-file="$3"',
+          (_, __, ___, file ) => {
+            i++;
+            return i == 1 ? `data-file="${file}"` : ''
+          }
+        //'data-file="$3"',
       ) // Replace absolute path with injector style path
   
 }
