@@ -133,7 +133,7 @@ export interface ActionItem extends OverviewItem {
   icon: string;
 }
 
-interface OverviewDataStructure {
+export interface OverviewDataStructure {
   id: string;
   title: string;
   items: DataItem[] | ActionItem[];
