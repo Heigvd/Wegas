@@ -16,7 +16,7 @@ type SetErrorStatusFunc = ((path: string, error: string) => void) | undefined;
 /**
  *Execute all client script
  */
-export function execAllScripts(libraries: ILibraries, logger: Logger, setErrorStatus: SetErrorStatusFunc = undefined) {
+export function execAllScripts(libraries: ILibraries, logger: Logger, setErrorStatus: SetErrorStatusFunc = undefined): void {
   // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
   setReloadingStatus(true);
   clearEffects();
@@ -40,7 +40,7 @@ function executeClientLibrary(
   libraryContent: string,
   logger: Logger,
   setErrorStatus: SetErrorStatusFunc,
-) {
+): void {
   const path = computeLibraryPath(libraryName, 'client');
   let error = '';
   safeClientScriptEval(
@@ -73,7 +73,7 @@ function executeClientLibrary(
  * The lower the number the earlier the evaluation occurs
  * scripts that have equal or no priority are sorted alphabetically
  * scripts that have no priority are evaluated after all the scripts with a defined priority
- * @param scripts
+ * @param scripts to be ordered, sorting occurs in place
  */
 function orderScripts(scripts: ScriptEntry[]): void {
 
