@@ -827,7 +827,7 @@ export function useClientScript<T>(
       injectReturn: !!clientScript?.returnType
   });
 }
-
+*/
 /**
  * Hook, execute a script locally.
  * @param script code to execute

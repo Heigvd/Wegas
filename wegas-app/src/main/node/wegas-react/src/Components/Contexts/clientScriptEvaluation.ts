@@ -75,7 +75,7 @@ function executeClientLibrary(
  * scripts that have no priority are evaluated after all the scripts with a defined priority
  * @param scripts
  */
-function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
+function orderScripts(scripts: ScriptEntry[]): void {
 
   const regex = /\/\/\s*EVALUATION_PRIORITY\s+(-?\d+)/;
   const pragmaPriority : Record<string, number> = {};
@@ -89,7 +89,7 @@ function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
     }
   });
 
-  return scripts.sort(([aName, _a],[bName, _b]) => {
+  scripts.sort(([aName, _a],[bName, _b]) => {
     const prioA = pragmaPriority[aName];
     const prioB = pragmaPriority[bName];
     if(prioA === prioB) {
