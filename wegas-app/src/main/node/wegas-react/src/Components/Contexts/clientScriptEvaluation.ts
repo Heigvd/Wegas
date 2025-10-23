@@ -79,7 +79,7 @@ function orderScripts(scripts: ScriptEntry[]): ScriptEntry[] {
 
   const regex = /\/\/\s*EVALUATION_PRIORITY\s+(-?\d+)/;
   const pragmaPriority : Record<string, number> = {};
-  scripts.forEach(([name, content]: [string, string]) => {
+  scripts.forEach(([name, content]: ScriptEntry) => {
     // match on the beginning of the file only
     const match = content?.substring(0,40).match(regex);
     if(match && !isNaN(Number(match[1]))){
