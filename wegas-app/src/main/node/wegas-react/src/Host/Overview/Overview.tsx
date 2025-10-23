@@ -24,6 +24,7 @@ import { ModalState, OverviewModal } from './OverviewModal/OverviewModal';
 import { OverviewRow } from './OverviewRow';
 
 export const trainerCellStyleI: CSSInterpolation = {
+  display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '#fff',
@@ -34,6 +35,9 @@ export const trainerCellStyleI: CSSInterpolation = {
   height: '48px',
   '&> p': {
     margin: 0,
+  },
+  '&> div': {
+    flexGrow: 1,
   },
 };
 
@@ -129,7 +133,7 @@ export interface ActionItem extends OverviewItem {
   icon: string;
 }
 
-interface OverviewDataStructure {
+export interface OverviewDataStructure {
   id: string;
   title: string;
   items: DataItem[] | ActionItem[];
@@ -203,11 +207,19 @@ export default function Overview({
       }, {});
   }, deepDifferent);
 
-  const buildFilter = (structure: OverviewDataStructure[], value: boolean) => {
+  const buildFilter = (structure: OverviewDataStructure[], forcedValue?: boolean) => {
     const filtered: FilterState = {};
     for (const row of structure) {
       filtered[row.id] = {};
       for (const item of row.items) {
+        let value : boolean = false;
+        if (forcedValue != undefined) {
+          value = forcedValue;
+        } else if (isDataItem(item)) {
+          value = item.active;
+        } else {
+          value = true;
+        }
         filtered[row.id][item.id] = value;
       }
     }
@@ -238,7 +250,7 @@ export default function Overview({
           [],
         );
         setOverviewState({ header: structure, row, data });
-        setFilterState(o => (o == null ? buildFilter(structure, true) : o));
+        setFilterState(o => (o == null ? buildFilter(structure) : o));
       }
     });
   }, [dashboardName]);
