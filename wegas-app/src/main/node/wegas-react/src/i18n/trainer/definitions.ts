@@ -5,7 +5,4 @@ export interface TrainerTranslations {
   manageColumns: string;
   refreshData: string;
   exportTeamsData: string;
-  selectAll: string,
-  deselectAll: string,
-  ok: string,
 }
