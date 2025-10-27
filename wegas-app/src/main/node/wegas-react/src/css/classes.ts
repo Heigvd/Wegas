@@ -144,6 +144,9 @@ export const foregroundContent = css({
 });
 
 /* Spaces */
+export const noMargin = css({
+  margin: '0',
+});
 export const componentMarginLeft = css({
   marginLeft: '5px',
 });
@@ -175,7 +178,9 @@ export const defaultMargin = cx(
   defaultMarginLeft,
 );
 
-export const autoMargin = css({ margin: 'auto' });
+export const autoMargin = css({
+  margin: 'auto'
+});
 export const xlPadding = css({
   padding: '2em',
 });

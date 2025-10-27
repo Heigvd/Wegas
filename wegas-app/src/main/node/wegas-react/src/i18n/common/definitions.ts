@@ -23,6 +23,9 @@ export interface CommonTranslations {
   add: string;
   filter: string;
   empty: string;
+  selectAll: string,
+  deselectAll: string,
+  ok: string,
   forceDelete: string;
   seeChanges: string;
   buildingWorld: string;

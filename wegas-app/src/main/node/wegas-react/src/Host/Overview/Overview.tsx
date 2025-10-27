@@ -7,7 +7,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
-import { expandWidth, flex, flexRow } from '../../css/classes';
+import { expandWidth, flex, flexBetween, flexRow } from '../../css/classes';
 import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
@@ -101,6 +101,35 @@ const flexAuto = css({
 
 const newDataStyle = css({
   color: themeVar.colors.PrimaryColor + ' !important',
+});
+
+const filterPrimaryButtonStyle = css({
+  padding: '8px 16px',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  color: themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  border: '1.5px solid',
+  borderColor: themeVar.colors.PrimaryColor,
+  borderRadius: '16px',
+  '&:hover': {
+    color: themeVar.colors.LightTextColor,
+    backgroundColor: themeVar.colors.PrimaryColor,
+  },
+});
+
+const filterSecondaryButtonStyle = css({
+  marginRight: '10px',
+  padding: '0',
+  fontSize: '12px',
+  fontWeight: 'bold',
+  textDecoration: 'underline',
+  color: themeVar.colors.PrimaryColor,
+  backgroundColor: 'transparent',
+  '&:hover': {
+    color: themeVar.colors.PrimaryColorShade,
+    backgroundColor: 'transparent',
+  },
 });
 
 export interface OverviewItem {
@@ -318,18 +347,33 @@ export default function Overview({
 
   const removeFiltersButton = () => {
     return (
-      <div className={cx(flex, flexRow)}>
+      <div className={cx(flex, flexRow, flexBetween)}>
+        <div className={cx(flex, flexRow)}>
+          <Button
+            className={cx(filterSecondaryButtonStyle)}
+            label={i18nValues.selectAll}
+            tooltip={i18nValuesTrainer.manageColumns}
+            onClick={() => setFilterState(undefined)}
+          />
+          <Button
+            className={cx(filterSecondaryButtonStyle)}
+            label={i18nValues.deselectAll}
+            tooltip={i18nValuesTrainer.manageColumns}
+            onClick={() =>
+              setFilterState(buildFilter(overviewState!.header, false))
+            }
+          />
+        </div>
         <Button
-          icon="check"
-          tooltip={i18nValuesTrainer.manageColumns}
-          onClick={() => setFilterState(undefined)}
-        />
-        <Button
-          icon="trash"
-          tooltip={i18nValuesTrainer.manageColumns}
-          onClick={() =>
-            setFilterState(buildFilter(overviewState!.header, false))
-          }
+          className={cx(filterPrimaryButtonStyle)}
+          label={i18nValues.ok}
+          onClick={() => {
+            setLayoutState({
+              modalState: 'Close',
+              team: undefined,
+              item: undefined,
+            });
+          }}
         />
       </div>
     );
