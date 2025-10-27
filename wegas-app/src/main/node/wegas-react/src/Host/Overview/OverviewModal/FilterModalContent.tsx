@@ -19,9 +19,10 @@ const filterListContainerStyle = css ({
 });
 
 const filterListStyle = css({
-    width: '85%',
+    width: '100%',
     height: '100%',
     'fieldset':  {
+        width: '90%',
         border: 'none',
         marginBottom: '25px',
     },

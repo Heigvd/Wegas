@@ -25,6 +25,7 @@ const modalContentStyle = css({
   padding: '25px',
   minWidth: '400px',
   maxWidth: '700px',
+  minHeight: '500px',
   maxHeight: '66%',
   boxShadow: '1px 2px 6px rgba(0,0,0,0.1)',
   '&>div': {
