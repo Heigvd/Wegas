@@ -7,7 +7,7 @@ import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
-import {expandWidth, flex, flexBetween, flexRow} from '../../css/classes';
+import { expandWidth, flex, flexBetween, flexRow } from '../../css/classes';
 import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
@@ -335,32 +335,35 @@ export default function Overview({
 
   const removeFiltersButton = () => {
     return (
-        <div className={cx(flex, flexRow, flexBetween)}>
-          <div className={cx(flex, flexRow)}>
-            <Button className={cx(filterSecondaryButtonStyle)}
-                label={i18nValues.selectAll}
-              tooltip={i18nValuesTrainer.manageColumns}
-              onClick={() => setFilterState(undefined)}
-            />
-            <Button className={cx(filterSecondaryButtonStyle)}
-                label={i18nValues.deselectAll}
-              tooltip={i18nValuesTrainer.manageColumns}
-              onClick={() =>
-                setFilterState(buildFilter(overviewState!.header, false))
-              }
-            />
-          </div>
-          <Button className={cx(filterPrimaryButtonStyle)}
-              label={i18nValues.ok}
-              onClick={() => {
-                setLayoutState({
-                  modalState: 'Close',
-                  team: undefined,
-                  item: undefined,
-                });
-              }}
+      <div className={cx(flex, flexRow, flexBetween)}>
+        <div className={cx(flex, flexRow)}>
+          <Button
+            className={cx(filterSecondaryButtonStyle)}
+            label={i18nValues.selectAll}
+            tooltip={i18nValuesTrainer.manageColumns}
+            onClick={() => setFilterState(undefined)}
+          />
+          <Button
+            className={cx(filterSecondaryButtonStyle)}
+            label={i18nValues.deselectAll}
+            tooltip={i18nValuesTrainer.manageColumns}
+            onClick={() =>
+              setFilterState(buildFilter(overviewState!.header, false))
+            }
           />
         </div>
+        <Button
+          className={cx(filterPrimaryButtonStyle)}
+          label={i18nValues.ok}
+          onClick={() => {
+            setLayoutState({
+              modalState: 'Close',
+              team: undefined,
+              item: undefined,
+            });
+          }}
+        />
+      </div>
     );
   };
 

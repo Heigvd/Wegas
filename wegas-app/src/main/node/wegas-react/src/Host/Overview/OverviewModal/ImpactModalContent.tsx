@@ -7,12 +7,14 @@ import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';
 import {
-    autoScroll, expandBoth, expandHeight,
-    flex,
-    flexColumn,
-    flexDistribute,
-    flexRow,
-    grow,
+  autoScroll,
+  expandBoth,
+  expandHeight,
+  flex,
+  flexColumn,
+  flexDistribute,
+  flexRow,
+  grow,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
@@ -24,9 +26,9 @@ import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
 
 const jsonFormStyle: string = css({
-    '>div': {
-        margin: '0',
-    },
+  '>div': {
+    margin: '0',
+  },
 });
 
 function recurscript(
@@ -99,18 +101,18 @@ export function ImpactModalComputedContent({
               className={cx(flex, flexColumn, expandHeight)}
             >
               <h2>{schema.description}</h2>
-                <div className={cx(autoScroll, jsonFormStyle)}>
-              <JSONForm
-                value={payloads[index] || {}}
-                schema={schema}
-                onChange={values =>
-                  setPayloads(o => {
-                    o[index] = values;
-                    return o;
-                  })
-                }
-              />
-                </div>
+              <div className={cx(autoScroll, jsonFormStyle)}>
+                <JSONForm
+                  value={payloads[index] || {}}
+                  schema={schema}
+                  onChange={values =>
+                    setPayloads(o => {
+                      o[index] = values;
+                      return o;
+                    })
+                  }
+                />
+              </div>
             </div>
           );
         })}
@@ -239,42 +241,41 @@ export function ImpactModalContent({
     };
 
     return showAdvancedImpact ? (
-            <ReparentableRoot>
-                    <TabLayout
-                        components={[
-                            {
-                                tabId: 'Impacts',
-                                content: (
-                                    <ImpactModalComputedContent
-                                        team={team}
-                                        actions={actions}
-                                        onExit={onExit}
-                                        refreshOverview={refreshOverview}
-                                    />
-                                ),
-                            },
-                            {
-                                tabId: 'Advanced impacts',
-                                content: (
-                                    <ImpactModalAdvancedContent
-                                        team={team}
-                                        onExit={onExit}
-                                        refreshOverview={refreshOverview}
-                                    />
-                                ),
-                            },
-                        ]}
-                        classNames={{
-                            header: tabsLineStyle,
-                            tabsClassName: overviewTabStyle,
-                            general: expandBoth,
-                        }}
-                        CustomTab={OverviewTab}
-                    />
-            </ReparentableRoot >
-  ) :
-      (
-          <ImpactModalComputedContent
+      <ReparentableRoot>
+        <TabLayout
+          components={[
+            {
+              tabId: 'Impacts',
+              content: (
+                <ImpactModalComputedContent
+                  team={team}
+                  actions={actions}
+                  onExit={onExit}
+                  refreshOverview={refreshOverview}
+                />
+              ),
+            },
+            {
+              tabId: 'Advanced impacts',
+              content: (
+                <ImpactModalAdvancedContent
+                  team={team}
+                  onExit={onExit}
+                  refreshOverview={refreshOverview}
+                />
+              ),
+            },
+          ]}
+          classNames={{
+            header: tabsLineStyle,
+            tabsClassName: overviewTabStyle,
+            general: expandBoth,
+          }}
+          CustomTab={OverviewTab}
+        />
+      </ReparentableRoot>
+    ) : (
+      <ImpactModalComputedContent
         team={team}
         actions={actions}
         onExit={onExit}
