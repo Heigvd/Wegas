@@ -8,7 +8,7 @@ import {
   flex,
   flexColumn,
   flexRow,
-  flexDistribute,
+  flexDistribute, expandBoth, autoScroll,
 } from '../../../css/classes';
 import { Game } from '../../../data/selectors';
 import JSONForm from 'jsoninput';
@@ -116,8 +116,9 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
       All the user of this team or the game choosed to hide their e-mail adress
     </pre>
   ) : (
-    <div className={cx(flex, flexColumn)}>
+    <div className={cx(flex, flexColumn, expandBoth)}>
       <h2>Send e-mail</h2>
+      <div className={autoScroll}>
       <JSONForm
         value={emails}
         schema={mailFormSchema}
@@ -125,6 +126,7 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
           setEmails(o => ({ ...o, subject, body }))
         }
       />
+      </div>
       <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
         <Button
           label="Send e-mail"

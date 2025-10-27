@@ -338,12 +338,12 @@ export default function Overview({
         <div className={cx(flex, flexRow, flexBetween)}>
           <div className={cx(flex, flexRow)}>
             <Button className={cx(filterSecondaryButtonStyle)}
-                label={i18nValuesTrainer.selectAll}
+                label={i18nValues.selectAll}
               tooltip={i18nValuesTrainer.manageColumns}
               onClick={() => setFilterState(undefined)}
             />
             <Button className={cx(filterSecondaryButtonStyle)}
-                label={i18nValuesTrainer.deselectAll}
+                label={i18nValues.deselectAll}
               tooltip={i18nValuesTrainer.manageColumns}
               onClick={() =>
                 setFilterState(buildFilter(overviewState!.header, false))
@@ -351,7 +351,7 @@ export default function Overview({
             />
           </div>
           <Button className={cx(filterPrimaryButtonStyle)}
-              label={i18nValuesTrainer.ok}
+              label={i18nValues.ok}
               onClick={() => {
                 setLayoutState({
                   modalState: 'Close',

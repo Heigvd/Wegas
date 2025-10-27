@@ -21,6 +21,9 @@ const filterListContainerStyle = css ({
 const filterListStyle = css({
     width: '100%',
     height: '100%',
+    '>div>fieldset':  {
+        marginBottom: '0',
+    },
     'fieldset':  {
         width: '90%',
         border: 'none',
