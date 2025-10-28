@@ -86,7 +86,7 @@ export default function HTMLEditor({
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
       />
-{/*      <h2>Old version</h2>
+      <h2>Old version</h2>
       <JoditReactEditor
         value={value}
         onChange={onEditorChanges}
@@ -95,7 +95,7 @@ export default function HTMLEditor({
         readonly={readOnly}
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
-      />*/}
+      />
       {showFileBrowsing && (
         <Modal onExit={() => setShowFileBrowsing(false)}>
           <FileBrowser

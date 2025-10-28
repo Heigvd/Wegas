@@ -235,7 +235,7 @@ export default function JoditReactEditor({
     jodit.current?.events.on('change', onChangeCallback);
     return () => {
       jodit.current?.events.off('change', onChangeCallback);
-    };x 
+    };
   }, [onChangeCallback]);
 
   React.useEffect(() => {

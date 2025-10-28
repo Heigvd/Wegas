@@ -1,12 +1,12 @@
 import React from 'react';
 import { css } from '@emotion/css';
 import { themeVar } from '../Theme/ThemeVars';
-import JoditEditor from 'jodit-react';
 import { Config } from 'jodit/types/config';
 import { ButtonsGroups, DeepPartial } from 'jodit/types/types';
 import { Jodit } from 'jodit';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { wlog } from '../../Helper/wegaslog';
+import JoditEditor from 'jodit-react';
 //import JoditEditorTemp from './TempJoditReactCopy';
 
 type FilePickerCallBackType = ((callback: (path: string) => void) => void) | undefined;
@@ -200,7 +200,7 @@ export default function JoditReactEditor2({
       wlog('on change callback', value);
       if (onChange && v !== prev) {
         const injected = toInjectorStyle(v);
-        wlog('Injector style', injected);
+        wlog('To Injector style funct', injected);
         onChange(injected);
       }
     },
@@ -215,8 +215,9 @@ export default function JoditReactEditor2({
     wlog('blur callback', v, me);
   }, []);
 
-  wlog('rerender J2 RECEIVED ', value);
+  wlog('rerender J2 RECEIVED', value);
   wlog('rerender TRANSFORMED', toFullUrl(value));
+
 
   return (
     <div className={wysiwygStyle}>
@@ -225,9 +226,15 @@ export default function JoditReactEditor2({
         config={configRef.current}
         onChange={(s) => onChangeCallback(s)}
         onBlur={onBlurCB}
+        editorRef={newEditorRef}
       />
     </div>
   )
+}
+
+let count = 0;
+function newEditorRef(_jodit: any) {
+  wlog('Hi hi new ref', count++);
 }
 
 /*
