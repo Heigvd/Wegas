@@ -134,6 +134,7 @@ export function OverviewRow({
                     <HTMLEditor
                       value={String(value)}
                       onChange={onChange}
+                      toolbarLayout={'player'}
                     />
                   );
                 }}

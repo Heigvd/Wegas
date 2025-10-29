@@ -189,6 +189,7 @@ function WhChoiceDisplay({
             }}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
+            toolbarLayout={'player'}
           />
         )}
       </div>

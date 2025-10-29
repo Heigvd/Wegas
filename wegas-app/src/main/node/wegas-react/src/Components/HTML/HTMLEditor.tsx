@@ -3,7 +3,7 @@ import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { classNameOrEmpty } from '../../Helper/className';
 import { Modal } from '../Modal';
-import JoditReactEditor from './JoditReactEditor';
+//import JoditReactEditor from './JoditReactEditor';
 import JoditReactEditor2 from './JoditReactEditor2';
 
 type CallbackFN = (url: string) => void;
@@ -36,7 +36,7 @@ export interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
   /**
    * display a custom toolbar
    */
-  toolbarLayout?: 'full' | 'player';
+  toolbarLayout: 'full' | 'player';
 }
 
 export default function HTMLEditor({
@@ -77,16 +77,16 @@ export default function HTMLEditor({
 
   return (
     <div className={classNameOrEmpty(className)} style={style} id={id}>
-      <JoditReactEditor2
-        value={value}
+     <JoditReactEditor2
+        value={value ?? ''}
         onChange={onEditorChanges}
-        placeholder={placeholder}
-        disabled={disabled}
-        readonly={readOnly}
+        placeholder={placeholder ?? ''}
+        disabled={disabled ?? false}
+        readonly={readOnly ?? false}
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
       />
-      <h2>Old version</h2>
+      {/*<h2>Old version</h2>
       <JoditReactEditor
         value={value}
         onChange={onEditorChanges}
@@ -95,7 +95,7 @@ export default function HTMLEditor({
         readonly={readOnly}
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
-      />
+      />*/}
       {showFileBrowsing && (
         <Modal onExit={() => setShowFileBrowsing(false)}>
           <FileBrowser
@@ -105,7 +105,6 @@ export default function HTMLEditor({
               file &&
                 fileBrowsingFunc.current &&
                 fileBrowsingFunc.current(
-                  document.location.origin +
                     fileURL(generateAbsolutePath(file)),
                 );
             }}

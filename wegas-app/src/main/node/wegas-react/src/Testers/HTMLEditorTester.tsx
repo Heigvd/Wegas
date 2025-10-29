@@ -10,7 +10,7 @@ export default function WegasScriptEditorTester() {
     <div className={cx(flex, expandBoth, flexColumn)}>
       <div style={{ height: '100%' }}>
         <Toggler value={enabled} onChange={setEnabled} />
-        <HTMLEditor disabled={!enabled} />
+        <HTMLEditor disabled={!enabled} toolbarLayout={'full'} />
       </div>
     </div>
   );

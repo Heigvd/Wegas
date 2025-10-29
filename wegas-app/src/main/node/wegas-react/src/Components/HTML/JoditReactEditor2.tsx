@@ -7,6 +7,7 @@ import { Jodit } from 'jodit';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { wlog } from '../../Helper/wegaslog';
 import JoditEditor from 'jodit-react';
+import { IJodit } from 'jodit/esm/types/jodit';
 //import JoditEditorTemp from './TempJoditReactCopy';
 
 type FilePickerCallBackType = ((callback: (path: string) => void) => void) | undefined;
@@ -15,19 +16,19 @@ export interface JoditEditorProps {
   /**
    * value - content to inject in the editor
    */
-  value?: string;
+  value: string;
   /**
    * When no content, this text is displayed in the editor
    */
-  placeholder?: string;
+  placeholder: string;
   /**
    * the editor is disabled
    */
-  disabled?: boolean;
+  disabled: boolean;
   /**
    * read only mode
    */
-  readonly?: boolean;
+  readonly: boolean;
   /**
    * onChange - function called each time the content of the editor changes
    */
@@ -41,7 +42,7 @@ export interface JoditEditorProps {
    * full => with link and image insertion and html raw edition
    * player => w/o the above
    */
-  toolbarLayout?: 'full' | 'player';
+  toolbarLayout: 'full' | 'player';
 }
 
 /**
@@ -114,14 +115,14 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
 }
 
 const disabledPlugins : string[] = [
-  /*'add-new-line',
+  'add-new-line',
   'drag-and-drop',
   'drag-and-drop-element',
   'iframe',
   'video',
   'print',
   'media',
-  'powered-by-jodit',*/
+  'powered-by-jodit',
 ];
 
 function addCustomFunctions(buttonsConfig: ButtonsGroups, showFilePickerFunc: FilePickerCallBackType):void {
@@ -161,6 +162,9 @@ function addCustomFunctions(buttonsConfig: ButtonsGroups, showFilePickerFunc: Fi
   }
 }
 
+let c = 0;
+let k = 0;
+
 /***** REACT COMPONENT *****/
 export default function JoditReactEditor2({
   value,
@@ -172,14 +176,14 @@ export default function JoditReactEditor2({
   toolbarLayout,
 }: JoditEditorProps){
 
-  const configRef = React.useRef<DeepPartial<Config>>();
-
-  React.useEffect(() => {
+  const config : DeepPartial<Config> = React.useMemo(() => {
     wlog('use effect config');
+    wlog('Toolbar layout', toolbarLayout);
+    wlog('placeholder', placeholder);
     const btnConfig = getButtonConfig(toolbarLayout);
 
     addCustomFunctions(btnConfig, showFilePickerFunc);
-    configRef.current = {
+    return {
       defaultActionOnPaste : 'insert_only_text',
       disablePlugins : disabledPlugins,
       buttons: btnConfig,
@@ -189,56 +193,56 @@ export default function JoditReactEditor2({
       removeButtons: ['classSpan'],
       readonly: readonly,
       disabled: disabled,
-      placeholder: placeholder,
+      placeholder: placeholder || '',
     };
   }, [disabled, readonly, showFilePickerFunc, placeholder]);
 
+  const lastChange = React.useRef(value);
+  const instanceCount = React.useRef(k++);
+  const joditRef: React.MutableRefObject<IJodit | undefined> = React.useRef();
+
   const onChangeCallback = React.useCallback(
-    (value: string | undefined, oldValue: string | undefined= undefined) => {
-      const prev = cleanValue(oldValue);
+    (value: string) => {
+      lastChange.current = value;
       const v = cleanValue(value);
-      wlog('on change callback', value);
-      if (onChange && v !== prev) {
+      wlog('****************** on change ', c++);
+      wlog('on change callback f', value);
+      if (onChange) {
         const injected = toInjectorStyle(v);
-        wlog('To Injector style funct', injected);
+        wlog('To Injector style fu', injected);
+
         onChange(injected);
       }
     },
     [onChange],
   );
-  /*
-  const onChangeCallback2 = React.useCallback((...args: any[])=> {
-    wlog('change callback 2', args);
-  }, []);
-*/
-  const onBlurCB = React.useCallback((v: string, me: MouseEvent) => {
-    wlog('blur callback', v, me);
-  }, []);
 
-  wlog('rerender J2 RECEIVED', value);
-  wlog('rerender TRANSFORMED', toFullUrl(value));
+  const onBlur = React.useCallback((v: string, me: MouseEvent) => {
+    wlog('blur callback', v, me);
+  }, [onChange]);
+
+  const setRef = React.useCallback((j : IJodit) => (joditRef.current = j), []);
+
+  wlog('UNFOCUSED', !joditRef.current?.isFocused);
+  const updatedValue = joditRef.current?.isFocused ? lastChange.current : toFullUrl(value);
+  wlog('rerender J2 RECEIVED', instanceCount, value);
+  wlog('rerender TRANSMITTED', instanceCount, updatedValue);
 
 
   return (
     <div className={wysiwygStyle}>
       <JoditEditor
-        value={toFullUrl(value)}
-        config={configRef.current}
+        value={updatedValue}
+        config={config}
         onChange={(s) => onChangeCallback(s)}
-        onBlur={onBlurCB}
-        editorRef={newEditorRef}
+        onBlur={(v, me) => onBlur(v,me)}
+        editorRef={setRef}
       />
     </div>
   )
 }
 
-let count = 0;
-function newEditorRef(_jodit: any) {
-  wlog('Hi hi new ref', count++);
-}
-
 /*
-function onChangeCallback3(v: string){
-  wlog('change 3', v);
-};
-*/
+function editorRefChange(_j: IJodit){
+  wlog('New editor');
+}*/
