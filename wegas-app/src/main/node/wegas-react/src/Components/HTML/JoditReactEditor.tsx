@@ -76,7 +76,6 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         '|',
         'link',
         IMG_PLACEHOLDER,
-        'image',
         '|',
         SRC_PLACEHOLDER,
         'table',
@@ -112,13 +111,13 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
 }
 
 const disabledPlugins = [
-  /*'add-new-line',
+  'add-new-line',
   'drag-and-drop',
   'drag-and-drop-element',
   'iframe',
   'video',
   'print',
-  'media',*/
+  'media',
   'powered-by-jodit',
 ];
 

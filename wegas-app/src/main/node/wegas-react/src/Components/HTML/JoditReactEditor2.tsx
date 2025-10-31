@@ -8,6 +8,7 @@ import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import { wlog } from '../../Helper/wegaslog';
 import JoditEditor from 'jodit-react';
 import { IJodit } from 'jodit/esm/types/jodit';
+import { classesCTX } from '../Contexts/ClassesProvider';
 //import JoditEditorTemp from './TempJoditReactCopy';
 
 type FilePickerCallBackType = ((callback: (path: string) => void) => void) | undefined;
@@ -73,10 +74,11 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         'ul',
         'ol',
         '|',
-        'left',
+        /*'left',
         'center',
         'right',
-        'justify',
+        'justify',*/
+        'customAlignement',
         '|',
         'link',
         IMG_PLACEHOLDER,
@@ -100,16 +102,18 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         'ul',
         'ol',
         '|',
-        'left',
+        /*'left',
         'center',
         'right',
-        'justify',
+        'justify',*/
+        'customAlignement',
         '|',
         'table',
         '|',
         'paragraph',
         'fontsize',
         'brush',
+        'classSpan'
       ];
   }
 }
@@ -176,34 +180,62 @@ export default function JoditReactEditor2({
   toolbarLayout,
 }: JoditEditorProps){
 
-  const config : DeepPartial<Config> = React.useMemo(() => {
+  const { classes } = React.useContext(classesCTX);
+
+  const configuration : DeepPartial<Config> = React.useMemo(() => {
     wlog('use effect config');
     wlog('Toolbar layout', toolbarLayout);
     wlog('placeholder', placeholder);
     const btnConfig = getButtonConfig(toolbarLayout);
 
     addCustomFunctions(btnConfig, showFilePickerFunc);
-    return {
+    const config: DeepPartial<Config> =  {
       defaultActionOnPaste : 'insert_only_text',
+      askBeforePasteFromWord : false,
+      askBeforePasteHTML : false,
+      statusbar: false,
       disablePlugins : disabledPlugins,
       buttons: btnConfig,
       buttonsMD: btnConfig,
       buttonsSM: btnConfig,
       buttonsXS: btnConfig,
-      removeButtons: ['classSpan'],
       readonly: readonly,
       disabled: disabled,
       placeholder: placeholder || '',
+      //toolbarButtonSize: 'large',
     };
-  }, [disabled, readonly, showFilePickerFunc, placeholder]);
+    config.controls = {
+      customAlignement: {
+        icon: 'dots',
+        tooltip: 'Alignement',
+        list: {
+          left: 'left',
+          center : 'center',
+          right : 'right',
+          justify: 'justify',
+        },
+      },
+      classSpan: { }
+    }
 
-  const lastChange = React.useRef(value);
+    if (Object.keys(classes).length && config.controls) {
+      config.controls.classSpan.list = classes;
+    } else {
+      config.removeButtons = ['classSpan'];
+    }
+
+    return config;
+
+  }, [disabled, readonly, showFilePickerFunc, placeholder, classes]);
+
+
+  const lastEditorChange = React.useRef(value);
   const instanceCount = React.useRef(k++);
-  const joditRef: React.MutableRefObject<IJodit | undefined> = React.useRef();
+  const joditRef = React.useRef<IJodit>();
 
   const onChangeCallback = React.useCallback(
     (value: string) => {
-      lastChange.current = value;
+      lastEditorChange.current = value;
       const v = cleanValue(value);
       wlog('****************** on change ', c++);
       wlog('on change callback f', value);
@@ -224,7 +256,7 @@ export default function JoditReactEditor2({
   const setRef = React.useCallback((j : IJodit) => (joditRef.current = j), []);
 
   wlog('UNFOCUSED', !joditRef.current?.isFocused);
-  const updatedValue = joditRef.current?.isFocused ? lastChange.current : toFullUrl(value);
+  const updatedValue = joditRef.current?.isFocused ? lastEditorChange.current : toFullUrl(value);
   wlog('rerender J2 RECEIVED', instanceCount, value);
   wlog('rerender TRANSMITTED', instanceCount, updatedValue);
 
@@ -233,7 +265,7 @@ export default function JoditReactEditor2({
     <div className={wysiwygStyle}>
       <JoditEditor
         value={updatedValue}
-        config={config}
+        config={configuration}
         onChange={(s) => onChangeCallback(s)}
         onBlur={(v, me) => onBlur(v,me)}
         editorRef={setRef}
