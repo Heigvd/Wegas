@@ -5,11 +5,9 @@ import { Config } from 'jodit/types/config';
 import { ButtonsGroups, DeepPartial } from 'jodit/types/types';
 import { Jodit } from 'jodit';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
-import { wlog } from '../../Helper/wegaslog';
 import JoditEditor from 'jodit-react';
 import { IJodit } from 'jodit/esm/types/jodit';
 import { classesCTX } from '../Contexts/ClassesProvider';
-//import JoditEditorTemp from './TempJoditReactCopy';
 
 type FilePickerCallBackType = ((callback: (path: string) => void) => void) | undefined;
 
@@ -44,15 +42,6 @@ export interface JoditEditorProps {
    * player => w/o the above
    */
   toolbarLayout: 'full' | 'player';
-}
-
-/**
- * @param value value to clean
- * @returns a sanitized string stripped of \n
- */
-function cleanValue(value: string | undefined): string {
-  const v = value || '';
-  return sanitize(v.replace(/\n/g, ''));
 }
 
 const wysiwygStyle = css({
@@ -136,7 +125,7 @@ function addCustomFunctions(buttonsConfig: ButtonsGroups, showFilePickerFunc: Fi
   if (imgIndex > -1) {
     buttonsConfig[imgIndex] = {
       icon: 'image',
-
+      tooltip: 'Image',
       exec: function (editor: Jodit) {
         if (showFilePickerFunc) {
           const s = editor.selection;
@@ -144,7 +133,6 @@ function addCustomFunctions(buttonsConfig: ButtonsGroups, showFilePickerFunc: Fi
             s.focus();
             s.restore();
             s.insertImage(path);
-            wlog('INSERTED path ', path)
           });
         }
       },
@@ -154,22 +142,20 @@ function addCustomFunctions(buttonsConfig: ButtonsGroups, showFilePickerFunc: Fi
   const sourceIndex = buttonsConfig.findIndex(e => e === SRC_PLACEHOLDER);
   //custom button for source mode
   if (sourceIndex > -1) {
+    const WYSIWYG = Jodit.constants.MODE_WYSIWYG;
+    const SPLIT = Jodit.constants.MODE_SPLIT;
+
     buttonsConfig[sourceIndex] = {
       icon: 'source',
+      tooltip: 'Source',
       exec: function (editor: Jodit) {
-        const WYSIWYG = Jodit.constants.MODE_WYSIWYG;
-        const SPLIT = Jodit.constants.MODE_SPLIT;
-        const currMode = editor.getMode();
-        editor.setMode(currMode === WYSIWYG ? SPLIT : WYSIWYG);
+        editor.setMode(editor.getMode() === WYSIWYG ? SPLIT : WYSIWYG);
       },
     };
   }
 }
 
-let c = 0;
-let k = 0;
-
-/***** REACT COMPONENT *****/
+/***************** REACT COMPONENT ***************/
 export default function JoditReactEditor2({
   value,
   onChange,
@@ -183,9 +169,6 @@ export default function JoditReactEditor2({
   const { classes } = React.useContext(classesCTX);
 
   const configuration : DeepPartial<Config> = React.useMemo(() => {
-    wlog('use effect config');
-    wlog('Toolbar layout', toolbarLayout);
-    wlog('placeholder', placeholder);
     const btnConfig = getButtonConfig(toolbarLayout);
 
     addCustomFunctions(btnConfig, showFilePickerFunc);
@@ -203,22 +186,22 @@ export default function JoditReactEditor2({
       disabled: disabled,
       placeholder: placeholder || '',
       //toolbarButtonSize: 'large',
-    };
-    config.controls = {
-      customAlignement: {
-        icon: 'dots',
-        tooltip: 'Alignement',
-        list: {
-          left: 'left',
-          center : 'center',
-          right : 'right',
-          justify: 'justify',
+      controls: {
+        customAlignement: {
+          icon: 'dots',
+          tooltip: 'Alignement',
+          list: {
+            left: 'left',
+            center : 'center',
+            right : 'right',
+            justify: 'justify',
+          },
         },
-      },
-      classSpan: { }
-    }
+        classSpan: { }
+      }
+    };
 
-    if (Object.keys(classes).length && config.controls) {
+    if (Object.keys(classes).length && config.controls?.classSpan) {
       config.controls.classSpan.list = classes;
     } else {
       config.removeButtons = ['classSpan'];
@@ -230,36 +213,24 @@ export default function JoditReactEditor2({
 
 
   const lastEditorChange = React.useRef(value);
-  const instanceCount = React.useRef(k++);
   const joditRef = React.useRef<IJodit>();
+  const setRef = React.useCallback((j : IJodit) => (joditRef.current = j), []);
+
+  // Update strategy: to avoid stutter and caret jumps,
+  // all incoming changes are ignored when the editor is focused
+  const updatedValue = joditRef.current?.isFocused ? lastEditorChange.current : toFullUrl(value);
 
   const onChangeCallback = React.useCallback(
     (value: string) => {
       lastEditorChange.current = value;
-      const v = cleanValue(value);
-      wlog('****************** on change ', c++);
-      wlog('on change callback f', value);
+      const v = sanitize(value.replace(/\n/g, ''));
       if (onChange) {
         const injected = toInjectorStyle(v);
-        wlog('To Injector style fu', injected);
-
         onChange(injected);
       }
     },
     [onChange],
   );
-
-  const onBlur = React.useCallback((v: string, me: MouseEvent) => {
-    wlog('blur callback', v, me);
-  }, [onChange]);
-
-  const setRef = React.useCallback((j : IJodit) => (joditRef.current = j), []);
-
-  wlog('UNFOCUSED', !joditRef.current?.isFocused);
-  const updatedValue = joditRef.current?.isFocused ? lastEditorChange.current : toFullUrl(value);
-  wlog('rerender J2 RECEIVED', instanceCount, value);
-  wlog('rerender TRANSMITTED', instanceCount, updatedValue);
-
 
   return (
     <div className={wysiwygStyle}>
@@ -267,14 +238,8 @@ export default function JoditReactEditor2({
         value={updatedValue}
         config={configuration}
         onChange={(s) => onChangeCallback(s)}
-        onBlur={(v, me) => onBlur(v,me)}
         editorRef={setRef}
       />
     </div>
   )
 }
-
-/*
-function editorRefChange(_j: IJodit){
-  wlog('New editor');
-}*/

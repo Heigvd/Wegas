@@ -3,7 +3,6 @@ import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { classNameOrEmpty } from '../../Helper/className';
 import { Modal } from '../Modal';
-//import JoditReactEditor from './JoditReactEditor';
 import JoditReactEditor2 from './JoditReactEditor2';
 
 type CallbackFN = (url: string) => void;
@@ -86,16 +85,6 @@ export default function HTMLEditor({
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
       />
-      {/*<h2>Old version</h2>
-      <JoditReactEditor
-        value={value}
-        onChange={onEditorChanges}
-        placeholder={placeholder}
-        disabled={disabled}
-        readonly={readOnly}
-        toolbarLayout={toolbarLayout}
-        showFilePickerFunc={showFilePicker}
-      />*/}
       {showFileBrowsing && (
         <Modal onExit={() => setShowFileBrowsing(false)}>
           <FileBrowser
