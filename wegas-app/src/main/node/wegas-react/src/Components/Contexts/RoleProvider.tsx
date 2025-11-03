@@ -10,9 +10,9 @@ import {
 } from '../../i18n/internalTranslator';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
 
-export const EditorRoleData = 'WEGAS_USER_ROLE';
+const EditorRoleData = 'WEGAS_USER_ROLE';
 
-export interface RoleContext {
+interface RoleContext {
   currentRole: string;
   setRole: (role: string) => void;
 }
@@ -34,14 +34,14 @@ function RoleContext({
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,
   );
 
+  const currentRole = Object.values(availableRoles).some(
+    role => role.id === storedRole,
+  ) ? storedRole : defaultRoleId
+
   return (
     <roleCTX.Provider
       value={{
-        currentRole: Object.values(availableRoles).some(
-          role => role.id === storedRole,
-        )
-          ? storedRole
-          : defaultRoleId,
+        currentRole: currentRole,
         setRole: role => {
           window.localStorage.setItem(EditorRoleData, role);
           setRole(role);
