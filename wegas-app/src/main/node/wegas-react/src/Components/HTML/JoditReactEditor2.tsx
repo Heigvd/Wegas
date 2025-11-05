@@ -6,8 +6,9 @@ import { ButtonsGroups, DeepPartial } from 'jodit/types/types';
 import { Jodit } from 'jodit';
 import sanitize, { toFullUrl, toInjectorStyle } from '../../Helper/sanitize';
 import JoditEditor from 'jodit-react';
-import { IJodit } from 'jodit/esm/types/jodit';
 import { classesCTX } from '../Contexts/ClassesProvider';
+import { useDebounceFn } from '../Hooks/useDebounce';
+import { wlog } from '../../Helper/wegaslog';
 
 type FilePickerCallBackType = ((callback: (path: string) => void) => void) | undefined;
 
@@ -212,33 +213,27 @@ export default function JoditReactEditor2({
   }, [disabled, readonly, showFilePickerFunc, placeholder, classes]);
 
 
-  const lastEditorChange = React.useRef(value);
-  const joditRef = React.useRef<IJodit>();
-  const setRef = React.useCallback((j : IJodit) => (joditRef.current = j), []);
-
-  // Update strategy: to avoid stutter and caret jumps,
-  // all incoming changes are ignored when the editor is focused
-  const updatedValue = joditRef.current?.isFocused ? lastEditorChange.current : toFullUrl(value);
-
   const onChangeCallback = React.useCallback(
-    (value: string) => {
-      lastEditorChange.current = value;
+    useDebounceFn((value: string) => {
+      wlog('value ', value);
       const v = sanitize(value.replace(/\n/g, ''));
+      wlog('valsan', v);
       if (onChange) {
         const injected = toInjectorStyle(v);
+        wlog('change', injected)
         onChange(injected);
       }
-    },
+    }, 1000),
     [onChange],
   );
 
+  wlog('render', toFullUrl(value));
   return (
     <div className={wysiwygStyle}>
       <JoditEditor
-        value={updatedValue}
+        value={toFullUrl(value)}
         config={configuration}
         onChange={(s) => onChangeCallback(s)}
-        editorRef={setRef}
       />
     </div>
   )

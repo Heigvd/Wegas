@@ -120,8 +120,7 @@ export default function sanitize(html: string): string {
   if (updated) {
       updated = updated.replace(
           new RegExp('data-file="([^"]*)"', 'gi'),
-          `src="${fileURL('')}$1"
-           href="${fileURL('')}$1"`,
+          `src="${fileURL('')}$1" href="${fileURL('')}$1"`,
       ); // @hack Place both href and src so it
       // will work for both <a> and <img>
       // elements
@@ -135,15 +134,14 @@ export default function sanitize(html: string): string {
 */
 export function toInjectorStyle(content: string) {
 
-  let i = 0;
+  // Replace absolute path with injector style path
   return content
       .replace(
-          new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)")', 'gi'),
-          (_, __, ___, file ) => {
-            i++;
-            return i == 1 ? `data-file="${file}"` : ''
-          }
-        //'data-file="$3"',
-      ) // Replace absolute path with injector style path
-  
+          //new RegExp('((src)="[^"]*/rest/GameModel/[^"]*/File/read/([^"\\s]*)(\\s+)?")', 'gi'),
+          new RegExp('((src)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)"\\s*)', 'gi'),
+
+        'data-file="$3"',
+      //).replace(new RegExp('((href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"\\s]*)(\\s+)?")', 'gi'),'')
+      ).replace(new RegExp('((href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)"\\s*)', 'gi'),'')
+
 }
