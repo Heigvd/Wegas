@@ -3,7 +3,7 @@ import { fileURL, generateAbsolutePath } from '../../API/files.api';
 import { FileBrowser } from '../../Editor/Components/FileBrowser/FileBrowser';
 import { classNameOrEmpty } from '../../Helper/className';
 import { Modal } from '../Modal';
-import JoditReactEditor2 from './JoditReactEditor2';
+import JoditReactEditor from './JoditReactEditor';
 
 type CallbackFN = (url: string) => void;
 
@@ -76,7 +76,7 @@ export default function HTMLEditor({
 
   return (
     <div className={classNameOrEmpty(className)} style={style} id={id}>
-     <JoditReactEditor2
+     <JoditReactEditor
         value={value ?? ''}
         onChange={onEditorChanges}
         placeholder={placeholder ?? ''}
