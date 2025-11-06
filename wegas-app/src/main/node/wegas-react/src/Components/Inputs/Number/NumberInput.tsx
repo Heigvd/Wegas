@@ -14,14 +14,17 @@ interface NumberInputProps extends InputProps<number> {
   min?: number;
   max?: number;
   toggleInputDataError?: React.Dispatch<React.SetStateAction<boolean>>;
+  ignoreChangesWhileFocused?: boolean
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value } = props;
+  const { value, ignoreChangesWhileFocused } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
+
+  const [focused, updateFocusedState] = React.useState(false);
 
   const onChange = (newValue: string | number) => {
     const numberValue = Number(newValue);
@@ -39,10 +42,13 @@ export function NumberInput(props: NumberInputProps) {
 
   React.useEffect(() => {
     // Prevent wegas value from overriding current input
-    if (value !== Number(input)) {
+    if(ignoreChangesWhileFocused && focused){
+      // ignore
+    }
+    else if (value !== Number(input)) {
       setInput(String(value));
     }
-  }, [value]);
+  }, [value, ignoreChangesWhileFocused]);
 
   return (
     <div className={cx(flexColumn, expandWidth)}>
@@ -55,6 +61,8 @@ export function NumberInput(props: NumberInputProps) {
         className={cx(numberInputStyle, props.className)}
         onChange={newValue => onChange(newValue)}
         inputType="text"
+        onFocus={(_) => updateFocusedState(true)}
+        onBlur={(_) => updateFocusedState(false)}
         />
     </div>
   );
