@@ -26,7 +26,7 @@ export function NumberInput(props: NumberInputProps) {
 
   const [focused, updateFocusedState] = React.useState(false);
 
-  const onChange = (newValue: string | number) => {
+  const onChange = React.useCallback((newValue: string | number) => {
     const numberValue = Number(newValue);
     const stringValue = String(newValue);
     if (numberValue !== Number(input)) {
@@ -38,7 +38,7 @@ export function NumberInput(props: NumberInputProps) {
         props.toggleInputDataError && props.toggleInputDataError(true);
       }
     }
-  };
+  }, [min, max, props.toggleInputDataError, props.onChange]);
 
   React.useEffect(() => {
     // Prevent wegas value from overriding current input
@@ -59,7 +59,7 @@ export function NumberInput(props: NumberInputProps) {
         {...omit(props, 'onChange', 'value', 'className')}
         value={input}
         className={cx(numberInputStyle, props.className)}
-        onChange={newValue => onChange(newValue)}
+        onChange={onChange}
         inputType="text"
         onFocus={(_) => updateFocusedState(true)}
         onBlur={(_) => updateFocusedState(false)}
