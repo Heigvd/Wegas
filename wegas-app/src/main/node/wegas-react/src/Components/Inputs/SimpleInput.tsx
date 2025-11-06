@@ -89,6 +89,10 @@ export interface SimpleInputProps extends InputProps<string | number> {
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   /**
+   *
+   */
+  onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  /**
    * set width 100%
    */
   fullWidth?: boolean;
@@ -115,6 +119,7 @@ export function SimpleInput({
   className,
   style,
   onFocus,
+  onBlur,
   fullWidth,
   inputType = 'text',
   debouncingTime = 400,
@@ -156,6 +161,7 @@ export function SimpleInput({
         readOnly={readOnly}
         autoComplete={autoComplete ? 'on' : 'off'}
         onFocus={onFocus}
+        onBlur={onBlur}
       />
     );
   }
@@ -173,6 +179,7 @@ export function SimpleInput({
       readOnly={readOnly}
       autoComplete={autoComplete ? 'on' : 'off'}
       onFocus={onFocus}
+      onBlur={onBlur}
     />
   );
 }
