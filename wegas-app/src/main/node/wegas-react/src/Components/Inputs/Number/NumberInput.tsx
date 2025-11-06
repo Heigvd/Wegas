@@ -24,7 +24,7 @@ export function NumberInput(props: NumberInputProps) {
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
-  const [focused, updateFocusedState] = React.useState(false);
+  const [focused, updateFocusedState] = React.useState<boolean>(false);
 
   const onChange = React.useCallback((newValue: string | number) => {
     const numberValue = Number(newValue);

@@ -3,7 +3,6 @@ import * as React from 'react';
 import { classNameOrEmpty } from '../../Helper/className';
 import { useDebouncedOnChange } from '../Hooks/useDebounce';
 import { themeVar } from '../Theme/ThemeVars';
-import { FocusEventHandler } from 'react';
 
 export const inputDefaultCSS = {
   minWidth: '4em',
@@ -92,7 +91,7 @@ export interface SimpleInputProps extends InputProps<string | number> {
   /**
    *
    */
-  onBlur?: FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   /**
    * set width 100%
    */
