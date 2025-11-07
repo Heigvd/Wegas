@@ -117,8 +117,8 @@ export default function sanitize(html: string): string {
  * @param {string} content
  */
  export function toFullUrl(content?: string) {
-  let updated = content || '';
-  return updated.replace(
+
+  return (content || '').replace(
     new RegExp('(<img.*?)data-file="([^"]*)"', 'gi'),
     `$1src="${fileURL('')}$2"`,
   ).replace(
