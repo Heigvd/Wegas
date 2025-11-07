@@ -207,7 +207,6 @@ export default function JoditReactEditor({
     }, 1000),
     [onChange],
   );
-
   return (
     <div className={wysiwygStyle}>
       <JoditEditor

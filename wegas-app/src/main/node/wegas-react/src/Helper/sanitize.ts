@@ -112,36 +112,32 @@ export default function sanitize(html: string): string {
 }
 
 /**
- * Replace data-file attribute with complete href and src
+ * Replaces data-file attributes with complete href for <a> and src for <img>
+ * making them portable to any game model
  * @param {string} content
  */
  export function toFullUrl(content?: string) {
   let updated = content || '';
-  if (updated) {
-      updated = updated.replace(
-          new RegExp('data-file="([^"]*)"', 'gi'),
-          `src="${fileURL('')}$1" href="${fileURL('')}$1"`,
-      ); // @hack Place both href and src so it
-      // will work for both <a> and <img>
-      // elements
-  }
-  return updated;
+  return updated.replace(
+    new RegExp('(<img.*?)data-file="([^"]*)"', 'gi'),
+    `$1src="${fileURL('')}$2"`,
+  ).replace(
+    new RegExp('(<a.*?)data-file="([^"]*)"', 'gi'),
+    `$1href="${fileURL('')}$2"`,
+  );
+
 }
 
 /**
-* Replace href/src with injector style data-file attribute
-* @param {string} content
-*/
+ * Translate href/src paths to data-file=subpath style
+ * in order to make the resource reference "game model agnostic"
+ * @param {string} content
+ */
 export function toInjectorStyle(content: string) {
 
-  // Replace absolute path with injector style path
-  return content
-      .replace(
-          //new RegExp('((src)="[^"]*/rest/GameModel/[^"]*/File/read/([^"\\s]*)(\\s+)?")', 'gi'),
-          new RegExp('((src)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)"\\s*)', 'gi'),
-
-        'data-file="$3"',
-      //).replace(new RegExp('((href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"\\s]*)(\\s+)?")', 'gi'),'')
-      ).replace(new RegExp('((href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)"\\s*)', 'gi'),'')
+  return content.replace(
+    new RegExp('((src|href)="[^"]*/rest/GameModel/[^"]*/File/read/([^"]*)")', 'gi'),
+    'data-file="$3"',
+  );
 
 }
