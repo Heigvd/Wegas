@@ -9,6 +9,7 @@ import {
   addSeparator,
   removeSeparator,
 } from '../../PageComponents/tools/numberSeparator';
+import { wlog } from '../../../Helper/wegaslog';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -30,16 +31,16 @@ export function NumberInput(props: NumberInputProps) {
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
-  const [focused, updateFocusedState] = React.useState<boolean>(false);
+  const lastChange = React.useRef<string | number>(value || '');
 
-  const onChange = React.useCallback((newValue: string | number) => {
+  const propagateChange = React.useCallback((newValue: string | number) => {
     const numberValue = removeSeparator(newValue, separator);
     const stringValue = String(newValue);
 
     if (numberValue !== Number(input)) {
       isNaN(numberValue)
         ? setInput(stringValue)
-        : setInput(addSeparator(value, separator));
+        : setInput(addSeparator(numberValue, separator));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
@@ -49,15 +50,26 @@ export function NumberInput(props: NumberInputProps) {
     }
   }, [min, max, props.toggleInputDataError, props.onChange]);
 
+  const onChange = React.useCallback((newValue: string | number) => {
+    lastChange.current = newValue;
+    if (!ignoreChangesWhileFocused) {
+      propagateChange(newValue);
+    }
+
+  },[ignoreChangesWhileFocused, propagateChange, lastChange]);
+
+  const onBlur = React.useCallback((_: any) => {
+    wlog(lastChange.current);
+    propagateChange(lastChange.current);
+  },[lastChange]);
+  // rm last change ?
   React.useEffect(() => {
-    // Prevent wegas value from overriding current input
-    if(ignoreChangesWhileFocused && focused){
-      // ignore
-    }
-    else if (value !== Number(input)) {
+    // remove if ?
+    if (value !== Number(input)) {
       setInput(addSeparator(value, separator));
+      lastChange.current = value || '';
     }
-  }, [value, ignoreChangesWhileFocused]);
+  }, [value]);
 
   return (
     <div className={cx(flexColumn, expandWidth)}>
@@ -71,8 +83,7 @@ export function NumberInput(props: NumberInputProps) {
         onChange={onChange}
         inputType="text"
         placeholder={placeholder}
-        onFocus={(_) => updateFocusedState(true)}
-        onBlur={(_) => updateFocusedState(false)}
+        onBlur={onBlur}
         />
     </div>
   );
