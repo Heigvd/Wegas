@@ -5,7 +5,6 @@ import { themeVar } from '../../Theme/ThemeVars';
 import { TranslatableText } from '../HTMLText';
 import {
   choiceDescriptionContainerStyle,
-  choiceDescriptionStyle,
   choiceHeaderStyle,
 } from './ChoiceDisplay';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -13,7 +12,7 @@ import { componentsTranslations } from '../../../i18n/components/components';
 
 const repliesContainer = css({
   display: 'flex',
-  flexDirection: 'row',
+  flexDirection: 'column',
   width: '100%',
   marginTop: '5px',
   fontSize: themeVar.others.TextFont2,
@@ -22,7 +21,7 @@ const repliesContainer = css({
 const replyStyle = css({
   fontWeight: 'bold',
   choiceLabelStyle: choiceHeaderStyle,
-  padding: '15px',
+  padding: '15px 15px 0 15px',
   whiteSpace: 'nowrap',
 });
 
@@ -30,7 +29,13 @@ const replyListStyle = css({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  marginBottom: '1em',
+});
+
+const replyDescriptionStyle = css({
+  padding: '0',
+  '& p': {
+    margin: '0',
+  },
 });
 
 const earlierReplyContainerStyle = css({
@@ -58,7 +63,7 @@ function ReplyDisplay({ reply, isEarlierReply }: ReplyDisplayProps) {
     >
       <TranslatableText
         className={cx(
-          choiceDescriptionStyle,
+          replyDescriptionStyle,
           'wegas-question__reply-description',
         )}
         content={reply.ignored ? ignorationAnswer : answer}

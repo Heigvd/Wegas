@@ -509,19 +509,11 @@ export function ConnectedStateMachineEditor({
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in editingState) {
-    if (editingState.variable == null) {
-      return (
-        <span className={mediumPadding}>
-          {i18nValues.stateMachine.selectVariable}
-        </span>
-      );
-    } else {
-      return (
+    return editingState.variable == null ? null : (
         <span className={mediumPadding}>
           {i18nValues.stateMachine.selectedNotStateMachine}
         </span>
       );
-    }
   } else {
     return (
       <div className={grow}>

@@ -9,7 +9,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     Tester: 'Testeur',
     Variables: 'Variables',
     'State Machine': "Machine d'états",
-    'Variable Properties': 'Propriétés des variables',
+    'Variable Properties': 'Paramètres de la variable',
     Files: 'Fichiers',
     Scripts: 'Scripts',
     Styles: 'Styles',
@@ -37,7 +37,6 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
     'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
-    selectVariable: "Choisissez une machine d'état ou un dialogue à afficher",
     selectedNotStateMachine:
       "La variable sélectionnée n'est pas de type State Machine",
   },
@@ -146,6 +145,7 @@ export const editorTabsTranslationsFR: EditorTabsTranslations = {
       pastel: 'Pastel',
       secondary: 'Secondaire',
       dark: 'Sombre',
+      disabled: 'Désactivé',
       'dark secondary': 'Secondaire sombre',
       'Accent color': "Couleur d'accentuation",
       'Disabled color': 'Couleurs désactivé',

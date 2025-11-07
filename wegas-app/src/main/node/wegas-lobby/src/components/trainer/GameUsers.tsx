@@ -10,12 +10,7 @@ import { css } from '@emotion/css';
 import { faSync, faTrash, faUserTimes } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import AsyncSelect from 'react-select/async';
-import {
-  IAbstractAccountWithId,
-  IGameWithId,
-  IPlayer,
-  ITeam,
-} from 'wegas-ts-api';
+import { IAbstractAccountWithId, IGameWithId, IPlayer, ITeam } from 'wegas-ts-api';
 import {
   getRestClient,
   kickTeam,
@@ -47,8 +42,7 @@ import {
   defaultSelectStyles,
 } from '../styling/style';
 
-
-function PlayerDetails(player : IPlayer) {
+function PlayerDetails(player: IPlayer) {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
 
@@ -77,7 +71,7 @@ function PlayerDetails(player : IPlayer) {
 /**
  * Display team & players
  */
-function TeamDetails(team : ITeam): JSX.Element {
+function TeamDetails(team: ITeam): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
 
@@ -99,7 +93,7 @@ function TeamDetails(team : ITeam): JSX.Element {
         />
       </Flex>
       {team.players.map(p => (
-        <PlayerDetails key={p.id} {...p}/>
+        <PlayerDetails key={p.id} {...p} />
       ))}
       {team.players.length === 0 ? (
         <i className={css({ marginLeft: '10px' })}>{i18n.teamIsEmpty}</i>
@@ -113,16 +107,13 @@ interface GameProps {
 }
 
 function fullGameLoadRequired(gameData: IGameStoreInfo): boolean {
-  if(!gameData)
-    return true;
-  if(gameData === 'LOADING')
-    return false;
-  if(!gameData.teams)
-    return true;
+  if (!gameData) return true;
+  if (gameData === 'LOADING') return false;
+  if (!gameData.teams) return true;
   // given that a test player is always present
   // test that we have a full data object
   const testTeam = gameData.teams[0];
-  return (!testTeam || !testTeam.players[0]?.name);
+  return !testTeam || !testTeam.players[0]?.name;
 }
 
 function reRenderNeeded(existing: IGameStoreInfo, newdata: IGameStoreInfo): boolean {
@@ -142,19 +133,21 @@ function GameComposition({ game }: GameProps): JSX.Element {
     if (fullGameLoadRequired(fullGameData)) {
       if (game.id != null) {
         // Editor view fetches the full data including teams and player names
-        dispatch(getGameById({id: game.id, view: 'Editor'}));
+        dispatch(getGameById({ id: game.id, view: 'Editor' }));
       }
     }
   }, [fullGameData, dispatch, game.id]);
 
-  if (!fullGameData || fullGameData === 'LOADING' || fullGameLoadRequired(fullGameData)){
+  if (!fullGameData || fullGameData === 'LOADING' || fullGameLoadRequired(fullGameData)) {
     return (
       <CardContainer>
         <InlineLoading />
       </CardContainer>
     );
   } else {
-    const realTeams = fullGameData.teams.filter(team => team != null && !entityIs(team, 'DebugTeam'));
+    const realTeams = fullGameData.teams
+      .filter(team => team != null && !entityIs(team, 'DebugTeam'))
+      .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
     return (
       <FitSpace direction="column" overflow="auto">
         <CardContainer>
@@ -162,7 +155,7 @@ function GameComposition({ game }: GameProps): JSX.Element {
             <TeamDetails key={team.id} {...team} />
           ))}
         </CardContainer>
-        <Flex className={css({ padding: '10px 10px 0px 10px', gap: "15px" })}>
+        <Flex className={css({ padding: '10px 10px 0px 10px', gap: '15px' })}>
           <Toggler
             title={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
             label={playersCanCreate ? i18n.playersCanCreateTeams : i18n.playersCantCreateTeams}
@@ -176,7 +169,7 @@ function GameComposition({ game }: GameProps): JSX.Element {
             label={playersCanLeave ? i18n.playersCanLeaveTeams : i18n.playersCantLeaveTeams}
             value={playersCanLeave}
             onChange={() => {
-              dispatch(updateGame({...game, preventPlayerLeavingTeam: playersCanLeave }));
+              dispatch(updateGame({ ...game, preventPlayerLeavingTeam: playersCanLeave }));
             }}
           />
         </Flex>
@@ -315,4 +308,3 @@ export function GameUsers({ game }: GameProps): JSX.Element {
     </Tabs>
   );
 }
-

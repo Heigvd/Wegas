@@ -144,6 +144,9 @@ export const foregroundContent = css({
 });
 
 /* Spaces */
+export const noMargin = css({
+  margin: '0',
+});
 export const componentMarginLeft = css({
   marginLeft: '5px',
 });
@@ -175,7 +178,9 @@ export const defaultMargin = cx(
   defaultMarginLeft,
 );
 
-export const autoMargin = css({ margin: 'auto' });
+export const autoMargin = css({
+  margin: 'auto'
+});
 export const xlPadding = css({
   padding: '2em',
 });
@@ -358,15 +363,12 @@ export const unreadSignalStyle = css({
     content: '""',
     position: 'absolute',
     top: '50%',
-    left: '0.5rem',
+    left: '0.35rem',
     width: '0.5rem',
     height: '0.5rem',
     transform: 'translateY(-50%)',
     backgroundColor: themeVar.colors.PrimaryColor,
     borderRadius: '100%',
-  },
-  '&> div': {
-    marginLeft: '1rem',
   },
 });
 

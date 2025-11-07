@@ -1,4 +1,4 @@
-import {EditorTabsTranslations} from './editorTabs';
+import { EditorTabsTranslations } from './editorTabs';
 
 export const editorTabsTranslationsDE: EditorTabsTranslations = {
   miscellaneous: {
@@ -9,7 +9,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     Tester: 'Tester',
     Variables: 'Variablen',
     'State Machine': 'Zustandsmaschine',
-    'Variable Properties': 'Eigenschaften Variablen',
+'Variable Properties': 'Variablenparameter',
     Files: 'Dateien',
     Scripts: 'Skripte',
     Styles: 'Stile',
@@ -37,8 +37,6 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
     'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
-    selectVariable:
-      'Wählen Sie eine Statusmaschine oder einen Dialog zur Anzeige',
     selectedNotStateMachine:
       'Die ausgewählte Variable ist keine Art von Zustandsmaschine',
   },
@@ -149,6 +147,7 @@ export const editorTabsTranslationsDE: EditorTabsTranslations = {
       pastel: 'Pastell',
       secondary: 'Sekundär',
       dark: 'Dunkel',
+      disabled: 'Deaktiviert',
       'dark secondary': 'Dunkel sekundär',
       'Accent color': 'Akzentfarbe',
       'Disabled color': 'Deaktivierte Farbe',

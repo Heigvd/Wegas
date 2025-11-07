@@ -99,7 +99,7 @@ export function CommonViewContainer({
   className,
 }: CommonViewProps) {
   const { currentFeatures } = React.useContext(featuresCTX);
-  const error = errorMessage && errorMessage.join(', ');
+  const error = errorMessage && errorMessage.length > 0 ? errorMessage.join(', ') : null;
   const layout = view.layout ? LAYOUTS[view.layout] : '';
 
   if (
@@ -121,7 +121,8 @@ export function CommonViewContainer({
         )}
       >
         {children}
-        <div className={errorStyle}>{error}</div>
+        {error && <div className={errorStyle}>{error}</div>}
+
       </div>
     );
   }

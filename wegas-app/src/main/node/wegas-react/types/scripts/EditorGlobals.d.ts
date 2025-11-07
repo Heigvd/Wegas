@@ -12,6 +12,6 @@ interface GlobalEditorClass {
   setFeatures: (features: FeaturesSelecta) => void;
   getLanguage: () => IGameModelLanguage | undefined;
   setLanguage: (lang: { code: IGameModelLanguage['code'] } | string) => void;
-  getPageLoaders: () => { [name: string]: number };
-  setPageLoader: (name: string, pageId: number) => void;
+  getPageLoaders: () => { [name: string]: string };
+  setPageLoader: (name: string, pageId: string) => void;
 }

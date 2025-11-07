@@ -6,6 +6,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import ResizeObserver from 'resize-observer-polyfill';
+import {featuresCTX, isFeatureEnabled} from "../../Components/Contexts/FeaturesProvider";
 
 const ctx = React.createContext<
   undefined | ((children: React.ReactNode, id: string) => HTMLDivElement)
@@ -84,6 +85,7 @@ export function Reparentable({
   const resizeObserver = React.useRef<ResizeObserver | undefined>();
   const sizeDisplayRef = React.useRef<HTMLDivElement>(null);
   const n = React.useRef<HTMLDivElement>();
+  const { currentFeatures } = React.useContext(featuresCTX);
 
   if (getNode == null) {
     throw new Error(
@@ -121,7 +123,7 @@ export function Reparentable({
       let timer: number | undefined;
 
       const ro = new ResizeObserver(() => {
-        if (sizeDisplayRef.current != null && n.current != null) {
+        if (sizeDisplayRef.current != null && n.current != null && isFeatureEnabled(currentFeatures, 'ADVANCED')) {
           const rect = n.current.getBoundingClientRect();
           sizeDisplayRef.current.innerText = `${rect.width.toFixed()}x${rect.height.toFixed()}`;
           sizeDisplayRef.current.style.right = `${
@@ -143,7 +145,7 @@ export function Reparentable({
       ro.observe(n.current);
       resizeObserver.current = ro;
     }
-  }, []);
+  }, [currentFeatures]);
 
   return (
     <>

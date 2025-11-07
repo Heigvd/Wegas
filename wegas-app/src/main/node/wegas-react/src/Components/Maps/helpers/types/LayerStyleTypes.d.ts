@@ -42,14 +42,15 @@ interface CircleStyleObject extends SharedImageStyleProperties {
   radius: number;
 }
 
-interface RegularShapeStyleObject
-  extends Omit<CircleStyleObject, 'type' | 'radius'> {
+interface RegularShapeStyleObject {
   type: 'RegularShape';
   points: number;
-  radius?: number;
+  radius: number;
   radius1?: number;
   radius2?: number;
   angle?: number;
+  fill?: FillStyleObject;
+  stroke?: StrokeStyleObject;
 }
 
 type AnchorUnitsStyleObject = 'fraction' | 'pixels';
@@ -70,9 +71,8 @@ interface IconStyleObject extends SharedImageStyleProperties {
   crossOrigin?: CrossOriginStyleObject;
   img?: HTMLImageElement | HTMLCanvasElement;
   offset?: PointLikeObject;
-  offsetOrigin?: PointLikeObject;
+  offsetOrigin?: AnchorPositionStyleObject;
   size?: PointLikeObject;
-  imgSize?: PointLikeObject;
   src?: string;
 }
 

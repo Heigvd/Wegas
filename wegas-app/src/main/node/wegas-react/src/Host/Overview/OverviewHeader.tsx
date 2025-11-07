@@ -1,21 +1,22 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
+import { Button } from '../../Components/Inputs/Buttons/Button';
+import { themeVar } from '../../Components/Theme/ThemeVars';
+import { flex, flexColumn, itemCenter, justifyCenter } from '../../css/classes';
+import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { trainerTranslations } from '../../i18n/trainer/trainer';
+import { SortMode, SortState, TableSorter } from '../TableSorter';
 import {
   ActionItem,
   isDataItem,
   OverviewClickType,
+  OverviewDataStructure,
   OverviewItem,
   OverviewState,
 } from './Overview';
-import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { OverviewButton } from './OverviewButton';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { flex, flexColumn, itemCenter, justifyCenter } from '../../css/classes';
-import { themeVar } from '../../Components/Theme/ThemeVars';
-import { SortMode, SortState, TableSorter } from '../TableSorter';
+import { firstScrollCellStyle, fixedCellStyle } from './OverviewCell';
 import { FilterState } from './OverviewModal/FilterModalContent';
-import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { trainerTranslations } from '../../i18n/trainer/trainer';
 
 const headerStyle = css({
   verticalAlign: 'middle',
@@ -52,6 +53,14 @@ function filterFn(item: OverviewItem, filterState: FilterState | undefined) {
   );
 }
 
+function countFilteredChildren(
+  h: OverviewDataStructure,
+  filterState: FilterState | undefined,
+): number {
+  return (h.items as OverviewItem[]).filter(item => filterFn(item, filterState))
+    .length;
+}
+
 interface OverviewHeaderProps {
   overviewState: OverviewState | undefined;
   filterState: FilterState | undefined;
@@ -81,13 +90,7 @@ export function OverviewHeader({
       {overviewState?.header &&
         overviewState.header.map((h, i) => (
           <colgroup key={h.title + i + 'col'}>
-            <col
-              span={
-                (h.items as OverviewItem[]).filter(item =>
-                  filterFn(item, filterState),
-                ).length
-              }
-            />
+            <col span={countFilteredChildren(h, filterState)} />
           </colgroup>
         ))}
       <colgroup>
@@ -113,19 +116,17 @@ export function OverviewHeader({
             </th>
           )}
           {overviewState?.header &&
-            overviewState.header.map((h, i) => (
-              <th
-                key={h.title + i}
-                colSpan={
-                  (h.items as OverviewItem[]).filter(item =>
-                    filterFn(item, filterState),
-                  ).length
-                }
-                className={cx({ [firstScrollCellStyle]: i === 0 })}
-              >
-                {h.title}
-              </th>
-            ))}
+            overviewState.header
+              .filter(h => countFilteredChildren(h, filterState) > 0)
+              .map((h, i) => (
+                <th
+                  key={h.title + i}
+                  colSpan={countFilteredChildren(h, filterState)}
+                  className={cx({ [firstScrollCellStyle]: i === 0 })}
+                >
+                  {h.title}
+                </th>
+              ))}
           <th colSpan={2}>{i18nValues.actions}</th>
         </tr>
         <tr>

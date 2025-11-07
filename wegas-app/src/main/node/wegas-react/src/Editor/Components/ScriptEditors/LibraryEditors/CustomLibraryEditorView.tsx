@@ -477,9 +477,7 @@ export function CustomLibraryEditorView({
       <ReflexSplitter />
       {/* The overflow: hidden is set to avoid epileptic size changes */}
       <ReflexElement flex={currentLibrary == null ? 1 : 5} style={{overflow: "hidden"}}>
-        {currentLibrary == null ? (
-          'No library selected yet'
-        ) : (
+        {currentLibrary == null ? null : (
           <Toolbar className={expandBoth}>
             <Toolbar.Header className={defaultToolboxHeaderStyle}>
               <div className={defaultTooboxLabelContainerStyle}>

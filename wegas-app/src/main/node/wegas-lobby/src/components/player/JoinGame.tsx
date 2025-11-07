@@ -182,7 +182,9 @@ function ShowTeams({ closePanel, game }: ShowTeamsProps): JSX.Element {
             gradientHeight={100}
             bgColor="var(--bgColor)"
             grow={0}
-            items={teams.filter(t => !entityIs(t, 'DebugTeam'))}
+            items={teams
+              .filter(t => !entityIs(t, 'DebugTeam'))
+              .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))}
             emptyMessage={<i>{i18n.pleaseCreateTeam}</i>}
           >
             {t => <TeamToJoinCard key={t.id} closePanel={closePanel} team={t} />}

@@ -17,11 +17,7 @@ import { downloadFile, fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
-import {
-  createTranslatableContent,
-  createTranslation,
-  translate,
-} from '../../data/i18n';
+import { createTranslatableContent, createTranslation, translate } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
@@ -36,27 +32,20 @@ import {
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
-import { createLRU, replace, visitDSF } from '../../Helper/tools';
-import { createScript, isScript } from '../../Helper/wegasEntites';
+import { createLRU, visitDSF } from '../../Helper/tools';
+import { createScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
-import {
-  defaultFeatures,
-  FeatureContext,
-  featuresCTX,
-  isFeatureEnabled,
-} from '../Contexts/FeaturesProvider';
+import { defaultFeatures, FeatureContext, featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
-import {
-  schemaProps,
-} from '../PageComponents/tools/schemaProps';
+import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { addPopup } from '../PopupManager';
 import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
-import { polygon, lineString, multiPolygon, multiLineString, feature } from '@turf/helpers';
+import { feature, lineString, multiLineString, multiPolygon, polygon } from '@turf/helpers';
 import * as lineIntersect from '@turf/line-intersect';
 import * as bboxClip from '@turf/bbox-clip';
 
@@ -191,14 +180,12 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
       Object.entries(pageLoaders).reduce(
         (o, [name, script]) => ({
           ...o,
-          [name]: Number(
-            safeClientScriptEval(
-              script,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-            ),
+          [name]: safeClientScriptEval<string>(
+            script,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
           ),
         }),
         {},
@@ -231,9 +218,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
       name != null &&
       parameters != null &&
       types != null &&
-      parameters != null &&
       array != null &&
-      parameters != null &&
       method != null
     ) {
       globalDispatch(
@@ -637,7 +622,7 @@ const memoClientScriptEval = (() => {
 })();
 
 export function clientScriptEval<T>(
-  script: string | IScript | undefined,
+  script: string | IScript | ScriptCallback | undefined,
   context:
     | {
         [name: string]: unknown;
@@ -645,8 +630,9 @@ export function clientScriptEval<T>(
     | undefined,
   state: PagesContextState | undefined,
   options: TranspileOptions | undefined,
+  argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
-  return memoClientScriptEval(script, context, state, options);
+  return memoClientScriptEval(script, context, state, options, argValues);
 }
 
 export function customClientScriptEval<T>(
@@ -678,7 +664,7 @@ export function printWegasScriptError(error: WegasScriptError): string {
 
 function handleError(error: unknown, filename?: string): WegasScriptError {
   if (error instanceof Error || error instanceof globals.Error) {
-    const e: WegasScriptError = {
+    return {
       message: error.message,
       name: error.name,
       stack: error.stack,
@@ -687,19 +673,17 @@ function handleError(error: unknown, filename?: string): WegasScriptError {
       columnNumber: (error as unknown as { columnNumber?: number })
         .columnNumber,
     };
-    return e;
   } else {
-    const e: WegasScriptError = {
+    return {
       message: 'Unknown Error' + error,
       name: 'WegasScriptError',
       fileName: filename,
     };
-    return e;
   }
 }
 
 export function safeClientScriptEval<T>(
-  script: string | IScript | undefined,
+  script: string | IScript | ScriptCallback | undefined,
   context:
     | {
         [name: string]: unknown;
@@ -708,9 +692,10 @@ export function safeClientScriptEval<T>(
   catchCB: ((e: Error) => void) | undefined,
   state: PagesContextState | undefined,
   options: TranspileOptions | undefined,
+  argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
   try {
-    return clientScriptEval<T>(script, context, state, options);
+    return clientScriptEval<T>(script, context, state, options, argValues);
   } catch (e) {
     const error = handleError(e, options?.moduleName);
     if (catchCB) {
@@ -823,6 +808,7 @@ export function useScript<T>(
   return returnValue as any;
 }
 
+/* UNUSED
 export function useClientScript<T>(
   clientScript?: IClientScript,
   context?: {
@@ -841,12 +827,13 @@ export function useClientScript<T>(
       injectReturn: !!clientScript?.returnType
   });
 }
-
+*/
 /**
  * Hook, execute a script locally.
  * @param script code to execute
  * @returns Last expression or LocalEvalError in case it errors.
  */
+/* UNUSED
 export function useUnsafeScript<T>(
   script?: string | IScript,
   context?: {
@@ -866,7 +853,8 @@ export function useUnsafeScript<T>(
 
   return returnValue;
 }
-
+*/
+/* UNUSED
 export function parseAndRunClientScript(
   script: string | IScript,
   context?: {
@@ -915,7 +903,7 @@ export function parseAndRunClientScript(
     ? { ...script, content: scriptContent }
     : scriptContent;
 }
-
+*/
 export type ContextRef = React.MutableRefObject<UnknownValuesObject | undefined>;
 
 export function useUpdatedContextRef(context: UnknownValuesObject | undefined) {
@@ -954,37 +942,6 @@ export function isScriptCallback(script: unknown): script is ScriptCallback {
   );
 }
 
-export function safeScriptCallbackEval<T>(
-  script: ScriptCallback | undefined,
-  context:
-    | {
-        [name: string]: unknown;
-      }
-    | undefined,
-  catchCB: ((e: Error) => void) | undefined,
-  state: PagesContextState | undefined,
-  options: TranspileOptions | undefined,
-  argValues: unknown[] = [],
-): T extends WegasScriptEditorReturnType ? T : unknown {
-  try {
-    return memoClientScriptEval<T>(script, context, state, options, argValues);
-  } catch (e) {
-    const error = handleError(e, options?.moduleName);
-    if (catchCB) {
-      catchCB(error);
-    } else {
-      const scriptContent =
-        typeof script === 'string' ? script : script?.content;
-      wwarn(
-        `${printWegasScriptError(error)}
-        \n\nScript content is :\n${scriptContent}\n\nTranspiled content is :\n${
-          scriptContent != null ? ts.transpile(scriptContent) : undefined
-        }`,
-      );
-    }
-    return undefined as any;
-  }
-}
 
 export function useScriptObjectWithFallback<
   T extends Record<string, unknown>,
@@ -1049,7 +1006,7 @@ export function computeCB<T extends AnyFunction>(
   contextRef: ContextRef | undefined,
 ): T {
   return function (...cbArgs: Parameters<T>) {
-    return safeScriptCallbackEval(
+    return safeClientScriptEval(
       callbackScript,
       contextRef?.current,
       undefined,
