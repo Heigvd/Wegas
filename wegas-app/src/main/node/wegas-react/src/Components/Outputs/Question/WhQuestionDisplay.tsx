@@ -157,7 +157,7 @@ function WhChoiceDisplay({
             toggleInputDataError={toggleInputDataError}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
-            ignoreChangesWhileFocused={true}
+            propagateOnBlur={true}
           />
         ) : choiceD['@class'] === 'StringDescriptor' ? (
           <SimpleInput

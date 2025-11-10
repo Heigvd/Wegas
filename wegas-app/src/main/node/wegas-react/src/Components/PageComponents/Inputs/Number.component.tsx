@@ -110,7 +110,7 @@ function PlayerNumberInput({
       onChange={onChange}
       placeholder={placeholderText}
       separator={separator}
-      ignoreChangesWhileFocused={true}
+      propagateOnBlur={true}
     />
   );
 }

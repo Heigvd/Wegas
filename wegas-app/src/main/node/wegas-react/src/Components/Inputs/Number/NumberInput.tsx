@@ -9,7 +9,6 @@ import {
   addSeparator,
   removeSeparator,
 } from '../../PageComponents/tools/numberSeparator';
-import { wlog } from '../../../Helper/wegaslog';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -21,17 +20,19 @@ interface NumberInputProps extends InputProps<number> {
   min?: number;
   max?: number;
   toggleInputDataError?: React.Dispatch<React.SetStateAction<boolean>>;
-  ignoreChangesWhileFocused?: boolean
+  /**
+   * When true the value is only propagated when the input is blurred (unfocused)
+   * Otherwise the value is propagated on each change
+   */
+  propagateOnBlur?: boolean
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value, placeholder, separator, ignoreChangesWhileFocused } = props;
+  const { value, placeholder, separator, propagateOnBlur } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
-
-  const lastChange = React.useRef<string | number>(value || '');
 
   const propagateChange = React.useCallback((newValue: string | number) => {
     const numberValue = removeSeparator(newValue, separator);
@@ -48,26 +49,21 @@ export function NumberInput(props: NumberInputProps) {
         props.toggleInputDataError && props.toggleInputDataError(true);
       }
     }
-  }, [min, max, props.toggleInputDataError, props.onChange]);
+  }, [min, max, props.toggleInputDataError, props.onChange, props.separator]);
 
-  const onChange = React.useCallback((newValue: string | number) => {
-    lastChange.current = newValue;
-    if (!ignoreChangesWhileFocused) {
+  const onChange = function(newValue: string | number) {
+    if (!propagateOnBlur) {
       propagateChange(newValue);
     }
+  };
 
-  },[ignoreChangesWhileFocused, propagateChange, lastChange]);
+  const onBlur = function(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    propagateChange(event.target.value);
+  };
 
-  const onBlur = React.useCallback((_: any) => {
-    wlog(lastChange.current);
-    propagateChange(lastChange.current);
-  },[lastChange]);
-  // rm last change ?
   React.useEffect(() => {
-    // remove if ?
     if (value !== Number(input)) {
       setInput(addSeparator(value, separator));
-      lastChange.current = value || '';
     }
   }, [value]);
 
