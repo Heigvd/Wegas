@@ -63,7 +63,7 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         'ul',
         'ol',
         '|',
-        'customAlignement',
+        'customAlignment',
         '|',
         'link',
         IMG_PLACEHOLDER,
@@ -170,11 +170,12 @@ export default function JoditReactEditor({
       readonly: readonly,
       disabled: disabled,
       placeholder: placeholder || '',
+      showTooltip: false,
       //toolbarButtonSize: 'large',
       controls: {
-        customAlignement: {
+        customAlignment: {
           icon: 'dots',
-          tooltip: 'Alignement',
+          tooltip: 'Alignment',
           list: {
             left: 'left',
             center : 'center',

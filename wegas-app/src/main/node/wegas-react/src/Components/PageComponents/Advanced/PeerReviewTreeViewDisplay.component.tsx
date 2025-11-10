@@ -312,7 +312,7 @@ function EvalutationEditor({
         onChange={onChangeNotify}
         disabled={disabled || waitingState}
         readOnly={readOnly}
-        toolbarLayout={'player'}
+        toolbarLayout='player'
       />
     );
   } else if (scriptableEntityIs(iEvaluation, 'GradeInstance')) {
