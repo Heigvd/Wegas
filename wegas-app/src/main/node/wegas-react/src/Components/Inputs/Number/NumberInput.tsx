@@ -5,10 +5,12 @@ import { InputProps, SimpleInput } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { expandWidth, flexColumn } from '../../../css/classes';
 import {
-  NumberSeparator,
-  addSeparator,
-  removeSeparator,
+  addSeparator2,
+  NumberSeparator, removeSeparator2,
+  //addSeparator,
+  //removeSeparator,
 } from '../../PageComponents/tools/numberSeparator';
+import { wlog } from '../../../Helper/wegaslog';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -28,20 +30,25 @@ interface NumberInputProps extends InputProps<number> {
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value, placeholder, separator, propagateOnBlur } = props;
+  const { value, placeholder, propagateOnBlur } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
   const propagateChange = React.useCallback((newValue: string | number) => {
-    const numberValue = removeSeparator(newValue, separator);
+    const numberValue = removeSeparator2(newValue);
     const stringValue = String(newValue);
+
+    wlog('string val', stringValue);
+    wlog('number val', numberValue);
+    wlog('char codes', [...stringValue].map(c => c.charCodeAt(0)));
 
     if (numberValue !== Number(input)) {
       isNaN(numberValue)
         ? setInput(stringValue)
-        : setInput(addSeparator(numberValue, separator));
+        : setInput(addSeparator2(numberValue));
+        //: setInput(addSeparator(numberValue, separator));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
@@ -49,7 +56,7 @@ export function NumberInput(props: NumberInputProps) {
         props.toggleInputDataError && props.toggleInputDataError(true);
       }
     }
-  }, [min, max, props.toggleInputDataError, props.onChange, props.separator]);
+  }, [min, max, props.toggleInputDataError, props.onChange]);
 
   const onChange = function(newValue: string | number) {
     if (!propagateOnBlur) {
@@ -63,7 +70,8 @@ export function NumberInput(props: NumberInputProps) {
 
   React.useEffect(() => {
     if (value !== Number(input)) {
-      setInput(addSeparator(value, separator));
+      setInput(addSeparator2(value));
+      //setInput(addSeparator(value, separator));
     }
   }, [value]);
 

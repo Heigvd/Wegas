@@ -34,7 +34,7 @@ function PlayerNumber({
   options,
   pageId,
   path,
-  separator,
+  //separator,
 }: PlayerNumberProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
@@ -61,7 +61,7 @@ function PlayerNumber({
         <PlayerComponentDisplay
           script={script}
           context={context}
-          separator={separator}
+          //separator={separator}
         />
       )}
     </div>
