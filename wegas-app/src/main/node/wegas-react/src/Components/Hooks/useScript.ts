@@ -116,6 +116,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     removeFeature,
     addClass,
     removeClass,
+    classes
   } = globalContexts;
 
   const player = store.players[store.global.currentPlayerId];
@@ -299,6 +300,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Classes = {
     addClass,
     removeClass,
+    classes
   };
 
   globals.Popups = {

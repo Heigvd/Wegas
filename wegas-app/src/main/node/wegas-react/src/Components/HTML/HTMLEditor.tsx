@@ -35,7 +35,7 @@ export interface HTMLEditorProps extends ClassStyleId, DisabledReadonly {
   /**
    * display a custom toolbar
    */
-  toolbarLayout?: 'full' | 'player';
+  toolbarLayout: 'full' | 'player';
 }
 
 export default function HTMLEditor({
@@ -76,12 +76,12 @@ export default function HTMLEditor({
 
   return (
     <div className={classNameOrEmpty(className)} style={style} id={id}>
-      <JoditReactEditor
-        value={value}
+     <JoditReactEditor
+        value={value ?? ''}
         onChange={onEditorChanges}
-        placeholder={placeholder}
-        disabled={disabled}
-        readonly={readOnly}
+        placeholder={placeholder ?? ''}
+        disabled={disabled ?? false}
+        readonly={readOnly ?? false}
         toolbarLayout={toolbarLayout}
         showFilePickerFunc={showFilePicker}
       />
@@ -94,7 +94,6 @@ export default function HTMLEditor({
               file &&
                 fileBrowsingFunc.current &&
                 fileBrowsingFunc.current(
-                  document.location.origin +
                     fileURL(generateAbsolutePath(file)),
                 );
             }}
