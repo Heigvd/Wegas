@@ -43,6 +43,7 @@ export function NumberInput(props: NumberInputProps) {
     wlog('string val', stringValue);
     wlog('number val', numberValue);
     wlog('char codes', [...stringValue].map(c => c.charCodeAt(0)));
+    wlog(min, max);
 
     if (numberValue !== Number(input)) {
       isNaN(numberValue)
@@ -50,9 +51,11 @@ export function NumberInput(props: NumberInputProps) {
         : setInput(addSeparator2(numberValue));
         //: setInput(addSeparator(numberValue, separator));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
+        wlog('removing error')
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
       } else {
+        wlog('activating error')
         props.toggleInputDataError && props.toggleInputDataError(true);
       }
     }
@@ -67,6 +70,10 @@ export function NumberInput(props: NumberInputProps) {
   const onBlur = function(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
     propagateChange(event.target.value);
   };
+
+  const onFocus = function(_event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    //setInput(input?.replace(/\s/g,''));
+  }
 
   React.useEffect(() => {
     if (value !== Number(input)) {
@@ -88,6 +95,7 @@ export function NumberInput(props: NumberInputProps) {
         inputType="text"
         placeholder={placeholder}
         onBlur={onBlur}
+        onFocus={onFocus}
         />
     </div>
   );

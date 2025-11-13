@@ -14,6 +14,7 @@ import { InputProps } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { NumberInput } from './NumberInput';
 import Slider from './react-input-slider/react-number-slider';
+import { addSeparator2 } from '../../PageComponents/tools/numberSeparator';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -128,24 +129,27 @@ export function NumberSlider({
     if (displayValues == null) {
       display = null;
     } else if (typeof displayValues === 'string') {
+
       switch (displayValues) {
         case 'External':
           display = (
-            <div className={cx({ [halfOpacity]: disabled })}>{value}</div>
+            <div className={cx({ [halfOpacity]: disabled })}>
+              {addSeparator2(value)}
+            </div>
           );
           break;
         case 'Internal':
           display = (
             <div className={cx({ [halfOpacity]: disabled })}>
-              {internalValue}
+              {addSeparator2(internalValue)}
             </div>
           );
           break;
         case 'Both':
           display = (
             <div className={cx(flex, flexColumn, { [halfOpacity]: disabled })}>
-              <div>External value : {value}</div>
-              <div>Internal value : {internalValue}</div>
+              <div>External value : {addSeparator2(value)}</div>
+              <div>Internal value : {addSeparator2(internalValue)}</div>
             </div>
           );
           break;
@@ -159,6 +163,7 @@ export function NumberSlider({
               disabled={disabled}
               readOnly={readOnly}
               placeholder={placeholder}
+              propagateOnBlur={true}
             />
           );
           break;

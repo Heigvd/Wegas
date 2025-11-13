@@ -91,7 +91,6 @@ class NumberParser {
     this.decimal = new RegExp(`[${parts?.find(d => d.type === "decimal")?.value || ''}]`);
     this.numeral = new RegExp(`[${numerals.join("")}]`, "g");
     this.index = (d:string) => String(index.get(d)!);
-
   }
 
   toLocale(value: number | undefined): string {
