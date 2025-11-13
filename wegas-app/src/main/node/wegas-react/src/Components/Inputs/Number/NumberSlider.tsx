@@ -14,7 +14,7 @@ import { InputProps } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { NumberInput } from './NumberInput';
 import Slider from './react-input-slider/react-number-slider';
-import { addSeparator } from '../../PageComponents/tools/numberSeparator';
+import { toFormattedString } from '../../PageComponents/tools/numberSeparator';
 
 const valueDisplayStyle = css({
   textAlign: 'center',
@@ -134,22 +134,22 @@ export function NumberSlider({
         case 'External':
           display = (
             <div className={cx({ [halfOpacity]: disabled })}>
-              {addSeparator(value)}
+              {toFormattedString(value)}
             </div>
           );
           break;
         case 'Internal':
           display = (
             <div className={cx({ [halfOpacity]: disabled })}>
-              {addSeparator(internalValue)}
+              {toFormattedString(internalValue)}
             </div>
           );
           break;
         case 'Both':
           display = (
             <div className={cx(flex, flexColumn, { [halfOpacity]: disabled })}>
-              <div>External value : {addSeparator(value)}</div>
-              <div>Internal value : {addSeparator(internalValue)}</div>
+              <div>External value : {toFormattedString(value)}</div>
+              <div>Internal value : {toFormattedString(internalValue)}</div>
             </div>
           );
           break;

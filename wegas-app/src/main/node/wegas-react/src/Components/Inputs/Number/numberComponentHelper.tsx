@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { MessageString } from '../../../Editor/Components/MessageString';
-import { removeSeparator } from '../../PageComponents/tools/numberSeparator';
+import { parseNumber } from '../../PageComponents/tools/numberSeparator';
 
 interface CheckMinMaxProps {
   min?: number;
@@ -13,7 +13,7 @@ export function CheckMinMax({
   max,
   value,
 }: CheckMinMaxProps): JSX.Element | null {
-  const numberValue = typeof value === 'number' ? value : removeSeparator(value || '');
+  const numberValue = typeof value === 'number' ? value : parseNumber(value || '');
 
   if (isNaN(numberValue)) {
     return <MessageString value={`Value is not a number`} type={'error'} />;

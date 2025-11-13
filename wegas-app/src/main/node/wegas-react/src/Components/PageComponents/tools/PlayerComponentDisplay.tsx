@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { INumberDescriptor, IScript } from 'wegas-ts-api';
 import { useComponentScript } from '../../Hooks/useComponentScript';
-import { addSeparator } from './numberSeparator';
+import { toFormattedString } from './numberSeparator';
 
 export interface PlayerNumberDisplayProps {
   script: IScript | undefined;
@@ -12,7 +12,6 @@ export interface PlayerNumberDisplayProps {
 export default function PlayerNumberDisplay({
   script,
   context,
-  //separator,
 }: PlayerNumberDisplayProps) {
   const { instance, notFound } = useComponentScript<INumberDescriptor>(
     script,
@@ -23,7 +22,6 @@ export default function PlayerNumberDisplay({
     // Add some error handling
     throw Error('NumberDescriptor not found');
   } else {
-    //return <>{addSeparator(instance!.getValue(), separator)}</>;
-    return <>{addSeparator(instance!.getValue())}</>;
+    return <>{toFormattedString(instance!.getValue())}</>;
   }
 }

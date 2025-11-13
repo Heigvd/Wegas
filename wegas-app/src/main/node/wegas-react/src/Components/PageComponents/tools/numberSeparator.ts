@@ -1,11 +1,18 @@
 
-export function removeSeparator(
-  value: string | number
-){
-  return parser.parse(String(value))
+/**
+ * Parses numbers from a string representation formatted as the navigator's locale
+ * Spaces are removed in any case
+ * dot (.) as decimal separator is always supported
+ * */
+export function parseNumber(value: string): number{
+  return parser.parse(value);
 }
 
-export function addSeparator(value: number | undefined) {
+/**
+ * Formats a number according to the navigator's locale code
+ * @param value the value to format
+ */
+export function toFormattedString(value: number | undefined): string {
   return parser.toLocale(value);
 }
 
@@ -38,7 +45,7 @@ class NumberParser {
     return value === undefined ? '' : this.format.format(value);
   }
 
-  parse(value: string) {
+  parse(value: string): number {
     const cleaned = value.replace(/\s/g,"")
       .replace(this.group, "")
       .replace(this.decimal, ".")

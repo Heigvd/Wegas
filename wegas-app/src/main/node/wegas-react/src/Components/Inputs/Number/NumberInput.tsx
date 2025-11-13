@@ -5,8 +5,8 @@ import { InputProps, SimpleInput } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { expandWidth, flexColumn } from '../../../css/classes';
 import {
-  addSeparator,
-  removeSeparator,
+  toFormattedString,
+  parseNumber,
 } from '../../PageComponents/tools/numberSeparator';
 
 const numberInputStyle = css({
@@ -32,14 +32,14 @@ export function NumberInput(props: NumberInputProps) {
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
-  const propagateChange = React.useCallback((newValue: string | number) => {
-    const numberValue = removeSeparator(newValue);
+  const propagateChange = React.useCallback((newValue: string) => {
+    const numberValue = parseNumber(newValue);
     const stringValue = String(newValue);
 
     if (numberValue !== Number(input)) {
       isNaN(numberValue)
         ? setInput(stringValue)
-        : setInput(addSeparator(numberValue));
+        : setInput(toFormattedString(numberValue));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
@@ -49,7 +49,7 @@ export function NumberInput(props: NumberInputProps) {
     }
   }, [min, max, props.toggleInputDataError, props.onChange]);
 
-  const onChange = function(newValue: string | number) {
+  const onChange = function(newValue: string) {
     if (!propagateOnBlur) {
       propagateChange(newValue);
     }
@@ -61,7 +61,7 @@ export function NumberInput(props: NumberInputProps) {
 
   React.useEffect(() => {
     if (value !== Number(input)) {
-      setInput(addSeparator(value));
+      setInput(toFormattedString(value));
     }
   }, [value]);
 
