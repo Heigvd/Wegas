@@ -5,12 +5,9 @@ import { InputProps, SimpleInput } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { expandWidth, flexColumn } from '../../../css/classes';
 import {
-  addSeparator2,
-  NumberSeparator, removeSeparator2,
-  //addSeparator,
-  //removeSeparator,
+  addSeparator,
+  removeSeparator,
 } from '../../PageComponents/tools/numberSeparator';
-import { wlog } from '../../../Helper/wegaslog';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -18,7 +15,6 @@ const numberInputStyle = css({
 
 interface NumberInputProps extends InputProps<number> {
   placeholder?: string;
-  separator?: NumberSeparator;
   min?: number;
   max?: number;
   toggleInputDataError?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,25 +33,17 @@ export function NumberInput(props: NumberInputProps) {
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
   const propagateChange = React.useCallback((newValue: string | number) => {
-    const numberValue = removeSeparator2(newValue);
+    const numberValue = removeSeparator(newValue);
     const stringValue = String(newValue);
-
-    wlog('string val', stringValue);
-    wlog('number val', numberValue);
-    wlog('char codes', [...stringValue].map(c => c.charCodeAt(0)));
-    wlog(min, max);
 
     if (numberValue !== Number(input)) {
       isNaN(numberValue)
         ? setInput(stringValue)
-        : setInput(addSeparator2(numberValue));
-        //: setInput(addSeparator(numberValue, separator));
+        : setInput(addSeparator(numberValue));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
-        wlog('removing error')
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
       } else {
-        wlog('activating error')
         props.toggleInputDataError && props.toggleInputDataError(true);
       }
     }
@@ -71,14 +59,9 @@ export function NumberInput(props: NumberInputProps) {
     propagateChange(event.target.value);
   };
 
-  const onFocus = function(_event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    //setInput(input?.replace(/\s/g,''));
-  }
-
   React.useEffect(() => {
     if (value !== Number(input)) {
-      setInput(addSeparator2(value));
-      //setInput(addSeparator(value, separator));
+      setInput(addSeparator(value));
     }
   }, [value]);
 
@@ -95,7 +78,6 @@ export function NumberInput(props: NumberInputProps) {
         inputType="text"
         placeholder={placeholder}
         onBlur={onBlur}
-        onFocus={onFocus}
         />
     </div>
   );

@@ -15,14 +15,9 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import PlayerComponentDisplay from '../tools/PlayerComponentDisplay';
 import { classStyleIdSchema } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
-import { NumberSeparator } from '../tools/numberSeparator';
 
 export interface PlayerNumberProps extends WegasComponentProps {
   script?: IScript;
-  /**
-   * separator - symbol to separate thousands values
-   */
-  separator: NumberSeparator;
 }
 
 function PlayerNumber({
@@ -34,7 +29,6 @@ function PlayerNumber({
   options,
   pageId,
   path,
-  //separator,
 }: PlayerNumberProps) {
   const { somethingIsUndefined } = useInternalTranslate(commonTranslations);
 
@@ -61,7 +55,6 @@ function PlayerNumber({
         <PlayerComponentDisplay
           script={script}
           context={context}
-          //separator={separator}
         />
       )}
     </div>
@@ -81,12 +74,6 @@ registerComponent(
         label: 'Variable',
         required: true,
         returnType: ['SNumberDescriptor', 'number'],
-      }),
-      separator: schemaProps.select({
-        label: 'Separator',
-        values: ['none', 'space', 'apostrophe', 'comma'],
-        value: 'none',
-        required: true,
       }),
       ...classStyleIdSchema,
     },
