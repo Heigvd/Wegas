@@ -213,24 +213,11 @@ export function ImpactModalComputedContent({
         })}
       </div>
       {showResults && (
-        <div
-          className={cx(
-            errorMessageContainerStyle,
-            classOrNothing('success', nbTeamErrored < 1),
-          )}
-        >
-          {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
-          {nbTeamErrored > 0 && Array.isArray(team) && (
-            <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
-          )}
-          {feedbacks.map((msg: string) => {
-            return (
-              <div key={msg} className={cx(textCenter, autoMargin)}>
-                {msg}
-              </div>
-            );
-          })}
-        </div>
+        <DisplayFeedbacks
+          team={team}
+          nbTeamErrored={nbTeamErrored}
+          feedbacks={feedbacks}
+        />
       )}
       <div
         className={cx(
@@ -362,24 +349,11 @@ export function ImpactModalAdvancedContent({
         }}
       />
       {showResults && (
-        <div
-          className={cx(
-            errorMessageContainerStyle,
-            classOrNothing('success', nbTeamErrored < 1),
-          )}
-        >
-          {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
-          {nbTeamErrored > 0 && Array.isArray(team) && (
-            <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
-          )}
-          {feedbacks.map((msg: string) => {
-            return (
-              <div key={msg} className={cx(textCenter, autoMargin)}>
-                {msg}
-              </div>
-            );
-          })}
-        </div>
+        <DisplayFeedbacks
+          team={team}
+          nbTeamErrored={nbTeamErrored}
+          feedbacks={feedbacks}
+        />
       )}
       <div
         className={cx(
@@ -481,4 +455,35 @@ export function ImpactModalContent({
     wwarn(e);
     return <pre>Only wegas react formatting allowed</pre>;
   }
+}
+
+function DisplayFeedbacks({
+  team,
+  nbTeamErrored,
+  feedbacks,
+}: {
+  team: ImpactModalComputedContentProps['team'];
+  nbTeamErrored: number;
+  feedbacks: string[];
+}): JSX.Element {
+  return (
+    <div
+      className={cx(
+        errorMessageContainerStyle,
+        classOrNothing('success', nbTeamErrored < 1),
+      )}
+    >
+      {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
+      {nbTeamErrored > 0 && Array.isArray(team) && (
+        <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
+      )}
+      {feedbacks.map((msg: string) => {
+        return (
+          <div key={msg} className={cx(textCenter, autoMargin)}>
+            {msg}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
