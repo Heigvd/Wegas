@@ -233,6 +233,7 @@ function TranslationItemView({
           value={value || ''}
           onChange={onValueChange}
           disabled={disabled}
+          toolbarLayout='full'
         />
       ) : (
         <SimpleInput

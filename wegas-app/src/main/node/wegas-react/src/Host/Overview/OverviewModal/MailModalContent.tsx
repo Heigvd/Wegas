@@ -1,21 +1,23 @@
 import { cx } from '@emotion/css';
+import JSONForm from 'jsoninput';
 import * as React from 'react';
 import { TeamAPI } from '../../../API/teams.api';
 import { UserAPI } from '../../../API/user.api';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import {
+  autoScroll,
+  expandBoth,
   flex,
   flexColumn,
-  flexRow,
   flexDistribute,
+  flexRow,
 } from '../../../css/classes';
 import { Game } from '../../../data/selectors';
-import JSONForm from 'jsoninput';
-import { modalButtonsContainer } from './OverviewModal';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
+import { modalButtonsContainer } from './OverviewModal';
 
-const mailFormSchema : AvailableSchemas = {
+const mailFormSchema: AvailableSchemas = {
   properties: {
     from: schemaProps.string({
       label: 'From',
@@ -32,8 +34,8 @@ const mailFormSchema : AvailableSchemas = {
       fullWidth: true,
     }),
     body: {
-      type : "string",
-      view: {label: "Body", type:"html"},
+      type: 'string',
+      view: { label: 'Body', type: 'html' },
     },
   },
 };
@@ -116,15 +118,17 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
       All the user of this team or the game choosed to hide their e-mail adress
     </pre>
   ) : (
-    <div className={cx(flex, flexColumn)}>
+    <div className={cx(flex, flexColumn, expandBoth)}>
       <h2>Send e-mail</h2>
-      <JSONForm
-        value={emails}
-        schema={mailFormSchema}
-        onChange={({ subject, body }: Email) =>
-          setEmails(o => ({ ...o, subject, body }))
-        }
-      />
+      <div className={autoScroll}>
+        <JSONForm
+          value={emails}
+          schema={mailFormSchema}
+          onChange={({ subject, body }: Email) =>
+            setEmails(o => ({ ...o, subject, body }))
+          }
+        />
+      </div>
       <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
         <Button
           label="Send e-mail"

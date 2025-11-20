@@ -885,11 +885,7 @@ export function FileBrowserNode({
                     readOnly={readOnly}
                   />
                 ))
-              ) : (
-                <div className={cx(noToggleStyle, infoShortTextStyle)}>
-                  {i18nValues.empty}
-                </div>
-              )
+              ) : null
             ) : (
               <div className={cx(noToggleStyle, infoShortTextStyle)}>
                 {i18nValues.loading}...

@@ -9,7 +9,8 @@ import { TabLayout } from '../../../Components/TabLayout/TabLayout';
 import {
   autoMargin,
   autoScroll,
-  expandWidth,
+  expandBoth,
+  expandHeight,
   flex,
   flexColumn,
   flexDistribute,
@@ -30,10 +31,10 @@ import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { classOrNothing } from '../../../Helper/className';
 
-const impactContainerStyle = css({
-  //padding: '10px',
-  marginBottom: '20px',
-  //boxShadow: '1px 2px 6px rgba(0, 0, 0, 0.1)',
+const jsonFormStyle: string = css({
+  '>div': {
+    margin: '0',
+  },
 });
 
 const errorMessageContainerStyle = css({
@@ -154,26 +155,28 @@ export function ImpactModalComputedContent({
     : team?.getPlayers()[0].getEntity();
 
   return (
-    <div className={cx(flex, flexColumn, expandWidth)}>
+    <div className={cx(flex, flexColumn, expandBoth)}>
       <div className={cx(flex, flexColumn, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
           const schema = globals.Function(`return (${schemaFn})()`)();
           return (
             <div
               key={JSON.stringify(schemaFn) + index}
-              className={cx(flex, flexColumn, impactContainerStyle)}
+              className={cx(flex, flexColumn, expandHeight)}
             >
               <h2>{schema.description}</h2>
-              <JSONForm
-                value={payloads[index] || {}}
-                schema={schema}
-                onChange={values =>
-                  setPayloads(o => {
-                    o[index] = values;
-                    return o;
-                  })
-                }
-              />
+              <div className={cx(autoScroll, jsonFormStyle)}>
+                <JSONForm
+                  value={payloads[index] || {}}
+                  schema={schema}
+                  onChange={values =>
+                    setPayloads(o => {
+                      o[index] = values;
+                      return o;
+                    })
+                  }
+                />
+              </div>
             </div>
           );
         })}
@@ -398,6 +401,7 @@ export function ImpactModalContent({
           classNames={{
             header: tabsLineStyle,
             tabsClassName: overviewTabStyle,
+            general: expandBoth,
           }}
           CustomTab={OverviewTab}
         />

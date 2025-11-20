@@ -14,7 +14,7 @@ const LoggerLevels: Record<LoggerLevel, number> = {
 
 type LogFn = (...args: unknown[]) => void;
 
-interface Logger {
+export interface Logger {
   getLevel: () => LoggerLevel;
   setLevel: (level: LoggerLevel) => void;
   debug: LogFn;

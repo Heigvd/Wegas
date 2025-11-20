@@ -3,18 +3,13 @@ import u from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
-import {
-  ILibraries,
-  LibraryAPI,
-  ServerLibraryType,
-} from '../../API/library.api';
+import { ILibraries, LibraryAPI, ServerLibraryType } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
 import { ActionCreator, manageResponseHandler } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { GameModel } from '../../data/selectors';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { setReloadingStatus } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
@@ -23,18 +18,13 @@ import {
   SrcEditorLanguages,
 } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { useJSONSchema } from '../../Editor/Components/ScriptEditors/useJSONSchema';
-import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger, wwarn } from '../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { clearModule } from '../Hooks/sandbox';
 import { useGlobalLibs } from '../Hooks/useGlobalLibs';
-import {
-  printWegasScriptError,
-  safeClientScriptEval,
-  setGlobals,
-  useGlobalContexts,
-} from '../Hooks/useScript';
+import { setGlobals, useGlobalContexts } from '../Hooks/useScript';
+import { execAllScripts } from './clientScriptEvaluation';
 
 const monacoLogger = getLogger('monaco');
 const contextLogger = getLogger('Libraries Context');
@@ -259,12 +249,6 @@ export type LibraryType = ValueOf<typeof libraryTypes>;
  * ILibrariesState is the state of every libraries of a certain type on the server
  */
 type LibrariesState = LibrariesWithStatus;
-
-//function isRealLibraryStateEntry(
-//  entry: [string, LibrariesWithStatus] | [LibraryType, LibrariesWithStatus],
-//): entry is [LibraryType, LibrariesWithStatus] {
-//  return libraryTypes.includes(entry[0] as LibraryType);
-//}
 
 export function filterByLibraryType(
   state: LibrariesState,
@@ -510,56 +494,6 @@ export const librariesCTX = React.createContext<LibrariesContext>({
 
 const librariesLoaderLogger = getLogger('LibrariesLoader');
 
-function executeClientLibrary(
-  libraryName: string,
-  libraryContent: string,
-  setErrorStatus: (path: string, error: string) => void,
-) {
-  const path = computeLibraryPath(libraryName, 'client');
-  let error = '';
-  safeClientScriptEval(
-    libraryContent,
-    undefined,
-    e => {
-      error = printWegasScriptError(e);
-    },
-    undefined,
-    {
-      moduleName: `./${libraryName}`,
-      injectReturn: false,
-    },
-  );
-  setErrorStatus(path, error);
-  if (error) {
-    librariesLoaderLogger.warn(error);
-  }
-}
-
-type ScriptName = string;
-type ScriptContent = string;
-
-type ScriptEntry = [ScriptName, ScriptContent];
-
-/**
- *Execute all client script
- */
-function execAllScripts(
-  scripts: ScriptEntry[],
-  setErrorStatus: (path: string, error: string) => void,
-) {
-  // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
-  setReloadingStatus(true);
-  clearEffects();
-
-  scripts.forEach(([libName, libContent]) => {
-    executeClientLibrary(libName, libContent, setErrorStatus);
-  });
-
-  runEffects();
-  // resumes pagesStore status, hooks will be triggered
-  setReloadingStatus(false);
-}
-
 export function LibrariesLoader(
   props: React.PropsWithChildren<UnknownValuesObject>,
 ) {
@@ -606,12 +540,7 @@ export function LibrariesLoader(
               librariesType: 'client',
               libraries,
             });
-            execAllScripts(
-              Object.entries(libraries).map(([k, v]) => {
-                return [k, v.content];
-              }),
-              setErrorCb,
-            );
+            execAllScripts(libraries, librariesLoaderLogger, setErrorCb);
           } catch (e) {
             wwarn(e);
           }
@@ -712,12 +641,12 @@ export function LibrariesLoader(
           const clientScripts = filterByLibraryType(
             stateRef.current,
             'client',
-          ).reduce<Record<string, string>>((acc, gmc) => {
-            acc[gmc.persisted.contentKey] = gmc.persisted.content;
+          ).reduce<Record<string, IGameModelContent>>((acc, gmc) => {
+            acc[gmc.persisted.contentKey] = gmc.persisted;
             return acc;
           }, {});
 
-          execAllScripts(Object.entries(clientScripts), setErrorCb);
+          execAllScripts(clientScripts, librariesLoaderLogger, setErrorCb);
         },
       );
     },
@@ -1064,14 +993,14 @@ export function LibrariesLoader(
               const clientScripts = filterByLibraryType(
                 stateRef.current,
                 'client',
-              ).reduce<Record<string, string>>((acc, gmc) => {
-                acc[gmc.persisted.contentKey] = gmc.persisted.content;
+              ).reduce<Record<string, IGameModelContent>>((acc, gmc) => {
+                acc[gmc.persisted.contentKey] = gmc.persisted;
                 return acc;
               }, {});
               // Since dispatchLibrariesState is asnyc (presumably since React 18) let's override edited library with new version
-              clientScripts[library.contentKey] = library.content;
+              clientScripts[library.contentKey] = library;
 
-              execAllScripts(Object.entries(clientScripts), setErrorCb);
+              execAllScripts(clientScripts, librariesLoaderLogger, setErrorCb);
             }
           }
 

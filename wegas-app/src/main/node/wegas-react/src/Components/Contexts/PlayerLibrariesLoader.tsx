@@ -7,59 +7,16 @@ import {
 import { useWebsocketEvent } from '../../API/websocket';
 import { ActionCreator } from '../../data/actions';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { setReloadingStatus } from '../../data/Stores/pageContextStore';
 import { store } from '../../data/Stores/store';
-import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { getLogger } from '../../Helper/wegaslog';
 import { clearModule } from '../Hooks/sandbox';
 import {
-  printWegasScriptError,
-  safeClientScriptEval,
   setGlobals,
   useGlobalContexts,
 } from '../Hooks/useScript';
-
+import { execAllScripts } from './clientScriptEvaluation';
 
 const librariesLoaderLogger = getLogger('ClientLibrariesLoader');
-
-function executeClientLibrary(
-  libraryName: string,
-  libraryContent: string,
-) {
-  let error = '';
-  safeClientScriptEval(
-    libraryContent,
-    undefined,
-    e => {
-      error = printWegasScriptError(e);
-    },
-    undefined,
-    {
-      moduleName: `./${libraryName}`,
-      injectReturn: false,
-    },
-  );
-  if (error) {
-    librariesLoaderLogger.warn(error);
-  }
-}
-
-/**
- *Execute all client script
- */
-function execAllScripts(scripts: ILibraries) {
-  // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
-  setReloadingStatus(true);
-  clearEffects();
-
-  Object.entries(scripts).forEach(([libName, lib]) => {
-    executeClientLibrary(libName, lib.content);
-  });
-
-  runEffects();
-  // resumes pagesStore status, hooks will be triggered
-  setReloadingStatus(false);
-}
 
 export default function PlayerLibrariesLoader(
   props: React.PropsWithChildren<UnknownValuesObject>,
@@ -83,7 +40,7 @@ export default function PlayerLibrariesLoader(
     if (isReadyForClientScript) {
       LibraryAPI.getAllLibraries('ClientScript')
         .then((libraries: ILibraries) => {
-          execAllScripts(libraries);
+          execAllScripts(libraries, librariesLoaderLogger);
           setClientScripts(libraries);
 
           // initial client script evaluation done !
@@ -105,7 +62,7 @@ export default function PlayerLibrariesLoader(
             const newCs = {...currentCs,
               [updatedLibraryName]: library
             };
-            execAllScripts(newCs);
+            execAllScripts(newCs, librariesLoaderLogger);
             return newCs;
           });
         },
