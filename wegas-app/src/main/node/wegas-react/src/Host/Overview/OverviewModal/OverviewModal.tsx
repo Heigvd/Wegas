@@ -81,8 +81,8 @@ export function OverviewModal({
   onNewFilterState,
 }: OverviewModalProps) {
   const teamName = Array.isArray(team)
-    ? CurrentGame.name
-    : `"${team?.getName()}"`;
+    ? 'all teams'
+    : `"${team?.getName()}" team`;
 
   return (
     <Modal

@@ -6,6 +6,7 @@ import { globals } from '../../../Components/Hooks/sandbox';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
   autoMargin,
   autoScroll,
@@ -21,15 +22,14 @@ import {
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
+import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
+import { classOrNothing } from '../../../Helper/className';
 import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';
 import { ActionItem } from '../Overview';
 import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
-import { parseEvent } from '../../../Editor/Components/EntityEditor';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
-import { classOrNothing } from '../../../Helper/className';
 
 const jsonFormStyle: string = css({
   '>div': {
@@ -41,6 +41,7 @@ const errorMessageContainerStyle = css({
   maxWidth: '300px',
   margin: 'auto',
   display: 'flex',
+  flexDirection: 'column',
   width: '100%',
   textAlign: 'center',
   height: 'auto',
@@ -71,11 +72,17 @@ export function ImpactModalComputedContent({
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
 
-  const [showToast, setShowToast] = React.useState<boolean>(false);
-  const [showError, setShowError] = React.useState<boolean>(false);
-  const [message, setMessage] = React.useState<string | undefined>(undefined);
+  const [showResults, setShowResults] = React.useState<boolean>(false);
+  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
+  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
 
-  const recurscript = React.useCallback(
+  function resetResults(): void {
+    setShowResults(false);
+    setNbTeamErrored(0);
+    setFeedbacks([]);
+  }
+
+  const recursiveScript = React.useCallback(
     (
       functions: string[],
       payloads: UnknownValuesObject[],
@@ -106,16 +113,22 @@ export function ImpactModalComputedContent({
                 timestamp: new Date().getTime(),
                 unread: true,
               };
-              setShowError(true);
-              setMessage(parseEvent(exceptionEvent).message);
+              setNbTeamErrored(value => value + 1);
+              const message = parseEvent(exceptionEvent).message;
+              if (message.trim().length > 0) {
+                setFeedbacks(feedback => {
+                  if (!feedback.includes(message)) {
+                    return feedback.concat(message);
+                  }
+                  return feedback;
+                });
+              }
               return true;
             }
-            setMessage('Impact successfully applied');
-            setShowToast(true);
             return false;
           })
           .then((errorOccurred: boolean) => {
-            recurscript(
+            recursiveScript(
               functions,
               payloads,
               player,
@@ -127,24 +140,16 @@ export function ImpactModalComputedContent({
           });
       }
     },
-    [message],
+    [],
   );
 
   React.useEffect(() => {
-    const toastTimeout = setTimeout(() => {
-      setShowToast(false);
-    }, 2000);
-
-    return () => clearTimeout(toastTimeout);
-  }, [showToast]);
-
-  React.useEffect(() => {
-    const errorTimeout = setTimeout(() => {
-      setShowError(false);
+    const timeout = setTimeout(() => {
+      resetResults();
     }, 3000);
 
-    return () => clearTimeout(errorTimeout);
-  }, [showError]);
+    return () => clearTimeout(timeout);
+  }, [showResults]);
 
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
@@ -156,7 +161,7 @@ export function ImpactModalComputedContent({
 
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
-      <div className={cx(flex, flexColumn, autoScroll)}>
+      <div className={cx(flex, flexColumn, grow, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
           const schema = globals.Function(`return (${schemaFn})()`)();
           return (
@@ -181,22 +186,29 @@ export function ImpactModalComputedContent({
           );
         })}
       </div>
-      <div
-        className={cx(
-          errorMessageContainerStyle,
-          classOrNothing('hidden', !showError && !showToast),
-          classOrNothing('success', showToast),
-        )}
-      >
-        <div className={cx(textCenter, autoMargin)}>{message}</div>
-      </div>
+      {showResults && (
+        <div
+          className={cx(
+            errorMessageContainerStyle,
+            classOrNothing('success', nbTeamErrored < 1),
+          )}
+        >
+          {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
+          {nbTeamErrored > 0 && Array.isArray(team) && (
+            <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
+          )}
+          {feedbacks.map((msg: string) => {
+            return <div key={msg} className={cx(textCenter, autoMargin)}>{msg}</div>;
+          })}
+        </div>
+      )}
       <div
         className={cx(
           flex,
           flexRow,
           flexDistribute,
           modalButtonsContainer,
-          showError || showToast ? hidden : '',
+          showResults ? hidden : '',
         )}
       >
         <Button
@@ -204,9 +216,10 @@ export function ImpactModalComputedContent({
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
+            resetResults();
             if (Array.isArray(team) && Array.isArray(player)) {
               team.map((t, i) => {
-                recurscript(
+                recursiveScript(
                   functions,
                   payloads,
                   player[i],
@@ -216,7 +229,7 @@ export function ImpactModalComputedContent({
                 );
               });
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              recurscript(
+              recursiveScript(
                 functions,
                 payloads,
                 player,
@@ -225,6 +238,7 @@ export function ImpactModalComputedContent({
                 refreshOverview,
               );
             }
+            setShowResults(true);
           }}
         />
       </div>
@@ -249,13 +263,16 @@ export function ImpactModalAdvancedContent({
   refreshOverview,
 }: ImpactModalAdvancedContentProps) {
   const [script, setScript] = React.useState('');
-  const [showToast, setShowToast] = React.useState<boolean>(false);
-  const [showError, setShowError] = React.useState<boolean>(false);
-  const [message, setMessage] = React.useState<string | undefined>(undefined);
 
-  const player = Array.isArray(team)
-    ? team.map(t => t?.getPlayers()[0].getEntity())
-    : team?.getPlayers()[0].getEntity();
+  const [showResults, setShowResults] = React.useState<boolean>(false);
+  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
+  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
+
+  function resetResults(): void {
+    setShowResults(false);
+    setNbTeamErrored(0);
+    setFeedbacks([]);
+  }
 
   const runScript = React.useCallback(
     (player: Readonly<IPlayer> | undefined) => {
@@ -267,12 +284,18 @@ export function ImpactModalAdvancedContent({
               timestamp: new Date().getTime(),
               unread: true,
             };
-            setShowError(true);
-            setMessage(parseEvent(exceptionEvent).message);
+            setNbTeamErrored(value => value + 1);
+            const message = parseEvent(exceptionEvent).message;
+            if (message.trim().length > 0) {
+              setFeedbacks(feedback => {
+                if (!feedback.includes(message)) {
+                  return feedback.concat(message);
+                }
+                return feedback;
+              });
+            }
             return true;
           }
-          setMessage('Impact successfully applied');
-          setShowToast(true);
           return false;
         })
         .then((errorOccurred: boolean) => {
@@ -284,24 +307,20 @@ export function ImpactModalAdvancedContent({
           }
         });
     },
-    [script, onExit, refreshOverview],
+    [script, onExit, refreshOverview, setNbTeamErrored, setFeedbacks],
   );
 
   React.useEffect(() => {
-    const toastTimeout = setTimeout(() => {
-      setShowToast(false);
-    }, 2000);
-
-    return () => clearTimeout(toastTimeout);
-  }, [showToast]);
-
-  React.useEffect(() => {
-    const errorTimeout = setTimeout(() => {
-      setShowError(false);
+    const timeout = setTimeout(() => {
+      resetResults();
     }, 3000);
 
-    return () => clearTimeout(errorTimeout);
-  }, [showError]);
+    return () => clearTimeout(timeout);
+  }, [showResults]);
+
+  const player = Array.isArray(team)
+    ? team.map(t => t?.getPlayers()[0].getEntity())
+    : team?.getPlayers()[0].getEntity();
 
   return (
     <div className={cx(flex, flexColumn, grow)}>
@@ -312,22 +331,29 @@ export function ImpactModalAdvancedContent({
           setScript(script);
         }}
       />
-      <div
-        className={cx(
-          errorMessageContainerStyle,
-          classOrNothing('hidden', !showError && !showToast),
-          classOrNothing('success', showToast),
-        )}
-      >
-        <div className={cx(textCenter, autoMargin)}>{message}</div>
-      </div>
+      {showResults && (
+        <div
+          className={cx(
+            errorMessageContainerStyle,
+            classOrNothing('success', nbTeamErrored < 1),
+          )}
+        >
+          {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
+          {nbTeamErrored > 0 && Array.isArray(team) && (
+            <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
+          )}
+          {feedbacks.map((msg: string) => {
+            return <div key={msg} className={cx(textCenter, autoMargin)}>{msg}</div>;
+          })}
+        </div>
+      )}
       <div
         className={cx(
           flex,
           flexRow,
           flexDistribute,
           modalButtonsContainer,
-          showError || showToast ? hidden : '',
+          showResults ? hidden : '',
         )}
       >
         <Button
@@ -335,6 +361,7 @@ export function ImpactModalAdvancedContent({
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
+            resetResults();
             if (Array.isArray(team) && Array.isArray(player)) {
               team.map((_t, i) => {
                 runScript(player[i]);
@@ -342,6 +369,8 @@ export function ImpactModalAdvancedContent({
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
               runScript(player);
             }
+            setShowResults(true);
+            refreshOverview();
           }}
         />
       </div>
