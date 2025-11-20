@@ -31,6 +31,32 @@ import { ActionItem } from '../Overview';
 import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
 
+const subTitleStyle: string = css({
+  marginBlock: '12px',
+  fontSize: 'medium',
+});
+
+const smartLabels: string = css({
+  label: {
+    fontSize: '14px',
+    fontWeight: 'normal',
+    margin: 0,
+  },
+});
+
+const advancedImpactModalStyle: string = css({
+  width: '700px',
+  height: '400px',
+  maxHeight: '100%',
+  overflow: 'auto',
+  '.wegas-tree-variable-select__search-container': {
+    fontSize: '14px',
+    width: '600px',
+    minHeight: '4em',
+    maxHeight: '12em',
+  },
+});
+
 const jsonFormStyle: string = css({
   '>div': {
     margin: '0',
@@ -169,8 +195,8 @@ export function ImpactModalComputedContent({
               key={JSON.stringify(schemaFn) + index}
               className={cx(flex, flexColumn, expandHeight)}
             >
-              <h2>{schema.description}</h2>
-              <div className={cx(autoScroll, jsonFormStyle)}>
+              <h3 className={subTitleStyle}>{schema.description}</h3>
+              <div className={cx(autoScroll, jsonFormStyle, smartLabels)}>
                 <JSONForm
                   value={payloads[index] || {}}
                   schema={schema}
@@ -198,7 +224,11 @@ export function ImpactModalComputedContent({
             <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
           )}
           {feedbacks.map((msg: string) => {
-            return <div key={msg} className={cx(textCenter, autoMargin)}>{msg}</div>;
+            return (
+              <div key={msg} className={cx(textCenter, autoMargin)}>
+                {msg}
+              </div>
+            );
           })}
         </div>
       )}
@@ -323,7 +353,7 @@ export function ImpactModalAdvancedContent({
     : team?.getPlayers()[0].getEntity();
 
   return (
-    <div className={cx(flex, flexColumn, grow)}>
+    <div className={cx(flex, flexColumn, grow, advancedImpactModalStyle)}>
       <JSONForm
         value={{ script }}
         schema={advancedImpactSchema}
@@ -343,7 +373,11 @@ export function ImpactModalAdvancedContent({
             <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
           )}
           {feedbacks.map((msg: string) => {
-            return <div key={msg} className={cx(textCenter, autoMargin)}>{msg}</div>;
+            return (
+              <div key={msg} className={cx(textCenter, autoMargin)}>
+                {msg}
+              </div>
+            );
           })}
         </div>
       )}

@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { autoScroll, expandBoth, flex, flexColumn } from '../../../css/classes';
 import '../../../Editor/Components/FormView';
 import {
   FilterModalContent,
@@ -90,26 +91,30 @@ export function OverviewModal({
       className={modalStyle}
       innerClassName={cx(modalContentStyle, modalInputsStyle)}
     >
-      {modalState !== 'Filter' && teamName && (
-        <h3 className={modalTitleStyle}>Impact {teamName}</h3>
-      )}
-      {modalState === 'Impacts' ? (
-        <ImpactModalContent
-          team={team}
-          onExit={onExit}
-          item={item}
-          refreshOverview={refreshOverview}
-        />
-      ) : modalState === 'Mail' ? (
-        <MailModalContent team={team} onExit={onExit} />
-      ) : modalState === 'Filter' ? (
-        <FilterModalContent
-          overviewState={overviewState}
-          filterState={filterState}
-          onNewFilterState={onNewFilterState}
-          filterButtons={filterButtons}
-        />
-      ) : null}
+      <div className={cx(flex, flexColumn, expandBoth)}>
+        {modalState !== 'Filter' && teamName && (
+          <h3 className={modalTitleStyle}>Impact {teamName}</h3>
+        )}
+        <div className={cx(flex, flexColumn, autoScroll)}>
+          {modalState === 'Impacts' ? (
+            <ImpactModalContent
+              team={team}
+              onExit={onExit}
+              item={item}
+              refreshOverview={refreshOverview}
+            />
+          ) : modalState === 'Mail' ? (
+            <MailModalContent team={team} onExit={onExit} />
+          ) : modalState === 'Filter' ? (
+            <FilterModalContent
+              overviewState={overviewState}
+              filterState={filterState}
+              onNewFilterState={onNewFilterState}
+              filterButtons={filterButtons}
+            />
+          ) : null}
+        </div>
+      </div>
     </Modal>
   );
 }
