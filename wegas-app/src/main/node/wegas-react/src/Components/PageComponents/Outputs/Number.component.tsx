@@ -52,7 +52,10 @@ function PlayerNumber({
       {typeof number === 'number' ? (
         number
       ) : (
-        <PlayerComponentDisplay script={script} context={context} />
+        <PlayerComponentDisplay
+          script={script}
+          context={context}
+        />
       )}
     </div>
   );

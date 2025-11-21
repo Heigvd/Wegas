@@ -4,6 +4,10 @@ import * as React from 'react';
 import { InputProps, SimpleInput } from '../SimpleInput';
 import { CheckMinMax } from './numberComponentHelper';
 import { expandWidth, flexColumn } from '../../../css/classes';
+import {
+  toFormattedString,
+  parseNumber,
+} from '../../PageComponents/tools/numberSeparator';
 
 const numberInputStyle = css({
   textAlign: 'center',
@@ -14,23 +18,28 @@ interface NumberInputProps extends InputProps<number> {
   min?: number;
   max?: number;
   toggleInputDataError?: React.Dispatch<React.SetStateAction<boolean>>;
-  ignoreChangesWhileFocused?: boolean
+  /**
+   * When true the value is only propagated when the input is blurred (unfocused)
+   * Otherwise the value is propagated on each change
+   */
+  propagateOnBlur?: boolean
 }
 
 export function NumberInput(props: NumberInputProps) {
-  const { value, ignoreChangesWhileFocused } = props;
+  const { value, placeholder, propagateOnBlur } = props;
   const min = props.min ?? Number.NEGATIVE_INFINITY;
   const max = props.max ?? Number.POSITIVE_INFINITY;
 
   const [input, setInput] = React.useState<string | undefined>(undefined);
 
-  const [focused, updateFocusedState] = React.useState<boolean>(false);
-
-  const onChange = React.useCallback((newValue: string | number) => {
-    const numberValue = Number(newValue);
+  const propagateChange = React.useCallback((newValue: string) => {
+    const numberValue = parseNumber(newValue);
     const stringValue = String(newValue);
+
     if (numberValue !== Number(input)) {
-      setInput(stringValue);
+      isNaN(numberValue)
+        ? setInput(stringValue)
+        : setInput(toFormattedString(numberValue));
       if (!isNaN(numberValue) && numberValue >= min && numberValue <= max) {
         props.toggleInputDataError && props.toggleInputDataError(false);
         props.onChange && props.onChange(numberValue);
@@ -40,15 +49,21 @@ export function NumberInput(props: NumberInputProps) {
     }
   }, [min, max, props.toggleInputDataError, props.onChange]);
 
+  const onChange = function(newValue: string) {
+    if (!propagateOnBlur) {
+      propagateChange(newValue);
+    }
+  };
+
+  const onBlur = function(event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    propagateChange(event.target.value);
+  };
+
   React.useEffect(() => {
-    // Prevent wegas value from overriding current input
-    if(ignoreChangesWhileFocused && focused){
-      // ignore
+    if (value !== Number(input)) {
+      setInput(toFormattedString(value));
     }
-    else if (value !== Number(input)) {
-      setInput(String(value));
-    }
-  }, [value, ignoreChangesWhileFocused]);
+  }, [value]);
 
   return (
     <div className={cx(flexColumn, expandWidth)}>
@@ -61,8 +76,8 @@ export function NumberInput(props: NumberInputProps) {
         className={cx(numberInputStyle, props.className)}
         onChange={onChange}
         inputType="text"
-        onFocus={(_) => updateFocusedState(true)}
-        onBlur={(_) => updateFocusedState(false)}
+        placeholder={placeholder}
+        onBlur={onBlur}
         />
     </div>
   );

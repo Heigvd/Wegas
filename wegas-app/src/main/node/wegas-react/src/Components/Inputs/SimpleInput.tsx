@@ -89,9 +89,11 @@ export interface SimpleInputProps extends InputProps<string | number> {
     event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => void;
   /**
-   *
+   * called when the input loses focus
    */
-  onBlur?: React.FocusEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onBlur?: (
+    event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => void;
   /**
    * set width 100%
    */
