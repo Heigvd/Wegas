@@ -175,13 +175,12 @@ export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
   return schema;
 }
 
-
 // Importing Form as a Lazy componenet prevents circular import statements
 const Form = React.lazy(() => import('./Form'));
 
 function Fallback() {
   const i18nValues = useInternalTranslate(commonTranslations);
-  return <div className={ mediumPadding }>{ i18nValues.loading + '...' }</div>
+  return <div className={mediumPadding}>{i18nValues.loading + '...'}</div>;
 }
 
 export function WindowedEditor<T extends IMergeable>({
@@ -195,7 +194,7 @@ export function WindowedEditor<T extends IMergeable>({
   highlight,
   localDispatch,
   ...options
-}: EditorProps<T>) : JSX.Element {
+}: EditorProps<T>): JSX.Element {
   let pathEntity = entity as T & { id?: number };
 
   if (Array.isArray(path) && path.length > 0) {
@@ -231,52 +230,50 @@ export function WindowedEditor<T extends IMergeable>({
   }
 
   return (
-    <React.Suspense fallback={<Fallback /> }>
-    <Form
-      entity={pathEntity}
-      label={
-        <>
-          <IconComp
-            icon={withDefault(getIcon(entity!), 'pen')}
-            className={css({ marginRight: '2px' })}
-          />
-          {editorTitle({
-            label: entity
-              ? (entity as { label?: ITranslatableContent }).label
-              : undefined,
-            editorTag: entity
-              ? (entity as { editorTag?: string }).editorTag
-              : undefined,
-            name: getClassLabel(pathEntity),
-            index: entity
-              ? (entity as { index?: string }).index
-              : undefined,
-          })}
-        </>
-      }
-      update={variable =>
-        update != null
-          ? update(deepUpdate(entity, path, variable) as T)
-          : undefined
-      }
-      actions={actions.map(action => ({
-        ...action,
-        action: function (e: T) {
-          action.action(deepUpdate(entity, path, e) as T, path);
-        },
-      }))}
-      path={path}
-      config={overrideSchema(
-        entity,
-        customSchema !== undefined ? customSchema : schema,
-      )}
-      onChange={(val: unknown) => {
-        onChange && onChange(deepUpdate(entity, path, val) as T);
-      }}
-      highlight={highlight}
-      localDispatch={localDispatch}
-      {...options}
-    />
+    <React.Suspense fallback={<Fallback />}>
+      <Form
+        entity={pathEntity}
+        label={
+          <>
+            <IconComp
+              icon={withDefault(getIcon(entity!), 'pen')}
+              className={css({ marginRight: '2px' })}
+            />
+            {editorTitle({
+              label: entity
+                ? (entity as { label?: ITranslatableContent }).label
+                : undefined,
+              editorTag: entity
+                ? (entity as { editorTag?: string }).editorTag
+                : undefined,
+              name: getClassLabel(pathEntity),
+              index: entity ? (entity as { index?: string }).index : undefined,
+            })}
+          </>
+        }
+        update={variable =>
+          update != null
+            ? update(deepUpdate(entity, path, variable) as T)
+            : undefined
+        }
+        actions={actions.map(action => ({
+          ...action,
+          action: function (e: T) {
+            action.action(deepUpdate(entity, path, e) as T, path);
+          },
+        }))}
+        path={path}
+        config={overrideSchema(
+          entity,
+          customSchema !== undefined ? customSchema : schema,
+        )}
+        onChange={(val: unknown) => {
+          onChange && onChange(deepUpdate(entity, path, val) as T);
+        }}
+        highlight={highlight}
+        localDispatch={localDispatch}
+        {...options}
+      />
     </React.Suspense>
   );
 }
@@ -311,18 +308,26 @@ export function parseEvent(
               break;
 
             case 'WegasOutOfBoundException': {
-              const min = exception.min ? exception.min : '-∞';
-              const max = exception.max ? exception.max : '∞';
-              const error =
-                '"' +
-                exception.variableName +
-                '" is out of bound. <br>(' +
-                exception.value +
-                ' not in [' +
-                min +
-                ';' +
-                max +
-                '])';
+              let error = '';
+              if (
+                exception.min !== undefined &&
+                exception.value < exception.min
+              ) {
+                error =
+                  exception.variableName +
+                  ' can not be less than ' +
+                  exception.min;
+              } else if (
+                exception.max !== undefined &&
+                exception.value > exception.max
+              ) {
+                error =
+                  exception.variableName +
+                  ' can not be more than ' +
+                  exception.max;
+              } else {
+                error = "Something's wrong with " + exception.variableName;
+              }
               message += error;
               break;
             }
@@ -371,10 +376,7 @@ export function parseEventFromIndex(
   }
 }
 
-function getStateConfig(
-  state: Readonly<Edition>,
-  entity: IVariableDescriptor,
-) {
+function getStateConfig(state: Readonly<Edition>, entity: IVariableDescriptor) {
   return 'config' in state && state.config != null
     ? state.config
     : getEditionConfig(entity);
@@ -487,14 +489,13 @@ export function editionActions<T extends IVariableDescriptor>(
 }
 
 function VariableEditionPanel({
-                                editing,
-                                entity,
-                                events,
-                                readOnly,
-                                localDispatch,
-                                highlightInstance
-                              }: VariableFormProps & {highlightInstance: boolean | undefined}) {
-
+  editing,
+  entity,
+  events,
+  readOnly,
+  localDispatch,
+  highlightInstance,
+}: VariableFormProps & { highlightInstance: boolean | undefined }) {
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
     [editing],
@@ -556,7 +557,8 @@ function VariableEditionPanel({
     return null;
   }
 
-  return (<ErrorBoundary>
+  return (
+    <ErrorBoundary>
       <WindowedEditor
         path={path}
         getConfig={config}
@@ -631,18 +633,18 @@ export function VariableForm({
           />
         </ReflexElement>
       </ReflexContainer>
-    )
+    );
   }
 
   return (
-        <VariableEditionPanel
-          editing={editing}
-          entity={entity}
-          events={events}
-          readOnly={readOnly}
-          localDispatch={localDispatch}
-          highlightInstance={highlightInstance}
-        />
+    <VariableEditionPanel
+      editing={editing}
+      entity={entity}
+      events={events}
+      readOnly={readOnly}
+      localDispatch={localDispatch}
+      highlightInstance={highlightInstance}
+    />
   );
 }
 

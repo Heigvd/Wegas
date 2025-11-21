@@ -196,7 +196,7 @@ export function Searcher<T>({
         />
       </div>
       {searching && (
-        <div className={treeCss}>
+        <div className={cx(treeCss, 'wegas-tree-variable-select__search-container' )}>
           <SearchableItems
             match={(item, s) => {
               return item.label.toLowerCase().includes(s.toLowerCase());

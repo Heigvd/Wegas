@@ -6,7 +6,9 @@ import { globals } from '../../../Components/Hooks/sandbox';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';
+import { themeVar } from '../../../Components/Theme/ThemeVars';
 import {
+  autoMargin,
   autoScroll,
   expandBoth,
   expandHeight,
@@ -15,15 +17,45 @@ import {
   flexDistribute,
   flexRow,
   grow,
+  hidden,
+  textCenter,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
+import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
+import { classOrNothing } from '../../../Helper/className';
 import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';
 import { ActionItem } from '../Overview';
 import { OverviewTab, overviewTabStyle } from '../OverviewTab';
 import { modalButtonsContainer } from './OverviewModal';
+
+const subTitleStyle: string = css({
+  marginBlock: '12px',
+  fontSize: 'medium',
+});
+
+const smartLabels: string = css({
+  label: {
+    fontSize: '14px',
+    fontWeight: 'normal',
+    margin: 0,
+  },
+});
+
+const advancedImpactModalStyle: string = css({
+  width: '700px',
+  height: '400px',
+  maxHeight: '100%',
+  overflow: 'auto',
+  '.wegas-tree-variable-select__search-container': {
+    fontSize: '14px',
+    width: '600px',
+    minHeight: '4em',
+    maxHeight: '12em',
+  },
+});
 
 const jsonFormStyle: string = css({
   '>div': {
@@ -31,41 +63,25 @@ const jsonFormStyle: string = css({
   },
 });
 
-function recurscript(
-  functions: string[],
-  payloads: UnknownValuesObject[],
-  player: Readonly<IPlayer> | undefined,
-  team: STeam | undefined,
-  onExit: () => void,
-  refreshOverview: () => void,
-  index: number = 0,
-) {
-  if (index >= functions.length) {
-    refreshOverview();
-    onExit();
-  } else {
-    asyncRunLoadedScript(
-      Game.selectCurrent().id!,
-      functions[index],
-      player,
-      undefined,
-      {
-        team: team?.getEntity(),
-        payload: payloads[index],
-      },
-    ).finally(() => {
-      recurscript(
-        functions,
-        payloads,
-        player,
-        team,
-        onExit,
-        refreshOverview,
-        index + 1,
-      );
-    });
-  }
-}
+const errorMessageContainerStyle = css({
+  maxWidth: '300px',
+  margin: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  textAlign: 'center',
+  height: 'auto',
+  color: themeVar.colors.ErrorColor,
+  opacity: 1,
+  transition: 'opacity .5s',
+  '&.hidden': {
+    opacity: 0,
+    height: '0px',
+  },
+  '&.success': {
+    color: themeVar.colors.SuccessColor,
+  },
+});
 
 interface ImpactModalComputedContentProps {
   team: STeam | STeam[] | undefined;
@@ -81,6 +97,86 @@ export function ImpactModalComputedContent({
   refreshOverview,
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
+
+  const [showResults, setShowResults] = React.useState<boolean>(false);
+  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
+  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
+
+  function resetResults(): void {
+    setShowResults(false);
+    setNbTeamErrored(0);
+    setFeedbacks([]);
+  }
+
+  const recursiveScript = React.useCallback(
+    (
+      functions: string[],
+      payloads: UnknownValuesObject[],
+      player: Readonly<IPlayer> | undefined,
+      team: STeam | undefined,
+      onExit: () => void,
+      refreshOverview: () => void,
+      index: number = 0,
+    ) => {
+      if (index >= functions.length) {
+        refreshOverview();
+        onExit();
+      } else {
+        asyncRunLoadedScript(
+          Game.selectCurrent().id!,
+          functions[index],
+          player,
+          undefined,
+          {
+            team: team?.getEntity(),
+            payload: payloads[index],
+          },
+        )
+          .then(response => {
+            setShowResults(true);
+            if (response.events.length > 0) {
+              const exceptionEvent: WegasEvent = {
+                ...response.events[0],
+                timestamp: new Date().getTime(),
+                unread: true,
+              };
+              setNbTeamErrored(value => value + 1);
+              const message = parseEvent(exceptionEvent).message;
+              if (message.trim().length > 0) {
+                setFeedbacks(feedback => {
+                  if (!feedback.includes(message)) {
+                    return feedback.concat(message);
+                  }
+                  return feedback;
+                });
+              }
+              return true;
+            }
+            return false;
+          })
+          .then((errorOccurred: boolean) => {
+            recursiveScript(
+              functions,
+              payloads,
+              player,
+              team,
+              errorOccurred ? () => {} : () => setTimeout(onExit, 2000),
+              refreshOverview,
+              index + 1,
+            );
+          });
+      }
+    },
+    [],
+  );
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      resetResults();
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [showResults]);
 
   const functions = actions.map(({ doFn }) => {
     return `(${doFn})(team,payload)`;
@@ -100,8 +196,8 @@ export function ImpactModalComputedContent({
               key={JSON.stringify(schemaFn) + index}
               className={cx(flex, flexColumn, expandHeight)}
             >
-              <h2>{schema.description}</h2>
-              <div className={cx(autoScroll, jsonFormStyle)}>
+              <h3 className={subTitleStyle}>{schema.description}</h3>
+              <div className={cx(autoScroll, jsonFormStyle, smartLabels)}>
                 <JSONForm
                   value={payloads[index] || {}}
                   schema={schema}
@@ -117,15 +213,31 @@ export function ImpactModalComputedContent({
           );
         })}
       </div>
-      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
+      {showResults && (
+        <DisplayFeedbacks
+          team={team}
+          nbTeamErrored={nbTeamErrored}
+          feedbacks={feedbacks}
+        />
+      )}
+      <div
+        className={cx(
+          flex,
+          flexRow,
+          flexDistribute,
+          modalButtonsContainer,
+          showResults ? hidden : '',
+        )}
+      >
         <Button
           disabled={player == null}
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
+            resetResults();
             if (Array.isArray(team) && Array.isArray(player)) {
               team.map((t, i) => {
-                recurscript(
+                recursiveScript(
                   functions,
                   payloads,
                   player[i],
@@ -135,7 +247,7 @@ export function ImpactModalComputedContent({
                 );
               });
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              recurscript(
+              recursiveScript(
                 functions,
                 payloads,
                 player,
@@ -169,12 +281,62 @@ export function ImpactModalAdvancedContent({
 }: ImpactModalAdvancedContentProps) {
   const [script, setScript] = React.useState('');
 
+  const [showResults, setShowResults] = React.useState<boolean>(false);
+  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
+  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
+
+  function resetResults(): void {
+    setShowResults(false);
+    setNbTeamErrored(0);
+    setFeedbacks([]);
+  }
+
+  const runScript = React.useCallback(
+    (player: Readonly<IPlayer> | undefined) => {
+      asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
+        .then(response => {
+          setShowResults(true);
+          if (response.events.length > 0) {
+            const exceptionEvent: WegasEvent = {
+              ...response.events[0],
+              timestamp: new Date().getTime(),
+              unread: true,
+            };
+            setNbTeamErrored(value => value + 1);
+            const message = parseEvent(exceptionEvent).message;
+            if (message.trim().length > 0) {
+              setFeedbacks(feedback => {
+                if (!feedback.includes(message)) {
+                  return feedback.concat(message);
+                }
+                return feedback;
+              });
+            }
+          } else {
+            setTimeout(() => {
+              onExit();
+              refreshOverview();
+            }, 2000);
+          }
+        });
+    },
+    [script, onExit, refreshOverview, setNbTeamErrored, setFeedbacks],
+  );
+
+  React.useEffect(() => {
+    const timeout = setTimeout(() => {
+      resetResults();
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, [showResults]);
+
   const player = Array.isArray(team)
     ? team.map(t => t?.getPlayers()[0].getEntity())
     : team?.getPlayers()[0].getEntity();
 
   return (
-    <div className={cx(flex, flexColumn, grow)}>
+    <div className={cx(flex, flexColumn, grow, advancedImpactModalStyle)}>
       <JSONForm
         value={{ script }}
         schema={advancedImpactSchema}
@@ -182,34 +344,36 @@ export function ImpactModalAdvancedContent({
           setScript(script);
         }}
       />
-
-      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
+      {showResults && (
+        <DisplayFeedbacks
+          team={team}
+          nbTeamErrored={nbTeamErrored}
+          feedbacks={feedbacks}
+        />
+      )}
+      <div
+        className={cx(
+          flex,
+          flexRow,
+          flexDistribute,
+          modalButtonsContainer,
+          showResults ? hidden : '',
+        )}
+      >
         <Button
           disabled={player == null}
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
           onClick={() => {
+            resetResults();
             if (Array.isArray(team) && Array.isArray(player)) {
               team.map((_t, i) => {
-                asyncRunLoadedScript(
-                  Game.selectCurrent().id!,
-                  script,
-                  player[i],
-                )
-                  .catch(wwarn)
-                  .finally(() => {
-                    onExit();
-                    refreshOverview();
-                  });
+                runScript(player[i]);
               });
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
-                .catch(wwarn)
-                .finally(() => {
-                  onExit();
-                  refreshOverview();
-                });
+              runScript(player);
             }
+            refreshOverview();
           }}
         />
       </div>
@@ -286,4 +450,35 @@ export function ImpactModalContent({
     wwarn(e);
     return <pre>Only wegas react formatting allowed</pre>;
   }
+}
+
+function DisplayFeedbacks({
+  team,
+  nbTeamErrored,
+  feedbacks,
+}: {
+  team: ImpactModalComputedContentProps['team'];
+  nbTeamErrored: number;
+  feedbacks: string[];
+}): JSX.Element {
+  return (
+    <div
+      className={cx(
+        errorMessageContainerStyle,
+        classOrNothing('success', nbTeamErrored < 1),
+      )}
+    >
+      {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
+      {nbTeamErrored > 0 && Array.isArray(team) && (
+        <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
+      )}
+      {feedbacks.map((msg: string) => {
+        return (
+          <div key={msg} className={cx(textCenter, autoMargin)}>
+            {msg}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
