@@ -11,7 +11,7 @@
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
-        "cypress": "^12.5.1",
+        "cypress": "^15.6.0",
         "cypress-react-selector": "^3.0.0",
         "eslint": "^8.34.0",
         "eslint-config-prettier": "^8.6.0",

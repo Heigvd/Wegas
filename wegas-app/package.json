@@ -24,5 +24,8 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
     "rimraf": "^3.0.2"
+  },
+  "resolutions": {
+    "@xmldom/xmldom": "^0.8.4"
   }
 }
