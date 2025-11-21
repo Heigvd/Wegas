@@ -133,6 +133,7 @@ export function ImpactModalComputedContent({
           },
         )
           .then(response => {
+            setShowResults(true);
             if (response.events.length > 0) {
               const exceptionEvent: WegasEvent = {
                 ...response.events[0],
@@ -172,7 +173,7 @@ export function ImpactModalComputedContent({
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       resetResults();
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timeout);
   }, [showResults]);
@@ -255,7 +256,6 @@ export function ImpactModalComputedContent({
                 refreshOverview,
               );
             }
-            setShowResults(true);
           }}
         />
       </div>
@@ -295,6 +295,7 @@ export function ImpactModalAdvancedContent({
     (player: Readonly<IPlayer> | undefined) => {
       asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
         .then(response => {
+          setShowResults(true);
           if (response.events.length > 0) {
             const exceptionEvent: WegasEvent = {
               ...response.events[0],
@@ -311,12 +312,7 @@ export function ImpactModalAdvancedContent({
                 return feedback;
               });
             }
-            return true;
-          }
-          return false;
-        })
-        .then((errorOccurred: boolean) => {
-          if (!errorOccurred) {
+          } else {
             setTimeout(() => {
               onExit();
               refreshOverview();
@@ -330,7 +326,7 @@ export function ImpactModalAdvancedContent({
   React.useEffect(() => {
     const timeout = setTimeout(() => {
       resetResults();
-    }, 3000);
+    }, 5000);
 
     return () => clearTimeout(timeout);
   }, [showResults]);
@@ -377,7 +373,6 @@ export function ImpactModalAdvancedContent({
             } else if (!Array.isArray(team) && !Array.isArray(player)) {
               runScript(player);
             }
-            setShowResults(true);
             refreshOverview();
           }}
         />
