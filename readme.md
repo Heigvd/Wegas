@@ -10,6 +10,11 @@ A Web Game Authoring System for rapid development of serious games without progr
 ### Authors
 *   Dominique Jaccard dominique.jaccard@heig-vd.ch 
 *   Maxence Laurent maxence.laurent@gmail.com
+*   Jeanne Ashdown jeanne.ashdown@heig-vd.ch
+*   Mikkel Vestergaard mikkel.vestergaard@heig-vd.ch
+*   Xavier Good xavier.good@heig-vd.ch
+*   Sandra Monnier sandra.monnier@heig-vd.ch
+*   Audrey Huguenin audrey.huguenin@heig-vd.ch
 *   Pierre-Benjamin Monaco pierre-benjamin.monaco@heig-vd.ch
 *   Jarle Hulaas jarle.hulaas@heig-vd.ch
 *   Cyril Junod cyril.junod@gmail.com
