@@ -118,7 +118,7 @@ function PlayerTextInput({
             placeholder={placeholderText}
             className={className}
             style={style}
-            toolbarLayout="full"
+            toolbarLayout="player"
           />
         );
       }}
@@ -133,7 +133,7 @@ function PlayerTextInput({
       placeholder={placeholderText}
       className={className}
       style={style}
-      toolbarLayout="full"
+      toolbarLayout="player"
     />
   );
 }

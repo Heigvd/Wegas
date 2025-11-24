@@ -103,7 +103,7 @@ function PlayerNumberInput({
       disabled={disabled || locked}
       onChange={onChange}
       placeholder={placeholderText}
-      ignoreChangesWhileFocused={true}
+      propagateOnBlur={true}
     />
   );
 }

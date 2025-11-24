@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { Modal } from '../../../Components/Modal';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { autoScroll, expandBoth, flex, flexColumn } from '../../../css/classes';
 import '../../../Editor/Components/FormView';
 import {
   FilterModalContent,
@@ -22,14 +23,21 @@ const modalStyle = css({
 
 const modalContentStyle = css({
   position: 'relative',
-  overflow: 'auto',
-  padding: '40px',
+  padding: '25px',
   minWidth: '400px',
   maxWidth: '700px',
+  minHeight: '500px',
+  maxHeight: '66%',
   boxShadow: '1px 2px 6px rgba(0,0,0,0.1)',
   '&>div': {
     color: themeVar.colors.DarkTextColor,
   },
+});
+
+const modalTitleStyle = css({
+  margin: '0 0 15px 0',
+  paddingBottom: '15px',
+  borderBottom: '1px solid ' + themeVar.colors.DisabledColor,
 });
 
 const modalInputsStyle = css({
@@ -73,29 +81,40 @@ export function OverviewModal({
   filterState,
   onNewFilterState,
 }: OverviewModalProps) {
+  const teamName = Array.isArray(team)
+    ? 'all teams'
+    : `"${team?.getName()}" team`;
+
   return (
     <Modal
       onExit={onExit}
       className={modalStyle}
       innerClassName={cx(modalContentStyle, modalInputsStyle)}
     >
-      {modalState === 'Impacts' ? (
-        <ImpactModalContent
-          team={team}
-          onExit={onExit}
-          item={item}
-          refreshOverview={refreshOverview}
-        />
-      ) : modalState === 'Mail' ? (
-        <MailModalContent team={team} onExit={onExit} />
-      ) : modalState === 'Filter' ? (
-        <FilterModalContent
-          overviewState={overviewState}
-          filterState={filterState}
-          onNewFilterState={onNewFilterState}
-          filterButtons={filterButtons}
-        />
-      ) : null}
+      <div className={cx(flex, flexColumn, expandBoth)}>
+        {modalState !== 'Filter' && teamName && (
+          <h3 className={modalTitleStyle}>Impact {teamName}</h3>
+        )}
+        <div className={cx(flex, flexColumn, autoScroll)}>
+          {modalState === 'Impacts' ? (
+            <ImpactModalContent
+              team={team}
+              onExit={onExit}
+              item={item}
+              refreshOverview={refreshOverview}
+            />
+          ) : modalState === 'Mail' ? (
+            <MailModalContent team={team} onExit={onExit} />
+          ) : modalState === 'Filter' ? (
+            <FilterModalContent
+              overviewState={overviewState}
+              filterState={filterState}
+              onNewFilterState={onNewFilterState}
+              filterButtons={filterButtons}
+            />
+          ) : null}
+        </div>
+      </div>
     </Modal>
   );
 }

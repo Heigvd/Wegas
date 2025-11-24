@@ -157,7 +157,6 @@ function WhChoiceDisplay({
             toggleInputDataError={toggleInputDataError}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
-            ignoreChangesWhileFocused={true}
           />
         ) : choiceD['@class'] === 'StringDescriptor' ? (
           <SimpleInput
@@ -190,6 +189,7 @@ function WhChoiceDisplay({
             }}
             disabled={questionI.validated || disabled}
             readOnly={readOnly}
+            toolbarLayout='player'
           />
         )}
       </div>

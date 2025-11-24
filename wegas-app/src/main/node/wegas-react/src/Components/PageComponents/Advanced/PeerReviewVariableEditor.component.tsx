@@ -201,6 +201,7 @@ export default function PeerReviewVariableEditor({
               readOnly={options.readOnly}
               className={className}
               style={style}
+              toolbarLayout='player'
             />
           );
         } else {

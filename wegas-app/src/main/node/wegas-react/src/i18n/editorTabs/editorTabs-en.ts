@@ -22,7 +22,7 @@ export const editorTabsTranslationsEN = {
     Tester: 'Tester',
     Variables: 'Variables',
     'State Machine': 'State Machine',
-    'Variable Properties': 'Variables Properties',
+    'Variable Properties': 'Variable Settings',
     Files: 'Files',
     Scripts: 'Scripts',
     Styles: 'Styles',
@@ -50,7 +50,6 @@ export const editorTabsTranslationsEN = {
     'Peer reviews': 'Peer reviews',
   },
   stateMachine: {
-    selectVariable: 'Select a state-machine or a dialogue to display',
     selectedNotStateMachine:
       'The selected variable is not some kind of state machine',
   },

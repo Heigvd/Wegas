@@ -210,6 +210,7 @@ export default function Preview() {
                     }
                     disabled={disabled}
                     readOnly={readOnly}
+                    toolbarLayout='player'
                   />
                 </ReflexElement>
               </ReflexContainer>

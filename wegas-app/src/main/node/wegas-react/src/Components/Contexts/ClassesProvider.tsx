@@ -35,6 +35,8 @@ function ClassesHandler({
 }
 
 /**
- * Provider for LangContext Handles stores language change
+ * Provider for Classes Handles stores classes change
+ * The add and remove method are exposed in the client script context (Classes.add(...))
+ * Enables client scripts to inject classes names which will be available dynamically in the React context
  */
 export const ClassesProvider = React.memo(ClassesHandler);
