@@ -68,7 +68,9 @@ export function TreeChildren<T = unknown>({
         <div
           style={{ minHeight: minimumNodeHeight, minWidth: minimumLabelWidth }}
           className={emptyNodeStyle}
-        />
+        >
+          Empty...
+        </div>
       ) : (
         React.Children.map(children, (child, index) => (
           <passedPropsCTX.Provider
