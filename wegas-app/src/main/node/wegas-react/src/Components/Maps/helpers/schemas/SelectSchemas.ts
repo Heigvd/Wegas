@@ -8,11 +8,11 @@ export const selectSchema = schemaProps.hashlist({
       label: 'Selectable layers',
       value: {
         prop: 'layers',
-        schema: schemaProps.code({
-          label: 'Selectable layers',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['unknown'],
+        schema: schemaProps.callback({
+          label: 'Layer Filter',
+          callbackProps: {
+            args: [['layer', ['any']]],
+            returnType: ['boolean'],
           },
         }),
       },
