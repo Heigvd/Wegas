@@ -17,18 +17,18 @@ export interface WegasDrawProps extends Options {
 
 export function WegasDraw({ onDrawEnd, onDrawStart, onDrawAbort, ...drawOptions }: WegasDrawProps) {
   const { map } = React.useContext(mapCTX);
+
+  const drawInteraction = React.useRef<Draw>();
+
   React.useEffect(() => {
     if (map) {
       if(drawOptions.type === undefined){
         drawOptions.type = 'Point';
       }
-      drawOptions.finishCondition = ((e) => {
-        wlog('event', e);
-        return false;
-      });
 
       const draw = new Draw(drawOptions);
       map.addInteraction(draw);
+      drawInteraction.current = draw;
 
       if (onDrawEnd) {
         draw.on('drawend', onDrawEnd);
@@ -40,11 +40,30 @@ export function WegasDraw({ onDrawEnd, onDrawStart, onDrawAbort, ...drawOptions 
         draw.on('drawabort', onDrawAbort);
       }
 
+
       return () => {
+        draw.abortDrawing();
         map.removeInteraction(draw);
       };
     }
-  }, [map, onDrawEnd, drawOptions]);
+  }, [map, onDrawEnd, onDrawStart, onDrawAbort, drawOptions]);
+
+  const escapeListener = React.useCallback((event: KeyboardEvent) => {
+      wlog(event.key)
+      if(event.code === 'Escape' && drawInteraction.current){
+        wlog('stopping interaction')
+        drawInteraction.current.abortDrawing();
+      }
+    },
+    [drawInteraction.current],
+  );
+
+  React.useEffect(() => {
+    window.addEventListener('keydown', escapeListener);
+    return () => {
+      window.removeEventListener('keydown', escapeListener);
+    };
+  }, [escapeListener]);
 
   return null;
 }
