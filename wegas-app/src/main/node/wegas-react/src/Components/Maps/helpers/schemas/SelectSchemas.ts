@@ -45,7 +45,7 @@ export const selectSchema = schemaProps.hashlist({
         schema: schemaProps.callback({
           label: 'Filter',
           callbackProps: {
-            args: [['feature', ['any']]],
+            args: [['feature', ['Feature']]],
             returnType: ['boolean'],
           },
         }),
@@ -137,7 +137,7 @@ export const selectSchema = schemaProps.hashlist({
         schema: schemaProps.callback({
           label: 'on Select',
           callbackProps: {
-            args: [['event', ['any']]],
+            args: [['event', ['SelectEvent']]],
             returnType: ['void'],
           },
         }),

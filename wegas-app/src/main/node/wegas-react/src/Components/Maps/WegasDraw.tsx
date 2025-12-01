@@ -2,7 +2,8 @@ import { Draw } from 'ol/interaction';
 import { DrawEvent, Options } from 'ol/interaction/Draw';
 import * as React from 'react';
 import { mapCTX } from './WegasMap';
-import { wlog } from '../../Helper/wegaslog';
+import { primaryAction } from 'ol/events/condition';
+import { MapBrowserEvent } from 'ol';
 
 /**
  * A react implementation of OpenLayer Draw object
@@ -18,19 +19,18 @@ export interface WegasDrawProps extends Options {
 export function WegasDraw({ onDrawEnd, onDrawStart, onDrawAbort, ...drawOptions }: WegasDrawProps) {
   const { map } = React.useContext(mapCTX);
 
-  const drawInteraction = React.useRef<Draw>();
-
   React.useEffect(() => {
     if (map) {
       if(drawOptions.type === undefined){
         drawOptions.type = 'Point';
       }
+      // ignore right clicks
+      drawOptions.condition = (event: MapBrowserEvent) => primaryAction(event);
 
       const draw = new Draw(drawOptions);
       map.addInteraction(draw);
-      drawInteraction.current = draw;
 
-      if (onDrawEnd) {
+      if(onDrawEnd) {
         draw.on('drawend', onDrawEnd);
       }
       if(onDrawStart) {
@@ -40,30 +40,30 @@ export function WegasDraw({ onDrawEnd, onDrawStart, onDrawAbort, ...drawOptions 
         draw.on('drawabort', onDrawAbort);
       }
 
+      const handleContextMenu = (_evt: any) => {
+        draw.abortDrawing();
+      };
+
+      const escapeListener = (event: KeyboardEvent) => {
+        if(event.code === 'Escape'){
+          draw.abortDrawing();
+        }
+      }
+
+      const viewPort = map.getViewport();
+      viewPort.addEventListener('contextmenu', handleContextMenu);
+      viewPort.addEventListener('keydown', escapeListener);
+      // required to listen to keyboard events
+      viewPort.tabIndex = 32767;
 
       return () => {
         draw.abortDrawing();
+        viewPort.removeEventListener('contextmenu', handleContextMenu);
+        viewPort.removeEventListener('keydown', escapeListener);
         map.removeInteraction(draw);
       };
     }
   }, [map, onDrawEnd, onDrawStart, onDrawAbort, drawOptions]);
-
-  const escapeListener = React.useCallback((event: KeyboardEvent) => {
-      wlog(event.key)
-      if(event.code === 'Escape' && drawInteraction.current){
-        wlog('stopping interaction')
-        drawInteraction.current.abortDrawing();
-      }
-    },
-    [drawInteraction.current],
-  );
-
-  React.useEffect(() => {
-    window.addEventListener('keydown', escapeListener);
-    return () => {
-      window.removeEventListener('keydown', escapeListener);
-    };
-  }, [escapeListener]);
 
   return null;
 }

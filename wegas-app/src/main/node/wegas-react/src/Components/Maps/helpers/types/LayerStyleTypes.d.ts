@@ -11,6 +11,8 @@ type FeatureGeometryType =
   | 'GeometryCollection'
   | 'Circle';
 
+
+
 interface FillStyleObject {
   type: 'FillStyle';
   color: ColorStyleObject;

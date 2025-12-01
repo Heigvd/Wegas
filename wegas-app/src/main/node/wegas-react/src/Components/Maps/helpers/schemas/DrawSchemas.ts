@@ -32,11 +32,11 @@ export const drawSchema = schemaProps.hashlist({
           label: 'Draw',
           scriptProps: {
             language: 'TypeScript',
-            returnType: ["'Point' | 'LineString' | 'Polygon'"],
+            returnType: ["'Point' | 'LineString' | 'Polygon' |'Circle'"],
           },
           literalSchema: schemaProps.select({
             label : 'Shape type',
-            values : ['Point', 'LineString', 'Polygon']
+            values : ['Point', 'LineString', 'Polygon', 'Circle']
           }),
         }),
       },
@@ -48,7 +48,7 @@ export const drawSchema = schemaProps.hashlist({
         schema: schemaProps.callback({
           label: 'on Draw End',
           callbackProps: {
-            args: [['event', ['any']]],
+            args: [['event', ['DrawEvent']]],
             returnType: ['void'],
           },
         }),
@@ -61,7 +61,7 @@ export const drawSchema = schemaProps.hashlist({
         schema: schemaProps.callback({
           label: 'on Draw Start',
           callbackProps: {
-            args: [['event', ['any']]],
+            args: [['event', ['DrawEvent']]],
             returnType: ['void'],
           },
         }),
@@ -74,7 +74,7 @@ export const drawSchema = schemaProps.hashlist({
         schema: schemaProps.callback({
           label: 'on Draw Abort',
           callbackProps: {
-            args: [['event', ['any']]],
+            args: [['event', ['DrawEvent']]],
             returnType: ['void'],
           },
         }),

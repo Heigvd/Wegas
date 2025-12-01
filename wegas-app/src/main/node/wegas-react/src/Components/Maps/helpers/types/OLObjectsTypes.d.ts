@@ -2,6 +2,15 @@
  * [x, y]
  */
 type PointLikeObject = [number, number];
+
+type SimpleGeometryLike =
+  PointLikeObject
+  | PointLikeObject[]
+  | PointLikeObject[][]
+  | PointLikeObject[][][]
+  | PointLikeObject[][][][]
+  | PointLikeObject[][][][][];
+
 /**
  * [minx, miny, maxx, maxy]
  */
@@ -56,3 +65,25 @@ type FeatureFilter =
 
 ///Select
 type ConditionFN = (event: any) => boolean;
+
+
+/// Features simplified typing
+interface Feature {
+  getId(): number | string | undefined;
+  getGeometry(): Geometry | GeometryCollection | undefined;
+  getKeys(): Array<string>;
+  getProperties(): {
+    [x: string]: any;
+  };
+  getExtent(): ExtentLikeObject
+}
+
+interface Geometry {
+  getCoordinates(): SimpleGeometryLike
+  getType(): Exclude<FeatureGeometryType, 'GeometryCollection'>;
+}
+
+interface GeometryCollection {
+  getGeometries(): Array<any>;
+  getType(): Extract<FeatureGeometryType, 'GeometryCollection'>
+}
