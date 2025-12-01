@@ -52,19 +52,6 @@ export const selectSchema = schemaProps.hashlist({
       },
     },
     {
-      label: 'Features to add during selection',
-      value: {
-        prop: 'features',
-        schema: schemaProps.code({
-          label: 'Features to add during selection',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ['unknown[]'],
-          },
-        }),
-      },
-    },
-    {
       label: 'Hit tolerance',
       value: {
         prop: 'hitTolerance',
