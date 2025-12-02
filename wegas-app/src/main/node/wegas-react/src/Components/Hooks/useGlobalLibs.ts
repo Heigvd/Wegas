@@ -76,7 +76,7 @@ import { deepDifferent } from './storeHookFactory';
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
 function makeAmbient(source: string) {
-  return source.replace(stripRegex, '');
+  return source.replace(stripRegex, '').replace(/^(export )/gm, '');
 }
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
