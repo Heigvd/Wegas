@@ -75,6 +75,11 @@ import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
+/**
+ * Makes the source code's declarations available without import statements (ambient)
+ * This is done by removing all the code that is annotated with the STRIP FROM/TO pattern and the exports statements
+ * @param source source code to strip off
+ */
 function makeAmbient(source: string) {
   return source.replace(stripRegex, '').replace(/^(export )/gm, '');
 }
