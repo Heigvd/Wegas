@@ -124,7 +124,7 @@ export function WegasMap({
 
             features.push({
               feature: props,
-              layerId: layer.get('layerId'),
+              layerId: layer?.get('layerId'),
             });
           });
           mapOptions!.onClick!([coord[0], coord[1]], features);

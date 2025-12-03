@@ -5,15 +5,19 @@ export const drawSchema = schemaProps.hashlist({
   label: 'Draw options',
   choices: [
     {
-      label: 'Drawable layers',
+      label: 'Geometry type',
       value: {
-        prop: 'layers',
-        schema: schemaProps.callback({
-          label: 'Layer Filter',
-          callbackProps: {
-            args: [['layer', ['any']]],
-            returnType: ['boolean'],
+        prop: 'type',
+        schema: schemaProps.scriptable({
+          label: 'Draw',
+          scriptProps: {
+            language: 'TypeScript',
+            returnType: ["DrawType"],
           },
+          literalSchema: schemaProps.select({
+            label : 'Shape type',
+            values : ['Point', 'LineString', 'Polygon', 'Circle']
+          }),
         }),
       },
     },
@@ -25,28 +29,11 @@ export const drawSchema = schemaProps.hashlist({
       },
     },
     {
-      label: 'Draw type',
-      value: {
-        prop: 'type',
-        schema: schemaProps.scriptable({
-          label: 'Draw',
-          scriptProps: {
-            language: 'TypeScript',
-            returnType: ["'Point' | 'LineString' | 'Polygon' |'Circle'"],
-          },
-          literalSchema: schemaProps.select({
-            label : 'Shape type',
-            values : ['Point', 'LineString', 'Polygon', 'Circle']
-          }),
-        }),
-      },
-    },
-    {
       label: 'On Draw End',
       value: {
         prop: 'onDrawEnd',
         schema: schemaProps.callback({
-          label: 'on Draw End',
+          label: 'On Draw End',
           callbackProps: {
             args: [['event', ['DrawEvent']]],
             returnType: ['void'],
@@ -59,7 +46,7 @@ export const drawSchema = schemaProps.hashlist({
       value: {
         prop: 'onDrawStart',
         schema: schemaProps.callback({
-          label: 'on Draw Start',
+          label: 'On Draw Start',
           callbackProps: {
             args: [['event', ['DrawEvent']]],
             returnType: ['void'],
@@ -72,12 +59,26 @@ export const drawSchema = schemaProps.hashlist({
       value: {
         prop: 'onDrawAbort',
         schema: schemaProps.callback({
-          label: 'on Draw Abort',
+          label: 'On Draw Abort',
           callbackProps: {
             args: [['event', ['DrawEvent']]],
             returnType: ['void'],
           },
         }),
+      },
+    },
+    {
+      label: 'Min points',
+      value: {
+        prop: 'minPoints',
+        schema: schemaProps.number({ value: undefined, label: 'Minimum points' }),
+      },
+    },
+    {
+      label: 'Max points',
+      value: {
+        prop: 'maxPoints',
+        schema: schemaProps.number({ value: undefined, label: 'Maximum points' }),
       },
     },
   ],
