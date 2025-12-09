@@ -11,8 +11,6 @@ type FeatureGeometryType =
   | 'GeometryCollection'
   | 'Circle';
 
-
-
 interface FillStyleObject {
   type: 'FillStyle';
   color: ColorStyleObject;
@@ -35,20 +33,20 @@ interface SharedImageStyleProperties {
   rotation?: number;
   scale?: PointLikeObject | number;
   displacement?: PointLikeObject;
+  declutterMode?: 'declutter' | 'none' | 'obstacle'
 }
 
-interface CircleStyleObject extends SharedImageStyleProperties {
+interface CircleStyleObject extends Omit<SharedImageStyleProperties, 'opacity'> {
   type: 'CircleStyle';
   fill?: FillStyleObject;
   stroke?: StrokeStyleObject;
   radius: number;
 }
 
-interface RegularShapeStyleObject {
+interface RegularShapeStyleObject extends Omit<SharedImageStyleProperties, 'opacity'>{
   type: 'RegularShape';
   points: number;
   radius: number;
-  radius1?: number;
   radius2?: number;
   angle?: number;
   fill?: FillStyleObject;
@@ -83,7 +81,7 @@ type ImageStyleObject =
   | RegularShapeStyleObject
   | IconStyleObject;
 
-interface TextStyleObject extends Partial<SharedImageStyleProperties> {
+interface TextStyleObject extends Omit<SharedImageStyleProperties, 'displacement' | 'opacity'> {
   type: 'TextStyle';
   font?: string;
   maxAngle?: number;

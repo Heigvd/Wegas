@@ -5,11 +5,11 @@ export const drawSchema = schemaProps.hashlist({
   label: 'Draw options',
   choices: [
     {
-      label: 'Geometry type',
+      label: 'Geometry Type',
       value: {
         prop: 'type',
         schema: schemaProps.scriptable({
-          label: 'Draw',
+          label: 'Geometry Type',
           scriptProps: {
             language: 'TypeScript',
             returnType: ["DrawType"],
@@ -42,7 +42,7 @@ export const drawSchema = schemaProps.hashlist({
       },
     },
     {
-      label: 'On Draw start',
+      label: 'On Draw Start',
       value: {
         prop: 'onDrawStart',
         schema: schemaProps.callback({
