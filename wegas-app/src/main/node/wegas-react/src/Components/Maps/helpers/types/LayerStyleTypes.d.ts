@@ -28,7 +28,6 @@ interface StrokeStyleObject {
 }
 
 interface SharedImageStyleProperties {
-  opacity?: number;
   rotateWithView?: boolean;
   rotation?: number;
   scale?: PointLikeObject | number;
@@ -36,14 +35,14 @@ interface SharedImageStyleProperties {
   declutterMode?: 'declutter' | 'none' | 'obstacle'
 }
 
-interface CircleStyleObject extends Omit<SharedImageStyleProperties, 'opacity'> {
+interface CircleStyleObject extends SharedImageStyleProperties {
   type: 'CircleStyle';
   fill?: FillStyleObject;
   stroke?: StrokeStyleObject;
   radius: number;
 }
 
-interface RegularShapeStyleObject extends Omit<SharedImageStyleProperties, 'opacity'>{
+interface RegularShapeStyleObject extends SharedImageStyleProperties {
   type: 'RegularShape';
   points: number;
   radius: number;
@@ -63,6 +62,7 @@ type CrossOriginStyleObject = 'anonymous' | 'use-credentials';
 
 interface IconStyleObject extends SharedImageStyleProperties {
   type: 'IconStyle';
+  opacity?: number;
   anchor?: PointLikeObject;
   anchorOrigin?: AnchorPositionStyleObject;
   anchorXUnits?: AnchorUnitsStyleObject;
@@ -81,7 +81,7 @@ type ImageStyleObject =
   | RegularShapeStyleObject
   | IconStyleObject;
 
-interface TextStyleObject extends Omit<SharedImageStyleProperties, 'displacement' | 'opacity'> {
+interface TextStyleObject extends Omit<SharedImageStyleProperties, 'displacement'> {
   type: 'TextStyle';
   font?: string;
   maxAngle?: number;

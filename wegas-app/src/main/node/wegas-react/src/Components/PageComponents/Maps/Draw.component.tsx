@@ -39,7 +39,7 @@ registerComponent(
     id: 'WegasMapDraw',
     name: 'Features draw',
     icon: 'map',
-    illustration: 'selectInput', // TODO where what ?
+    illustration: 'image',
     schema: { drawProps: drawSchema },
   }),
 );
