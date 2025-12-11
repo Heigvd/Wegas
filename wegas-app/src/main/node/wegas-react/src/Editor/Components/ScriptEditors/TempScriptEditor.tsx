@@ -89,7 +89,7 @@ export function functionalizeScript(
 }
 
 interface Positions {
-  lastImportPosition: number;
+  lastImportPostion: number;
   startBodyPosition: number;
   stopBodyPosition: number;
   startReturnPosition: number;
@@ -140,8 +140,8 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       return syntaxErrors.map(se => `syntax error "${se.messageText}"`);
     }
 
-    let lastImportPosition = 0;
-    let startBodyPosition = lastImportPosition;
+    let lastImportPostion = 0;
+    let startBodyPosition = lastImportPostion;
     let stopBodyPosition = functionalizedScript.length;
     let startReturnPosition: number | undefined = undefined;
     let stopReturnPosition: number | undefined = undefined;
@@ -151,9 +151,9 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     // walk through leading import statements
     while (
       ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
-    ) {
+      ) {
       // end extract last import end-position
-      lastImportPosition = sourceFile.statements[currentStatementIndex].end;
+      lastImportPostion = sourceFile.statements[currentStatementIndex].end;
       currentStatementIndex++;
     }
 
@@ -168,7 +168,6 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       const scriptFunction = firstNonImportStatement.expression;
       if (ts.isBlock(scriptFunction.body)) {
         const body = scriptFunction.body;
-        const returnType = scriptFunction.type;
         if (scriptFunction.body.statements.find(ts.isImportDeclaration)) {
           return [
             'Import statements are not allowed in the body of the function',
@@ -193,8 +192,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
               startReturnPosition = lastStatement.getStart();
               stopReturnPosition = lastStatement.getEnd();
             } else {
-              const returnTypeInfo = returnType ? ' of type ' + returnType.getText() : '';
-              return ['Last function statement must be a return statement' + returnTypeInfo];
+              return ['Last function statement must be a return statement'];
             }
           } else {
             return ['Function is empty'];
@@ -222,7 +220,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     for (const statement of sourceFile.statements) {
       // If new import found, push the startPosition at the end of the statement
       if (ts.isImportDeclaration(statement)) {
-        lastImportPosition = statement.end;
+        lastImportPostion = statement.end;
       }
       // If another statement is found, stop searching
       else {
@@ -232,7 +230,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
     if (startReturnPosition != null && stopReturnPosition != null) {
       return {
-        lastImportPosition,
+        lastImportPostion,
         startBodyPosition,
         stopBodyPosition,
         startReturnPosition,
@@ -248,14 +246,14 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
 function extractFromPositions(script: string, positions: Positions): string {
   const {
-    lastImportPosition,
+    lastImportPostion,
     startBodyPosition,
     //stopBodyPosition,
     startReturnPosition,
     stopReturnPosition,
   } = positions;
 
-  const imports = script.substring(0, lastImportPosition);
+  const imports = script.substring(0, lastImportPostion);
 
   const body = script.substring(startBodyPosition, startReturnPosition);
 
