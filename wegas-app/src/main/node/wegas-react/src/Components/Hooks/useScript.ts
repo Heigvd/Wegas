@@ -466,15 +466,35 @@ export const insertReturn = (val: string) => {
   );
 
   if (ts.isSourceFile(sourceFile)) {
-    // Find the last import before another statement
-    const lastStatement =
-      sourceFile.statements[sourceFile.statements.length - 1];
-    if (lastStatement) {
-      const p = lastStatement.getStart();
-      if (!ts.isReturnStatement(lastStatement)) {
-        code = code.substring(0, p) + 'return ' + code.substring(p);
+    let currentStatementIndex = 0;
+
+    // walk through leading import statements
+    while (
+      sourceFile.statements[currentStatementIndex] &&
+      ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
+      ) {
+      currentStatementIndex++;
+    }
+    const firstNonImportStatement = sourceFile.statements[currentStatementIndex];
+    let requiresReturn = true;
+    if(firstNonImportStatement &&
+      ts.isExpressionStatement(firstNonImportStatement) &&
+      ts.isArrowFunction(firstNonImportStatement.expression))
+    {
+      requiresReturn = firstNonImportStatement.expression?.type?.getText() !== 'void';
+    }
+    if(requiresReturn) {
+      // Find the last import before another statement
+      const lastStatement =
+        sourceFile.statements[sourceFile.statements.length - 1];
+      if (lastStatement) {
+
+        if (!ts.isReturnStatement(lastStatement)) {
+          const p = lastStatement.getStart();
+          code = code.substring(0, p) + 'return ' + code.substring(p);
+        }
+        return indent(code);
       }
-      return indent(code);
     }
   }
   return val;
