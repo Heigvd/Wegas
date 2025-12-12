@@ -29,12 +29,13 @@ export function ResizeHandle({
   const [open, setOpen] = React.useState(false);
   const computedMinSize = minSize ? minSize + 'px' : '100%';
   const textSize = textContent
-    ? (textContent.split(/\n/).length + 1) * lineHeight + handleHeight
+    ? Math.max(textContent.split(/\n/).length, 4) * lineHeight + handleHeight
     : 0;
-  const computedMaxSize =
-    textContent || maxSize || minSize
-      ? Math.max(textSize, maxSize || 0, minSize || 0) + 'px'
-      : '100%';
+  let maxSizeValue = Math.max(textSize, minSize || 0);
+  if(maxSize){
+    maxSizeValue = Math.min(maxSizeValue, maxSize);
+  }
+  const computedMaxSize = maxSizeValue > 0 ? maxSizeValue + 'px' : '100%';
 
   return (
     <div

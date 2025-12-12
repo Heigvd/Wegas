@@ -249,7 +249,7 @@ export default function JoditReactEditor({
   }, []);
 
   const debouncedResize = useDebounceFn((editor: Jodit) => {
-    editor.events.fire('resize');
+    editor?.events?.fire('resize');
   }, 100);
 
   return (

@@ -150,6 +150,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
     // walk through leading import statements
     while (
+      sourceFile.statements[currentStatementIndex] &&
       ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
     ) {
       // end extract last import end-position
@@ -161,12 +162,13 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       sourceFile.statements[currentStatementIndex];
 
     if (
+      firstNonImportStatement &&
       ts.isExpressionStatement(firstNonImportStatement) &&
       ts.isArrowFunction(firstNonImportStatement.expression)
     ) {
       // first non-import statement is the arrow function
       const scriptFunction = firstNonImportStatement.expression;
-      if (ts.isBlock(scriptFunction.body)) {
+      if (scriptFunction.body && ts.isBlock(scriptFunction.body)) {
         const body = scriptFunction.body;
         const returnType = scriptFunction.type;
         if (scriptFunction.body.statements.find(ts.isImportDeclaration)) {
@@ -403,8 +405,9 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
       {error && <MessageString value={error} type="error" />}
       {resizable ? (
         <ResizeHandle
-          minSize={125}
-          textContent={value + '\n\n' || '\n\n\n\n\n'}
+          minSize={130}
+          maxSize={1250}
+          textContent={value}
         >
           <SrcEditor
             {...props}

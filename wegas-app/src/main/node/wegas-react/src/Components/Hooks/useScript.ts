@@ -484,7 +484,6 @@ export const insertReturn = (val: string) => {
       requiresReturn = firstNonImportStatement.expression?.type?.getText() !== 'void';
     }
     if(requiresReturn) {
-      // Find the last import before another statement
       const lastStatement =
         sourceFile.statements[sourceFile.statements.length - 1];
       if (lastStatement) {
