@@ -159,6 +159,7 @@ registerComponent(
         'WegasMapImageLayer',
         'WegasMapVectorLayer',
         'WegasMapSelect',
+        'WegasMapDraw'
       ],
     },
   }),

@@ -151,7 +151,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     // walk through leading import statements
     while (
       ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
-    ) {
+      ) {
       // end extract last import end-position
       lastImportPostion = sourceFile.statements[currentStatementIndex].end;
       currentStatementIndex++;
