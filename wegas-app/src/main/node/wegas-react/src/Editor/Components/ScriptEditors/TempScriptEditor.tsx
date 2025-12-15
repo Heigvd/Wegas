@@ -185,7 +185,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
             const lastStatement = fnStatements.slice(-1)[0];
 
             if (lastStatement == null) {
-              return ['Function must have at least one statement'];
+              return ['Function must have a return statement'];
             } else if (ts.isReturnStatement(lastStatement)) {
               const returnExpr = lastStatement.expression;
               if (returnExpr && ts.isObjectLiteralExpression(returnExpr)) {
@@ -194,9 +194,6 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
               startReturnPosition = lastStatement.getStart();
               stopReturnPosition = lastStatement.getEnd();
-            } else if(returnType?.getText() === 'void'){
-              startReturnPosition = 0;
-              stopReturnPosition = 0;
             } else {
               const returnTypeInfo = returnType ? ' of type ' + returnType.getText() : '';
               return ['Last function statement has to be a return statement' + returnTypeInfo];

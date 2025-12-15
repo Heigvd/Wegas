@@ -447,7 +447,6 @@ function indent(script: string, numLevel?: number) {
   return t + script.replace(/(\r?\n)/g, '$1' + t);
 }
 
-
 export const insertReturn = (val: string) => {
   let code = val;
 
@@ -466,34 +465,15 @@ export const insertReturn = (val: string) => {
   );
 
   if (ts.isSourceFile(sourceFile)) {
-    let currentStatementIndex = 0;
+    const lastStatement =
+      sourceFile.statements[sourceFile.statements.length - 1];
+    if (lastStatement) {
 
-    // walk through leading import statements
-    while (
-      sourceFile.statements[currentStatementIndex] &&
-      ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
-      ) {
-      currentStatementIndex++;
-    }
-    const firstNonImportStatement = sourceFile.statements[currentStatementIndex];
-    let requiresReturn = true;
-    if(firstNonImportStatement &&
-      ts.isExpressionStatement(firstNonImportStatement) &&
-      ts.isArrowFunction(firstNonImportStatement.expression))
-    {
-      requiresReturn = firstNonImportStatement.expression?.type?.getText() !== 'void';
-    }
-    if(requiresReturn) {
-      const lastStatement =
-        sourceFile.statements[sourceFile.statements.length - 1];
-      if (lastStatement) {
-
-        if (!ts.isReturnStatement(lastStatement)) {
-          const p = lastStatement.getStart();
-          code = code.substring(0, p) + 'return ' + code.substring(p);
-        }
-        return indent(code);
+      if (!ts.isReturnStatement(lastStatement)) {
+        const p = lastStatement.getStart();
+        code = code.substring(0, p) + 'return ' + code.substring(p);
       }
+      return indent(code);
     }
   }
   return val;
