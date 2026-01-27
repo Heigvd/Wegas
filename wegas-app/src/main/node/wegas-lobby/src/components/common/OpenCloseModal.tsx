@@ -46,11 +46,14 @@ export default function OptionCloseModal({
     }
   }, [navigate, route]);
 
+  // add a star to the route path, so that it can handle nested routes (by example roles/xxx/members/xxx/permissions/edit)
+  const starRoute = (route?.endsWith('\*')) ? route : route + '\*';
+
   if (route != null) {
     return (
       <Routes>
         <Route
-          path={`${route}`}
+          path={starRoute}
           element={
             <>
               <IconButton className={iconClassName} title={iconTitle} icon={icon}>

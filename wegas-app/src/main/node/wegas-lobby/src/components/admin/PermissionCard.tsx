@@ -56,6 +56,7 @@ interface PermIdOption {
 }
 
 const baseGmPerm = ['Edit', 'Duplicate', 'Instantiate'];
+const viewGmPerm = 'View';
 const allGmPerm = 'View,Edit,Delete,Duplicate,Instantiate';
 
 export function GameModelPermissionEditor({
@@ -118,10 +119,15 @@ export function GameModelPermissionEditor({
           id: gameModelId,
           value: allGmPerm,
         });
-      } else {
+      } else if (gmPerm.some(perm => permState[perm])) {
         onChange({
           id: gameModelId,
           value: gmPerm.flatMap(perm => (permState[perm] ? [perm] : [])).join(','),
+        });
+      } else {
+        onChange({
+          id: gameModelId,
+          value: viewGmPerm,
         });
       }
     }
