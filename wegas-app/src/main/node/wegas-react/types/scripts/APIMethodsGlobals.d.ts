@@ -31,6 +31,7 @@ interface APIMethodsClass {
     callback?: (res?: SVariableDescriptor) => void,
   ) => void;
   updateVariable: (instance: IVariableDescriptor) => void;
+  updateVariableAsync: (instance: IVariableDescriptor) => Promise<unknown>;
   deleteVariable: (variable: IVariableDescriptor) => void;
   updateInstance: (variable: IVariableInstance) => void;
   runScript: (
