@@ -447,7 +447,6 @@ function indent(script: string, numLevel?: number) {
   return t + script.replace(/(\r?\n)/g, '$1' + t);
 }
 
-
 export const insertReturn = (val: string) => {
   let code = val;
 
@@ -466,12 +465,12 @@ export const insertReturn = (val: string) => {
   );
 
   if (ts.isSourceFile(sourceFile)) {
-    // Find the last import before another statement
     const lastStatement =
       sourceFile.statements[sourceFile.statements.length - 1];
     if (lastStatement) {
-      const p = lastStatement.getStart();
+
       if (!ts.isReturnStatement(lastStatement)) {
+        const p = lastStatement.getStart();
         code = code.substring(0, p) + 'return ' + code.substring(p);
       }
       return indent(code);

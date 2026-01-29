@@ -89,7 +89,7 @@ export function functionalizeScript(
 }
 
 interface Positions {
-  lastImportPostion: number;
+  lastImportPosition: number;
   startBodyPosition: number;
   stopBodyPosition: number;
   startReturnPosition: number;
@@ -140,8 +140,8 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       return syntaxErrors.map(se => `syntax error "${se.messageText}"`);
     }
 
-    let lastImportPostion = 0;
-    let startBodyPosition = lastImportPostion;
+    let lastImportPosition = 0;
+    let startBodyPosition = lastImportPosition;
     let stopBodyPosition = functionalizedScript.length;
     let startReturnPosition: number | undefined = undefined;
     let stopReturnPosition: number | undefined = undefined;
@@ -150,10 +150,11 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
     // walk through leading import statements
     while (
+      sourceFile.statements[currentStatementIndex] &&
       ts.isImportDeclaration(sourceFile.statements[currentStatementIndex])
-    ) {
+      ) {
       // end extract last import end-position
-      lastImportPostion = sourceFile.statements[currentStatementIndex].end;
+      lastImportPosition = sourceFile.statements[currentStatementIndex].end;
       currentStatementIndex++;
     }
 
@@ -161,13 +162,15 @@ function findPositions(functionalizedScript: string): Positions | string[] {
       sourceFile.statements[currentStatementIndex];
 
     if (
+      firstNonImportStatement &&
       ts.isExpressionStatement(firstNonImportStatement) &&
       ts.isArrowFunction(firstNonImportStatement.expression)
     ) {
       // first non-import statement is the arrow function
       const scriptFunction = firstNonImportStatement.expression;
-      if (ts.isBlock(scriptFunction.body)) {
+      if (scriptFunction.body && ts.isBlock(scriptFunction.body)) {
         const body = scriptFunction.body;
+        const returnType = scriptFunction.type;
         if (scriptFunction.body.statements.find(ts.isImportDeclaration)) {
           return [
             'Import statements are not allowed in the body of the function',
@@ -192,7 +195,8 @@ function findPositions(functionalizedScript: string): Positions | string[] {
               startReturnPosition = lastStatement.getStart();
               stopReturnPosition = lastStatement.getEnd();
             } else {
-              return ['Last function statement must be a return statement'];
+              const returnTypeInfo = returnType ? ' of type ' + returnType.getText() : '';
+              return ['Last function statement has to be a return statement' + returnTypeInfo];
             }
           } else {
             return ['Function is empty'];
@@ -220,7 +224,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
     for (const statement of sourceFile.statements) {
       // If new import found, push the startPosition at the end of the statement
       if (ts.isImportDeclaration(statement)) {
-        lastImportPostion = statement.end;
+        lastImportPosition = statement.end;
       }
       // If another statement is found, stop searching
       else {
@@ -230,7 +234,7 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
     if (startReturnPosition != null && stopReturnPosition != null) {
       return {
-        lastImportPostion,
+        lastImportPosition,
         startBodyPosition,
         stopBodyPosition,
         startReturnPosition,
@@ -246,14 +250,13 @@ function findPositions(functionalizedScript: string): Positions | string[] {
 
 function extractFromPositions(script: string, positions: Positions): string {
   const {
-    lastImportPostion,
+    lastImportPosition,
     startBodyPosition,
-    //stopBodyPosition,
     startReturnPosition,
     stopReturnPosition,
   } = positions;
 
-  const imports = script.substring(0, lastImportPostion);
+  const imports = script.substring(0, lastImportPosition);
 
   const body = script.substring(startBodyPosition, startReturnPosition);
 
@@ -399,8 +402,9 @@ export function TempScriptEditor(props: TempScriptEditorProps) {
       {error && <MessageString value={error} type="error" />}
       {resizable ? (
         <ResizeHandle
-          minSize={125}
-          textContent={value + '\n\n' || '\n\n\n\n\n'}
+          minSize={130}
+          maxSize={1250}
+          textContent={value}
         >
           <SrcEditor
             {...props}

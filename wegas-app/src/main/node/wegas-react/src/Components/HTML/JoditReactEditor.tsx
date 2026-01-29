@@ -52,22 +52,20 @@ const wysiwygStyle = css({
 const IMG_PLACEHOLDER = 'IMG_PLACEHOLDER';
 const SRC_PLACEHOLDER = 'SRC_PLACEHOLDER';
 
-function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
+function getButtonConfig(layout: 'full' | 'player' | undefined, extended: boolean): ButtonsGroups {
   switch (layout) {
     case 'full':
-      return [
-        'italic',
+      return extended ? [
         'bold',
+        'italic',
         'underline',
         '|',
+        'customAlignment',
         'ul',
         'ol',
         '|',
-        'customAlignment',
-        '|',
         'link',
         IMG_PLACEHOLDER,
-        '|',
         SRC_PLACEHOLDER,
         'table',
         '|',
@@ -75,12 +73,27 @@ function getButtonConfig(layout: 'full' | 'player' | undefined): ButtonsGroups {
         'fontsize',
         'brush',
         'classSpan', // custom fonts
+      ] : [
+        'bold',
+        'italic',
+        'underline',
+        '|',
+        'ul',
+        'ol',
+        '|',
+        'link',
+        IMG_PLACEHOLDER,
+        SRC_PLACEHOLDER,
+        '|',
+        'fontsize',
+        '|',
+        'collapsedTools',
       ];
     case 'player':
     default:
       return [
-        'italic',
         'bold',
+        'italic',
         'underline',
         '|',
         'ul',
@@ -154,8 +167,19 @@ export default function JoditReactEditor({
   const { classes } = React.useContext(classesCTX);
 
   const configuration : DeepPartial<Config> = React.useMemo(() => {
-    const btnConfig = getButtonConfig(toolbarLayout);
+    const btnConfigExtended = getButtonConfig(toolbarLayout, true);
+    const btnConfig = getButtonConfig(toolbarLayout, false);
+    const collapsedList : Record<string, string> = {
+      left: 'left',
+      center : 'center',
+      right : 'right',
+      justify: 'justify',
+      table: 'table',
+      paragraph: 'paragraph',
+      brush: 'brush',
+    }
 
+    addCustomFunctions(btnConfigExtended, showFilePickerFunc);
     addCustomFunctions(btnConfig, showFilePickerFunc);
     const config: DeepPartial<Config> =  {
       defaultActionOnPaste : 'insert_only_text',
@@ -163,18 +187,21 @@ export default function JoditReactEditor({
       askBeforePasteHTML : false,
       statusbar: false,
       disablePlugins : disabledPlugins,
-      buttons: btnConfig,
-      buttonsMD: btnConfig,
+      buttons: btnConfigExtended,
+      buttonsMD: btnConfigExtended,
       buttonsSM: btnConfig,
       buttonsXS: btnConfig,
+      sizeSM : 265,
+      sizeMD : 530,
       readonly: readonly,
       disabled: disabled,
       placeholder: placeholder || '',
       showTooltip: false,
-      //toolbarButtonSize: 'large',
+      toolbarAdaptive: true,
+      toolbarButtonSize: 'small',
       controls: {
         customAlignment: {
-          icon: 'dots',
+          icon: 'left',
           tooltip: 'Alignment',
           list: {
             left: 'left',
@@ -183,12 +210,18 @@ export default function JoditReactEditor({
             justify: 'justify',
           },
         },
+        collapsedTools: {
+          icon: 'dots',
+          tooltip: 'Other tools',
+          list: collapsedList,
+        },
         classSpan: { }
       }
     };
 
     if (Object.keys(classes).length && config.controls?.classSpan) {
       config.controls.classSpan.list = classes;
+      collapsedList.classSpan = 'classSpan';
     } else {
       config.removeButtons = ['classSpan'];
     }
@@ -208,13 +241,25 @@ export default function JoditReactEditor({
     }, 1000),
     [onChange],
   );
+  // force resize on jodit editor when its size changes
+  const sizeChangeListener = React.useCallback((editor: Jodit) => {
+    const container = editor.container;
+    const ro = new ResizeObserver(() => debouncedResize(editor));
+    ro.observe(container);
+  }, []);
+
+  const debouncedResize = useDebounceFn((editor: Jodit) => {
+    editor?.events?.fire('resize');
+  }, 100);
+
   return (
-    <div className={wysiwygStyle}>
-      <JoditEditor
-        value={toFullUrl(value)}
-        config={configuration}
-        onChange={(s) => onChangeCallback(s)}
-      />
-    </div>
+      <div className={wysiwygStyle}>
+        <JoditEditor
+            value={toFullUrl(value)}
+            config={configuration}
+            onChange={(s) => onChangeCallback(s)}
+            editorRef={sizeChangeListener}
+        />
+      </div>
   )
 }

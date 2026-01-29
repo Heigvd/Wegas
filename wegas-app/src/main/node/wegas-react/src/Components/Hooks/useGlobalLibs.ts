@@ -58,6 +58,9 @@ import olTypes from '!!raw-loader!../Maps/helpers/types/OLObjectsTypes.d.ts';
 import overlayTypes from '!!raw-loader!../Maps/helpers/types/OverlayTypes.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import interactionTypes from '!!raw-loader!../Maps/helpers/types/OLInteractionTypes.d.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.d.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -75,8 +78,13 @@ import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
+/**
+ * Makes the source code's declarations available without import statements (ambient)
+ * This is done by removing all the code that is annotated with the STRIP FROM/TO pattern and the exports statements
+ * @param source source code to strip off
+ */
 function makeAmbient(source: string) {
-  return source.replace(stripRegex, '');
+  return source.replace(stripRegex, '').replace(/^(export )/gm, '');
 }
 
 const ambientEntitiesSrc = makeAmbient(entitiesSrc);
@@ -118,6 +126,7 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
   { content: layerStyleTypes, name: 'layerStyleTypes.d' },
   { content: layerSourceTypes, name: 'layerSourceTypes.d' },
   { content: overlayTypes, name: 'overlayTypes.d' },
+  { content: interactionTypes, name: 'olInteractionTypes.d'}
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [

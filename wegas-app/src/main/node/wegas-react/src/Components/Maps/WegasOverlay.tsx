@@ -24,7 +24,7 @@ export interface WegasOverlayProps
    */
   autoPan?: AutoPanOptions;
   /**
-   * Set the position of the overlay when a click occures on the map
+   * Set the position of the overlay when a click occurs on the map
    */
   positionOnClick?: boolean;
   /**

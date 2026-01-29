@@ -70,6 +70,7 @@ export const APIScriptMethods: APIMethodsClass = {
     });
   },
   updateVariable: variable => dispatch(updateDescriptor(variable)),
+  updateVariableAsync: async (variable) => await dispatch(updateDescriptor(variable)),
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
   runScript: async (script, context): Promise<IManagedResponse> => {

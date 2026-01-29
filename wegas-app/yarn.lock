@@ -3283,11 +3283,6 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-autobind-decorator@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/autobind-decorator/-/autobind-decorator-2.4.0.tgz#ea9e1c98708cf3b5b356f7cf9f10f265ff18239c"
-  integrity sha512-OGYhWUO72V6DafbF8PM8rm3EPbfuyMZcJhtm5/n26IDwO18pohE4eNazLoCGhPiXOCD0gEGmrbU3849QvM8bbw==
-
 autoprefixer@^10.2.6:
   version "10.4.0"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.4.0.tgz#c3577eb32a1079a440ec253e404eaf1eb21388c8"
@@ -8312,19 +8307,17 @@ jest@^29.3.1:
     import-local "^3.0.2"
     jest-cli "^29.3.1"
 
-jodit-react@^5.2.29:
-  version "5.2.29"
-  resolved "https://registry.yarnpkg.com/jodit-react/-/jodit-react-5.2.29.tgz#89162749952dcb792682a6bbb1a7c33cc93a7938"
-  integrity sha512-Wjrhtndh7hiMnLGDtHZtAXl+pybka/OaSzK7KiD38iOC6ihaKNfir/FLh/Smwap7VQi3wl6jorhvnFiUXqQw+Q==
+jodit-react@^5.2.38:
+  version "5.2.38"
+  resolved "https://registry.yarnpkg.com/jodit-react/-/jodit-react-5.2.38.tgz#a873b967d7c293374af60730761c544e7ad66d52"
+  integrity sha512-k98vjch0JWX13Dlf7tWv3wPo6dgO9bpi0NUBC6YrpGLYtRJx8d5Ttz5TLWuydEReedWWyNKobSGIGYQDihP8Vw==
   dependencies:
-    jodit "^4.6.16"
+    jodit "^4.7.9"
 
-jodit@^4.6.16:
-  version "4.6.16"
-  resolved "https://registry.yarnpkg.com/jodit/-/jodit-4.6.16.tgz#d8506ead85e8a4ff1406c2d993bb476568d11f07"
-  integrity sha512-jvJYKSdagCI67kPSfmFM/3odHevrYjqoiLu0IOzFIL3BQ8ayPiA75SIxKwyd4U6TuFRFmEXd/16TPMj55cypjA==
-  dependencies:
-    autobind-decorator "^2.4.0"
+jodit@^4.7.9:
+  version "4.7.9"
+  resolved "https://registry.yarnpkg.com/jodit/-/jodit-4.7.9.tgz#168581750fffbbc34cddba72eeb08d911531ad34"
+  integrity sha512-dPlewnu2+vVXELh9BEJTNQoSBL3Cf2E0fNh30yjSEgUtJHYSUYToDjMDEqr0T/L9iNpqPTODy2b4pzyGpPRUog==
 
 js-sdsl@^4.1.4:
   version "4.2.0"
@@ -9467,10 +9460,10 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-ol@10.6.1:
-  version "10.6.1"
-  resolved "https://registry.yarnpkg.com/ol/-/ol-10.6.1.tgz#950f3914b4eec978f087b36aa74ce1e18c41ab09"
-  integrity sha512-xp174YOwPeLj7c7/8TCIEHQ4d41tgTDDhdv6SqNdySsql5/MaFJEJkjlsYcvOPt7xA6vrum/QG4UdJ0iCGT1cg==
+ol@10.7.0:
+  version "10.7.0"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-10.7.0.tgz#6a072a602cab3a5d9b35356de8b837221d78379b"
+  integrity sha512-122U5gamPqNgLpLOkogFJhgpywvd/5en2kETIDW+Ubfi9lPnZ0G9HWRdG+CX0oP8od2d6u6ky3eewIYYlrVczw==
   dependencies:
     "@types/rbush" "4.0.0"
     earcut "^3.0.0"
