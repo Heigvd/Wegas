@@ -47,7 +47,7 @@ export default function OptionCloseModal({
   }, [navigate, route]);
 
   // add a star to the route path, so that it can handle nested routes (by example roles/xxx/members/xxx/permissions/edit)
-  const starRoute = (route?.endsWith('\*')) ? route : route + '\*';
+  const starRoute = (route == undefined || route.endsWith('/*')) ? route : route + '/*';
 
   if (route != null) {
     return (
