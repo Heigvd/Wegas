@@ -1,7 +1,6 @@
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/css';
 import * as React from 'react';
-import { editHandle, stateBoxButtonStyle } from '../../../Components/FlowChart/StateProcessComponent';
-import { flex, flexRow } from '../../../css/classes';
+import { stateBoxButtonStyle } from '../../../Components/FlowChart/StateProcessComponent';
 import { IconComp } from '../Views/FontAwesome';
 
 const editButtonStyle = css(stateBoxButtonStyle);
@@ -22,20 +21,6 @@ export function EditButton({ onClick }: ButtonProps) {
   return (
     <div className={editButtonStyle} onClick={onClick} data-nodrag={true}>
       <IconComp icon="pen" />
-    </div>
-  );
-}
-
-interface EditHandleProps {
-  onTrash: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  onEdit: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-}
-
-export function EditHandle({ onEdit, onTrash }: EditHandleProps) {
-  return (
-    <div className={cx(flex, flexRow, editHandle)}>
-      <TrashButton onClick={onTrash} />
-      <EditButton onClick={onEdit} />
     </div>
   );
 }

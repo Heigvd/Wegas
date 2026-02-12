@@ -29,13 +29,10 @@ import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { deleteState } from '../../../data/Reducer/editingState';
 import {
   editingStore,
-  EditingStoreDispatch,
 } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 
 const customProcessComponentEditingStyle = css({
@@ -56,7 +53,7 @@ const stateBoxContentEditingStyle = css({
 
 export function LiteStateProcessComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
->(stateMachine: Immutable<IFSM>, dispatch: EditingStoreDispatch) {
+>(stateMachine: Immutable<IFSM>) {
   function LiteStateProcessComponent({
     isProcessSelected,
     onClick,
@@ -92,18 +89,6 @@ export function LiteStateProcessComponentFactory<
       },
       [disabled, onClick, process, readOnly],
     );
-
-    const onTrash = React.useCallback(() => {
-      if (
-        isActionAllowed({
-          disabled: disabled,
-          readOnly: readOnly,
-        })
-      ) {
-        dispatch(deleteState(stateMachine, Number(process.id)));
-        setEditing(false);
-      }
-    }, [disabled, process.id, readOnly]);
 
     const onValidate = React.useCallback(
       (value: string) => {
@@ -145,9 +130,7 @@ export function LiteStateProcessComponentFactory<
           onDoubleClick={onEdit}
           onClick={e => onClick && onClick(e, process)}
         >
-          {isSelected && !isEditing && (
-            <EditHandle onEdit={onEdit} onTrash={onTrash} />
-          )}
+          {isSelected && !isEditing}
           {isEditing ? (
             <div
               className={cx(stateBoxContentEditingStyle, css({ padding: 0 }))}
