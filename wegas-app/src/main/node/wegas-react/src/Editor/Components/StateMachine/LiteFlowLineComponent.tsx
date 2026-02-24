@@ -7,12 +7,12 @@ import {
   IFSMDescriptor,
 } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
 } from '../../../Components/FlowChart/FlowLineComponent';
 import {
+  selectedTransitionBoxStyle,
   transitionBoxActionStyle,
   transitionBoxStyle,
   transitionContainerStyle,
@@ -35,6 +35,9 @@ import {
 import { classOrNothing } from '../../../Helper/className';
 import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
+import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
+import {IconComp} from "../Views/FontAwesome";
+import {impactIcon} from "../../../Components/FlowChart/StateProcessComponent";
 
 const customFlowLineComponentEditingStyle = css({
   zIndex: 1000,
@@ -72,9 +75,10 @@ export function LiteFlowLineComponentFactory<
     const [isEditing, setEditing] = React.useState(false);
     const [isShown, setIsShown] = React.useState(false);
     const { lang } = React.useContext(languagesCTX);
+    const { currentFeatures } = React.useContext(featuresCTX);
 
     const textValue = entityIs(flowline.transition, 'Transition')
-      ? flowline.transition.label || flowline.transition.triggerCondition?.content
+      ? flowline.transition.label
       : translate(flowline.transition.actionText, lang);
 
     const onValidate = React.useCallback(
@@ -186,6 +190,7 @@ export function LiteFlowLineComponentFactory<
                   disabled,
                   readOnly,
                 }),
+                [selectedTransitionBoxStyle]: selected,
               })}
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}
@@ -196,14 +201,16 @@ export function LiteFlowLineComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                  <EmptyMessage
-                    className={cx(expandWidth, textCenter, block)}
-                  />
+                    <span className={cx(expandWidth, textCenter, block)}>No label</span>
                 )}
               </div>
             </div>
           )}
-          {isShown &&
+          {(flowline.transition.preStateImpact?.content ||
+              flowline.transition.triggerCondition?.content) && (
+              < IconComp className={cx(impactIcon)} icon="meteor" />
+          )}
+          {isFeatureEnabled(currentFeatures, 'ADVANCED') && isShown &&
             (flowline.transition.preStateImpact?.content ||
               flowline.transition.triggerCondition?.content) && (
               <div className={transitionMoreInfosStyle}>

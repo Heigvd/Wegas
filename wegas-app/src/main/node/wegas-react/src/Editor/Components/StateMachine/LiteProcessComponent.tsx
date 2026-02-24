@@ -3,14 +3,13 @@ import produce, { Immutable } from 'immer';
 import * as React from 'react';
 import { IDialogueDescriptor, IFSMDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomProcessComponent,
   ProcessComponentProps,
 } from '../../../Components/FlowChart/ProcessComponent';
 import {
   currentStateBoxStyle,
-  defaultStateBoxStyle,
+  defaultStateBoxStyle, impactIcon,
   isStateCurrent,
   isStateCurrentDefault,
   selectedStateBoxStyle,
@@ -37,6 +36,8 @@ import {
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
+import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
+import {IconComp} from "../Views/FontAwesome";
 
 const customProcessComponentEditingStyle = css({
   zIndex: 1000,
@@ -64,10 +65,11 @@ export function LiteStateProcessComponentFactory<
   }: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
     const { disabled, readOnly, process } = processProps;
     const { lang } = React.useContext(languagesCTX);
+    const { currentFeatures } = React.useContext(featuresCTX);
 
     let textValue = '';
     if(entityIs(process.state, 'State')){
-      textValue = process.state.label || process.state.onEnterEvent?.content || '';
+      textValue = process.state.label || '';
     }else {
       textValue = translate(process.state.text, lang);
     }
@@ -187,17 +189,18 @@ export function LiteStateProcessComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                  <EmptyMessage
-                    className={cx(expandWidth, textCenter, block)}
-                  />
+                    <span className={cx(expandWidth, textCenter, block)}>No label</span>
                 )}
               </div>
-              {isActionAllowed({ readOnly, disabled }) && (
+              {isActionAllowed({readOnly, disabled }) && (
                 <StateProcessHandle sourceProcess={process} />
               )}
             </div>
           )}
-          {isShown && process.state.onEnterEvent?.content && (
+          {process.state.onEnterEvent?.content && (
+              < IconComp className={cx(impactIcon)} icon="meteor" />
+          )}
+          {isFeatureEnabled(currentFeatures, 'ADVANCED') && isShown && process.state.onEnterEvent?.content && (
             <div className={stateMoreInfosStyle}>
               <strong>Impact</strong>
               <p>{process.state.onEnterEvent.content}</p>
