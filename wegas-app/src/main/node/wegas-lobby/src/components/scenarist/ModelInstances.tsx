@@ -150,7 +150,7 @@ function InstanceCard({ gameModel }: InstanceCardProps): JSX.Element {
       <CardMainButton
         icon={faMagic}
         title={i18n.openGameModelAsScenarist}
-        url={`../${gameModel.uiversion === 2 ? '2/' : ''}edit.html?gameModelId=${gameModel.id}`}
+        url={`./${gameModel.uiversion === 2 ? '2/' : ''}edit.html?gameModelId=${gameModel.id}`}
       />
     </Card>
   );
