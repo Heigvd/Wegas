@@ -167,7 +167,7 @@ public class GameModelController {
                 + "variables.csv").build();
     }
 
-    @GET
+    @PUT
     @Path("{modelId: [1-9][0-9]*}/Integrate/{scenarioId: [1-9][0-9]*}")
     public GameModel integrate(@PathParam("modelId") Long modelId,
         @PathParam("scenarioId") Long scenarioId) throws IOException, RepositoryException {
