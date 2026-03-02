@@ -34,9 +34,15 @@ function RoleContext({
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,
   );
 
+  React.useEffect(() => {
+    setRole(window.localStorage.getItem(EditorRoleData) || defaultRoleId);
+  }, [
+    defaultRoleId
+  ]);
+
   const currentRole = Object.values(availableRoles).some(
     role => role.id === storedRole,
-  ) ? storedRole : defaultRoleId
+  ) ? storedRole : defaultRoleId;
 
   return (
     <roleCTX.Provider
