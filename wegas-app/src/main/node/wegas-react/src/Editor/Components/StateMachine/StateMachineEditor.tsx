@@ -417,11 +417,11 @@ export function StateMachineEditor<
 
   const Process = React.useMemo(() => {
     if (lite) {
-      return LiteStateProcessComponentFactory(stateMachine, dispatch);
+      return LiteStateProcessComponentFactory(stateMachine);
     } else {
       return StateProcessComponent;
     }
-  }, [dispatch, lite, stateMachine]);
+  }, [lite, stateMachine]);
 
   const Flowline = React.useMemo(() => {
     if (lite) {

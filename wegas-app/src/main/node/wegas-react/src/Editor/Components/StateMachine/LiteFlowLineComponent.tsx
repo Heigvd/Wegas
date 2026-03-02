@@ -27,13 +27,8 @@ import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { deleteTransition } from '../../../data/Reducer/editingState';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
+import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
-import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
 import {IconComp} from "../Views/FontAwesome";
@@ -129,24 +124,6 @@ export function LiteFlowLineComponentFactory<
       [disabled, flowline, onClick, readOnly, startProcess],
     );
 
-    const onTrash = React.useCallback(() => {
-      if (
-        isActionAllowed({
-          disabled: disabled,
-          readOnly: readOnly,
-        })
-      ) {
-        editingStore.dispatch(
-          deleteTransition(
-            stateMachine,
-            Number(startProcess.id),
-            Number(flowline.id),
-          ),
-        );
-        setEditing(false);
-      }
-    }, [disabled, flowline.id, readOnly, startProcess.id]);
-
     return (
       <CustomFlowLineComponent
         selected={selected}
@@ -162,9 +139,7 @@ export function LiteFlowLineComponentFactory<
             [transitionContainerEditingStyle]: isEditing,
           })}
         >
-          {!isEditing && selected && (
-            <EditHandle onEdit={onEdit} onTrash={onTrash} />
-          )}
+          {!isEditing && selected}
           {isEditing ? (
             <div className={stateBoxContentEditingStyle}>
               <Validate
