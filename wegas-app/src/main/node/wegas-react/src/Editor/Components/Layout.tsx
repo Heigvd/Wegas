@@ -262,10 +262,14 @@ export default function Layout() {
   const layoutPages = (allowedPages === true) ?
     allLayoutPages : filterAndFlatten(allLayoutPages, allowedPages);
 
-  const initTabs =
-    currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id
-      ? [['Variables', 'Pages Layout'], ['Variable Properties'], ['Page Display']]
-      : layoutPages.map(page => page.tabId);
+  let initTabs = [];
+  if(currentRole === DEFAULT_ROLES.SCENARIO_EDITOR.id){
+    initTabs = [['Variables', 'Pages Layout'], ['Variable Properties'], ['Page Display']];
+  } else if(Array.isArray(allowedPages)){
+    initTabs = allowedPages;
+  } else {
+    initTabs = layoutPages.map(page => page.tabId);
+  }
 
   const initialLayout = filterAllowedInitTabs(initTabs, allowedPages);
 
