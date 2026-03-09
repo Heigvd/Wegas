@@ -33,6 +33,8 @@ import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
 import {IconComp} from "../Views/FontAwesome";
+import {useInternalTranslate} from "../../../i18n/internalTranslator";
+import {commonTranslations} from "../../../i18n/common/common";
 
 const customProcessComponentEditingStyle = css({
   zIndex: 1000,
@@ -61,6 +63,7 @@ export function LiteStateProcessComponentFactory<
     const { disabled, readOnly, process } = processProps;
     const { lang } = React.useContext(languagesCTX);
     const { currentFeatures } = React.useContext(featuresCTX);
+    const i18nValues = useInternalTranslate(commonTranslations);
 
     let textValue = '';
     if(entityIs(process.state, 'State')){
@@ -169,7 +172,7 @@ export function LiteStateProcessComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                    <span className={cx(expandWidth, textCenter, block)}>No label</span>
+                    <span className={cx(expandWidth, textCenter, block)}>{entityIs(stateMachine, 'DialogueDescriptor') ? i18nValues.noText : i18nValues.noLabel}</span>
                 )}
               </div>
               {isActionAllowed({readOnly, disabled }) && (

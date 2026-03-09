@@ -33,6 +33,8 @@ import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
 import {IconComp} from "../Views/FontAwesome";
 import {impactIcon} from "../../../Components/FlowChart/StateProcessComponent";
+import {useInternalTranslate} from "../../../i18n/internalTranslator";
+import { commonTranslations } from '../../../i18n/common/common';
 
 const customFlowLineComponentEditingStyle = css({
   zIndex: 1000,
@@ -71,6 +73,7 @@ export function LiteFlowLineComponentFactory<
     const [isShown, setIsShown] = React.useState(false);
     const { lang } = React.useContext(languagesCTX);
     const { currentFeatures } = React.useContext(featuresCTX);
+    const i18nValues = useInternalTranslate(commonTranslations);
 
     const textValue = entityIs(flowline.transition, 'Transition')
       ? flowline.transition.label
@@ -176,7 +179,7 @@ export function LiteFlowLineComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                    <span className={cx(expandWidth, textCenter, block)}>No label</span>
+                    <span className={cx(expandWidth, textCenter, block)}>{entityIs(stateMachine, 'DialogueDescriptor') ? i18nValues.noText : i18nValues.noLabel}</span>
                 )}
               </div>
             </div>
