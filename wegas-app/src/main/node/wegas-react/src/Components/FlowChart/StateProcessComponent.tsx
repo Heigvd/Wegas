@@ -39,17 +39,18 @@ export const stateBoxStyle = css({
   display: 'inline-flex',
   flexDirection: 'row',
   alignItems: 'center',
-  padding: '15px 15px 15px 15px',
+  padding: '20px',
   boxSizing: 'border-box',
   background: themeVar.colors.BackgroundColor,
   borderRadius: '8px',
   borderWidth: '2px',
   borderStyle: 'solid',
-  borderColor: themeVar.colors.DisabledColor,
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
   color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   maxHeight: '100px',
+  '&:hover': {
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2), 0px 6px 20px rgba(0, 0, 0, 0.2)',
+  },
   '& *': {
     whiteSpace: 'nowrap',
     maxHeight: '40px',
@@ -58,7 +59,7 @@ export const stateBoxStyle = css({
   },
   '.StateLabelTextStyle': {
     fontSize: '16px',
-    textAlign: 'left',
+    textAlign: 'center',
     flex: '1 1 auto',
   },
 });
@@ -67,7 +68,7 @@ export const stateBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
     background: themeVar.colors.BackgroundColor,
-    borderColor: themeVar.colors.PrimaryColor,
+    borderColor: themeVar.colors.ActiveColor,
   },
 });
 
@@ -84,15 +85,13 @@ export const indexTagStyle = css({
 });
 
 export const stateBoxButtonStyle = {
-  color: themeVar.colors.PrimaryColor,
   display: 'flex',
-  minWidth: '30px',
-  height: '30px',
   justifyContent: 'center',
   alignItems: 'center',
+  color: themeVar.colors.ActiveColor,
   cursor: 'pointer',
   '&:hover': {
-    color: themeVar.colors.PrimaryColorShade,
+    color: themeVar.colors.ActiveColor,
   },
 };
 
@@ -110,20 +109,34 @@ export const editHandle = css({
 
 const handleForTransition = css({
   ...stateBoxButtonStyle,
-  marginRight: '-15px',
-  borderTop: '1px solid ' + themeVar.colors.PrimaryColor,
-  borderBottom: '1px solid ' + themeVar.colors.PrimaryColor,
-  borderLeft: '1px solid ' + themeVar.colors.PrimaryColor,
-  borderRadius: '5px 0 0 5px',
-  marginLeft: '5px',
+  position: 'absolute',
+  top: '50%',
+  right: '0',
+  transform: 'translate(50%, -50%)',
+  padding: '6px',
+  backgroundColor: themeVar.colors.BackgroundColor,
+  border: '2px solid ' + themeVar.colors.ActiveColor,
+  borderRadius: '50%',
   cursor: 'grab',
   '&:hover': {
     color: themeVar.colors.PrimaryColorShade,
-    borderTop: '1px solid ' + themeVar.colors.PrimaryColorShade,
-    borderBottom: '1px solid ' + themeVar.colors.PrimaryColorShade,
-    borderLeft: '1px solid ' + themeVar.colors.PrimaryColorShade,
+    border: '2px solid ' + themeVar.colors.PrimaryColorShade,
+  },
+  '.svg-inline--fa': {
+    width: '12px',
+    height: '12px',
   },
 });
+
+export const impactIcon = css({
+  position: 'absolute',
+  right: '8px',
+  bottom: '8px',
+  height: '12px',
+  width: '12px',
+  color: themeVar.colors.ActiveColor,
+})
+
 export const stateMoreInfosStyle = css({
   position: 'absolute',
   backgroundColor: themeVar.colors.BackgroundColor,
@@ -148,11 +161,13 @@ export const stateMoreInfosStyle = css({
 });
 
 export const selectedStateBoxStyle = css({
-  backgroundColor: themeVar.colors.HeaderColor,
-  color: themeVar.colors.ActiveColor,
-  boxShadow: 'none',
+  borderColor: themeVar.colors.PrimaryColor,
   '&:hover': {
-    backgroundColor: themeVar.colors.HeaderColor,
+    borderColor: themeVar.colors.PrimaryColor,
+  },
+  [`& .${handleForTransition}`]: {
+    border: '2px solid ' + themeVar.colors.PrimaryColor,
+    color: themeVar.colors.PrimaryColor,
   },
   [`.${indexTagStyle}`]: {
     borderColor: themeVar.colors.ActiveColor,
@@ -160,7 +175,15 @@ export const selectedStateBoxStyle = css({
 });
 
 export const currentStateBoxStyle = css({
-  borderColor: themeVar.colors.SuccessColor,
+  backgroundColor: themeVar.colors.HeaderColor,
+  '&:hover': {
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
+  [`& .${handleForTransition}`]: {
+    borderWidth: '3px',
+    borderStyle: 'double',
+    backgroundColor: themeVar.colors.HeaderColor,
+  },
 });
 
 export const defaultStateBoxStyle = css({
@@ -248,6 +271,7 @@ export function StateBox({
           <StateProcessHandle sourceProcess={state} />
         )}
       </div>
+      < IconComp className="impactIcon" icon="meteor" />
       {isShown && state.state.onEnterEvent?.content && (
         <div className={stateMoreInfosStyle}>
           <strong>Impact</strong>

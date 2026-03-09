@@ -28,18 +28,18 @@ export const transitionBoxStyle = css({
   flexDirection: 'row',
   alignItems: 'center',
   boxSizing: 'border-box',
-  padding: '4px',
-  background: themeVar.colors.PrimaryColor,
-  border: '1px solid ' + themeVar.colors.BackgroundColor,
+  padding: '8px 28px 8px 8px',
+  background: themeVar.colors.BackgroundColor,
+  border: '2px solid ' + themeVar.colors.DisabledColor,
   borderRadius: '8px',
-  color: themeVar.colors.LightTextColor,
+  color: themeVar.colors.ActiveColor,
   flexGrow: 0,
   '&>*': {
     margin: '0 7px',
   },
   '.StateLabelTextStyle': {
     fontSize: '16px',
-    textAlign: 'left',
+    textAlign: 'center',
     margin: 0,
     flex: '1 1 auto',
   },
@@ -61,17 +61,14 @@ export const transitionBoxStyle = css({
 export const transitionBoxActionStyle = css({
   cursor: 'pointer',
   '&:hover': {
-    boxShadow: '0px 0px 6px rgba(0, 0, 0, 0.2)',
-    borderColor: 'transparent',
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2), 0px 6px 20px rgba(0, 0, 0, 0.2)',
   },
 });
 
-const selectedTransitionBoxStyle = css({
-  background: themeVar.colors.ActiveColor,
-  border: '4px solid ' + themeVar.colors.ActiveColor,
+export const selectedTransitionBoxStyle = css({
+  border: '2px solid ' + themeVar.colors.PrimaryColor,
   '&:hover': {
-    backgroundColor: themeVar.colors.ActiveColor,
-    border: '4px solid ' + themeVar.colors.ActiveColor,
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2), 0px 6px 20px rgba(0, 0, 0, 0.2)',
   },
 });
 
@@ -153,7 +150,7 @@ export function TransitionBox({
             {transition.transition.preStateImpact?.content && (
               <div>
                 <strong>Impact</strong>
-                <p> {transition.transition.preStateImpact.content}</p>
+                <p>{transition.transition.preStateImpact.content}</p>
               </div>
             )}
             {transition.transition.triggerCondition?.content && (

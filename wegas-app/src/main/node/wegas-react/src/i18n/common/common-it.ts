@@ -29,6 +29,8 @@ export const commonTranslationsIT: CommonTranslations = {
   forceDelete: 'Forzare la cancellazione',
   seeChanges: 'Vedere le modifiche',
   buildingWorld: 'Il mondo è in costruzione!',
+  noLabel: 'Nessuna etichetta',
+  noText: 'Nessun testo',
   features: 'Caratteristiche',
   language: 'Lingua',
   deepSearch: 'Ricerca profonda',

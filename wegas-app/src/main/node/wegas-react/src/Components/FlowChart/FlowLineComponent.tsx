@@ -36,7 +36,7 @@ export function ArrowDefs() {
         orient="auto"
         // eslint-disable-next-line react/no-unknown-property
         fill="transparent"
-        stroke="rgb(128, 127, 127)"
+        stroke={themeVar.colors.DisabledColor}
         className={hoverLineStyle}
       >
         <polyline points="0 0, 6 5, 0 10" />
@@ -72,7 +72,7 @@ export function ArrowDefs() {
 }
 
 const arrowCSS = (zoom: number) => ({
-  stroke: 'rgb(128,127,127)',
+  stroke: themeVar.colors.DisabledColor,
   strokeWidth: 2 * zoom,
   fill: 'none',
 });
