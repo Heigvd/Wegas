@@ -85,7 +85,7 @@
         ];
     };
 
-    Y.namespace("Wegas.Config").ExtraTabs = [
+    /*Y.namespace("Wegas.Config").ExtraTabs = [
         {
             label: "Stats de base",
             targetMode: "host",
@@ -93,7 +93,7 @@
                 type: "PactStats"
             }]
         }
-    ];
+    ];*/
 
     app.once('render', function() {
         /* global Y */
