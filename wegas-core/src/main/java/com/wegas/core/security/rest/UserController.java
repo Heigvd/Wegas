@@ -26,10 +26,6 @@ import com.wegas.core.rest.util.Email;
 import com.wegas.core.rest.util.pagination.Page;
 import com.wegas.core.rest.util.pagination.Pageable;
 import com.wegas.core.security.aai.AaiAccount;
-import com.wegas.core.security.aai.AaiConfigInfo;
-import com.wegas.core.security.aai.AaiLoginResponse;
-import com.wegas.core.security.aai.AaiToken;
-import com.wegas.core.security.aai.AaiUserDetails;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -53,18 +49,15 @@ import jakarta.mail.internet.AddressException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -535,75 +528,6 @@ public class UserController {
             userFacade.create(user);
         } else {
             logger.error("This AAI account is already registered.");
-        }
-    }
-
-    /**
-     * Logs in an AAI-authenticated user or creates a new account for him.
-     *
-     * @return AaiLoginResponse telling e.g. if the user is new. Session cookies for the user's
-     *         browser are also returned.
-     *
-     * @param userDetails
-     */
-    @POST
-    @Path("AaiLogin")
-    public AaiLoginResponse aaiLogin(AaiUserDetails userDetails,
-                                     @Context HttpServletRequest request,
-                                     @Context HttpServletResponse response) throws ServletException, IOException {
-
-        // Check if the invocation is by HTTPS. @TODO: verify certificate.
-        if (!request.isSecure()) {
-            return new AaiLoginResponse("AAI login request must be made by HTTPS", false, false);
-        }
-
-        if (!AaiConfigInfo.isAaiEnabled()) {
-            logger.error("AAI login refused because it's configured to be inactive.");
-            return new AaiLoginResponse("Sorry, AAI login is currently not possible.", false, false);
-        }
-
-        String secret = AaiConfigInfo.getAaiSecret(); // Ignored if empty !
-        if (secret.length() != 0 && !userDetails.getSecret().equals(secret)) {
-            logger.trace("Real secret: {}, expected:{}", userDetails.getSecret(), secret);
-            Enumeration<String> headerNames = request.getHeaderNames();
-            if (headerNames != null) {
-                while (headerNames.hasMoreElements()) {
-                    String hdr = headerNames.nextElement();
-                    logger.error("    HTTP header: {} = {}", hdr, request.getHeader(hdr));
-                }
-            }
-            return new AaiLoginResponse("Could not authenticate Wegas AAI server", false, false);
-        }
-        // Get rid of shared secret:
-        userDetails.setSecret("checked");
-
-        // It should not be possible for the caller (our AAI login server) to be already logged in...
-        Subject subject = SecurityUtils.getSubject();
-        if (Helper.isLoggedIn(subject)) {
-            requestManager.logout(subject);
-            throw WegasErrorMessage.error("Logging out an already logged in user (internal error?)");
-        }
-
-        try {
-            Long accountId = (Long) subject.getPrincipal();
-            AaiToken token = new AaiToken(accountId, userDetails);
-            token.setRememberMe(userDetails.isRememberMe());
-            requestManager.login(subject, token);
-            accountFacade.refreshAaiAccount(userDetails);
-            return new AaiLoginResponse("Login successful", true, false);
-        } catch (AuthenticationException aex) {
-            logger.error("User not found, creating new account.");
-            AaiAccount account = AaiAccount.build(userDetails);
-            this.create(account, request);
-            // Try to log in the new user:
-            try {
-                AaiToken token = new AaiToken((Long) account.getId(), userDetails);
-                token.setRememberMe(userDetails.isRememberMe());
-                requestManager.login(subject, token);
-            } catch (AuthenticationException aex2) {
-                return new AaiLoginResponse("New account created, could not login to it", false, true);
-            }
-            return new AaiLoginResponse("New account created, login successful", true, true);
         }
     }
 

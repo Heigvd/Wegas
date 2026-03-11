@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import { getAaiConfig, signInWithJpaAccount } from '../../API/api';
 import { buildLinkWithQueryParam } from '../../helper';
 import useTranslations from '../../i18n/I18nContext';
-import AAILogo from '../../images/aai.svg';
 import EduIDLogo from '../../images/eduID.svg';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import Flex from '../common/Flex';
@@ -38,11 +37,6 @@ const defCred: Credentials = {
   password: '',
 };
 
-const aaiStyle = css({
-  height: '24px',
-  paddingRight: '5px',
-});
-
 const eduIDStyle = css({
   height: '24px',
 });
@@ -63,9 +57,6 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
   const signWithUsernameOnly = username != null && username.length > 0;
 
   const aaiConfig = useAppSelector(state => state.auth.aaiConfig);
-
-  const showAaiButton = typeof aaiConfig === 'object' && aaiConfig.enabled && aaiConfig.showButton;
-  const aaiUrl = typeof aaiConfig === 'object' ? aaiConfig.loginUrl : '';
 
   const showEduIdButton =
     typeof aaiConfig === 'object' && aaiConfig.eduIdEnabled && aaiConfig.eduIdUrl.length > 0;
@@ -101,7 +92,7 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
           {i18n.forgottenPassword}
         </InlineLink>
       ),
-      dynamicErrorMessage: () => i18n.forgottenPassword
+      dynamicErrorMessage: () => i18n.forgottenPassword,
     },
   ];
 
@@ -122,12 +113,6 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
       <MelonContainer
         below={
           <Flex justify="space-evenly">
-            {showAaiButton ? (
-              <a className={aaiLinkStyle} href={aaiUrl} rel="noreferer">
-                <AAILogo className={aaiStyle} />
-                AAI Login
-              </a>
-            ) : null}
             {showEduIdButton ? (
               <a className={aaiLinkStyle} href={eduIdUrl} rel="noreferer">
                 <EduIDLogo className={eduIDStyle} />
