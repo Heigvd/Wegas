@@ -29,6 +29,8 @@ export interface CommonTranslations {
   forceDelete: string;
   seeChanges: string;
   buildingWorld: string;
+  noLabel: string;
+  noText: string;
   features: string;
   language: string;
   deepSearch: string;

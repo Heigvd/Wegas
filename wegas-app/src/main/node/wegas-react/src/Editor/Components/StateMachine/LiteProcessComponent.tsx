@@ -3,14 +3,13 @@ import produce, { Immutable } from 'immer';
 import * as React from 'react';
 import { IDialogueDescriptor, IFSMDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomProcessComponent,
   ProcessComponentProps,
 } from '../../../Components/FlowChart/ProcessComponent';
 import {
   currentStateBoxStyle,
-  defaultStateBoxStyle,
+  defaultStateBoxStyle, impactIcon,
   isStateCurrent,
   isStateCurrentDefault,
   selectedStateBoxStyle,
@@ -29,14 +28,13 @@ import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { deleteState } from '../../../data/Reducer/editingState';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
+import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
-import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
+import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
+import {IconComp} from "../Views/FontAwesome";
+import {useInternalTranslate} from "../../../i18n/internalTranslator";
+import {commonTranslations} from "../../../i18n/common/common";
 
 const customProcessComponentEditingStyle = css({
   zIndex: 1000,
@@ -56,7 +54,7 @@ const stateBoxContentEditingStyle = css({
 
 export function LiteStateProcessComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
->(stateMachine: Immutable<IFSM>, dispatch: EditingStoreDispatch) {
+>(stateMachine: Immutable<IFSM>) {
   function LiteStateProcessComponent({
     isProcessSelected,
     onClick,
@@ -64,10 +62,12 @@ export function LiteStateProcessComponentFactory<
   }: ProcessComponentProps<TransitionFlowLine, StateProcess>) {
     const { disabled, readOnly, process } = processProps;
     const { lang } = React.useContext(languagesCTX);
+    const { currentFeatures } = React.useContext(featuresCTX);
+    const i18nValues = useInternalTranslate(commonTranslations);
 
     let textValue = '';
     if(entityIs(process.state, 'State')){
-      textValue = process.state.label || process.state.onEnterEvent?.content || '';
+      textValue = process.state.label || '';
     }else {
       textValue = translate(process.state.text, lang);
     }
@@ -92,18 +92,6 @@ export function LiteStateProcessComponentFactory<
       },
       [disabled, onClick, process, readOnly],
     );
-
-    const onTrash = React.useCallback(() => {
-      if (
-        isActionAllowed({
-          disabled: disabled,
-          readOnly: readOnly,
-        })
-      ) {
-        dispatch(deleteState(stateMachine, Number(process.id)));
-        setEditing(false);
-      }
-    }, [disabled, process.id, readOnly]);
 
     const onValidate = React.useCallback(
       (value: string) => {
@@ -145,9 +133,6 @@ export function LiteStateProcessComponentFactory<
           onDoubleClick={onEdit}
           onClick={e => onClick && onClick(e, process)}
         >
-          {isSelected && !isEditing && (
-            <EditHandle onEdit={onEdit} onTrash={onTrash} />
-          )}
           {isEditing ? (
             <div
               className={cx(stateBoxContentEditingStyle, css({ padding: 0 }))}
@@ -187,17 +172,18 @@ export function LiteStateProcessComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                  <EmptyMessage
-                    className={cx(expandWidth, textCenter, block)}
-                  />
+                    <span className={cx(expandWidth, textCenter, block)}>{entityIs(stateMachine, 'DialogueDescriptor') ? i18nValues.noText : i18nValues.noLabel}</span>
                 )}
               </div>
-              {isActionAllowed({ readOnly, disabled }) && (
+              {isActionAllowed({readOnly, disabled }) && (
                 <StateProcessHandle sourceProcess={process} />
               )}
             </div>
           )}
-          {isShown && process.state.onEnterEvent?.content && (
+          {process.state.onEnterEvent?.content && (
+              < IconComp className={cx(impactIcon)} icon="meteor" />
+          )}
+          {isFeatureEnabled(currentFeatures, 'ADVANCED') && isShown && process.state.onEnterEvent?.content && (
             <div className={stateMoreInfosStyle}>
               <strong>Impact</strong>
               <p>{process.state.onEnterEvent.content}</p>

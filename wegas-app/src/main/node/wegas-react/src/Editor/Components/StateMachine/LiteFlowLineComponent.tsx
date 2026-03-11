@@ -7,12 +7,12 @@ import {
   IFSMDescriptor,
 } from 'wegas-ts-api';
 import { languagesCTX } from '../../../Components/Contexts/LanguagesProvider';
-import { EmptyMessage } from '../../../Components/EmptyMessage';
 import {
   CustomFlowLineComponent,
   FlowLineComponentProps,
 } from '../../../Components/FlowChart/FlowLineComponent';
 import {
+  selectedTransitionBoxStyle,
   transitionBoxActionStyle,
   transitionBoxStyle,
   transitionContainerStyle,
@@ -27,14 +27,14 @@ import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { deleteTransition } from '../../../data/Reducer/editingState';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
+import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
-import { EditHandle } from './EditHandle';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
+import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
+import {IconComp} from "../Views/FontAwesome";
+import {impactIcon} from "../../../Components/FlowChart/StateProcessComponent";
+import {useInternalTranslate} from "../../../i18n/internalTranslator";
+import { commonTranslations } from '../../../i18n/common/common';
 
 const customFlowLineComponentEditingStyle = css({
   zIndex: 1000,
@@ -72,9 +72,11 @@ export function LiteFlowLineComponentFactory<
     const [isEditing, setEditing] = React.useState(false);
     const [isShown, setIsShown] = React.useState(false);
     const { lang } = React.useContext(languagesCTX);
+    const { currentFeatures } = React.useContext(featuresCTX);
+    const i18nValues = useInternalTranslate(commonTranslations);
 
     const textValue = entityIs(flowline.transition, 'Transition')
-      ? flowline.transition.label || flowline.transition.triggerCondition?.content
+      ? flowline.transition.label
       : translate(flowline.transition.actionText, lang);
 
     const onValidate = React.useCallback(
@@ -125,24 +127,6 @@ export function LiteFlowLineComponentFactory<
       [disabled, flowline, onClick, readOnly, startProcess],
     );
 
-    const onTrash = React.useCallback(() => {
-      if (
-        isActionAllowed({
-          disabled: disabled,
-          readOnly: readOnly,
-        })
-      ) {
-        editingStore.dispatch(
-          deleteTransition(
-            stateMachine,
-            Number(startProcess.id),
-            Number(flowline.id),
-          ),
-        );
-        setEditing(false);
-      }
-    }, [disabled, flowline.id, readOnly, startProcess.id]);
-
     return (
       <CustomFlowLineComponent
         selected={selected}
@@ -158,9 +142,7 @@ export function LiteFlowLineComponentFactory<
             [transitionContainerEditingStyle]: isEditing,
           })}
         >
-          {!isEditing && selected && (
-            <EditHandle onEdit={onEdit} onTrash={onTrash} />
-          )}
+          {!isEditing && selected}
           {isEditing ? (
             <div className={stateBoxContentEditingStyle}>
               <Validate
@@ -186,6 +168,7 @@ export function LiteFlowLineComponentFactory<
                   disabled,
                   readOnly,
                 }),
+                [selectedTransitionBoxStyle]: selected,
               })}
               onMouseEnter={() => !disabled && setIsShown(true)}
               onMouseLeave={() => !disabled && setIsShown(false)}
@@ -196,14 +179,16 @@ export function LiteFlowLineComponentFactory<
                 {textValue ? (
                   <HTMLText text={textValue} />
                 ) : (
-                  <EmptyMessage
-                    className={cx(expandWidth, textCenter, block)}
-                  />
+                    <span className={cx(expandWidth, textCenter, block)}>{entityIs(stateMachine, 'DialogueDescriptor') ? i18nValues.noText : i18nValues.noLabel}</span>
                 )}
               </div>
             </div>
           )}
-          {isShown &&
+          {(flowline.transition.preStateImpact?.content ||
+              flowline.transition.triggerCondition?.content) && (
+              < IconComp className={cx(impactIcon)} icon="meteor" />
+          )}
+          {isFeatureEnabled(currentFeatures, 'ADVANCED') && isShown &&
             (flowline.transition.preStateImpact?.content ||
               flowline.transition.triggerCondition?.content) && (
               <div className={transitionMoreInfosStyle}>

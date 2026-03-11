@@ -6,15 +6,13 @@
  * Licensed under the MIT License
  */
 
-import { css, cx } from '@emotion/css';
-import { faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { css } from '@emotion/css';
 import * as React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import useTranslations from '../../i18n/I18nContext';
 import FitSpace from '../common/FitSpace';
 import Flex from '../common/Flex';
-import IconButton from '../common/IconButton';
-import { adminButtonStyle, SecondLevelLink } from '../common/Link';
+import { SecondLevelLink } from '../common/Link';
 import { adminColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
 import Invoicing from './Invoicing';
@@ -45,7 +43,7 @@ export default function Admin(): JSX.Element {
           <SecondLevelLink to={`invoices`}>{i18n.gameAdmins}</SecondLevelLink>
           <SecondLevelLink to={`loggers`}>{i18n.loggers}</SecondLevelLink>
           <SecondLevelLink to={`locks`}>{i18n.locks}</SecondLevelLink>
-          <IconButton
+          {/*<IconButton
             title={i18n.stats}
             className={cx(adminButtonStyle, css({ display: 'flex' }))}
             icon={faExternalLinkAlt}
@@ -54,7 +52,7 @@ export default function Admin(): JSX.Element {
             }}
           >
             {i18n.stats}
-          </IconButton>
+          </IconButton>*/}
         </Flex>
         <FitSpace direction="column" overflow="auto">
           <Routes>
