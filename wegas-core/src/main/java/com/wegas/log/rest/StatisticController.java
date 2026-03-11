@@ -7,12 +7,11 @@
  */
 package com.wegas.log.rest;
 
-import com.wegas.core.XlsxSpreadsheet;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.rest.GameController.StreamingOutputImpl;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.log.xapi.Xapi;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
 /**
@@ -75,7 +72,7 @@ public class StatisticController {
             @PathParam("questName") String qName,
             @QueryParam("gid") String gameIds) throws IOException {
 
-        return xapi.getQuestionReplies(logid, qName, readIds(gameIds));
+        throw WegasErrorMessage.error("Service no longer available");
     }
 
     @GET
@@ -109,22 +106,7 @@ public class StatisticController {
             @PathParam("ids") String gameIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
 
-        List<Long> ids = readIds(gameIds);
-        for (Long id : ids) {
-            requestManager.assertUpdateRight(gameFacade.find(id));
-        }
-        XlsxSpreadsheet xlsx = xapi.exportXLSX(logId, ids, activityPattern);
-
-        Workbook workbook = xlsx.getWorkbood();
-
-        StreamingOutput sout;
-        sout = new StreamingOutputImpl(workbook);
-
-        String filename = logId + ".xlsx";
-
-        return Response.ok(sout, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                .header("Content-Disposition", "attachment; filename="
-                        + filename).build();
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -133,24 +115,7 @@ public class StatisticController {
             @PathParam("ids") String teamIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
 
-        List<Long> ids = readIds(teamIds);
-        for (Long id : ids) {
-            requestManager.assertUpdateRight(teamFacade.find(id));
-        }
-
-        XlsxSpreadsheet xlsx = xapi.exportXLSXyTeam(logId, ids, activityPattern);
-
-        Workbook workbook = xlsx.getWorkbood();
-
-        StreamingOutput sout;
-        sout = new StreamingOutputImpl(workbook);
-
-        String filename = logId + ".xlsx";
-
-        return Response.ok(sout, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                .header("Content-Disposition", "attachment; filename="
-                        + filename).build();
-
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -159,18 +124,7 @@ public class StatisticController {
             @PathParam("ids") String gameIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
 
-        List<Long> ids = readIds(gameIds);
-        for (Long id : ids) {
-            requestManager.assertUpdateRight(gameFacade.find(id));
-        }
-        StringBuilder sb = xapi.exportCSV(logId, ids, ",", activityPattern);
-
-        String filename = logId + ".csv";
-
-        return Response.ok(sb.toString(), "text/csv")
-                .header("Content-Disposition", "attachment; filename="
-                        + filename).build();
-
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -179,19 +133,7 @@ public class StatisticController {
             @PathParam("ids") String teamIds,
             @QueryParam("activityPattern") String activityPattern) throws IOException {
 
-        List<Long> ids = readIds(teamIds);
-        for (Long id : ids) {
-            requestManager.assertUpdateRight(teamFacade.find(id));
-        }
-
-        StringBuilder sb = xapi.exportCSVByTeam(logId, ids, ",", activityPattern);
-
-        String filename = logId + ".csv";
-
-        return Response.ok(sb.toString(), "text/csv")
-                .header("Content-Disposition", "attachment; filename="
-                        + filename).build();
-
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
