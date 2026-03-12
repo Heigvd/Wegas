@@ -240,7 +240,7 @@ export default function Token({accountId, hash}: TokenProps): JSX.Element {
           );
         } else if (entityIs(token.account, 'AaiAccount')) {
           if (typeof aaiConfig === 'object') {
-            const url = buildLinkWithQueryParam(aaiConfig.loginUrl, {redirect: redirectBack});
+            const url = buildLinkWithQueryParam(aaiConfig.eduIdUrl, {redirect: redirectBack});
             window.location.href = url;
           }
         }
