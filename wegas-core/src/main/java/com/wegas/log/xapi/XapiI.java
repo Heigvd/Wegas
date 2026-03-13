@@ -7,9 +7,6 @@
  */
 package com.wegas.log.xapi;
 
-import gov.adlnet.xapi.model.IStatementObject;
-import gov.adlnet.xapi.model.Result;
-import gov.adlnet.xapi.model.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -19,16 +16,6 @@ public interface XapiI {
 
     IStatementObject activity(String id);
 
-    /**
-     * Activity with custom ActivityDefinition
-     *
-     * @param id           activityTy
-     * @param activityType definition type
-     * @param name         activity definition name, mapped by language code
-     * @param definition   definition itself, mapped by language code
-     *
-     * @return
-     */
     IStatementObject activity(String id, String activityType,
             Map<String, String> name,
             Map<String, String> definition);

@@ -31,21 +31,7 @@ import com.wegas.log.xapi.model.ProjectedStatement;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade.ReplyValidate;
 import com.wegas.mcq.persistence.wh.WhQuestionDescriptor;
-import gov.adlnet.xapi.client.StatementClient;
-import gov.adlnet.xapi.model.Account;
-import gov.adlnet.xapi.model.Activity;
-import gov.adlnet.xapi.model.ActivityDefinition;
-import gov.adlnet.xapi.model.Agent;
-import gov.adlnet.xapi.model.Context;
-import gov.adlnet.xapi.model.ContextActivities;
-import gov.adlnet.xapi.model.Group;
-import gov.adlnet.xapi.model.IStatementObject;
-import gov.adlnet.xapi.model.Result;
-import gov.adlnet.xapi.model.Statement;
-import gov.adlnet.xapi.model.Verb;
-import gov.adlnet.xapi.util.Base64;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -471,64 +457,8 @@ public class Xapi implements XapiI {
         return getLearningLockerClient().getActivityCount(gameIds);
     }
 
-    public StatementClient getClient() throws MalformedURLException {
-
-        String host = Helper.getWegasProperty("xapi.host");
-        String token = Helper.getWegasProperty("xapi.auth");
-
-        /**
-         * Bug in client when using token +filterWith...
-         */
-        byte[] bytes = Base64.decode(token, Base64.DEFAULT);
-        String decoded = new String(bytes, StandardCharsets.US_ASCII);
-
-        String user;
-        String password;
-
-        int indexOf = decoded.indexOf(':');
-
-        if (indexOf <= 0) {
-            throw new MalformedURLException("Authorization token is invalid");
-        } else {
-            user = decoded.substring(0, indexOf);
-            password = decoded.substring(indexOf + 1);
-        }
-
-        return new StatementClient(host, user, password);
-    }
-
     @Asynchronous
     public void asyncPost(List<Object> statements) {
-        //logger.debug("XAPI Tx Commit");
-        try {
-            StatementClient client = getClient();
-
-            long start = System.currentTimeMillis();
-            logger.info("xAPI start async post batch");
-            for (Object o : statements) {
-                long subStart = System.currentTimeMillis();
-                logger.info("xAPI async post {}", o);
-                if (o instanceof Statement) {
-                    try {
-                        client.postStatement((Statement) o);
-
-                    } catch (IOException ex) {
-                        logger.error("XapiTx postStatement on commit error: {}", ex);
-                    }
-                } else if (o instanceof ArrayList) {
-                    ArrayList<Statement> list = (ArrayList<Statement>) o;
-                    try {
-                        client.postStatements(list);
-                    } catch (IOException ex) {
-                        logger.error("XapiTx postStatements on commit error: {}", ex);
-                    }
-                }
-                logger.info("xAPI post duration: {}", System.currentTimeMillis() - subStart);
-            }
-            logger.info("xAPI post batch duration: {}", System.currentTimeMillis() - start);
-            statements.clear();
-        } catch (MalformedURLException ex) {
-            logger.error("Post Statements failed: {}", ex);
-        }
+        // quietly do nothing
     }
 }

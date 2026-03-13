@@ -9,8 +9,8 @@ package com.wegas.log.xapi.jta;
 
 import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.log.xapi.Statement;
 import com.wegas.log.xapi.Xapi;
-import gov.adlnet.xapi.model.Statement;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
