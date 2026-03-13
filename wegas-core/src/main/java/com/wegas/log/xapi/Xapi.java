@@ -85,17 +85,14 @@ public class Xapi implements XapiI {
 
     @Override
     public Statement userStatement(final String verb, final IStatementObject object) {
-
-        final Agent agent = this.agent(requestManager.getCurrentUser());
-        final Verb v = new Verb(verb);
-        final Statement stmt = new Statement(agent, v, object);
-        stmt.setTimestamp(OffsetDateTime.now().format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
-        return stmt;
+        logger.debug("Quietly, returns an empty object as xapi is deprecated");
+        return new Statement();
     }
 
     @Override
     public IStatementObject activity(String id) {
-        return new Activity(id);
+        logger.debug("Quietly, returns an empty object as xapi is deprecated");
+        return new Activity();
     }
 
     private HashMap<String, String> convertToHashMap(Map<String, String> map) {
@@ -108,25 +105,19 @@ public class Xapi implements XapiI {
     public IStatementObject activity(String id, String activityType,
         Map<String, String> name,
         Map<String, String> definition) {
-        Activity activity = new Activity(id);
-        ActivityDefinition def = new ActivityDefinition();
-        def.setType(activityType);
-        def.setName(convertToHashMap(name));
-        def.setDescription(convertToHashMap(definition));
-        activity.setDefinition(def);
-        return activity;
+        logger.debug("Quietly, returns an empty object as xapi is deprecated");
+        return new Activity();
     }
 
     @Override
     public Result result(String response) {
-        final Result result = new Result();
-        result.setResponse(response);
-
-        return result;
+        logger.debug("Quietly, returns an empty object as xapi is deprecated");
+        return new Result();
     }
 
     @Override
     public Result result() {
+        logger.debug("Quietly, returns an empty object as xapi is deprecated");
         return new Result();
     }
 
@@ -140,26 +131,12 @@ public class Xapi implements XapiI {
 
     @Override
     public void post(Statement stmt) {
-        if (isValid()) {
-            stmt.setContext(this.genContext());
-            xapiTx.post(stmt);
-        } else {
-            logger.debug("Failed to persist an xapi statement, invalid context\n{}", serialize(stmt));
-        }
+        logger.debug("Quietly, do nothing as xapi is deprecated");
     }
 
     @Override
     public void post(List<Statement> stmts) {
-        if (isValid()) {
-            Context ctx = this.genContext();
-            stmts.forEach(stmt -> stmt.setContext(ctx));
-
-            xapiTx.post(new ArrayList<>(stmts));
-        } else {
-            for (Statement s : stmts) {
-                logger.debug("Failed to persist an xapi statement, invalid context\n{}", serialize(s));
-            }
-        }
+        logger.debug("Quietly, do nothing as xapi is deprecated");
     }
 
     public Statement build(String verb, String activity) {
@@ -168,7 +145,7 @@ public class Xapi implements XapiI {
 
     @Override
     public void post(String verb, String activity) {
-        this.post(verb, activity, null);
+        logger.debug("Quietly, do nothing as xapi is deprecated");
     }
 
     public Statement build(String verb, String activity, String result) {
@@ -181,11 +158,7 @@ public class Xapi implements XapiI {
 
     @Override
     public void post(String verb, String activity, String result) {
-        if (isValid()) {
-            post(this.build(verb, activity, result));
-        } else {
-            logger.debug("Failed to persist an xapi statement, invalid context\n{}", verb, activity, result);
-        }
+        logger.debug("Quietly, do nothing as xapi is deprecated");
     }
 
     private Context genContext() {
