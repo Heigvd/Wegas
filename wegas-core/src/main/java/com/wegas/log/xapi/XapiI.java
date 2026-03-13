@@ -10,6 +10,10 @@ package com.wegas.log.xapi;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * This file must be kept here so that any scenario script that would be based on it can run safely.
+ */
+
 public interface XapiI {
 
     Statement userStatement(final String verb, final IStatementObject object);
