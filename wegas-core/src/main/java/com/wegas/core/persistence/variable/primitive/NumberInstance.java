@@ -15,7 +15,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.EntityComparators;
-import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.annotations.Errored;
 import com.wegas.core.persistence.annotations.WegasConditions.And;
 import com.wegas.core.persistence.annotations.WegasConditions.GreaterThan;
@@ -39,7 +38,6 @@ import jakarta.persistence.Transient;
  * @author Francois-Xavier Aeberhard (fx at red-agent.com)
  */
 @Entity
-@EntityListeners(NumberListener.class)
 /*@Table(indexes = {
  @Index(columnList = "history.numberinstance_id")
  })*/

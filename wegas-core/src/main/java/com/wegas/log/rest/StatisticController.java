@@ -9,16 +9,10 @@ package com.wegas.log.rest;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
-import com.wegas.log.xapi.Xapi;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -29,6 +23,11 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+
+/*
+ * Deprecated since the removal of learning locker + xapi logging.
+ * This file must be kept here so that any rest call based on Statistics path can run safely.
+ */
 
 /**
  * This class contains the methods used to access the Wegas statistics. It uses the data of the xAPI database to create
@@ -42,36 +41,19 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 @Produces(MediaType.APPLICATION_JSON)
 public class StatisticController {
 
-
-    @Inject
-    private RequestManager requestManager;
-
-    @Inject
-    private TeamFacade teamFacade;
-
     @Inject
     private GameFacade gameFacade;
 
     @Inject
     private GameModelFacade gameModelFacade;
 
-    @Inject
-    private Xapi xapi;
 
-    private List<Long> readIds(String ids) {
-        if (ids != null) {
-            return Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList());
-        } else {
-            return new ArrayList<>();
-        }
-    }
 
     @GET
     @Path("LogId/{logid: [^/]+}/Question/{questName: [^/]+}")
     public List<Map<String, String>> showQuestion(@PathParam("logid") String logid,
-            @PathParam("questName") String qName,
-            @QueryParam("gid") String gameIds) throws IOException {
-
+                                                  @PathParam("questName") String qName,
+                                                  @QueryParam("gid") String gameIds) throws IOException {
         throw WegasErrorMessage.error("Service no longer available");
     }
 
@@ -79,9 +61,7 @@ public class StatisticController {
     @Path("LogId")
     @RequiresRoles("Administrator")
     public List<String> getLogIds() {
-        // Do not fetch list of logIDs from XAPI db
-        //return xapi.getAllLogId();
-        return gameModelFacade.findDistinctLogIds();
+        return gameModelFacade.findDistinctLogIds(); // TODO see if we can safely remove this
     }
 
     /**
@@ -95,56 +75,44 @@ public class StatisticController {
     @Path("queryGames/{logid: .+}")
     @RequiresRoles("Administrator")
     public List<Long> neo4jDirectQuery(@PathParam("logid") final String logID) {
-        // Do not fetch list of logIDs from XAPI db
-        //return xapi.getAllGameIdByLogId(logID);
-        return gameFacade.getAllGameIdByLogId(logID);
+        return gameFacade.getAllGameIdByLogId(logID); // TODO see if we can safely remove this
     }
 
     @GET
     @Path("ExportXLSX/{logid: [^/]+}/Games/{ids: [^/]+}")
     public Response exportXLSX(@PathParam("logid") String logId,
-            @PathParam("ids") String gameIds,
-            @QueryParam("activityPattern") String activityPattern) throws IOException {
-
+                               @PathParam("ids") String gameIds,
+                               @QueryParam("activityPattern") String activityPattern) throws IOException {
         return Response.status(Response.Status.GONE).build();
     }
 
     @GET
     @Path("ExportXLSX/{logid: [^/]+}/Teams/{ids: [^/]+}")
     public Response exportXLSXByTeam(@PathParam("logid") String logId,
-            @PathParam("ids") String teamIds,
-            @QueryParam("activityPattern") String activityPattern) throws IOException {
-
+                                     @PathParam("ids") String teamIds,
+                                     @QueryParam("activityPattern") String activityPattern) throws IOException {
         return Response.status(Response.Status.GONE).build();
     }
 
     @GET
     @Path("Export/{logid: [^/]+}/Games/{ids: [^/]+}")
     public Response exportCSV(@PathParam("logid") String logId,
-            @PathParam("ids") String gameIds,
-            @QueryParam("activityPattern") String activityPattern) throws IOException {
-
+                              @PathParam("ids") String gameIds,
+                              @QueryParam("activityPattern") String activityPattern) throws IOException {
         return Response.status(Response.Status.GONE).build();
     }
 
     @GET
     @Path("Export/{logid: [^/]+}/Teams/{ids: [^/]+}")
     public Response exportCSVByTeam(@PathParam("logid") String logId,
-            @PathParam("ids") String teamIds,
-            @QueryParam("activityPattern") String activityPattern) throws IOException {
-
+                                    @PathParam("ids") String teamIds,
+                                    @QueryParam("activityPattern") String activityPattern) throws IOException {
         return Response.status(Response.Status.GONE).build();
     }
 
     @GET
     @Path("Count")
     public List<Map<String, Object>> getActivityCount(@QueryParam("gids") String gameIds) throws IOException {
-
-        List<Long> ids = readIds(gameIds);
-        for (Long id : ids) {
-            requestManager.assertUpdateRight(gameFacade.find(id));
-        }
-
-        return xapi.getActivityCount(ids);
+        throw WegasErrorMessage.error("Service no longer available");
     }
 }
