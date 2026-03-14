@@ -1065,7 +1065,7 @@ YUI.add('wegas-tabview', function(Y) {
     Plugin.ResizeTabViewLinks = ResizeTabViewLinks;
 
     /**
-     * Plugin that allows games to add their own tabs (Statistics, Orchestrator, Properties, etc).
+     * Plugin that allows games to add their own tabs (Orchestrator, Properties, etc).
      * Items are added to the "plus" menu of all tabViews
      * @extends Y.Plugin.Base
      */

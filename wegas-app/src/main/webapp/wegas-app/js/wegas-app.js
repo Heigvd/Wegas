@@ -243,16 +243,6 @@ YUI.add("wegas-app", function(Y) {
                             }
                         }
 
-                        /*if (gm.get("properties").get("val").logID) {
-                            extraTabs._addTab({
-                                label: I18n.t("global.statistics"),
-                                children: [{
-                                        type: "Statistics"
-                                    }
-                                ]
-                            });
-                        }*/
-
                         Y.Array.each(
                             Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                             function(prd) {
