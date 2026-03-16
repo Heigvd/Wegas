@@ -61,21 +61,14 @@ public class StatisticController {
     @Path("LogId")
     @RequiresRoles("Administrator")
     public List<String> getLogIds() {
-        return gameModelFacade.findDistinctLogIds(); // TODO see if we can safely remove this
+        throw WegasErrorMessage.error("Service no longer available");
     }
 
-    /**
-     * pass through to neo4j database
-     *
-     * @param logID
-     *
-     * @return Query result
-     */
     @GET
     @Path("queryGames/{logid: .+}")
     @RequiresRoles("Administrator")
     public List<Long> neo4jDirectQuery(@PathParam("logid") final String logID) {
-        return gameFacade.getAllGameIdByLogId(logID); // TODO see if we can safely remove this
+        throw WegasErrorMessage.error("Service no longer available");
     }
 
     @GET
