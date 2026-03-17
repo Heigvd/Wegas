@@ -3,7 +3,11 @@ import u from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
-import { ILibraries, LibraryAPI, ServerLibraryType } from '../../API/library.api';
+import {
+  ILibraries,
+  LibraryAPI,
+  ServerLibraryType,
+} from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
 import { ActionCreator, manageResponseHandler } from '../../data/actions';
@@ -193,8 +197,6 @@ async function loadGlobalServerLibs(): Promise<ILibraries> {
   const urls = [
     APP_BASE + '/wegas-app/js/server/wegas-server-dashboard.js',
     APP_BASE + '/wegas-app/js/server/wegas-server-helper.js',
-    APP_BASE + '/wegas-app/js/server/wegas-survey-helper.js',
-    APP_BASE + '/wegas-app/js/server/wegas-survey-xapi.js',
   ];
 
   const libs = await urls.reduce<Promise<ILibraries>>(async (asyncAcc, url) => {
