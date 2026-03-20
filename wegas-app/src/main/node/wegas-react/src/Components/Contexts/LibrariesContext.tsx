@@ -197,6 +197,8 @@ async function loadGlobalServerLibs(): Promise<ILibraries> {
   const urls = [
     APP_BASE + '/wegas-app/js/server/wegas-server-dashboard.js',
     APP_BASE + '/wegas-app/js/server/wegas-server-helper.js',
+    APP_BASE + '/wegas-app/js/server/wegas-survey-helper.js',
+    APP_BASE + '/wegas-app/js/server/wegas-survey-xapi.js',
   ];
 
   const libs = await urls.reduce<Promise<ILibraries>>(async (asyncAcc, url) => {
