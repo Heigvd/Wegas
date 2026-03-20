@@ -82,9 +82,6 @@
                                         <fileset>
                                             <directory>src/main/node/wegas-lobby/node_modules</directory>
                                         </fileset>
-                                        <fileset>
-                                            <directory>src/main/node/wegas-stats/node_modules</directory>
-                                        </fileset>
                                     </filesets>
                                 </configuration>
                             </execution>
