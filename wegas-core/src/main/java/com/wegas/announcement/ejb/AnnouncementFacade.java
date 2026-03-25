@@ -9,8 +9,8 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -25,7 +25,7 @@ public class AnnouncementFacade extends BaseFacade<Announcement> {
         return this.find(id);
     }
 
-    public Collection<Announcement> findActive(){
+    public List<Announcement> findActive(){
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<Announcement> query = criteriaBuilder.createQuery(Announcement.class);

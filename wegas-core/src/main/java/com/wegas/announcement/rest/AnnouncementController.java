@@ -8,7 +8,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 
-import java.util.Collection;
+import java.util.List;
 
 @Stateless
 @Path("Announcement")
@@ -36,21 +36,21 @@ public class AnnouncementController {
 
     @DELETE
     @RequiresRoles("Administrator")
-    @Path("delete")
-    public void delete(Long id) {
+    @Path("{id: [1-9][0-9]*}")
+    public void delete(@PathParam("id") Long id) {
         announcementFacade.remove(id);
     }
 
     @GET
     @RequiresRoles("Administrator")
     @Path("all")
-    public Collection<Announcement> getAll() {
+    public List<Announcement> getAll() {
         return announcementFacade.findAll();
     }
 
     @GET
     @Path("active")
-    public Collection<Announcement> getActive() {
+    public List<Announcement> getActive() {
        return announcementFacade.findActive();
     }
 

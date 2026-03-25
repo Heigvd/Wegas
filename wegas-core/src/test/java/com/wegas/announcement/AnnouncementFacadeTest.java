@@ -4,14 +4,13 @@ import com.wegas.announcement.ejb.AnnouncementFacade;
 import com.wegas.announcement.persistence.Announcement;
 import com.wegas.test.arquillian.AbstractArquillianTestMinimal;
 import jakarta.inject.Inject;
-import org.eclipse.persistence.jpa.jpql.parser.LocalDateTime;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
 
@@ -23,54 +22,46 @@ public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
 
     @Before
     public void setUp() throws Exception {
-        // create 3 announcements
+        long now = new Date().getTime();
+        Date before1 = new Date(now - (1000 * 60 * 6));//-6 minutes
+        Date before2 = new Date(now - (1000 * 60 * 3));
 
-        Date now = new Date();
-        Date before1 = new Date(now.getTime() - (2000 * 60 * 60 * 24));
-        Date before2 = new Date(now.getTime() - (1000 * 60 * 60 * 24));
-
-        Date after1 = new Date(now.getTime() + (1000 * 60 * 60 * 24));
-        Date after2 = new Date(now.getTime() + (2000 * 60 * 60 * 24));
+        Date after1 = new Date(now + (1000 * 60 * 3));
+        Date after2 = new Date(now + (1000 * 60 * 6));
 
         Announcement before = new Announcement();
-        before.setStartTime(before1);
-        before.setEndTime(before2);
+        before.setStartDisplayTime(before1);
+        before.setEndDisplayTime(before2);
         before.setMessage("This was before");
 
         this.ongoing1 = new Announcement();
-        ongoing1.setStartTime(before2);
-        ongoing1.setEndTime(after1);
+        ongoing1.setStartDisplayTime(before2);
+        ongoing1.setEndDisplayTime(after1);
         ongoing1.setMessage("This is ongoing");
 
         this.ongoing2 = new Announcement();
-        ongoing2.setStartTime(before1);
-        ongoing2.setEndTime(after1);
+        ongoing2.setStartDisplayTime(before1);
+        ongoing2.setEndDisplayTime(after1);
         ongoing2.setMessage("This is also ongoing");
 
         Announcement after = new Announcement();
-        after.setStartTime(after1);
-        after.setEndTime(after2);
+        after.setStartDisplayTime(after1);
+        after.setEndDisplayTime(after2);
         after.setMessage("This will be after");
 
         announcementFacade.create(before);
-        announcementFacade.create(ongoing1);
         announcementFacade.create(ongoing2);
+        announcementFacade.create(ongoing1);
         announcementFacade.create(after);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        // TODO should instances be removed ?
     }
 
     @Test
     public void getActiveTest() throws Exception {
-        Collection<Announcement> result = announcementFacade.findActive();
+        List<Announcement> result = announcementFacade.findActive();
         Assert.assertEquals(2, result.size());
-        Announcement a = result.iterator().next();
-        Assert.assertEquals(a.getMessage(), ongoing1.getMessage());
-        a = result.iterator().next();
-        Assert.assertEquals(a.getMessage(), ongoing2.getMessage());
+
+        Assert.assertEquals(result.get(0).getMessage(), ongoing1.getMessage());
+        Assert.assertEquals(result.get(1).getMessage(), ongoing2.getMessage());
     }
 
     @Test
@@ -78,6 +69,5 @@ public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
         Collection<Announcement> result = announcementFacade.findAll();
         Assert.assertEquals(4, result.size());
     }
-
 
 }
