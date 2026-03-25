@@ -19,7 +19,6 @@ public class AnnouncementController {
     @Inject
     private AnnouncementFacade announcementFacade;
 
-
     @POST
     @RequiresRoles("Administrator")
     @Path("create")

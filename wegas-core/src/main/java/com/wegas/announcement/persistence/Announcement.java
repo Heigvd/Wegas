@@ -92,8 +92,7 @@ public class Announcement extends AbstractEntity {
 
     @Override
     public String toString() {
-        // TODO
-        return this.id + "";
+        return this.getClass().getName() + "(" + this.getId() + ")";
     }
 
     /**** GETTER & SETTERS ***/
