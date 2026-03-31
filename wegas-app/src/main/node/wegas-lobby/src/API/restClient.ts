@@ -8,6 +8,8 @@
 
 import {
   IAbstractAccountWithId,
+  IAnnouncement,
+  IAnnouncementWithId,
   IGameAdmin,
   IGameAdminWithId,
   IGameModelLanguageWithId,
@@ -900,6 +902,28 @@ export const WegasLobbyRestClient = function (
       clearOnlineUsers: () => {
         const path = `${baseUrl}/Pusher/OnlineUser`;
         return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
+      },
+    },
+    AnnouncementController: {
+      create: (announcement: IAnnouncement) => {
+        const path = `${baseUrl}/Announcement`;
+        return sendJsonRequest<IAnnouncement>('POST', path, announcement, errorHandler);
+      },
+      update: (announcement: IAnnouncementWithId) => {
+        const path = `${baseUrl}/Announcement/${announcement.id}`;
+        return sendJsonRequest<IAnnouncementWithId>('PUT', path, announcement, errorHandler);
+      },
+      delete: (announcementId: number) => {
+        const path = `${baseUrl}/Announcement/${announcementId}`;
+        return sendJsonRequest<void>('DELETE', path, undefined, errorHandler);
+      },
+      getAll: () => {
+        const path = `${baseUrl}/Announcement/all`;
+        return sendJsonRequest<IAnnouncementWithId[]>('GET', path, undefined, errorHandler);
+      },
+      getActive: () => {
+        const path = `${baseUrl}/Announcement/active`;
+        return sendJsonRequest<IAnnouncementWithId[]>('GET', path, undefined, errorHandler);
       },
     },
   };

@@ -8,6 +8,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
   IAbstractAccountWithId,
+  IAnnouncement,
+  IAnnouncementWithId,
   IGameAdmin,
   IGameModelLanguageWithId,
   IGameModelWithId,
@@ -822,3 +824,42 @@ export const restoreVersion = createAsyncThunk(
 export const uploadJson = createAsyncThunk('gameModel/upload', async ({ file }: { file: File }) => {
   return await restClient.GameModelController.uploadJSON(file);
 });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Announcement API
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const createAnnouncement = createAsyncThunk(
+  'announcement/create',
+  async (announcement: IAnnouncement) => {
+    return await restClient.AnnouncementController.create(announcement);
+  },
+);
+
+export const updateAnnouncement = createAsyncThunk(
+  'announcement/update',
+  async (announcement: IAnnouncementWithId ) => {
+    return await restClient.AnnouncementController.update(announcement);
+  },
+);
+
+export const deleteAnnouncement = createAsyncThunk(
+  'announcement/delete',
+  async (id: number) => {
+    return await restClient.AnnouncementController.delete(id);
+  },
+);
+
+export const getAllAnnouncements = createAsyncThunk(
+  'announcement/all',
+  async () => {
+    return await restClient.AnnouncementController.getAll();
+  },
+);
+
+export const getActiveAnnouncements = createAsyncThunk(
+  'announcement/active',
+  async () => {
+    return await restClient.AnnouncementController.getActive();
+  },
+);

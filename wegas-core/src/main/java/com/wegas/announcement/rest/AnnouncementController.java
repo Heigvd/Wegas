@@ -21,7 +21,6 @@ public class AnnouncementController {
 
     @POST
     @RequiresRoles("Administrator")
-    @Path("create")
     public Announcement create(Announcement announcement){
         return announcementFacade.createNew(announcement);
     }

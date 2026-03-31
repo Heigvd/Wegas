@@ -1,5 +1,7 @@
 package com.wegas.announcement.persistence;
 
+import ch.albasim.wegas.annotations.WegasEntityProperty;
+import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.WithPermission;
@@ -21,40 +23,45 @@ public class Announcement extends AbstractEntity {
 
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    private Date createdTime = new Date();
+    private Date creationTime = new Date();
 
     /**
-     * Downtime start if any
+     * Intervention start time if any
      */
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    private Date startTime;
+    @WegasEntityProperty
+    private Date interventionStartTime;
 
     /**
-     * Downtime end if any
+     * Intervention end time if any
      */
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    private Date endTime;
+    @WegasEntityProperty
+    private Date interventionEndTime;
 
     /**
-     * When the message should start displaying
+     * Start time of the announcement
      */
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    private Date startDisplayTime;
+    @WegasEntityProperty(nullable = false, optional = false)
+    private Date displayStartTime;
 
     /**
-     * When the message should stop displaying
+     * End time of the announcement
      */
     @Temporal(value = TemporalType.TIMESTAMP)
     @Column(columnDefinition = "timestamp with time zone")
-    private Date endDisplayTime;
+    @WegasEntityProperty(nullable = false, optional = false)
+    private Date displayEndTime;
 
     /**
      * Displayed message to the user
      */
     @Lob
+    @WegasEntityProperty(nullable = false, optional = false)
     private String message;
 
     /**
@@ -68,6 +75,7 @@ public class Announcement extends AbstractEntity {
     @Enumerated(value = EnumType.STRING)
     @Column(length = 24, columnDefinition = "character varying(24) default 'INFO'::character varying")
     @NotNull
+    @WegasEntityProperty(sameEntityOnly = true, nullable = false, optional = false)
     private MessageType messageType = MessageType.INFO;
 
     @Override
@@ -97,36 +105,42 @@ public class Announcement extends AbstractEntity {
 
     /**** GETTER & SETTERS ***/
 
-    public Date getStartTime() {
-        return startTime;
+    /**
+     * @return the announcement creation time
+     */
+    @WegasExtraProperty(nullable = false, optional = false)
+    public Date getCreationTime() { return creationTime; }
+
+    public Date getInterventionStartTime() {
+        return interventionStartTime;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setInterventionStartTime(Date startTime) {
+        this.interventionStartTime = startTime;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public Date getInterventionEndTime() {
+        return interventionEndTime;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setInterventionEndTime(Date endTime) {
+        this.interventionEndTime = endTime;
     }
 
-    public Date getStartDisplayTime() {
-        return startDisplayTime;
+    public Date getDisplayStartTime() {
+        return displayStartTime;
     }
 
-    public void setStartDisplayTime(Date startDisplayTime) {
-        this.startDisplayTime = startDisplayTime;
+    public void setDisplayStartTime(Date startDisplayTime) {
+        this.displayStartTime = startDisplayTime;
     }
 
-    public Date getEndDisplayTime() {
-        return endDisplayTime;
+    public Date getDisplayEndTime() {
+        return displayEndTime;
     }
 
-    public void setEndDisplayTime(Date endDisplayTime) {
-        this.endDisplayTime = endDisplayTime;
+    public void setDisplayEndTime(Date endDisplayTime) {
+        this.displayEndTime = endDisplayTime;
     }
 
     public String getMessage() {

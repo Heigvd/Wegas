@@ -30,23 +30,23 @@ public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
         Date after2 = new Date(now + (1000 * 60 * 6));
 
         Announcement before = new Announcement();
-        before.setStartDisplayTime(before1);
-        before.setEndDisplayTime(before2);
+        before.setDisplayStartTime(before1);
+        before.setDisplayEndTime(before2);
         before.setMessage("This was before");
 
         this.ongoing1 = new Announcement();
-        ongoing1.setStartDisplayTime(before2);
-        ongoing1.setEndDisplayTime(after1);
+        ongoing1.setDisplayStartTime(before2);
+        ongoing1.setDisplayEndTime(after1);
         ongoing1.setMessage("This is ongoing");
 
         this.ongoing2 = new Announcement();
-        ongoing2.setStartDisplayTime(before1);
-        ongoing2.setEndDisplayTime(after1);
+        ongoing2.setDisplayStartTime(before1);
+        ongoing2.setDisplayEndTime(after1);
         ongoing2.setMessage("This is also ongoing");
 
         Announcement after = new Announcement();
-        after.setStartDisplayTime(after1);
-        after.setEndDisplayTime(after2);
+        after.setDisplayStartTime(after1);
+        after.setDisplayEndTime(after2);
         after.setMessage("This will be after");
 
         announcementFacade.create(before);
@@ -66,7 +66,22 @@ public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
 
     @Test
     public void getAllTest(){
-        Collection<Announcement> result = announcementFacade.findAll();
+        List<Announcement> result = announcementFacade.findAll();
+        Assert.assertEquals(4, result.size());
+    }
+
+    @Test
+    public void deletionTest() throws Exception {
+        Announcement other = new Announcement();
+        other.setMessage("other");
+        // create and get created entity
+        other = announcementFacade.createNew(other);
+        List<Announcement> result = announcementFacade.findAll();
+        Assert.assertEquals(5, result.size());
+
+        announcementFacade.remove(other.getId());
+        Assert.assertNull(announcementFacade.find(other.getId()));
+        result = announcementFacade.findAll();
         Assert.assertEquals(4, result.size());
     }
 

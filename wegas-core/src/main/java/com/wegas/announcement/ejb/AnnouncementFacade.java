@@ -29,18 +29,18 @@ public class AnnouncementFacade extends BaseFacade<Announcement> {
 
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery<Announcement> query = criteriaBuilder.createQuery(Announcement.class);
-        Root<Announcement> root = query.from(Announcement.class);
+        final Root<Announcement> root = query.from(Announcement.class);
         query.select(root);
 
         final Date now = new Date();
 
-        Predicate active = criteriaBuilder.and(
-                criteriaBuilder.lessThan(root.get("startDisplayTime"), now),
-                criteriaBuilder.greaterThan(root.get("endDisplayTime"), now)
+        final Predicate active = criteriaBuilder.and(
+                criteriaBuilder.lessThan(root.get("displayStartTime"), now),
+                criteriaBuilder.greaterThan(root.get("displayEndTime"), now)
         );
 
         query.where(active);
-        query.orderBy(criteriaBuilder.desc(root.get("startDisplayTime")));
+        query.orderBy(criteriaBuilder.desc(root.get("displayStartTime")));
 
         return this.getEntityManager().createQuery(query).getResultList();
     }
@@ -53,6 +53,7 @@ public class AnnouncementFacade extends BaseFacade<Announcement> {
     public void create(Announcement entity) {
         getEntityManager().persist(entity);
     }
+
 
     @Override
     public void remove(Announcement entity) {
