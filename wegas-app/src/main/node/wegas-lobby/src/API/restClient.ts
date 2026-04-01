@@ -907,7 +907,7 @@ export const WegasLobbyRestClient = function (
     AnnouncementController: {
       create: (announcement: IAnnouncement) => {
         const path = `${baseUrl}/Announcement`;
-        return sendJsonRequest<IAnnouncement>('POST', path, announcement, errorHandler);
+        return sendJsonRequest<IAnnouncementWithId>('POST', path, announcement, errorHandler);
       },
       update: (announcement: IAnnouncementWithId) => {
         const path = `${baseUrl}/Announcement/${announcement.id}`;

@@ -829,7 +829,7 @@ export const uploadJson = createAsyncThunk('gameModel/upload', async ({ file }: 
 // Announcement API
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const createAnnouncement = createAsyncThunk(
+export const createAnnouncement = createAsyncThunk<IAnnouncementWithId, IAnnouncement>(
   'announcement/create',
   async (announcement: IAnnouncement) => {
     return await restClient.AnnouncementController.create(announcement);
