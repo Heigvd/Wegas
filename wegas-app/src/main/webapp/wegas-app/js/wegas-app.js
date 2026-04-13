@@ -270,9 +270,7 @@ YUI.add("wegas-app", function(Y) {
                             .find(function(role) {
                                 return role.get("name") === "Administrator";
                             });
-                        if (isCurrentUserAdmin
-                            || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")
-                            ) {
+                        if (Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                             extraTabs._addTab({
                                 label: I18n.t("global.surveys"),
                                 // This widget automatically updates the server script path
