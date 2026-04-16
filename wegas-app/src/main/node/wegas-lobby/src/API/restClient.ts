@@ -95,10 +95,6 @@ export type ITokenInfo = WithAtClass & {
 };
 
 export interface IAaiConfigInfo {
-  enabled: boolean;
-  showButton: boolean;
-  server: string;
-  loginUrl: string;
   eduIdEnabled: boolean;
   eduIdUrl: string;
 }

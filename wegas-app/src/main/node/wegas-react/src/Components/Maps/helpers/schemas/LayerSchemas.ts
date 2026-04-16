@@ -126,6 +126,10 @@ export const wegasVectorLayerSourceSchema: AvailableSchemas = {
       label: 'Use spatial index',
       value: true,
     }),
+    isSourceZipped: schemaProps.boolean({
+      label: 'Source zipped ?',
+      value: false,
+    }),
   },
 };
 
@@ -297,16 +301,15 @@ export const onLayerReadySchema: AvailableSchemas = {
   view: {
     label: 'On layer ready',
     type: 'undefinedable',
-    schema:
-      schemaProps.callback({
-        required: false,
-        callbackProps: {
-          args: [
-            ['layer', ['any']],
-            ['map', ['any']],
-          ],
-          returnType: ['void'],
-        },
-      })
-  }
-}
+    schema: schemaProps.callback({
+      required: false,
+      callbackProps: {
+        args: [
+          ['layer', ['any']],
+          ['map', ['any']],
+        ],
+        returnType: ['void'],
+      },
+    }),
+  },
+};

@@ -71,6 +71,7 @@
     "jodit-react": "^5.2.38",
     "jsoninput": "github:heigvd/jsoninput",
     "jsplumb": "^2.11.2",
+    "jszip": "^3.10.1",
     "less": "^3.12.2",
     "lodash-es": "^4.17.21",
     "match-sorter": "^4.0.1",

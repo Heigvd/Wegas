@@ -37,14 +37,33 @@ import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
 import Feature from 'ol/Feature';
 import { Geometry } from 'ol/geom';
+import JSZip from 'jszip';
 
 async function fetchSource(
   pathOrData: string | object | undefined,
+  isZip: boolean,
 ): Promise<object | undefined> {
   if (typeof pathOrData === 'string') {
-    return (await fetch(fileURL(pathOrData))).json();
+    const data = await fetch(fileURL(pathOrData));
+
+    return isZip ? unzipToJson(data) : data.json();
   }
   return undefined;
+}
+
+async function unzipToJson(
+  data: Response | undefined,
+): Promise<object | undefined> {
+  if (!data) return undefined;
+
+  const zip = new JSZip();
+  const contents = await zip.loadAsync(data.blob());
+
+  const file = Object.values(contents.files).find(file => !file.dir);
+  if (!file) return undefined;
+
+  const text = await file.async('string');
+  return JSON.parse(text);
 }
 
 interface PlayerVectorLayerProps extends WegasComponentProps {
@@ -97,7 +116,10 @@ export default function PlayerVectorLayer({
   if (!entityIs(source, 'Script')) {
     pathOrData = source;
   }
-  const asyncData = useAsync(fetchSource, [pathOrData]);
+  const asyncData = useAsync(fetchSource, [
+    pathOrData,
+    layerSource?.isSourceZipped,
+  ]);
 
   const currentOLLayer = React.useMemo(() => {
     let data: object | undefined = undefined;
