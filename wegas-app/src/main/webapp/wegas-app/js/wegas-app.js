@@ -243,16 +243,6 @@ YUI.add("wegas-app", function(Y) {
                             }
                         }
 
-                        /*if (gm.get("properties").get("val").logID) {
-                            extraTabs._addTab({
-                                label: I18n.t("global.statistics"),
-                                children: [{
-                                        type: "Statistics"
-                                    }
-                                ]
-                            });
-                        }*/
-
                         Y.Array.each(
                             Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                             function(prd) {
@@ -280,9 +270,7 @@ YUI.add("wegas-app", function(Y) {
                             .find(function(role) {
                                 return role.get("name") === "Administrator";
                             });
-                        if (isCurrentUserAdmin
-                            || Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")
-                            ) {
+                        if (Y.Wegas.Facade.Variable.cache.find("@class", "SurveyDescriptor")) {
                             extraTabs._addTab({
                                 label: I18n.t("global.surveys"),
                                 // This widget automatically updates the server script path

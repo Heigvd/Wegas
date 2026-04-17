@@ -902,11 +902,6 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-presence-min.js",
                 requires: ["overlay", "wegas-presencecss", "font-awesome", "escape"],
                 ws_provides: "EditorChat"
-            },
-            "wegas-statistics": {
-                path: "js/widget/wegas-statistics-min.js",
-                requires: ["promise", "chartist"],
-                ws_provides: "Statistics"
             }
         }
     });

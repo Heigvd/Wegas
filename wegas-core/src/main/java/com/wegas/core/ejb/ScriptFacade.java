@@ -279,7 +279,7 @@ public class ScriptFacade extends WegasAbstractFacade {
         putBinding(bindings, "RequestManager", RequestManagerI.class, requestManager);
         putBinding(bindings, "Event", ScriptEventFacadeI.class, event);
         putBinding(bindings, "DelayedEvent", DelayedScriptEventFacadeI.class, delayedEvent);
-        putBinding(bindings, "xapi", XapiI.class, xapi);
+        putBinding(bindings, "xapi", XapiI.class, xapi); // Note : even if there is no more handling for xapi, keep this for the old scripts to compile
 
         bindings.put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
 
