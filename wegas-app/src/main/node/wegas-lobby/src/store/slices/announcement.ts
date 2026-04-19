@@ -28,7 +28,10 @@ const announcementSlice = createSlice({
       state.announcements.sort((a1, a2) => a1.creationTime - a2.creationTime);
       // sort required ?
     }).addCase(API.updateAnnouncement.fulfilled, (state, action) => {
-      state.announcements.push(action.payload);
+      const idx = state.announcements.findIndex(a => a.id === action.payload.id);
+      if(idx > -1){
+        state.announcements[idx] = action.payload;
+      }
     }).addCase(API.getActiveAnnouncements.fulfilled, (state, action) => {
       state.status = 'ACTIVE_LOADED';
       state.announcements = action.payload;

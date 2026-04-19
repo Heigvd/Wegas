@@ -24,7 +24,7 @@ const hideBar = css({
 });
 
 export interface BaseField<T> {
-  type: 'text' | 'textarea' | 'password' | 'boolean';
+  type: 'text' | 'textarea' | 'password' | 'boolean' | 'date' | 'custom';
   key: keyof T;
   readonly?: boolean;
   label?: React.ReactNode;
@@ -56,9 +56,37 @@ export interface BooleanField<T> extends BaseField<T> {
   showAs: 'toggle' | 'checkbox';
 }
 
+export interface DateField<T> extends BaseField<T> {
+  type: 'date';
+  /**
+   * Underlying type representation
+   * timestamp = epoch value
+   * string = some parsable date string
+   * date = a Date pbject
+   */
+  representation: 'timestamp' | 'string' | 'date';
+}
+
+export interface CustomField<T, U> extends BaseField<T> {
+  type: 'custom';
+  fromString: ((value: String) => U);
+  toString: ((value: U) => string);
+}
+
+function dateToInputValue(date: Date | number | string ): string {
+
+  let parsed : Date;
+  if(typeof date === 'string')
+    parsed = Date.parse(date);
+  else if(typeof date === 'number'){
+    parsed = new Date(date)
+  }
+}
+
+
 //type: 'text' | 'password' | 'password_with_strength_bar' | 'toggle';
 
-export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T>;
+export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T> | DateField<T>;
 
 export interface FormProps<T> {
   fields: Readonly<Field<Readonly<T>>>[];
@@ -117,6 +145,22 @@ export default function Form<T>({
     },
     [submitCb],
   );
+
+
+  const convertDateAndSetFormValue = React.useCallback((key: keyof T, value: string, representation: DateField<T>['representation']) => {
+    let converted: any;
+    switch (representation){
+      case 'date':
+        converted = new Date(Date.parse(value));
+        break;
+      case 'timestamp':
+        converted = Date.parse(value);
+        break;
+      default:
+        converted = value;
+    }
+    setFormValue(key, converted);
+  }, [setFormValue]);
 
   const fieldComps = fields.map(field => {
     const isErroneous = field.isErroneous != null ? field.isErroneous(state) : false;
@@ -199,6 +243,23 @@ export default function Form<T>({
           {field.fieldFooter != null ? field.fieldFooter : null}
         </div>
       );
+    } else if (field.type === 'date') {
+      return(
+        <div key={fieldKey}>
+          <Input
+            type="date"
+            inputType='input'
+            value={String(state[field.key] || '')}
+            label={field.label}
+            placeholder={field.placeholder}
+            warning={erroneous && isErroneous ? field.errorMessage : undefined}
+            mandatory={field.isMandatory}
+            onChange={value => convertDateAndSetFormValue(field.key, value, field.representation)}
+            readonly={field.readonly}
+          />
+          {field.fieldFooter != null ? field.fieldFooter : null}
+        </div>
+      );
     }
   });
 
@@ -215,7 +276,7 @@ export default function Form<T>({
       onKeyDown={onEnterCb}
     >
       <div className={css({
-        overflow: "auto"
+        overflow: 'auto',
       })}>
         <form>
           {fieldComps}
