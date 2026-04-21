@@ -25,28 +25,18 @@ export default function AnnouncementCard({
   const dispatch = useAppDispatch();
 
   const [editing, setEditing] = React.useState(false);
-  /*
-  const [state, setState] = React.useState<{
-    announcement: IAnnouncementWithId;
-  }>({
-    announcement: announcement,
-  });*/
 
-  /*
-  const updateAnnouncementState = React.useCallback((gameModel: IGameModelWithId) => {
-    setState(state => ({ ...state, gameModel: gameModel }));
-  }, []);
-*/
   const deleteAnnouncementCallback = React.useCallback(async () => {
     return dispatch(deleteAnnouncement(announcement.id));
   }, []);
 
   const updateAnnouncementCallback = React.useCallback(async (a:IAnnouncementWithId) => {
-    //a.displayStartTime = Date.parse(String(a.displayStartTime));
-    //a.displayEndTime = Date.parse(String(a.displayEndTime));
-    a.messageType = a.messageType ? 'INFO' : 'WARNING';
+    const updated = {...a};
+    updated.messageType = updated.messageType ? 'INFO' : 'WARNING';
+    
     setEditing(false);
-    return dispatch(updateAnnouncement({...announcement, ...a}));
+
+    return dispatch(updateAnnouncement({...updated}));
   }, []);
 
   const announcementFields: Field<IAnnouncementWithId>[] = [
@@ -98,7 +88,8 @@ export default function AnnouncementCard({
       label: 'Warning',
       key: 'messageType',
       isMandatory: false,
-      showAs: 'toggle'
+      showAs: 'toggle',
+      readonly: false
     }
 
   ]

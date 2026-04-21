@@ -50,16 +50,16 @@ export default function Announcements(): JSX.Element {
   } else {
     return (
       <div>
+        <div>
+          <Button label="Add new" onClick={createAnnouncementCallback}></Button>
+        </div>
         <WindowedContainer
           emptyMessage={"No announcements"}
           items={announcements.announcements}
         >
           {makeCardCallback}
         </WindowedContainer>
-        <div>
-          <Button label="Add new" onClick={createAnnouncementCallback}></Button>
-        </div>
-    </div>);
+      </div>);
   }
 
 }

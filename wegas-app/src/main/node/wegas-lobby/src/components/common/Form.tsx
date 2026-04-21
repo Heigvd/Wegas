@@ -24,7 +24,7 @@ const hideBar = css({
 });
 
 export interface BaseField<T> {
-  type: 'text' | 'textarea' | 'password' | 'boolean' | 'date' | 'custom';
+  type: 'text' | 'textarea' | 'password' | 'boolean' | 'date';
   key: keyof T;
   readonly?: boolean;
   label?: React.ReactNode;
@@ -59,32 +59,45 @@ export interface BooleanField<T> extends BaseField<T> {
 export interface DateField<T> extends BaseField<T> {
   type: 'date';
   /**
-   * Underlying type representation
+   * Underlying data representation
    * timestamp = epoch value
-   * string = some parsable date string
-   * date = a Date pbject
+   * string = a parsable date string
+   * date = a Date object
    */
   representation: 'timestamp' | 'string' | 'date';
 }
 
-export interface CustomField<T, U> extends BaseField<T> {
-  type: 'custom';
-  fromString: ((value: String) => U);
-  toString: ((value: U) => string);
-}
 
-function dateToInputValue(date: Date | number | string ): string {
+function dateToInputValue(value: any): string {
+  if (value == null) return "";
 
-  let parsed : Date;
-  if(typeof date === 'string')
-    parsed = Date.parse(date);
-  else if(typeof date === 'number'){
-    parsed = new Date(date)
+  let date: Date;
+
+  if (value instanceof Date) {
+    date = value;
+  } else if (typeof value === "number") {
+    date = new Date(value);
+  } else if (typeof value === "string") {
+    if (!value.trim()) return "";
+
+    if (/^\d+$/.test(value)) {
+      const num = Number(value);
+      date = new Date(num < 1e12 ? num * 1000 : num);
+    } else {
+      date = new Date(value);
+    }
+  } else {
+    return "";
   }
+
+  if (isNaN(date.getTime())) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 }
-
-
-//type: 'text' | 'password' | 'password_with_strength_bar' | 'toggle';
 
 export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T> | DateField<T>;
 
@@ -97,7 +110,7 @@ export interface FormProps<T> {
   children?: React.ReactNode;
 }
 
-export default function Form<T>({
+export default function Form<T extends object>({
   fields,
   value,
   submitLabel,
@@ -148,7 +161,7 @@ export default function Form<T>({
 
 
   const convertDateAndSetFormValue = React.useCallback((key: keyof T, value: string, representation: DateField<T>['representation']) => {
-    let converted: any;
+    let converted: number | string | Date;
     switch (representation){
       case 'date':
         converted = new Date(Date.parse(value));
@@ -156,6 +169,7 @@ export default function Form<T>({
       case 'timestamp':
         converted = Date.parse(value);
         break;
+      case 'string':
       default:
         converted = value;
     }
@@ -249,7 +263,7 @@ export default function Form<T>({
           <Input
             type="date"
             inputType='input'
-            value={String(state[field.key] || '')}
+            value={dateToInputValue(state[field.key])}
             label={field.label}
             placeholder={field.placeholder}
             warning={erroneous && isErroneous ? field.errorMessage : undefined}
