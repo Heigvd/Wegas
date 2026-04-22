@@ -59,6 +59,10 @@ export interface BooleanField<T> extends BaseField<T> {
 export interface DateField<T> extends BaseField<T> {
   type: 'date';
   /**
+   * If true uses a datetime-local input
+   */
+  withTime: boolean;
+  /**
    * Underlying data representation
    * timestamp = epoch value
    * string = a parsable date string
@@ -68,7 +72,7 @@ export interface DateField<T> extends BaseField<T> {
 }
 
 
-function dateToInputValue(value: any): string {
+function dateToInputValue(value: any, withTime: boolean): string {
   if (value == null) return "";
 
   let date: Date;
@@ -82,7 +86,7 @@ function dateToInputValue(value: any): string {
 
     if (/^\d+$/.test(value)) {
       const num = Number(value);
-      date = new Date(num < 1e12 ? num * 1000 : num);
+      date = new Date(num);
     } else {
       date = new Date(value);
     }
@@ -96,7 +100,13 @@ function dateToInputValue(value: any): string {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
 
+  if(withTime){
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
   return `${year}-${month}-${day}`;
+
 }
 
 export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T> | DateField<T>;
@@ -261,9 +271,9 @@ export default function Form<T extends object>({
       return(
         <div key={fieldKey}>
           <Input
-            type="date"
+            type={field.withTime ? "datetime-local" : "date" }
             inputType='input'
-            value={dateToInputValue(state[field.key])}
+            value={dateToInputValue(state[field.key], field.withTime)}
             label={field.label}
             placeholder={field.placeholder}
             warning={erroneous && isErroneous ? field.errorMessage : undefined}
