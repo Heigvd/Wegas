@@ -235,26 +235,8 @@ var WegasDashboard = (function () {
     }
 
     function registerStatExporter(id, activityPattern, userConfig) {
-        var fn = function (owner, payload) {
-            var logId = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties").get("val").logID;
-            var path = owner.name === "Game" || owner.name === "DebugGame" ? "Games" : "Teams";
-            window.open("rest/Statistics/ExportXLSX/" + logId
-                + "/" + path + "/" + owner.get("id") + "QUERYSTRING", "_blank");
-        };
-
-        fn = "" + fn;
-
-        fn = fn.replace("QUERYSTRING", activityPattern ? "?activityPattern=" + activityPattern : "");
-
-        var cfg = userConfig || {};
-
-        registerAction(id, fn, {
-            section: cfg.section || 'actions',
-            order: typeof cfg.order === "number" ? cfg.order : -1,
-            icon: cfg.icon || "fa fa-pie-chart",
-            label: cfg.label || "View statistics",
-            hasGlobal: cfg.hasOwnProperty("hasGlobal") ? cfg.hasGlobal : true,
-        });
+        // Quietly, do nothing as xapi is deprecated.
+        // This call must be kept here so that any scenario script that would be based on it can run safely.
     }
 
     function getAllOverviews() {
