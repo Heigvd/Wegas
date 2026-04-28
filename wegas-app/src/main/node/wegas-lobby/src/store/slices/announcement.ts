@@ -1,46 +1,50 @@
 import { IAnnouncementWithId } from 'wegas-ts-api';
 import { createSlice } from '@reduxjs/toolkit';
 import * as API from '../../API/api';
-
+import { mapById } from '../../helper';
 
 export interface AnnouncementState {
-  announcements: IAnnouncementWithId[];
-  status : 'NOT_INITIALIZED' | 'LOADING' | 'ACTIVE_LOADED' | 'ALL_LOADED';
+  announcements: Record<number, IAnnouncementWithId>;
+  status: 'NOT_INITIALIZED' | 'LOADING' | 'ACTIVE_LOADED' | 'ALL_LOADED';
 }
 
 const initialState: AnnouncementState = {
-  announcements: [],
-  status: 'NOT_INITIALIZED'
-}
+  announcements: {},
+  status: 'NOT_INITIALIZED',
+};
 
 const announcementSlice = createSlice({
   name: 'announcement',
   initialState,
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(API.getAllAnnouncements.fulfilled, (state, action) => {
-      state.status = 'ALL_LOADED';
-      state.announcements = action.payload;
-    }).addCase(API.deleteAnnouncement.fulfilled, (state, action) => {
-      state.announcements = state.announcements.filter(a => a.id !== action.meta.arg);
-    }).addCase(API.createAnnouncement.fulfilled, (state, action) => {
-      state.announcements.push(action.payload);
-      state.announcements.sort((a1, a2) => a1.creationTime - a2.creationTime);
-      // sort required ?
-    }).addCase(API.updateAnnouncement.fulfilled, (state, action) => {
-      const idx = state.announcements.findIndex(a => a.id === action.payload.id);
-      if(idx > -1){
-        state.announcements[idx] = action.payload;
-      }
-    }).addCase(API.getActiveAnnouncements.fulfilled, (state, action) => {
-      state.status = 'ACTIVE_LOADED';
-      state.announcements = action.payload;
-    }).addCase(API.getAllAnnouncements.pending, (state) => {
-      state.status = 'LOADING';
-    }).addCase(API.getActiveAnnouncements.pending, (state) => {
-      state.status = 'LOADING';
-    })
-  }
-})
+    builder
+      .addCase(API.getAllAnnouncements.fulfilled, (state, action) => {
+        state.status = 'ALL_LOADED';
+        state.announcements = { ...state.announcements, ...mapById(action.payload) };
+      })
+      .addCase(API.getAllAnnouncements.pending, state => {
+        state.status = 'LOADING';
+      })
+      .addCase(API.deleteAnnouncement.fulfilled, (state, action) => {
+        delete state.announcements[action.meta.arg];
+      })
+      .addCase(API.createAnnouncement.fulfilled, (state, action) => {
+        state.announcements[action.payload.id] = action.payload;
+      })
+      .addCase(API.updateAnnouncement.fulfilled, (state, action) => {
+        if (state.announcements[action.payload.id] !== undefined) {
+          state.announcements[action.payload.id] = action.payload;
+        }
+      })
+      .addCase(API.getActiveAnnouncements.fulfilled, (state, action) => {
+        state.status = 'ACTIVE_LOADED';
+        state.announcements = action.payload;
+      })
+      .addCase(API.getActiveAnnouncements.pending, state => {
+        state.status = 'LOADING';
+      });
+  },
+});
 
 export default announcementSlice.reducer;

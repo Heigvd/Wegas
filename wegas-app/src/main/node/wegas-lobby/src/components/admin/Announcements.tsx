@@ -7,9 +7,7 @@ import { IAnnouncementWithId } from 'wegas-ts-api';
 import { createAnnouncement, getAllAnnouncements } from '../../API/api';
 import Button from '../common/ActionButton';
 
-
 export default function Announcements(): JSX.Element {
-
   const dispatch = useAppDispatch();
   //const i18n= useTranslations();
 
@@ -19,6 +17,10 @@ export default function Announcements(): JSX.Element {
       status: state.announcements.status,
     };
   }, shallowEqual);
+
+  const sorted = Object.values(announcements.announcements).sort(
+    (a, b) => a.creationTime - b.creationTime,
+  );
 
   React.useEffect(() => {
     if (announcements.status === 'NOT_INITIALIZED') {
@@ -32,34 +34,34 @@ export default function Announcements(): JSX.Element {
   );
 
   const createAnnouncementCallback = React.useCallback(async () => {
-    return dispatch(createAnnouncement({
-      '@class': 'Announcement',
-      message: "New announcement",
-      messageType: "INFO",
-      creationTime: 0,
-      displayStartTime: 0,
-      displayEndTime: 0,
-    }));
+    return dispatch(
+      createAnnouncement({
+        '@class': 'Announcement',
+        message: 'New announcement',
+        messageType: 'INFO',
+        creationTime: Date.now(),
+        displayStartTime: Date.now(),
+        displayEndTime: Date.now() + 1000 * 60 * 60, // +1 hour
+      }),
+    );
   }, []);
 
-  if(announcements.status !== 'ALL_LOADED'){
+  if (announcements.status !== 'ALL_LOADED') {
     return (
       <div>
-        <InlineLoading/>
-      </div>);
+        <InlineLoading />
+      </div>
+    );
   } else {
     return (
       <div>
         <div>
           <Button label="Add new" onClick={createAnnouncementCallback}></Button>
         </div>
-        <WindowedContainer
-          emptyMessage={"No announcements"}
-          items={announcements.announcements}
-        >
+        <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
           {makeCardCallback}
         </WindowedContainer>
-      </div>);
+      </div>
+    );
   }
-
 }
