@@ -25,26 +25,6 @@ public class AnnouncementFacade extends BaseFacade<Announcement> {
         return this.find(id);
     }
 
-    public List<Announcement> findActive(){
-
-        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
-        final CriteriaQuery<Announcement> query = criteriaBuilder.createQuery(Announcement.class);
-        final Root<Announcement> root = query.from(Announcement.class);
-        query.select(root);
-
-        final Date now = new Date();
-
-        final Predicate active = criteriaBuilder.and(
-                criteriaBuilder.lessThan(root.get("displayStartTime"), now),
-                criteriaBuilder.greaterThan(root.get("displayEndTime"), now)
-        );
-
-        query.where(active);
-        query.orderBy(criteriaBuilder.desc(root.get("displayStartTime")));
-
-        return this.getEntityManager().createQuery(query).getResultList();
-    }
-
     /**
      * Internal use
      * @param entity entity to persist

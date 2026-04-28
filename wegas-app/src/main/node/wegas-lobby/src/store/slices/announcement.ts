@@ -36,13 +36,6 @@ const announcementSlice = createSlice({
         if (state.announcements[action.payload.id] !== undefined) {
           state.announcements[action.payload.id] = action.payload;
         }
-      })
-      .addCase(API.getActiveAnnouncements.fulfilled, (state, action) => {
-        state.status = 'ACTIVE_LOADED';
-        state.announcements = action.payload;
-      })
-      .addCase(API.getActiveAnnouncements.pending, state => {
-        state.status = 'LOADING';
       });
   },
 });
