@@ -5,11 +5,15 @@ import AnnouncementCard from './AnnouncementCard';
 import { WindowedContainer } from '../common/CardContainer';
 import { IAnnouncementWithId } from 'wegas-ts-api';
 import { createAnnouncement, getAllAnnouncements } from '../../API/api';
-import Button from '../common/ActionButton';
+import useTranslations from '../../i18n/I18nContext';
+import Flex from '../common/Flex';
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { successColor } from '../styling/color';
+import IconButton from '../common/IconButton';
 
 export default function Announcements(): JSX.Element {
   const dispatch = useAppDispatch();
-  //const i18n= useTranslations();
+  const i18n = useTranslations();
 
   let announcements = useAppSelector(state => {
     return {
@@ -19,7 +23,7 @@ export default function Announcements(): JSX.Element {
   }, shallowEqual);
 
   const sorted = Object.values(announcements.announcements).sort(
-    (a, b) => a.creationTime - b.creationTime,
+    (a, b) => b.creationTime - a.creationTime,
   );
 
   React.useEffect(() => {
@@ -55,9 +59,17 @@ export default function Announcements(): JSX.Element {
   } else {
     return (
       <div>
-        <div>
-          <Button label="Add new" onClick={createAnnouncementCallback}></Button>
-        </div>
+        <Flex justify="space-between" align="center">
+          <h3>{i18n.announcements}</h3>
+          <IconButton
+            icon={faPlusCircle}
+            iconColor={successColor.toString()}
+            onClick={createAnnouncementCallback}
+          >
+            {i18n.createAnnouncement}
+          </IconButton>
+        </Flex>
+        <div></div>
         <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
           {makeCardCallback}
         </WindowedContainer>

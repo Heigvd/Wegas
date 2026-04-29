@@ -44,7 +44,7 @@ export default function Admin(): JSX.Element {
           <SecondLevelLink to={`invoices`}>{i18n.gameAdmins}</SecondLevelLink>
           <SecondLevelLink to={`loggers`}>{i18n.loggers}</SecondLevelLink>
           <SecondLevelLink to={`locks`}>{i18n.locks}</SecondLevelLink>
-          <SecondLevelLink to={`announcements`}>Announcements</SecondLevelLink>
+          <SecondLevelLink to={`announcements`}>{i18n.announcements}</SecondLevelLink>
           {/*<IconButton
             title={i18n.stats}
             className={cx(adminButtonStyle, css({ display: 'flex' }))}
@@ -78,10 +78,7 @@ export default function Admin(): JSX.Element {
                 </FitSpace>
               }
             />
-            <Route
-              path={`announcements/*`}
-              element={<Announcements />}
-            />
+            <Route path={`announcements/*`} element={<Announcements />} />
             <Route path="*" element={<MainAdminPanel />} />
           </Routes>
         </FitSpace>

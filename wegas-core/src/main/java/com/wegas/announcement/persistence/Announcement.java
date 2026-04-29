@@ -70,6 +70,8 @@ public class Announcement extends AbstractEntity {
     enum MessageType {
         INFO,
         WARNING,
+        MAINTENANCE,
+        INCIDENT
     }
 
     @Enumerated(value = EnumType.STRING)
@@ -109,7 +111,9 @@ public class Announcement extends AbstractEntity {
      * @return the announcement creation time
      */
     @WegasExtraProperty(nullable = false, optional = false)
-    public Date getCreationTime() { return creationTime; }
+    public Date getCreationTime() {
+        return creationTime;
+    }
 
     public Date getInterventionStartTime() {
         return interventionStartTime;

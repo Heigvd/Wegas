@@ -4,15 +4,24 @@ import { useAppDispatch } from '../../store/hooks';
 import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
 import Form, { Field } from '../common/Form';
 import Button from '../common/Button';
-
+import Flex from '../common/Flex';
+import Card from '../common/Card';
 
 const announcementFields: Field<IAnnouncementWithId>[] = [
   {
     type: 'text',
-    label: "Message",
+    label: 'Message',
     key: 'message',
     isMandatory: true,
-    errorMessage: "Need a message",
+    errorMessage: 'Need a message',
+  },
+  {
+    type: 'select',
+    label: 'Type',
+    key: 'messageType',
+    defaultValue: 'INFO',
+    values: ['INFO', 'WARNING', 'MAINTENANCE', 'INCIDENT'],
+    isMandatory: false,
   },
   {
     type: 'date',
@@ -20,8 +29,8 @@ const announcementFields: Field<IAnnouncementWithId>[] = [
     label: 'Display Start Time',
     key: 'displayStartTime',
     isMandatory: true,
-    errorMessage: "Invalid start time",
-    withTime: true
+    errorMessage: 'Invalid start time',
+    withTime: true,
     //isErroneous: (a) => isValidDate(a.displayStartTime)
   },
   {
@@ -30,8 +39,8 @@ const announcementFields: Field<IAnnouncementWithId>[] = [
     label: 'Display End Time',
     key: 'displayEndTime',
     isMandatory: true,
-    errorMessage: "Invalid end time",
-    withTime: true
+    errorMessage: 'Invalid end time',
+    withTime: true,
 
     //isErroneous: (a) => isValidDate(a.displayEndTime)
   },
@@ -41,8 +50,8 @@ const announcementFields: Field<IAnnouncementWithId>[] = [
     label: 'Intervention Start Time',
     key: 'interventionStartTime',
     isMandatory: false,
-    errorMessage: "Invalid start time",
-    withTime: true
+    errorMessage: 'Invalid start time',
+    withTime: true,
 
     //isErroneous: (a) => isValidDate(a.displayEndTime)
   },
@@ -52,40 +61,32 @@ const announcementFields: Field<IAnnouncementWithId>[] = [
     label: 'Intervention End Time',
     key: 'interventionEndTime',
     isMandatory: false,
-    errorMessage: "Invalid end time",
-    withTime: true
+    errorMessage: 'Invalid end time',
+    withTime: true,
 
     //isErroneous: (a) => isValidDate(a.displayEndTime)
   },
-  {
-    type: 'boolean',
-    label: 'Warning',
-    key: 'messageType',
-    isMandatory: false,
-    showAs: 'toggle',
-
-  }
-]
+];
 
 function toReadableDateTime(timestamp?: number | null): string {
-  if(timestamp == undefined){
+  if (timestamp == undefined) {
     return '-';
-  }else {
+  } else {
     return new Date(timestamp).toLocaleString(undefined, {
       year: 'numeric',
       month: 'numeric',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 }
 
 export default function AnnouncementCard({
-  announcement
-}: {announcement: IAnnouncementWithId}
-) : JSX.Element{
-
+  announcement,
+}: {
+  announcement: IAnnouncementWithId;
+}): JSX.Element {
   const dispatch = useAppDispatch();
 
   const [editing, setEditing] = React.useState(false);
@@ -94,35 +95,57 @@ export default function AnnouncementCard({
     return dispatch(deleteAnnouncement(announcement.id));
   }, []);
 
-  const updateAnnouncementCallback = React.useCallback(async (a:IAnnouncementWithId) => {
-    const updated = {...a};
-    updated.messageType = updated.messageType ? 'INFO' : 'WARNING';
+  const updateAnnouncementCallback = React.useCallback(async (a: IAnnouncementWithId) => {
+    const updated = { ...a };
 
     setEditing(false);
 
-    return dispatch(updateAnnouncement({...updated}));
+    return dispatch(updateAnnouncement({ ...updated }));
   }, []);
 
+  const getIconColor = React.useCallback(() => {
+    switch (announcement.messageType) {
+      case 'INFO':
+        return 'ICON_black-yellow_cogs_fa';
+      case 'WARNING':
+        return 'ICON_black-red_cogs_fa';
+      case 'MAINTENANCE':
+        return 'ICON_black-orange_cogs_fa';
+      case 'INCIDENT':
+        return 'ICON_black-green_cogs_fa';
+      default:
+        return 'ICON_black-blue_cogs_fa';
+    }
+  }, [announcement.messageType]);
 
-  if(editing){
-    return <Form
-      fields={announcementFields}
-      value={announcement}
-      onSubmit={updateAnnouncementCallback}
-    />
-  }
-  else {
+  if (editing) {
     return (
-      <div>
-        <h2>Message Id : {announcement.id}</h2>
+      <Form
+        fields={announcementFields}
+        value={announcement}
+        onSubmit={updateAnnouncementCallback}
+      />
+    );
+  } else {
+    return (
+      <Card title={String(announcement.id)} illustration={getIconColor()}>
         <p>Type : {announcement.messageType}</p>
         <p>Message : {announcement.message}</p>
-        <p>Display start time : {toReadableDateTime(announcement.displayStartTime)}</p>
-        <p>Display end time : {toReadableDateTime(announcement.displayEndTime)}</p>
-        <p>Intervention start time : {toReadableDateTime(announcement.interventionStartTime)}</p>
-        <p>Intervention end time : {toReadableDateTime(announcement.interventionEndTime)}</p>
-        <Button label={"Edit"} onClick={() => setEditing(true)}></Button>
-        <Button label={"Delete"} onClick={deleteAnnouncementCallback}></Button>
-      </div>
-    )}
+        <Flex direction="row" justify="space-between">
+          <Flex direction="column">
+            <p>Display start time :{toReadableDateTime(announcement.displayStartTime)}</p>
+            <p>Display end time : {toReadableDateTime(announcement.displayEndTime)}</p>
+          </Flex>
+          <Flex direction="column">
+            <p>
+              Intervention start time : {toReadableDateTime(announcement.interventionStartTime)}
+            </p>
+            <p>Intervention end time : {toReadableDateTime(announcement.interventionEndTime)}</p>
+          </Flex>
+        </Flex>
+        <Button label={'Edit'} onClick={() => setEditing(true)}></Button>
+        <Button label={'Delete'} onClick={deleteAnnouncementCallback}></Button>
+      </Card>
+    );
+  }
 }
