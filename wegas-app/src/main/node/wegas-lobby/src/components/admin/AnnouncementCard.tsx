@@ -1,4 +1,4 @@
-import { IAnnouncementWithId } from 'wegas-ts-api';
+import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import React from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
@@ -9,7 +9,7 @@ import {faPen, faTrash} from "@fortawesome/free-solid-svg-icons";
 import IconButton from "../common/IconButton";
 import {cardDetailsStyle, cardTitleStyle} from "../styling/style";
 
-const announcementFields: Field<IAnnouncementWithId>[] = [
+export const announcementFields: Field<IAnnouncement>[] = [
   {
     type: 'text',
     label: 'Message',
@@ -97,13 +97,16 @@ export default function AnnouncementCard({
     return dispatch(deleteAnnouncement(announcement.id));
   }, []);
 
-  const updateAnnouncementCallback = React.useCallback(async (a: IAnnouncementWithId) => {
-    const updated = { ...a };
+  const updateAnnouncementCallback = React.useCallback(
+    async (announcement: IAnnouncementWithId) => {
+      const updated = { ...announcement };
 
-    setEditing(false);
+      setEditing(false);
 
-    return dispatch(updateAnnouncement({ ...updated }));
-  }, []);
+      return dispatch(updateAnnouncement({ ...updated }));
+    },
+    [],
+  );
 
   const getIconColor = React.useCallback(() => {
     switch (announcement.messageType) {
