@@ -56,6 +56,15 @@ public class AnnouncementFacadeTest extends AbstractArquillianTestMinimal {
     }
 
     @Test
+    public void getActiveTest() throws Exception {
+        List<Announcement> result = announcementFacade.findActive();
+        Assert.assertEquals(2, result.size());
+
+        Assert.assertEquals(result.get(0).getMessage(), ongoing1.getMessage());
+        Assert.assertEquals(result.get(1).getMessage(), ongoing2.getMessage());
+    }
+
+    @Test
     public void getAllTest(){
         List<Announcement> result = announcementFacade.findAll();
         Assert.assertEquals(4, result.size());

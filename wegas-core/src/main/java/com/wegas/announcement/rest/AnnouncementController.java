@@ -46,4 +46,10 @@ public class AnnouncementController {
         return announcementFacade.findAll();
     }
 
+    @GET
+    @Path("active")
+    public List<Announcement> getActive() {
+       return announcementFacade.findActive();
+    }
+
 }

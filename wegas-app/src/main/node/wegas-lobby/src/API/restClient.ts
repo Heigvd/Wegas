@@ -823,12 +823,7 @@ export const WegasLobbyRestClient = function (
         query: string,
       ) => {
         const path = `${baseUrl}/Lobby/GameModel/type/${gmType}/status/${status}/Paginated`;
-        return sendJsonRequest<IPage<IGameModelWithId>>(
-          'POST',
-          path,
-          { page, size, query, mine, permissions },
-          errorHandler,
-        );
+        return sendJsonRequest<IPage<IGameModelWithId>>('POST', path, {page, size, query, mine, permissions}, errorHandler);
       },
       changeStatus: (gmid: number, status: IGameModelWithId['status']) => {
         const path = `${baseUrl}/Lobby/GameModel/${gmid}/status/${status}`;
@@ -924,6 +919,10 @@ export const WegasLobbyRestClient = function (
       },
       getAll: () => {
         const path = `${baseUrl}/Announcement/all`;
+        return sendJsonRequest<IAnnouncementWithId[]>('GET', path, undefined, errorHandler);
+      },
+      getActive: () => {
+        const path = `${baseUrl}/Announcement/active`;
         return sendJsonRequest<IAnnouncementWithId[]>('GET', path, undefined, errorHandler);
       },
     },
