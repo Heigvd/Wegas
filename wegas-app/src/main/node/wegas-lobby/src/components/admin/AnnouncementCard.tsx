@@ -1,4 +1,4 @@
-import { IAnnouncementWithId } from 'wegas-ts-api';
+import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import React from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
@@ -7,7 +7,7 @@ import Button from '../common/Button';
 import Flex from '../common/Flex';
 import Card from '../common/Card';
 
-const announcementFields: Field<IAnnouncementWithId>[] = [
+export const announcementFields: Field<IAnnouncement>[] = [
   {
     type: 'text',
     label: 'Message',
@@ -95,24 +95,27 @@ export default function AnnouncementCard({
     return dispatch(deleteAnnouncement(announcement.id));
   }, []);
 
-  const updateAnnouncementCallback = React.useCallback(async (a: IAnnouncementWithId) => {
-    const updated = { ...a };
+  const updateAnnouncementCallback = React.useCallback(
+    async (announcement: IAnnouncementWithId) => {
+      const updated = { ...announcement };
 
-    setEditing(false);
+      setEditing(false);
 
-    return dispatch(updateAnnouncement({ ...updated }));
-  }, []);
+      return dispatch(updateAnnouncement({ ...updated }));
+    },
+    [],
+  );
 
   const getIconColor = React.useCallback(() => {
     switch (announcement.messageType) {
       case 'INFO':
-        return 'ICON_black-yellow_cogs_fa';
+        return 'ICON_black-yellow_info_fa';
       case 'WARNING':
-        return 'ICON_black-red_cogs_fa';
+        return 'ICON_black-red_warning_fa';
       case 'MAINTENANCE':
-        return 'ICON_black-orange_cogs_fa';
+        return 'ICON_black-orange_plug_fa';
       case 'INCIDENT':
-        return 'ICON_black-green_cogs_fa';
+        return 'ICON_black-green_fire_fa';
       default:
         return 'ICON_black-blue_cogs_fa';
     }

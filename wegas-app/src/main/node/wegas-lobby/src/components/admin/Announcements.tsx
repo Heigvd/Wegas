@@ -1,15 +1,55 @@
 import * as React from 'react';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import InlineLoading from '../common/InlineLoading';
-import AnnouncementCard from './AnnouncementCard';
+import AnnouncementCard, { announcementFields } from './AnnouncementCard';
 import { WindowedContainer } from '../common/CardContainer';
-import { IAnnouncementWithId } from 'wegas-ts-api';
+import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import { createAnnouncement, getAllAnnouncements } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import Flex from '../common/Flex';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { successColor } from '../styling/color';
 import IconButton from '../common/IconButton';
+import DropDownPanel from '../common/DropDownPanel';
+import FitSpace from '../common/FitSpace';
+import { css } from '@emotion/css';
+import Form from '../common/Form';
+
+interface CreateAnnouncementProps {
+  close: () => void;
+}
+
+function CreateAnnouncement({ close }: CreateAnnouncementProps): JSX.Element {
+  const dispatch = useAppDispatch();
+  const i18n = useTranslations();
+  const announcement: IAnnouncement = {
+    '@class': 'Announcement',
+    message: 'New announcement',
+    messageType: 'INFO',
+    creationTime: Date.now(),
+    displayStartTime: Date.now(),
+    displayEndTime: Date.now() + 1000 * 60 * 60, // +1 hour
+  };
+
+  const createAnnouncementCallback = React.useCallback(
+    async (announcement: IAnnouncement) => {
+      return dispatch(createAnnouncement(announcement)).then(() => close());
+    },
+    [dispatch, close],
+  );
+
+  return (
+    <FitSpace direction="column">
+      <h3>{i18n.announcements}</h3>
+      <Form
+        fields={announcementFields}
+        value={announcement}
+        onSubmit={a => createAnnouncementCallback(a)}
+        submitLabel={i18n.create}
+      />
+    </FitSpace>
+  );
+}
 
 export default function Announcements(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -32,23 +72,12 @@ export default function Announcements(): JSX.Element {
     }
   }, [announcements]);
 
+  const [viewMode, setViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
+
   const makeCardCallback = React.useCallback(
     (a: IAnnouncementWithId) => <AnnouncementCard key={a.id} announcement={a} />,
     [],
   );
-
-  const createAnnouncementCallback = React.useCallback(async () => {
-    return dispatch(
-      createAnnouncement({
-        '@class': 'Announcement',
-        message: 'New announcement',
-        messageType: 'INFO',
-        creationTime: Date.now(),
-        displayStartTime: Date.now(),
-        displayEndTime: Date.now() + 1000 * 60 * 60, // +1 hour
-      }),
-    );
-  }, []);
 
   if (announcements.status !== 'ALL_LOADED') {
     return (
@@ -58,22 +87,40 @@ export default function Announcements(): JSX.Element {
     );
   } else {
     return (
-      <div>
-        <Flex justify="space-between" align="center">
-          <h3>{i18n.announcements}</h3>
+      <FitSpace direction="column" overflow="auto" className={css({ position: 'relative' })}>
+        <DropDownPanel
+          state={viewMode}
+          onClose={() => {
+            setViewMode('COLLAPSED');
+          }}
+        >
+          <CreateAnnouncement
+            close={() => {
+              setViewMode('COLLAPSED');
+            }}
+          />
+        </DropDownPanel>
+
+        <Flex
+          justify="space-between"
+          align="center"
+          className={css({
+            flexShrink: 0,
+            height: '80px',
+          })}
+        >
           <IconButton
             icon={faPlusCircle}
             iconColor={successColor.toString()}
-            onClick={createAnnouncementCallback}
+            onClick={() => setViewMode('EXPANDED')}
           >
             {i18n.createAnnouncement}
           </IconButton>
         </Flex>
-        <div></div>
         <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
           {makeCardCallback}
         </WindowedContainer>
-      </div>
+      </FitSpace>
     );
   }
 }
