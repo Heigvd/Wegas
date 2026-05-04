@@ -3,9 +3,11 @@ import React from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
 import Form, { Field } from '../common/Form';
-import Button from '../common/Button';
 import Flex from '../common/Flex';
 import Card from '../common/Card';
+import {faPen, faTrash} from "@fortawesome/free-solid-svg-icons";
+import IconButton from "../common/IconButton";
+import {cardDetailsStyle, cardTitleStyle} from "../styling/style";
 
 const announcementFields: Field<IAnnouncementWithId>[] = [
   {
@@ -106,15 +108,15 @@ export default function AnnouncementCard({
   const getIconColor = React.useCallback(() => {
     switch (announcement.messageType) {
       case 'INFO':
-        return 'ICON_black-yellow_cogs_fa';
+        return 'ICON_blue_info_fa';
       case 'WARNING':
-        return 'ICON_black-red_cogs_fa';
+        return 'ICON_yellow_exclamation_fa';
       case 'MAINTENANCE':
-        return 'ICON_black-orange_cogs_fa';
+        return 'ICON_orange_exclamation_fa';
       case 'INCIDENT':
-        return 'ICON_black-green_cogs_fa';
+        return 'ICON_red_close_fa';
       default:
-        return 'ICON_black-blue_cogs_fa';
+        return 'ICON_blue_info_fa';
     }
   }, [announcement.messageType]);
 
@@ -129,22 +131,25 @@ export default function AnnouncementCard({
   } else {
     return (
       <Card title={String(announcement.id)} illustration={getIconColor()}>
-        <p>Type : {announcement.messageType}</p>
-        <p>Message : {announcement.message}</p>
-        <Flex direction="row" justify="space-between">
-          <Flex direction="column">
-            <p>Display start time :{toReadableDateTime(announcement.displayStartTime)}</p>
-            <p>Display end time : {toReadableDateTime(announcement.displayEndTime)}</p>
+        <Flex direction="row" align={"center"} justify="space-between" grow={1}>
+          <Flex direction={"column"}>
+            <div className={cardTitleStyle}>{announcement.message}</div>
+            <div className={cardDetailsStyle}>Displayed from {toReadableDateTime(announcement.displayStartTime)} to {toReadableDateTime(announcement.displayEndTime)}</div>
+            <div className={cardDetailsStyle}>Intervened from {toReadableDateTime(announcement.interventionStartTime)} to {toReadableDateTime(announcement.interventionEndTime)}</div>
           </Flex>
-          <Flex direction="column">
-            <p>
-              Intervention start time : {toReadableDateTime(announcement.interventionStartTime)}
-            </p>
-            <p>Intervention end time : {toReadableDateTime(announcement.interventionEndTime)}</p>
+          <Flex>
+            <IconButton
+                icon={faPen}
+                onClick={() => setEditing(true)}
+            >
+            </IconButton>
+            <IconButton
+                icon={faTrash}
+                onClick={deleteAnnouncementCallback}
+            >
+            </IconButton>
           </Flex>
         </Flex>
-        <Button label={'Edit'} onClick={() => setEditing(true)}></Button>
-        <Button label={'Delete'} onClick={deleteAnnouncementCallback}></Button>
       </Card>
     );
   }

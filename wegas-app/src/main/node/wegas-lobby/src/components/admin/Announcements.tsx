@@ -10,6 +10,9 @@ import Flex from '../common/Flex';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { successColor } from '../styling/color';
 import IconButton from '../common/IconButton';
+import FitSpace from "../common/FitSpace";
+import {css} from "@emotion/css";
+import {panelPadding} from "../styling/style";
 
 export default function Announcements(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -58,22 +61,27 @@ export default function Announcements(): JSX.Element {
     );
   } else {
     return (
-      <div>
-        <Flex justify="space-between" align="center">
-          <h3>{i18n.announcements}</h3>
-          <IconButton
-            icon={faPlusCircle}
-            iconColor={successColor.toString()}
-            onClick={createAnnouncementCallback}
-          >
-            {i18n.createAnnouncement}
-          </IconButton>
-        </Flex>
-        <div></div>
-        <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
-          {makeCardCallback}
-        </WindowedContainer>
-      </div>
+          <FitSpace direction="column" overflow="auto" className={panelPadding}>
+              <Flex
+                  justify="space-between"
+                  align="center"
+                  className={css({
+                      flexShrink: 0,
+                      height: '80px',
+                  })}
+              >
+                  <IconButton
+                      icon={faPlusCircle}
+                      iconColor={successColor.toString()}
+                      onClick={createAnnouncementCallback}
+                  >
+                      {i18n.createAnnouncement}
+                  </IconButton>
+              </Flex>
+              <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
+                  {makeCardCallback}
+              </WindowedContainer>
+          </FitSpace>
     );
   }
 }
