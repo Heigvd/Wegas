@@ -1,13 +1,16 @@
 import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import React from 'react';
 import { useAppDispatch } from '../../store/hooks';
-import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
+import { deleteAnnouncement, updateAnnouncement} from '../../API/api';
 import Form, { Field } from '../common/Form';
 import Flex from '../common/Flex';
 import Card from '../common/Card';
-import {faPen, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faCog, faTrash} from "@fortawesome/free-solid-svg-icons";
 import IconButton from "../common/IconButton";
 import {cardDetailsStyle, cardTitleStyle} from "../styling/style";
+import OpenCloseModal from "../common/OpenCloseModal";
+import CardContainer from "../common/CardContainer";
+import FitSpace from "../common/FitSpace";
 
 export const announcementFields: Field<IAnnouncement>[] = [
   {
@@ -141,11 +144,29 @@ export default function AnnouncementCard({
             <div className={cardDetailsStyle}>Intervened from {toReadableDateTime(announcement.interventionStartTime)} to {toReadableDateTime(announcement.interventionEndTime)}</div>
           </Flex>
           <Flex>
-            <IconButton
-                icon={faPen}
-                onClick={() => setEditing(true)}
+            <OpenCloseModal
+                icon={faCog}
+                iconTitle={announcement.message}
+                title={announcement.messageType}
+                illustration={getIconColor()}
+                showCloseButton={true}
+                route={`${announcement.id}/announcement`}
             >
-            </IconButton>
+              {close => (
+                  <FitSpace direction="column" overflow="auto">
+                    <CardContainer>
+                      <Form
+                          fields={announcementFields}
+                          value={announcement}
+                          onSubmit={async (updated) => {
+                            await dispatch(updateAnnouncement(updated as IAnnouncementWithId));
+                            close();
+                          }}
+                      />
+                    </CardContainer>
+                  </FitSpace>
+              )}
+            </OpenCloseModal>
             <IconButton
                 icon={faTrash}
                 onClick={deleteAnnouncementCallback}
