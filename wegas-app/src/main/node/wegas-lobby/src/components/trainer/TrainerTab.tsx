@@ -16,7 +16,11 @@ import { getGamesPaginated, getShadowUserByIds } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGamesByIds, useGameStoreNoticeableChangesCount } from '../../selectors/wegasSelector';
+import {
+  MINE_OR_ALL,
+  useGamesByIds,
+  useGameStoreNoticeableChangesCount,
+} from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -32,13 +36,16 @@ import CreateGame from './CreateGame';
 import GameCard from './GameCard';
 import Checkbox from '../common/Checkbox';
 import { IPage } from '../../API/restClient';
+import Announcer from '../common/Announcer';
 
 export default function TrainerTab(): JSX.Element {
   const i18n = useTranslations();
   const dispatch = useAppDispatch();
   const { currentUser, isAdmin } = useCurrentUser();
 
-  const [gameCreationPanelMode, setGameCreationPanelMode] = React.useState<'EXPANDED' | 'COLLAPSED'>('COLLAPSED');
+  const [gameCreationPanelMode, setGameCreationPanelMode] = React.useState<
+    'EXPANDED' | 'COLLAPSED'
+  >('COLLAPSED');
 
   const [gameStatusFilter, setGameStatusFilter] = useLocalStorageState<IGameWithId['status']>(
     'trainer.status',
@@ -68,7 +75,7 @@ export default function TrainerTab(): JSX.Element {
     gameStatusFilter,
     currentUser != null ? currentUser.id : undefined,
     isAdmin ? mineFilter : 'MINE',
-    renderedGamesIds
+    renderedGamesIds,
   );
 
   //non-admin should never see deleted
@@ -107,7 +114,7 @@ export default function TrainerTab(): JSX.Element {
         query: filter,
         mine: isAdmin ? mineFilter === 'MINE' : true,
       }),
-    ).then((action) => {
+    ).then(action => {
       const payload = action.payload as IPage<IGameWithId>;
       setRenderedGamesIds(payload.pageContent.map((game: IGameWithId) => game.id));
       setTotalResults(payload.total);
@@ -248,53 +255,52 @@ export default function TrainerTab(): JSX.Element {
             height: '20px',
           })}
         >
-          <Flex
-            align="flex-start"
-          >
+          <Flex align="flex-start">
             <h3>{`${totalResults} ${i18n.games}`}</h3>
           </Flex>
-          {totalResults > pageSize /* show pagination tools only if needed */ &&
-            (<>
-            <Flex>
-              <h3>
-                <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
-                {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
-                <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
-              </h3>
-            </Flex>
-            <Flex
-              align="flex-end"
-            >
-              <Checkbox
-                label="20"
-                value={pageSize === 20}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
-              />
-              <Checkbox
-                label="50"
-                value={pageSize === 50}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
-              />
-              <Checkbox
-                label="100"
-                value={pageSize === 100}
-                onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
-              />
-            </Flex>
-          </>)
-        }
+          {totalResults > pageSize /* show pagination tools only if needed */ && (
+            <>
+              <Flex>
+                <h3>
+                  <IconButton onClick={onPreviousPage} icon={'caret-left'}></IconButton>
+                  {page}/{totalResults > 0 ? Math.ceil(totalResults / pageSize) : 1}
+                  <IconButton onClick={onNextPage} icon={'caret-right'}></IconButton>
+                </h3>
+              </Flex>
+              <Flex align="flex-end">
+                <Checkbox
+                  label="20"
+                  value={pageSize === 20}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 20 : pageSize)}
+                />
+                <Checkbox
+                  label="50"
+                  value={pageSize === 50}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 50 : pageSize)}
+                />
+                <Checkbox
+                  label="100"
+                  value={pageSize === 100}
+                  onChange={(newValue: boolean) => setPageSize(newValue ? 100 : pageSize)}
+                />
+              </Flex>
+            </>
+          )}
         </Flex>
 
-        {isDataReady ?
-          (<WindowedContainer
-              items={games.gamesAndGameModels}
-              scrollTo={selected}
-              emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
-            >
-              {buildCardCb}
-            </WindowedContainer>)
-          : (<InlineLoading />)
-        }
+        <Announcer />
+
+        {isDataReady ? (
+          <WindowedContainer
+            items={games.gamesAndGameModels}
+            scrollTo={selected}
+            emptyMessage={<i>{filter ? i18n.noGamesFound : i18n.noGames}</i>}
+          >
+            {buildCardCb}
+          </WindowedContainer>
+        ) : (
+          <InlineLoading />
+        )}
       </FitSpace>
     </FitSpace>
   );

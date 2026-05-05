@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
 
@@ -29,6 +29,7 @@ import { successColor } from '../styling/color';
 import { panelPadding } from '../styling/style';
 import JoinGame from './JoinGame';
 import PlayerCard from './PlayerCard';
+import Announcer from '../common/Announcer';
 
 interface SortBy {
   date: number;
@@ -161,6 +162,8 @@ export default function PlayerTab(): JSX.Element {
               onChange={setFilter}
             />
           </Flex>
+
+          <Announcer />
 
           {players.status === 'READY' ? (
             <>

@@ -1,3 +1,11 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
 import * as React from 'react';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import InlineLoading from '../common/InlineLoading';
@@ -10,8 +18,8 @@ import Flex from '../common/Flex';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { successColor } from '../styling/color';
 import IconButton from '../common/IconButton';
-import FitSpace from "../common/FitSpace";
-import { panelPadding } from "../styling/style";
+import FitSpace from '../common/FitSpace';
+import { panelPadding } from '../styling/style';
 import DropDownPanel from '../common/DropDownPanel';
 import { css } from '@emotion/css';
 import Form from '../common/Form';
@@ -58,8 +66,8 @@ export default function Announcements(): JSX.Element {
 
   let announcements = useAppSelector(state => {
     return {
-      announcements: state.announcements.announcements,
-      status: state.announcements.status,
+      announcements: state.announcements.all.announcements,
+      status: state.announcements.all.status,
     };
   }, shallowEqual);
 
@@ -80,7 +88,7 @@ export default function Announcements(): JSX.Element {
     [],
   );
 
-  if (announcements.status !== 'ALL_LOADED') {
+  if (announcements.status !== 'READY') {
     return (
       <div>
         <InlineLoading />
@@ -101,27 +109,27 @@ export default function Announcements(): JSX.Element {
             }}
           />
         </DropDownPanel>
-          <FitSpace direction="column" overflow="auto" className={panelPadding}>
-              <Flex
-                  justify="space-between"
-                  align="center"
-                  className={css({
-                      flexShrink: 0,
-                      height: '80px',
-                  })}
-              >
-                  <IconButton
-                      icon={faPlusCircle}
-                      iconColor={successColor.toString()}
-                      onClick={() => setViewMode('EXPANDED')}
-                  >
-                      {i18n.createAnnouncement}
-                  </IconButton>
-              </Flex>
-              <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
-                  {makeCardCallback}
-              </WindowedContainer>
-          </FitSpace>
+        <FitSpace direction="column" overflow="auto" className={panelPadding}>
+          <Flex
+            justify="space-between"
+            align="center"
+            className={css({
+              flexShrink: 0,
+              height: '80px',
+            })}
+          >
+            <IconButton
+              icon={faPlusCircle}
+              iconColor={successColor.toString()}
+              onClick={() => setViewMode('EXPANDED')}
+            >
+              {i18n.createAnnouncement}
+            </IconButton>
+          </Flex>
+          <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
+            {makeCardCallback}
+          </WindowedContainer>
+        </FitSpace>
       </FitSpace>
     );
   }

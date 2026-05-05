@@ -1,50 +1,74 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+
 import { IAnnouncementWithId } from 'wegas-ts-api';
 import { createSlice } from '@reduxjs/toolkit';
 import * as API from '../../API/api';
 import { mapById } from '../../helper';
+import { LoadingStatus } from '../store';
 
 export interface AnnouncementState {
-  announcements: Record<number, IAnnouncementWithId>;
-  status: 'NOT_INITIALIZED' | 'LOADING' | 'ACTIVE_LOADED' | 'ALL_LOADED';
+  all: {
+    status: LoadingStatus;
+    announcements: Record<number, IAnnouncementWithId>;
+  };
+  active: {
+    status: LoadingStatus;
+    announcements: Record<number, IAnnouncementWithId>;
+    dismissedIds: number[];
+  };
 }
 
 const initialState: AnnouncementState = {
-  announcements: {},
-  status: 'NOT_INITIALIZED',
+  all: { status: 'NOT_INITIALIZED', announcements: {} },
+  active: { status: 'NOT_INITIALIZED', announcements: {}, dismissedIds: [] },
 };
 
 const announcementSlice = createSlice({
   name: 'announcement',
   initialState,
-  reducers: {},
+  reducers: {
+    dismissAnnouncement(state, action: { payload: number }) {
+      if (!state.active.dismissedIds.includes(action.payload)) {
+        state.active.dismissedIds.push(action.payload);
+      }
+    },
+  },
   extraReducers: builder => {
     builder
-      .addCase(API.getAllAnnouncements.fulfilled, (state, action) => {
-        state.status = 'ALL_LOADED';
-        state.announcements = { ...state.announcements, ...mapById(action.payload) };
-      })
       .addCase(API.getAllAnnouncements.pending, state => {
-        state.status = 'LOADING';
+        state.all.status = 'LOADING';
+      })
+      .addCase(API.getAllAnnouncements.fulfilled, (state, action) => {
+        state.all.status = 'READY';
+        state.all.announcements = { ...state.all.announcements, ...mapById(action.payload) };
       })
       .addCase(API.deleteAnnouncement.fulfilled, (state, action) => {
-        delete state.announcements[action.meta.arg];
+        delete state.all.announcements[action.meta.arg];
+        delete state.active.announcements[action.meta.arg];
       })
       .addCase(API.createAnnouncement.fulfilled, (state, action) => {
-        state.announcements[action.payload.id] = action.payload;
+        state.all.announcements[action.payload.id] = action.payload;
       })
       .addCase(API.updateAnnouncement.fulfilled, (state, action) => {
-        if (state.announcements[action.payload.id] !== undefined) {
-          state.announcements[action.payload.id] = action.payload;
+        if (state.all.announcements[action.payload.id] !== undefined) {
+          state.all.announcements[action.payload.id] = action.payload;
         }
       })
       .addCase(API.getActiveAnnouncements.fulfilled, (state, action) => {
-        state.status = 'ACTIVE_LOADED';
-        state.announcements = action.payload;
+        state.active.status = 'READY';
+        state.active.announcements = action.payload;
       })
       .addCase(API.getActiveAnnouncements.pending, state => {
-        state.status = 'LOADING';
+        state.active.status = 'LOADING';
       });
   },
 });
 
+export const { dismissAnnouncement } = announcementSlice.actions;
 export default announcementSlice.reducer;

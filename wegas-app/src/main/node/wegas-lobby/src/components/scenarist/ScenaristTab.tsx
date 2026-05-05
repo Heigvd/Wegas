@@ -12,11 +12,15 @@ import { uniq } from 'lodash';
 import * as React from 'react';
 import { useMatch, useResolvedPath } from 'react-router-dom';
 import { IGameModelWithId } from 'wegas-ts-api';
-import {getGameModelsPaginated, getShadowUserByIds} from '../../API/api';
+import { getGameModelsPaginated, getShadowUserByIds } from '../../API/api';
 import useTranslations from '../../i18n/I18nContext';
 import { useLocalStorageState } from '../../preferences';
 import { useAccountsByUserIds, useCurrentUser } from '../../selectors/userSelector';
-import { MINE_OR_ALL, useGameModelsById, useGameModelStoreNoticeableChangesCount } from '../../selectors/wegasSelector';
+import {
+  MINE_OR_ALL,
+  useGameModelsById,
+  useGameModelStoreNoticeableChangesCount,
+} from '../../selectors/wegasSelector';
 import { useAppDispatch } from '../../store/hooks';
 import { WindowedContainer } from '../common/CardContainer';
 import DebouncedInput from '../common/DebouncedInput';
@@ -32,8 +36,9 @@ import CreateModel from './CreateModel';
 import CreateScenario from './CreateScenario';
 import GameModelCard from './GameModelCard';
 import InferModel from './InferModel';
-import Checkbox from "../common/Checkbox";
-import {IPage} from "../../API/restClient";
+import Checkbox from '../common/Checkbox';
+import { IPage } from '../../API/restClient';
+import Announcer from '../common/Announcer';
 
 export interface ScenaristTabProps {
   gameModelType: IGameModelWithId['type'];
@@ -45,10 +50,10 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   const { isAdmin } = useCurrentUser();
 
   const [createPanelViewMode, setCreatePanelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
-      'COLLAPSED',
+    'COLLAPSED',
   );
   const [inferModelViewMode, setInferModelViewMode] = React.useState<'EXPANDED' | 'COLLAPSED'>(
-      'COLLAPSED',
+    'COLLAPSED',
   );
 
   const [gameStatusFilter, setGameStatusFilter] = useLocalStorageState<IGameModelWithId['status']>(
@@ -94,7 +99,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   // if we change any filter or display choice, come back to first page
   React.useEffect(() => {
     if (page !== 1) {
-      setPage(1)
+      setPage(1);
     }
     // page must not be set as dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,26 +110,39 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   // OR if game models were added or changed status or deleted in the store (nbGameModelStoreChanges)
   React.useEffect(() => {
     setIsDataReady(false);
-    dispatch(getGameModelsPaginated({
-      type: gameModelType,
-      status: gameStatusFilter,
-      mine: isAdmin ? mineFilter === 'MINE' : true,
-      permissions: ['Edit', 'Translate'],
-      page: page,
-      size: pageSize,
-      query: filter,
-    }))
-      .then(action => {
-        const payload = (action.payload as IPage<IGameModelWithId>);
-        setRenderedGameModelsIds(payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id));
-        setTotalResults(payload.total);
-        setIsDataReady(true);
-      });
-  }, [dispatch, isAdmin, gameStatusFilter, gameModelType, page, pageSize, filter, mineFilter, nbGameModelStoreChanges]);
+    dispatch(
+      getGameModelsPaginated({
+        type: gameModelType,
+        status: gameStatusFilter,
+        mine: isAdmin ? mineFilter === 'MINE' : true,
+        permissions: ['Edit', 'Translate'],
+        page: page,
+        size: pageSize,
+        query: filter,
+      }),
+    ).then(action => {
+      const payload = action.payload as IPage<IGameModelWithId>;
+      setRenderedGameModelsIds(
+        payload.pageContent.map((gameModel: IGameModelWithId) => gameModel.id),
+      );
+      setTotalResults(payload.total);
+      setIsDataReady(true);
+    });
+  }, [
+    dispatch,
+    isAdmin,
+    gameStatusFilter,
+    gameModelType,
+    page,
+    pageSize,
+    filter,
+    mineFilter,
+    nbGameModelStoreChanges,
+  ]);
 
   const buildCardCb = React.useCallback(
-      (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
-      [],
+    (gameModel: IGameModelWithId) => <GameModelCard key={gameModel.id} gameModel={gameModel} />,
+    [],
   );
 
   const userIds: number[] = uniq(
@@ -141,7 +159,7 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
   }, [isAdmin, accountsState, dispatch]);
 
   // Detect any gameModel id in URL
-  const resolvedPath = useResolvedPath("./");
+  const resolvedPath = useResolvedPath('./');
 
   const match = useMatch<'id', string>(`${resolvedPath.pathname}:id/*`);
   const selectedId = Number(match?.params.id) || undefined;
@@ -319,6 +337,9 @@ export default function ScenaristTab({ gameModelType }: ScenaristTabProps): JSX.
             </>
           )}
         </Flex>
+
+        <Announcer />
+
         {isDataReady ? (
           <WindowedContainer
             items={gamemodels.gamemodels}
