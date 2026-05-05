@@ -10,8 +10,9 @@ import Flex from '../common/Flex';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { successColor } from '../styling/color';
 import IconButton from '../common/IconButton';
+import FitSpace from "../common/FitSpace";
+import { panelPadding } from "../styling/style";
 import DropDownPanel from '../common/DropDownPanel';
-import FitSpace from '../common/FitSpace';
 import { css } from '@emotion/css';
 import Form from '../common/Form';
 
@@ -39,7 +40,7 @@ function CreateAnnouncement({ close }: CreateAnnouncementProps): JSX.Element {
   );
 
   return (
-    <FitSpace direction="column">
+    <FitSpace direction="column" className={css({ minWidth: '400px', paddingBottom: '20px' })}>
       <h3>{i18n.announcements}</h3>
       <Form
         fields={announcementFields}
@@ -100,26 +101,27 @@ export default function Announcements(): JSX.Element {
             }}
           />
         </DropDownPanel>
-
-        <Flex
-          justify="space-between"
-          align="center"
-          className={css({
-            flexShrink: 0,
-            height: '80px',
-          })}
-        >
-          <IconButton
-            icon={faPlusCircle}
-            iconColor={successColor.toString()}
-            onClick={() => setViewMode('EXPANDED')}
-          >
-            {i18n.createAnnouncement}
-          </IconButton>
-        </Flex>
-        <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
-          {makeCardCallback}
-        </WindowedContainer>
+          <FitSpace direction="column" overflow="auto" className={panelPadding}>
+              <Flex
+                  justify="space-between"
+                  align="center"
+                  className={css({
+                      flexShrink: 0,
+                      height: '80px',
+                  })}
+              >
+                  <IconButton
+                      icon={faPlusCircle}
+                      iconColor={successColor.toString()}
+                      onClick={() => setViewMode('EXPANDED')}
+                  >
+                      {i18n.createAnnouncement}
+                  </IconButton>
+              </Flex>
+              <WindowedContainer emptyMessage={'No announcements'} items={sorted}>
+                  {makeCardCallback}
+              </WindowedContainer>
+          </FitSpace>
       </FitSpace>
     );
   }
