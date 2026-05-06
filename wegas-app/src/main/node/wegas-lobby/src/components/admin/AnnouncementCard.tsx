@@ -13,7 +13,7 @@ import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
 import Form, { Field } from '../common/Form';
 import Flex from '../common/Flex';
 import Card from '../common/Card';
-import { faCog, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCog, faTrash } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../common/IconButton';
 import { cardDetailsStyle, cardTitleStyle } from '../styling/style';
 import OpenCloseModal from '../common/OpenCloseModal';
@@ -22,25 +22,60 @@ import FitSpace from '../common/FitSpace';
 import { useLocation } from 'react-router-dom';
 import { useCurrentUser } from '../../selectors/userSelector';
 import { css } from '@emotion/css';
+import useTranslations from "../../i18n/I18nContext";
+import {
+  announcementError, announcementErrorLight,
+  announcementInfo,
+  announcementInfoLight,
+  announcementMaintenance, announcementMaintenanceLight,
+  announcementWarning,
+  announcementWarningLight
+} from "../styling/color";
 
 const announcementCardStyle = css({
+  ['& > div:nth-child(2)']: {
+    height: '100%',
+  },
   ['&.INFO']: {
-    color: '#0A9FF1',
-    background: '#E1F0F8',
+    color: announcementInfo.toString(),
+    background: announcementInfoLight.toString(),
   },
   ['&.WARNING']: {
-    color: '#FFC700',
-    background: '#FAF4E0',
+    color: announcementWarning.toString(),
+    background: announcementWarningLight.toString(),
   },
   ['&.MAINTENANCE']: {
-    color: '#FF7C00',
-    background: '#FAECE0',
+    color: announcementMaintenance.toString(),
+    background: announcementMaintenanceLight.toString(),
   },
   ['&.INCIDENT']: {
-    color: '#DC0000',
-    background: '#F6E0E0',
+    color: announcementError.toString(),
+    background: announcementErrorLight.toString(),
   },
 });
+
+const announcementCardContentStyle = css({
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexGrow: 1,
+  gap: '10px',
+  height: '100%',
+  padding: '10px 0 10px 0'
+})
+
+const dismissStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  height: '100%',
+  padding: '0 6px 0 16px',
+  borderLeft: '1px solid #d7d7d7',
+  color: 'var(--fgColor)',
+  textTransform: 'uppercase',
+  ':hover': {
+    cursor: 'pointer',
+}
+})
 
 export const announcementFields: Field<IAnnouncement>[] = [
   {
@@ -129,6 +164,7 @@ export default function AnnouncementCard({
   const location = useLocation();
 
   const [editing, setEditing] = React.useState(false);
+  const i18n = useTranslations();
 
   const deleteAnnouncementCallback = React.useCallback(async () => {
     return dispatch(deleteAnnouncement(announcement.id));
@@ -227,9 +263,9 @@ export default function AnnouncementCard({
         className={announcementCardStyle + ' ' + announcement.messageType}
         title={announcement.messageType}
       >
-        <Flex direction="row" align={'center'} justify="space-between" grow={1}>
+        <Flex className={announcementCardContentStyle}>
           <div className={cardTitleStyle}>{announcement.message}</div>
-          <IconButton icon={faTimes} onClick={onDismiss} />
+          <div onClick={onDismiss} className={dismissStyle}>{i18n.dismiss}</div>
         </Flex>
       </Card>
     );

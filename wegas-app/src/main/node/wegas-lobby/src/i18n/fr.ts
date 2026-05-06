@@ -13,6 +13,7 @@ export const fr: WegasTranslations = {
   formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('fr'),
   pleaseProvideData: 'Merci de remplir tous les champs',
   cancel: 'annuler',
+  dismiss: 'fermer',
   agree: 'Accepter',
   confirm: 'confirmer',
   emailAddress: 'adresse e-mail',

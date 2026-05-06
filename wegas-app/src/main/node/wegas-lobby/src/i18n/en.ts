@@ -12,6 +12,7 @@ export const en = {
   formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('en'),
   pleaseProvideData: 'Some data are missing',
   cancel: 'cancel',
+  dismiss: 'dismiss',
   agree: 'agree',
   confirm: 'confirm',
   emailAddress: 'e-mail address',
