@@ -112,13 +112,6 @@ export function GameModelAdvancedSettingsForm({ gameModel, onGameModelUpdate }: 
 
   const form1: Field<IGameModelWithId['properties']>[] = [
     {
-      type: 'text',
-      key: 'logID',
-      label: i18n.logId,
-      placeholder: i18n.logId,
-      isMandatory: false,
-    },
-    {
       type: 'boolean',
       showAs: 'checkbox',
       key: 'guestAllowed',
@@ -201,7 +194,6 @@ export default function GameModelSettings({ gameModel, onClose }: GameModelSetti
         state.gameModel.comments != gameModel.comments ||
         state.gameModel.properties.freeForAll != gameModel.properties.freeForAll ||
         state.gameModel.properties.iconUri != gameModel.properties.iconUri ||
-        state.gameModel.properties.logID != gameModel.properties.logID ||
         state.gameModel.properties.scriptUri != gameModel.properties.scriptUri ||
         state.gameModel.properties.clientScriptUri != gameModel.properties.clientScriptUri ||
         state.gameModel.properties.cssUri != gameModel.properties.cssUri ||

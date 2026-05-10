@@ -266,7 +266,6 @@ export default function GameSettings({ game, onClose }: GameSettingsProps) {
           state.gameModel.properties.cssUri !== gameModel.properties.cssUri ||
           state.gameModel.properties.guestAllowed !== gameModel.properties.guestAllowed ||
           state.gameModel.properties.clientScriptUri !== gameModel.properties.clientScriptUri ||
-          state.gameModel.properties.logID !== gameModel.properties.logID ||
           state.gameModel.properties.iconUri !== gameModel.properties.iconUri,
       );
     }

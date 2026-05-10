@@ -30,7 +30,6 @@ import com.wegas.core.persistence.variable.primitive.PrimitiveDescriptorI;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.security.util.ScriptExecutionContext;
-import com.wegas.log.xapi.Xapi;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
@@ -95,9 +94,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
 
     @Inject
     private VariableDescriptorFacade variableDescriptorFacade;
-
-    @Inject
-    private Xapi xapi;
 
     /**
      * Find a result identified by the given name belonging to the given descriptor
@@ -663,7 +659,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
                 logger.error("EventListener error (\"replyValidate\")", e);
                 // GOTCHA no eventManager is instantiated
             }
-            xapi.replyValidate(replyV);
             return reply;
         } else {
             throw WegasErrorMessage.error("This reply has already been validated");
@@ -701,8 +696,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> imple
         validateQuestion.setValidated(true);
         WhValidate whVal = new WhValidate(validateQuestion, player);
         scriptEvent.fire(player, "whValidate", whVal);
-
-        xapi.whValidate(whVal, player);
     }
 
     /**
