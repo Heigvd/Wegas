@@ -191,6 +191,17 @@ export default function AnnouncementCard({
     return new Date(epoch).toLocaleString(undefined, dateOptions);
   }, []);
 
+  const displayInterventionTimes = React.useCallback(
+    (announcement: IAnnouncementWithId) => {
+      return (
+        (announcement.messageType === 'MAINTENANCE' || announcement.messageType === 'INFO') &&
+        announcement.interventionStartTime &&
+        announcement.interventionEndTime
+      );
+    },
+    [announcement],
+  );
+
   React.useEffect(() => {
     console.log('Location', location);
     console.log('User', user);
@@ -279,13 +290,13 @@ export default function AnnouncementCard({
         <Flex className={announcementCardContentStyle}>
           <Flex direction="column">
             <div className={cardTitleStyle}>{announcement.message}</div>
-            {announcement.interventionStartTime && announcement.interventionEndTime && (
+            {displayInterventionTimes(announcement) && (
               <div className={cx(cardDetailsStyle, css({ marginTop: '10px' }))}>
                 <div>
-                  {i18n.maintenanceStart} : {formatDateCallback(announcement.interventionStartTime)}
+                  {i18n.maintenanceStart} :{formatDateCallback(announcement.interventionStartTime!)}
                 </div>
                 <div>
-                  {i18n.maintenanceEnd} : {formatDateCallback(announcement.interventionEndTime)}
+                  {i18n.maintenanceEnd} : {formatDateCallback(announcement.interventionEndTime!)}
                 </div>
               </div>
             )}
