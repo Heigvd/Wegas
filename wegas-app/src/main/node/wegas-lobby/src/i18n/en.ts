@@ -261,6 +261,8 @@ export const en = {
   locks: 'Locks',
   announcements: 'Announcements',
   createAnnouncement: 'Create new announcement',
+  maintenanceStart: 'Maintenance start',
+  maintenanceEnd: 'Maintenance end',
   gameAdmins: 'Invoicing',
   stats: 'Stats',
   createEmptyModel: 'Create an empty Model',

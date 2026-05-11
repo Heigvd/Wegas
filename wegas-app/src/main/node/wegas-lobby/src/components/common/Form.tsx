@@ -35,6 +35,7 @@ export interface BaseField<T> {
   isMandatory: boolean;
   isErroneous?: (entity: T) => boolean;
   errorMessage?: React.ReactNode;
+  showIf?: (entity: T) => boolean;
 }
 
 export interface TextualField<T> extends BaseField<T> {
@@ -149,6 +150,17 @@ export default function Form<T extends object>({
 
   let globalErroneous = false;
 
+  React.useEffect(() => {
+    fields.forEach(field => {
+      if (field.showIf && !field.showIf(state)) {
+        // Only reset if the value is currently non-null
+        if (state[field.key] != null) {
+          setState(s => ({ ...s, [field.key]: undefined }));
+        }
+      }
+    });
+  }, [fields, state]);
+
   const setFormValue = React.useCallback(
     (key: keyof T, value: unknown) => {
       // genuine hack inside: use setState as getter
@@ -201,6 +213,10 @@ export default function Form<T extends object>({
   );
 
   const fieldComps = fields.map(field => {
+    if (field.showIf && !field.showIf(state)) {
+      return null;
+    }
+
     const isErroneous = field.isErroneous != null ? field.isErroneous(state) : false;
     globalErroneous = globalErroneous || isErroneous;
     const fieldKey = `field-${field.key}`;

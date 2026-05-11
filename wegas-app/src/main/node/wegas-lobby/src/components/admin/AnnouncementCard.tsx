@@ -21,16 +21,18 @@ import CardContainer from '../common/CardContainer';
 import FitSpace from '../common/FitSpace';
 import { useLocation } from 'react-router-dom';
 import { useCurrentUser } from '../../selectors/userSelector';
-import { css } from '@emotion/css';
-import useTranslations from "../../i18n/I18nContext";
+import { css, cx } from '@emotion/css';
+import useTranslations from '../../i18n/I18nContext';
 import {
-  announcementError, announcementErrorLight,
+  announcementError,
+  announcementErrorLight,
   announcementInfo,
   announcementInfoLight,
-  announcementMaintenance, announcementMaintenanceLight,
+  announcementMaintenance,
+  announcementMaintenanceLight,
   announcementWarning,
-  announcementWarningLight
-} from "../styling/color";
+  announcementWarningLight,
+} from '../styling/color';
 
 const announcementCardStyle = css({
   ['& > div:nth-child(2)']: {
@@ -61,8 +63,8 @@ const announcementCardContentStyle = css({
   flexGrow: 1,
   gap: '10px',
   height: '100%',
-  padding: '10px 0 10px 0'
-})
+  padding: '10px 0 10px 0',
+});
 
 const dismissStyle = css({
   display: 'flex',
@@ -74,12 +76,12 @@ const dismissStyle = css({
   textTransform: 'uppercase',
   ':hover': {
     cursor: 'pointer',
-}
-})
+  },
+});
 
 export const announcementFields: Field<IAnnouncement>[] = [
   {
-    type: 'text',
+    type: 'textarea',
     label: 'Message',
     key: 'message',
     isMandatory: true,
@@ -122,6 +124,7 @@ export const announcementFields: Field<IAnnouncement>[] = [
     isMandatory: false,
     errorMessage: 'Invalid start time',
     withTime: true,
+    showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
 
     //isErroneous: (a) => isValidDate(a.displayEndTime)
   },
@@ -133,22 +136,25 @@ export const announcementFields: Field<IAnnouncement>[] = [
     isMandatory: false,
     errorMessage: 'Invalid end time',
     withTime: true,
+    showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
 
     //isErroneous: (a) => isValidDate(a.displayEndTime)
   },
 ];
 
+const dateOptions: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+};
+
 function toReadableDateTime(timestamp?: number | null): string {
   if (timestamp == undefined) {
     return '-';
   } else {
-    return new Date(timestamp).toLocaleString(undefined, {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return new Date(timestamp).toLocaleString(undefined, dateOptions);
   }
 }
 
@@ -180,6 +186,10 @@ export default function AnnouncementCard({
     },
     [],
   );
+
+  const formatDateCallback = React.useCallback((epoch: number) => {
+    return new Date(epoch).toLocaleString(undefined, dateOptions);
+  }, []);
 
   React.useEffect(() => {
     console.log('Location', location);
@@ -221,10 +231,13 @@ export default function AnnouncementCard({
                 Displayed from {toReadableDateTime(announcement.displayStartTime)} to{' '}
                 {toReadableDateTime(announcement.displayEndTime)}
               </div>
-              <div className={cardDetailsStyle}>
-                Intervened from {toReadableDateTime(announcement.interventionStartTime)} to{' '}
-                {toReadableDateTime(announcement.interventionEndTime)}
-              </div>
+              {(announcement.messageType === 'INFO' ||
+                announcement.messageType === 'MAINTENANCE') && (
+                <div className={cardDetailsStyle}>
+                  Intervened from {toReadableDateTime(announcement.interventionStartTime)} to{' '}
+                  {toReadableDateTime(announcement.interventionEndTime)}
+                </div>
+              )}
             </Flex>
             <Flex>
               <OpenCloseModal
@@ -264,8 +277,22 @@ export default function AnnouncementCard({
         title={announcement.messageType}
       >
         <Flex className={announcementCardContentStyle}>
-          <div className={cardTitleStyle}>{announcement.message}</div>
-          <div onClick={onDismiss} className={dismissStyle}>{i18n.dismiss}</div>
+          <Flex direction="column">
+            <div className={cardTitleStyle}>{announcement.message}</div>
+            {announcement.interventionStartTime && announcement.interventionEndTime && (
+              <div className={cx(cardDetailsStyle, css({ marginTop: '10px' }))}>
+                <div>
+                  {i18n.maintenanceStart} : {formatDateCallback(announcement.interventionStartTime)}
+                </div>
+                <div>
+                  {i18n.maintenanceEnd} : {formatDateCallback(announcement.interventionEndTime)}
+                </div>
+              </div>
+            )}
+          </Flex>
+          <div onClick={onDismiss} className={dismissStyle}>
+            {i18n.dismiss}
+          </div>
         </Flex>
       </Card>
     );

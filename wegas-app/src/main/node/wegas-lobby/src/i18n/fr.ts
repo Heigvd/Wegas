@@ -263,6 +263,8 @@ export const fr: WegasTranslations = {
   locks: 'Verrous',
   announcements: 'Annonces',
   createAnnouncement: 'Créer nouvelle annonce',
+  maintenanceStart: "Début de l'intervention",
+  maintenanceEnd: "Fin de l'intervention",
   gameAdmins: 'Facturation',
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
