@@ -79,6 +79,12 @@ const dismissStyle = css({
   },
 });
 
+function isValidTimestamp(timestamp: number) {
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return false;
+  const date = new Date(timestamp);
+  return !isNaN(date.getTime());
+}
+
 export const announcementFields: Field<IAnnouncement>[] = [
   {
     type: 'textarea',
@@ -101,9 +107,9 @@ export const announcementFields: Field<IAnnouncement>[] = [
     label: 'Display Start Time',
     key: 'displayStartTime',
     isMandatory: true,
-    errorMessage: 'Invalid start time',
     withTime: true,
-    //isErroneous: (a) => isValidDate(a.displayStartTime)
+    errorMessage: 'Invalid display start time',
+    isErroneous: a => !isValidTimestamp(a.displayStartTime),
   },
   {
     type: 'date',
@@ -111,10 +117,9 @@ export const announcementFields: Field<IAnnouncement>[] = [
     label: 'Display End Time',
     key: 'displayEndTime',
     isMandatory: true,
-    errorMessage: 'Invalid end time',
     withTime: true,
-
-    //isErroneous: (a) => isValidDate(a.displayEndTime)
+    errorMessage: 'Invalid display end time',
+    isErroneous: a => !isValidTimestamp(a.displayEndTime),
   },
   {
     type: 'date',
@@ -122,11 +127,10 @@ export const announcementFields: Field<IAnnouncement>[] = [
     label: 'Intervention Start Time',
     key: 'interventionStartTime',
     isMandatory: false,
-    errorMessage: 'Invalid start time',
     withTime: true,
     showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
-
-    //isErroneous: (a) => isValidDate(a.displayEndTime)
+    errorMessage: 'Invalid intervention start time',
+    isErroneous: a => a.interventionStartTime == null || !isValidTimestamp(a.interventionStartTime),
   },
   {
     type: 'date',
@@ -134,11 +138,10 @@ export const announcementFields: Field<IAnnouncement>[] = [
     label: 'Intervention End Time',
     key: 'interventionEndTime',
     isMandatory: false,
-    errorMessage: 'Invalid end time',
     withTime: true,
     showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
-
-    //isErroneous: (a) => isValidDate(a.displayEndTime)
+    errorMessage: 'Invalid intervention end time',
+    isErroneous: a => a.interventionEndTime == null || !isValidTimestamp(a.interventionEndTime),
   },
 ];
 
