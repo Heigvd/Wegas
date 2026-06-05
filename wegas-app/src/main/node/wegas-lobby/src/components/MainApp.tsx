@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-import { css, cx } from '@emotion/css';
+import {css, cx, keyframes} from '@emotion/css';
 import { faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 import * as React from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
@@ -20,7 +20,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import Admin from './admin/Admin';
 import FitSpace from './common/FitSpace';
 import IconButton from './common/IconButton';
-import InlineLoading from './common/InlineLoading';
 import { MainMenu } from './common/Link';
 import Loading from './common/Loading';
 import Modal from './common/Modal';
@@ -42,6 +41,8 @@ import {
 } from './styling/color';
 import { fullPageStyle, fullWidthWarningBanner, mainHeaderHeight } from './styling/style';
 import TrainerTab from './trainer/TrainerTab';
+import AnnouncementCard from "./admin/AnnouncementCard";
+
 
 // A custom hook that builds on useLocation to parse
 // the query string for you.
@@ -76,9 +77,25 @@ export default function MainApp(): JSX.Element {
     }
   }, [currentUserStatus, dispatch]);
 
-  const wsStatus = useAppSelector(state => state.pusher);
+  const { wsStatus, wegasStatus, announcements } = useAppSelector(state => ({
+      wsStatus: state.pusher,
+      wegasStatus: state.wegas.apiStatus,
+      announcements: state.announcements.active.announcements,
+  }))
 
-  const wegasStatus = useAppSelector(state => state.wegas.apiStatus);
+    const criticalAnnouncements = Object.values(announcements).filter(a => {
+        const now = Date.now()
+
+        if (a.messageType === 'INCIDENT') {
+            return a
+        }
+
+        if (a.messageType === 'MAINTENANCE') {
+            if (now > a.interventionStartTime! && now < a.interventionEndTime!) {
+                return a
+            }
+        }
+    })
 
   React.useEffect(() => {
     if (wsStatus.configStatus == 'NOT_INITIALIZED') {
@@ -99,9 +116,23 @@ export default function MainApp(): JSX.Element {
           className={css({
             display: 'flex',
             alignItems: 'center',
+              flexDirection: 'column'
           })}
         >
-          <InlineLoading text={i18n.reconnecting} />
+            <div
+                className={css({
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                })}
+            >
+                <TumbleLoader />
+                <p>{i18n.reconnecting}</p>
+            </div>
+
+            {criticalAnnouncements.map(a => (
+                <AnnouncementCard key={a.id} announcement={a} />
+            ))}
         </div>
       </Overlay>
     ) : null;
@@ -162,14 +193,21 @@ export default function MainApp(): JSX.Element {
 
     let borderColor = playerColor;
 
-    if (location.pathname.startsWith('/admin')) {
-      borderColor = adminColor;
-    } else if (location.pathname.startsWith('/trainer')) {
-      borderColor = trainerColor;
-    } else if (location.pathname.startsWith('/scenarist')) {
-      borderColor = scenaristColor;
-    } else if (location.pathname.startsWith('/modeler')) {
-      borderColor = modelerColor;
+    switch (true) {
+      case location.pathname.startsWith('/player'):
+        break;
+      case location.pathname.startsWith('/trainer'):
+        borderColor = trainerColor;
+        break;
+      case location.pathname.startsWith(('/scenarist')):
+        borderColor = scenaristColor;
+        break;
+      case location.pathname.startsWith(('/modeler')):
+        borderColor = modelerColor;
+        break;
+      case location.pathname.startsWith(('/admin')):
+        borderColor = adminColor;
+        break;
     }
 
     return (
@@ -336,4 +374,32 @@ export default function MainApp(): JSX.Element {
       </Overlay>
     );
   }
+}
+
+// Animated Loader based on wegas-react one.
+// Best to make it a component once design is discussed
+const animationMoves = keyframes`
+  0%,
+  100% { box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 0);}
+  20% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 1), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 0); }
+  40% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 0), 2em 0em 0 0 rgba(0, 0, 0, 1), 0em 2em 0 0 rgba(0, 0, 0, 1), -2em 0em 0 0 rgba(0, 0, 0, 0); }
+  60% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 0), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 1), -2em 0em 0 0 rgba(0, 0, 0, 1); }
+  80% {  box-shadow: 0em -2em 0 0 rgba(0, 0, 0, 1), 2em 0em 0 0 rgba(0, 0, 0, 0), 0em 2em 0 0 rgba(0, 0, 0, 0), -2em 0em 0 0 rgba(0, 0, 0, 1); }`;
+
+const tumbleLoaderStyle = css({
+    color: '#000000',
+    fontSize: '10px',
+    margin: '2em 2em',
+    position: 'relative',
+    textIndent: '-9999em',
+    transform: 'translateZ(0)',
+    width: '2em',
+    height: '2em',
+    animationFillMode: 'both',
+    animation: `${animationMoves} 3.5s infinite ease-in-out`,
+});
+
+export function TumbleLoader() {
+    const container = React.useRef<HTMLDivElement>(null);
+    return <div ref={container} className={cx(tumbleLoaderStyle, 'wegas-loader-tumble')}></div>;
 }
