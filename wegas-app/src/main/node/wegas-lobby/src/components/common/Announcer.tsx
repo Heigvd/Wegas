@@ -46,7 +46,7 @@ export default function Announcer(): JSX.Element {
   return (
     <Flex direction="column" className={css({ padding: '5px', margin: '10px' })}>
       {sorted.map(a => (
-        <AnnouncementCard key={a.id} announcement={a} onDismiss={() => dismiss(a.id)} />
+        <AnnouncementCard key={a.id} announcement={a} onDismiss={() => dismiss(a.id)} dismissable />
       ))}
     </Flex>
   );

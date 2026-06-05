@@ -9,7 +9,8 @@
 import * as React from 'react';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import InlineLoading from '../common/InlineLoading';
-import AnnouncementCard, { announcementFields } from './AnnouncementCard';
+import AnnouncementCard from './AnnouncementCard';
+import {announcementFields} from "./AnnouncementForm";
 import { WindowedContainer } from '../common/CardContainer';
 import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import { createAnnouncement, getAllAnnouncements } from '../../API/api';

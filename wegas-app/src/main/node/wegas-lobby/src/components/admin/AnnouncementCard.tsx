@@ -6,11 +6,10 @@
  * Licensed under the MIT License
  */
 
-import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
+import { IAnnouncementWithId } from 'wegas-ts-api';
 import React from 'react';
 import { useAppDispatch } from '../../store/hooks';
 import { deleteAnnouncement, updateAnnouncement } from '../../API/api';
-import Form, { Field } from '../common/Form';
 import Flex from '../common/Flex';
 import Card from '../common/Card';
 import { faCog, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -33,6 +32,7 @@ import {
   announcementWarning,
   announcementWarningLight,
 } from '../styling/color';
+import AnnouncementForm from './AnnouncementForm'
 
 const announcementCardStyle = css({
   ['& > div:nth-child(2)']: {
@@ -79,72 +79,6 @@ const dismissStyle = css({
   },
 });
 
-function isValidTimestamp(timestamp: number) {
-  if (!Number.isFinite(timestamp) || timestamp <= 0) return false;
-  const date = new Date(timestamp);
-  return !isNaN(date.getTime());
-}
-
-export const announcementFields: Field<IAnnouncement>[] = [
-  {
-    type: 'textarea',
-    label: 'Message',
-    key: 'message',
-    isMandatory: true,
-    errorMessage: 'Need a message',
-  },
-  {
-    type: 'select',
-    label: 'Type',
-    key: 'messageType',
-    defaultValue: 'INFO',
-    values: ['INFO', 'WARNING', 'MAINTENANCE', 'INCIDENT'],
-    isMandatory: false,
-  },
-  {
-    type: 'date',
-    representation: 'timestamp',
-    label: 'Display Start Time',
-    key: 'displayStartTime',
-    isMandatory: true,
-    withTime: true,
-    errorMessage: 'Invalid display start time',
-    isErroneous: a => !isValidTimestamp(a.displayStartTime),
-  },
-  {
-    type: 'date',
-    representation: 'timestamp',
-    label: 'Display End Time',
-    key: 'displayEndTime',
-    isMandatory: true,
-    withTime: true,
-    errorMessage: 'Invalid display end time',
-    isErroneous: a => !isValidTimestamp(a.displayEndTime),
-  },
-  {
-    type: 'date',
-    representation: 'timestamp',
-    label: 'Intervention Start Time',
-    key: 'interventionStartTime',
-    isMandatory: false,
-    withTime: true,
-    showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
-    errorMessage: 'Invalid intervention start time',
-    isErroneous: a => a.interventionStartTime == null || !isValidTimestamp(a.interventionStartTime),
-  },
-  {
-    type: 'date',
-    representation: 'timestamp',
-    label: 'Intervention End Time',
-    key: 'interventionEndTime',
-    isMandatory: false,
-    withTime: true,
-    showIf: a => a.messageType === 'MAINTENANCE' || a.messageType === 'INFO',
-    errorMessage: 'Invalid intervention end time',
-    isErroneous: a => a.interventionEndTime == null || !isValidTimestamp(a.interventionEndTime),
-  },
-];
-
 const dateOptions: Intl.DateTimeFormatOptions = {
   year: 'numeric',
   month: 'numeric',
@@ -163,51 +97,25 @@ function toReadableDateTime(timestamp?: number | null): string {
 
 export default function AnnouncementCard({
   announcement,
+  dismissable = false,
   onDismiss,
 }: {
   announcement: IAnnouncementWithId;
+  dismissable?: boolean;
   onDismiss?: () => void;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const user = useCurrentUser();
   const location = useLocation();
 
-  const [editing, setEditing] = React.useState(false);
   const i18n = useTranslations();
 
   const deleteAnnouncementCallback = React.useCallback(async () => {
     return dispatch(deleteAnnouncement(announcement.id));
   }, []);
 
-  const updateAnnouncementCallback = React.useCallback(
-    async (announcement: IAnnouncementWithId) => {
-      const updated = { ...announcement };
-
-      setEditing(false);
-
-      return dispatch(updateAnnouncement({ ...updated }));
-    },
-    [],
-  );
-
   const formatDateCallback = React.useCallback((epoch: number) => {
     return new Date(epoch).toLocaleString(undefined, dateOptions);
-  }, []);
-
-  const displayInterventionTimes = React.useCallback(
-    (announcement: IAnnouncementWithId) => {
-      return (
-        (announcement.messageType === 'MAINTENANCE' || announcement.messageType === 'INFO') &&
-        announcement.interventionStartTime &&
-        announcement.interventionEndTime
-      );
-    },
-    [announcement],
-  );
-
-  React.useEffect(() => {
-    console.log('Location', location);
-    console.log('User', user);
   }, []);
 
   const getIconColor = React.useCallback(() => {
@@ -225,90 +133,90 @@ export default function AnnouncementCard({
     }
   }, [announcement.messageType]);
 
-  // Not a fan of this check
-  if (user.isAdmin && location.pathname.includes('/admin')) {
-    if (editing) {
+  const isAdmin = user.isAdmin && location.pathname.includes('/admin')
+
+  const nonAdminContent = () => {
+    if (announcement.messageType === 'MAINTENANCE') {
       return (
-        <Form
-          fields={announcementFields}
-          value={announcement}
-          onSubmit={updateAnnouncementCallback}
-        />
-      );
-    } else {
-      return (
-        <Card title={String(announcement.id)} illustration={getIconColor()}>
-          <Flex direction="row" align={'center'} justify="space-between" grow={1}>
-            <Flex direction={'column'}>
-              <div className={cardTitleStyle}>{announcement.message}</div>
-              <div className={cardDetailsStyle}>
-                Displayed from {toReadableDateTime(announcement.displayStartTime)} to{' '}
-                {toReadableDateTime(announcement.displayEndTime)}
-              </div>
-              {(announcement.messageType === 'INFO' ||
-                announcement.messageType === 'MAINTENANCE') && (
-                <div className={cardDetailsStyle}>
-                  Intervened from {toReadableDateTime(announcement.interventionStartTime)} to{' '}
-                  {toReadableDateTime(announcement.interventionEndTime)}
-                </div>
-              )}
-            </Flex>
-            <Flex>
-              <OpenCloseModal
-                icon={faCog}
-                iconTitle={announcement.message}
-                title={announcement.messageType}
-                illustration={getIconColor()}
-                showCloseButton={true}
-                route={`${announcement.id}/announcement`}
-              >
-                {close => (
-                  <FitSpace direction="column" overflow="auto">
-                    <CardContainer>
-                      <Form
-                        fields={announcementFields}
-                        value={announcement}
-                        onSubmit={async updated => {
-                          await dispatch(updateAnnouncement(updated as IAnnouncementWithId));
-                          close();
-                        }}
-                      />
-                    </CardContainer>
-                  </FitSpace>
-                )}
-              </OpenCloseModal>
-              <IconButton icon={faTrash} onClick={deleteAnnouncementCallback} />
-            </Flex>
-          </Flex>
-        </Card>
-      );
+          <div className={cx(cardDetailsStyle, css({ marginTop: '10px' }))}>
+            <div>
+              {i18n.maintenanceStart} : {formatDateCallback(announcement.interventionStartTime!)}
+            </div>
+            <div>
+              {i18n.maintenanceEnd} : {formatDateCallback(announcement.interventionEndTime!)}
+            </div>
+          </div>
+      )
     }
-  } else {
+  }
+
+  const adminContent = () => {
     return (
-      <Card
-        illustration={getIconColor()}
-        className={announcementCardStyle + ' ' + announcement.messageType}
-        title={announcement.messageType}
-      >
-        <Flex className={announcementCardContentStyle}>
-          <Flex direction="column">
-            <div className={cardTitleStyle}>{announcement.message}</div>
-            {displayInterventionTimes(announcement) && (
-              <div className={cx(cardDetailsStyle, css({ marginTop: '10px' }))}>
-                <div>
-                  {i18n.maintenanceStart} :{formatDateCallback(announcement.interventionStartTime!)}
-                </div>
-                <div>
-                  {i18n.maintenanceEnd} : {formatDateCallback(announcement.interventionEndTime!)}
-                </div>
+        <>
+          <div className={cardDetailsStyle}>
+            Displayed from {toReadableDateTime(announcement.displayStartTime)} to{' '}
+            {toReadableDateTime(announcement.displayEndTime)}
+          </div>
+          {announcement.messageType === 'MAINTENANCE' ? (
+              <div className={cardDetailsStyle}>
+                Intervened from {toReadableDateTime(announcement.interventionStartTime)} to{' '}
+                {toReadableDateTime(announcement.interventionEndTime)}
               </div>
-            )}
-          </Flex>
+          ) : null}
+        </>
+    )
+  }
+
+  const nonAdminOptions = () => {
+    if (dismissable) {
+      return (
           <div onClick={onDismiss} className={dismissStyle}>
             {i18n.dismiss}
           </div>
+      )
+    }
+  }
+
+  const adminOptions = () => {
+    return (
+        <Flex>
+          <OpenCloseModal
+              icon={faCog}
+              iconTitle={announcement.message}
+              title={announcement.messageType}
+              illustration={getIconColor()}
+              showCloseButton={true}
+              route={`${announcement.id}/announcement`}
+          >
+            {close => (
+                <FitSpace direction="column" overflow="auto">
+                  <CardContainer>
+                    <AnnouncementForm announcement={announcement} onSubmit={async updated => {
+                      await dispatch(updateAnnouncement(updated as IAnnouncementWithId));
+                      close();
+                    }} />
+                  </CardContainer>
+                </FitSpace>
+            )}
+          </OpenCloseModal>
+          <IconButton icon={faTrash} onClick={deleteAnnouncementCallback} />
+        </Flex>
+    )
+  }
+
+  return (
+      <Card
+          title={`${announcement.messageType} ${user.isAdmin ? announcement.id : ""}`}
+          illustration={getIconColor()}
+          className={announcementCardStyle + ' ' + announcement.messageType}
+      >
+        <Flex className={announcementCardContentStyle}>
+          <Flex direction="column">
+              <div className={cardTitleStyle}>{announcement.message}</div>
+              {isAdmin ? adminContent() : nonAdminContent()}
+          </Flex>
+          {isAdmin ? adminOptions() : nonAdminOptions()}
         </Flex>
       </Card>
-    );
-  }
+  )
 }
