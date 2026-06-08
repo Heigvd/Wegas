@@ -77,7 +77,7 @@ export const announcementFields: Field<IAnnouncement>[] = [
 ];
 
 export default function AnnouncementForm(
-    {announcement, onSubmit}: { announcement: IAnnouncement | IAnnouncementWithId; onSubmit: (v: IAnnouncement | IAnnouncementWithId) => Promise<void>; }
+    {announcement, onSubmit, submitLabel}: { announcement: IAnnouncement | IAnnouncementWithId; onSubmit: (v: IAnnouncement | IAnnouncementWithId) => Promise<void>; submitLabel?: string }
 ): JSX.Element {
 
     return (
@@ -85,6 +85,7 @@ export default function AnnouncementForm(
             fields={announcementFields}
             value={announcement}
             onSubmit={onSubmit}
+            submitLabel={submitLabel}
         />
     );
 }

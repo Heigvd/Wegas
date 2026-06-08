@@ -10,7 +10,7 @@ import * as React from 'react';
 import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import InlineLoading from '../common/InlineLoading';
 import AnnouncementCard from './AnnouncementCard';
-import {announcementFields} from "./AnnouncementForm";
+import AnnouncementForm from "./AnnouncementForm";
 import { WindowedContainer } from '../common/CardContainer';
 import { IAnnouncement, IAnnouncementWithId } from 'wegas-ts-api';
 import { createAnnouncement, getAllAnnouncements } from '../../API/api';
@@ -23,7 +23,6 @@ import FitSpace from '../common/FitSpace';
 import { panelPadding } from '../styling/style';
 import DropDownPanel from '../common/DropDownPanel';
 import { css } from '@emotion/css';
-import Form from '../common/Form';
 
 interface CreateAnnouncementProps {
   close: () => void;
@@ -51,11 +50,10 @@ function CreateAnnouncement({ close }: CreateAnnouncementProps): JSX.Element {
   return (
     <FitSpace direction="column" className={css({ minWidth: '400px', paddingBottom: '20px' })}>
       <h3>{i18n.announcements}</h3>
-      <Form
-        fields={announcementFields}
-        value={announcement}
-        onSubmit={a => createAnnouncementCallback(a)}
-        submitLabel={i18n.create}
+      <AnnouncementForm
+          announcement={announcement}
+          onSubmit={a => createAnnouncementCallback(a)}
+          submitLabel={i18n.create}
       />
     </FitSpace>
   );
@@ -104,11 +102,13 @@ export default function Announcements(): JSX.Element {
             setViewMode('COLLAPSED');
           }}
         >
-          <CreateAnnouncement
-            close={() => {
-              setViewMode('COLLAPSED');
-            }}
-          />
+          {viewMode === 'EXPANDED' ? // Move it into dropdown panel?
+            (<CreateAnnouncement
+              close={() => {
+                setViewMode('COLLAPSED');
+              }}
+            />) : null
+          }
         </DropDownPanel>
         <FitSpace direction="column" overflow="auto" className={panelPadding}>
           <Flex
