@@ -21,6 +21,7 @@ import Form, { Field } from '../common/Form';
 import { InlineLink } from '../common/Link';
 import MelonContainer from '../common/MelonContainer';
 import PolicyDisclaimer from './PolicyDisclaimer';
+import Announcer from "../common/Announcer";
 
 interface Props {
   redirectTo: string | null;
@@ -111,6 +112,7 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
   return (
     <>
       <MelonContainer
+        top={<Announcer />}
         below={
           <Flex justify="space-evenly">
             {showEduIdButton ? (

@@ -85,6 +85,20 @@ public class Announcement extends AbstractEntity {
         return WegasMembership.ADMIN;
     }
 
+    /**
+     * Active announcements are publicly readable (e.g. on the login page, before any user logs in).
+     * Inactive/expired ones still require Administrator membership to be read.
+     * <p>
+     * Returning {@code null} means "no permission required"; see {@link AbstractEntity}.
+     */
+    @Override
+    public Collection<WegasPermission> getRequieredReadPermission(RequestManager.RequestContext context) {
+        Date now = new Date();
+        boolean active = displayStartTime != null && displayStartTime.before(now)
+                && displayEndTime != null && displayEndTime.after(now);
+        return active ? null : WegasMembership.ADMIN;
+    }
+
     @Override
     public WithPermission getMergeableParent() {
         return null;
