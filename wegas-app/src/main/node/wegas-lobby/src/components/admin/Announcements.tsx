@@ -102,13 +102,11 @@ export default function Announcements(): JSX.Element {
             setViewMode('COLLAPSED');
           }}
         >
-          {viewMode === 'EXPANDED' ? // Move it into dropdown panel?
-            (<CreateAnnouncement
-              close={() => {
-                setViewMode('COLLAPSED');
-              }}
-            />) : null
-          }
+          <CreateAnnouncement
+            close={() => {
+              setViewMode('COLLAPSED');
+            }}
+          />
         </DropDownPanel>
         <FitSpace direction="column" overflow="auto" className={panelPadding}>
           <Flex
