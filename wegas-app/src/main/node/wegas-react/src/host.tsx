@@ -17,43 +17,50 @@ import './data/Stores/store';
 import { PageContextProvider } from './Editor/Components/Page/PageEditor';
 import HostLayout from './Host/HostLayout';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
+import { store } from "./store/store";
+import { Provider } from "react-redux";
+import { ErrorBoundary } from "./Components/ErrorBoundary";
 
 importPageComponents();
 
 function mount() {
   const root = createRoot(document.getElementById('root')!);
   root.render(
-    <AuthorizationProvider>
-      <FeaturesProvider>
-        <FullscreenProvider>
-          <ServerStatusManager>
-            <LanguagesProvider>
-              <ClassesProvider>
-                <LibrariesLoader>
-                  <ThemeProvider contextName="trainer">
-                    <PopupManager>
-                      <DefaultDndProvider>
-                        <PageContextProvider>
-                          <EventInstanceManager>
-                            <HostLayout />
-                          </EventInstanceManager>
-                        </PageContextProvider>
-                      </DefaultDndProvider>
-                    </PopupManager>
-                  </ThemeProvider>
-                </LibrariesLoader>
-              </ClassesProvider>
-            </LanguagesProvider>
-          </ServerStatusManager>
-        </FullscreenProvider>
-      </FeaturesProvider>
-    </AuthorizationProvider>,
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AuthorizationProvider>
+          <FeaturesProvider>
+            <FullscreenProvider>
+              <ServerStatusManager>
+                <LanguagesProvider>
+                  <ClassesProvider>
+                    <LibrariesLoader>
+                      <ThemeProvider contextName="trainer">
+                        <PopupManager>
+                          <DefaultDndProvider>
+                            <PageContextProvider>
+                              <EventInstanceManager>
+                                <HostLayout />
+                              </EventInstanceManager>
+                            </PageContextProvider>
+                          </DefaultDndProvider>
+                        </PopupManager>
+                      </ThemeProvider>
+                    </LibrariesLoader>
+                  </ClassesProvider>
+                </LanguagesProvider>
+              </ServerStatusManager>
+            </FullscreenProvider>
+          </FeaturesProvider>
+        </AuthorizationProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 mount();
 
-if (module.hot) {
-  module.hot.accept('./Host/HostLayout', () => {
-    mount();
-  });
-}
+// if (module.hot) {
+//   module.hot.accept('./Host/HostLayout', () => {
+//     mount();
+//   });
+// }

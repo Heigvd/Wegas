@@ -15,50 +15,53 @@ import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
 import './data/Stores/store';
-import { ErrorBoundary } from './Editor/Components/ErrorBoundary';
+import { ErrorBoundary } from './Components/ErrorBoundary';
 import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
-// import { LibrariesLoader } from './Editor/Components/LibrariesLoader';
+import { store } from "./store/store";
+import { Provider } from "react-redux";
 
 importPageComponents();
 
 function mount() {
   const root = createRoot(document.getElementById('root')!);
   root.render(
-  <ErrorBoundary>
-    <AuthorizationProvider>
-      <FeaturesProvider>
-        <FullscreenProvider>
-          <ServerStatusManager>
-            <LanguagesProvider>
-              <ClassesProvider>
-                <LibrariesLoader>
-                  <RoleProvider>
-                    <ThemeProvider contextName="editor">
-                      <PopupManager>
-                        <ModalProvider>
-                          <EventInstanceManager>
-                            <Layout />
-                          </EventInstanceManager>
-                        </ModalProvider>
-                      </PopupManager>
-                    </ThemeProvider>
-                  </RoleProvider>
-                </LibrariesLoader>
-              </ClassesProvider>
-            </LanguagesProvider>
-          </ServerStatusManager>
-        </FullscreenProvider>
-      </FeaturesProvider>
-    </AuthorizationProvider>
-  </ErrorBoundary>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AuthorizationProvider>
+          <FeaturesProvider>
+            <FullscreenProvider>
+              <ServerStatusManager>
+                <LanguagesProvider>
+                  <ClassesProvider>
+                    <LibrariesLoader>
+                      <RoleProvider>
+                        <ThemeProvider contextName="editor">
+                          <PopupManager>
+                            <ModalProvider>
+                              <EventInstanceManager>
+                                <Layout />
+                              </EventInstanceManager>
+                            </ModalProvider>
+                          </PopupManager>
+                        </ThemeProvider>
+                      </RoleProvider>
+                    </LibrariesLoader>
+                  </ClassesProvider>
+                </LanguagesProvider>
+              </ServerStatusManager>
+            </FullscreenProvider>
+          </FeaturesProvider>
+        </AuthorizationProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 mount();
 
-if (module.hot) {
-  module.hot.accept('./Editor/Components/Layout', () => {
-    mount();
-  });
-}
+// if (module.hot) {
+//   module.hot.accept('./Editor/Components/Layout', () => {
+//     mount();
+//   });
+// }

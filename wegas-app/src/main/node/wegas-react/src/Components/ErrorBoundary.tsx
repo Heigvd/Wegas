@@ -1,8 +1,15 @@
 import * as React from 'react';
-import { Button } from '../../Components/Inputs/Buttons/Button';
-import { wwarn } from '../../Helper/wegaslog';
-// https://reactjs.org/docs/error-boundaries.html
+import { Button } from './Inputs/Buttons/Button';
+import { wwarn } from '../Helper/wegaslog';
 
+/**
+ * 12.06.2026
+ * React still has no hooks or function-component error boundary.
+ * getDerivedStateFromError and componentDidCatch are class-only lifecycle methods,
+ * and that hasn't changed through React 18/19
+ *
+ * https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
+ */
 export class ErrorBoundary extends React.Component<
   { children?: React.ReactNode },
   { hasError: boolean }

@@ -15,33 +15,40 @@ import './data/Stores/store';
 import { Player } from './Editor/Components/Player';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 import { PopupManager } from './Components/PopupManager';
+import { store } from './store/store'
+import { Provider } from 'react-redux'
+import { ErrorBoundary } from "./Components/ErrorBoundary";
 
 importPageComponents();
 
 function mount() {
   const root = createRoot(document.getElementById('root')!);
   root.render(
-    <AuthorizationProvider>
-      <FeaturesProvider>
-        <FullscreenProvider>
-          <ServerStatusManager>
-            <LanguagesProvider>
-              <ClassesProvider>
-                <PlayerLibrariesLoader>
-                  <ThemeProvider contextName="player">
-                    <PopupManager>
-                      <EventInstanceManager>
-                        <Player />
-                      </EventInstanceManager>
-                    </PopupManager>
-                  </ThemeProvider>
-                </PlayerLibrariesLoader>
-              </ClassesProvider>
-            </LanguagesProvider>
-          </ServerStatusManager>
-        </FullscreenProvider>
-      </FeaturesProvider>
-    </AuthorizationProvider>,
+    <ErrorBoundary>
+      <Provider store={store}>
+        <AuthorizationProvider>
+          <FeaturesProvider>
+            <FullscreenProvider>
+              <ServerStatusManager>
+                <LanguagesProvider>
+                  <ClassesProvider>
+                    <PlayerLibrariesLoader>
+                      <ThemeProvider contextName="player">
+                        <PopupManager>
+                          <EventInstanceManager>
+                            <Player />
+                          </EventInstanceManager>
+                        </PopupManager>
+                      </ThemeProvider>
+                    </PlayerLibrariesLoader>
+                  </ClassesProvider>
+                </LanguagesProvider>
+              </ServerStatusManager>
+            </FullscreenProvider>
+          </FeaturesProvider>
+        </AuthorizationProvider>
+      </Provider>
+    </ErrorBoundary>
   );
 }
 
