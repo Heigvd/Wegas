@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import u from 'immer';
+import { produce } from 'immer';
 import * as React from 'react';
 import {
   INumberDescriptor,
@@ -144,7 +144,7 @@ export default function PeerReviewVariableEditor({
         editingStore.dispatch(
           liveEdition(
             `private-Team-${Team.selectCurrent().id!}`,
-            u((variable: INumberInstance | ITextInstance) => {
+            produce((variable: INumberInstance | ITextInstance) => {
               if (entityIs(variable, 'NumberInstance')) {
                 variable.value = Number(val);
               } else {

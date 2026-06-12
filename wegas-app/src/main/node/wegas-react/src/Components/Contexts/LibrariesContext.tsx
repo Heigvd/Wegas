@@ -1,5 +1,5 @@
 import { useMonaco } from '@monaco-editor/react';
-import u from 'immer';
+import { produce } from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
@@ -367,7 +367,7 @@ const setLibrariesState = (
   oldState: LibrariesState,
   action: LibraryStateAction,
 ) =>
-  u(oldState, newState => {
+  produce(oldState, newState => {
     contextLogger.info(action.actionType);
     switch (action.actionType) {
       case 'SetUpLibrariesState': {

@@ -1,6 +1,6 @@
 import { parse } from '@babel/parser';
 import { css, cx } from '@emotion/css';
-import u from 'immer';
+import { produce } from 'immer';
 import { isArray } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -1165,7 +1165,7 @@ export function TranslationEditor() {
         editedTranslations,
         updateTranslations: translationObject => {
           setEditedTranslations(oet =>
-            u(oet, oet => {
+            produce(oet, oet => {
               if (translationObject.value == null) {
                 if (translationObject['@class'] === 'TranslationUpdate') {
                   delete oet[translationObject.code].TranslationUpdate[
@@ -1201,7 +1201,7 @@ export function TranslationEditor() {
         },
         resetLanguage: code => {
           setEditedTranslations(oet =>
-            u(oet, oet => {
+            produce(oet, oet => {
               oet[code] = { TranslationUpdate: {}, InScriptUpdate: {} };
               return oet;
             }),

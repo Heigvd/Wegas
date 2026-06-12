@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
 import { ITeam } from 'wegas-ts-api';
@@ -14,7 +14,7 @@ export interface TeamState {
 /**
  * Reducer for Teams
  */
-const teams: Reducer<Readonly<TeamState>> = u(
+const teams: Reducer<Readonly<TeamState>> = produce(
   (state: TeamState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {

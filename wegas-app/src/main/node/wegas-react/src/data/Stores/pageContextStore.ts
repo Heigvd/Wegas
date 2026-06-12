@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import * as React from 'react';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
@@ -34,7 +34,7 @@ export interface PagesContextState {
   };
 }
 
-const pagesContextStateReducer: Reducer<Readonly<PagesContextState>> = u(
+const pagesContextStateReducer: Reducer<Readonly<PagesContextState>> = produce(
   (state: PagesContextState, action: PagesContextActions) => {
     switch (action.type) {
       case 'CONTEXT_SET': {
@@ -54,7 +54,7 @@ const pagesContextStateReducer: Reducer<Readonly<PagesContextState>> = u(
     }
     return state;
   },
-  { context: {}, state: {} },
+  { reloading: false, context: {}, state: {} },
 );
 
 const composeEnhancers: typeof compose =

@@ -1,5 +1,5 @@
 import { compare } from 'fast-json-patch';
-import u from 'immer';
+import { produce } from 'immer';
 import { Reducer } from 'redux';
 import { PageAPI } from '../../API/pages.api';
 import { getItemFromPath, isPageItem } from '../../Helper/pages';
@@ -10,7 +10,7 @@ import { ThunkResult } from '../Stores/store';
 
 export type PageState = Readonly<AllPages>;
 
-const pageState: Reducer<Readonly<AllPages>> = u(
+const pageState: Reducer<Readonly<AllPages>> = produce(
   (state: AllPages, action: StateActions) => {
     switch (action.type) {
       case ActionType.PAGE_FETCH:
@@ -23,7 +23,7 @@ const pageState: Reducer<Readonly<AllPages>> = u(
         break;
     }
   },
-  {},
+  {} as AllPages,
 );
 export default pageState;
 

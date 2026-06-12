@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
 import { createStoreConnector } from '../connectStore';
@@ -19,7 +19,7 @@ const composeEnhancers: typeof compose =
 /**
  * Reducer for edition's state
  *
- * @param {any} [state=u({}, { currentGameModelId: CurrentGM.id })]
+ * @param {any} [state=produce({}, { currentGameModelId: CurrentGM.id })]
  * @param {StateActions} action
  * @returns {Readonly<EditingState>}
  */

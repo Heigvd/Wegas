@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { FocusedComponent } from '../../Editor/Components/Page/PageEditor';
@@ -28,7 +28,7 @@ interface PagesState {
   focusedComponent?: FocusedComponent;
 }
 
-const pagesStateReducer: Reducer<Readonly<PagesState>> = u(
+const pagesStateReducer: Reducer<Readonly<PagesState>> = produce(
   (state: PagesState, action: PagesActions) => {
     switch (action.type) {
       case 'COMPONENT_SET_FOCUSED': {

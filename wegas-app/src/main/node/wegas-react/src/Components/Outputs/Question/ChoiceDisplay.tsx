@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import produce from 'immer';
+import { produce } from 'immer';
 import * as React from 'react';
 import { IChoiceDescriptor, ISingleResultChoiceDescriptor } from 'wegas-ts-api';
 import {

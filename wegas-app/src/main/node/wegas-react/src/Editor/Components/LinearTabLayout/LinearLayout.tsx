@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
@@ -688,7 +688,7 @@ type TabLayoutsAction =
 const setLayout =
   (layoutId: string, role: string, rolesId: string) =>
   <T extends ManagedLayoutMap>(layouts: T, action: TabLayoutsAction) =>
-    u(layouts, (layouts: ManagedLayoutMap) => {
+    produce(layouts, (layouts: ManagedLayoutMap) => {
       if (action.type === 'RESET') {
         saveLayoutInLocal(layoutId, rolesId, role, action.newLayout);
         return action.newLayout;

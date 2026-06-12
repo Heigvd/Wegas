@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { cloneDeep } from 'lodash';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
 import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
@@ -79,7 +79,7 @@ type ThemeActions<
   A extends keyof typeof themeActionCreator = keyof typeof themeActionCreator,
 > = ReturnType<typeof themeActionCreator[A]>;
 
-const themeStateReducer: Reducer<Readonly<ThemesState>, ThemeActions> = u(
+const themeStateReducer: Reducer<Readonly<ThemesState>, ThemeActions> = produce(
   (state: ThemesState, action: ThemeActions) => {
     switch (action.type) {
       case 'GET_ALL_THEMES': {

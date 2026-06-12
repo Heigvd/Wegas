@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash';
 import { Reducer } from 'redux';
 import { IScript, IUser, WegasClassNames } from 'wegas-ts-api';
@@ -176,11 +176,11 @@ const defaultGlobalState: GlobalState = {
 /**
  * Reducer for editor's state
  *
- * @param {any} [state=u({}, { currentGameModelId: CurrentGM.id })]
+ * @param {any} [state=produce({}, { currentGameModelId: CurrentGM.id })]
  * @param {StateActions} action
  * @returns {Readonly<GlobalState>}
  */
-const global: Reducer<Readonly<GlobalState>> = u(
+const global: Reducer<Readonly<GlobalState>> = produce(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
       case ActionType.PAGE_ERROR:

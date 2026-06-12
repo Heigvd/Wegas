@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import produce from 'immer';
+import { produce } from 'immer';
 import * as React from 'react';
 import {
   IAbstractEntity,

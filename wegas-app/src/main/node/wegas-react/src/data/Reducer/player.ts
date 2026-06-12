@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
 import { IPlayer } from 'wegas-ts-api';
@@ -11,7 +11,7 @@ export interface PlayerState {
 /**
  * Reducer for Players
  */
-const players: Reducer<Readonly<PlayerState>> = u(
+const players: Reducer<Readonly<PlayerState>> = produce(
   (state: PlayerState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {

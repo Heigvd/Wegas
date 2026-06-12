@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { Reducer } from 'redux';
 import { StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
@@ -21,7 +21,7 @@ export type InitState = Record<InitStateKey, boolean>;
 /**
  * Reducer for Players
  */
-const initStatuses: Reducer<Readonly<InitState>> = u(
+const initStatuses: Reducer<Readonly<InitState>> = produce(
   (state: InitState, action: StateActions) => {
     switch (action.type) {
       case ActionType.INIT_STATE_SET: {
