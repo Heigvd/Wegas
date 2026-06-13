@@ -32,7 +32,7 @@ interface PlayerPageLoaderProps
 
 const defaultPageAsScript = () =>
   createScript(
-    JSON.stringify(store.getState().pages.index.defaultPageId),
+    JSON.stringify(store.getState().pages.index?.defaultPageId ?? ''),
     'TypeScript',
   );
 

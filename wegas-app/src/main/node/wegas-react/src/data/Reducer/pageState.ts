@@ -23,7 +23,7 @@ const pageState: Reducer<Readonly<AllPages>> = produce(
         break;
     }
   },
-  {} as AllPages,
+  { },
 );
 export default pageState;
 

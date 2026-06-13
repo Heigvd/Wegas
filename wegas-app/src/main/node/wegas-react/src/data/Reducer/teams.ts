@@ -31,10 +31,10 @@ const teams: Reducer<Readonly<TeamState>> = produce(
     }
     return state;
   },
-  (CurrentGame.teams || {}).reduce((prev, t) => {
+  (CurrentGame.teams || {}).reduce<TeamState>((prev, t) => {
     prev[t.id!] = t;
     return prev;
-  }, {} as TeamState),
+  }, {} ),
 );
 export default teams;
 

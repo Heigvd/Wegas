@@ -41,9 +41,9 @@ export default function PageSelect({
   );
 
   const pageItem =
-    value == null
+    value == null || index == undefined
       ? undefined
-      : (getPageIndexItem(index, value) as PageIndexItem);
+      : getPageIndexItem(index, value);
 
   return (
     <CommonViewContainer view={view} errorMessage={errorMessage}>
