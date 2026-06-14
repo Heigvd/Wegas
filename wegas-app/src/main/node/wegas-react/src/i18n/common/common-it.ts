@@ -76,4 +76,9 @@ export const commonTranslationsIT: CommonTranslations = {
     androidSettingsHint: (navigator: string) => `Controllare le impostazioni del proprio smartphone/tablet (Impostazioni / Applicazioni / ${ navigator
 } / Autorizzazioni / Fotocamera`
   },
+  announcements: {
+    maintenanceStart: 'Inizio manutenzione',
+    maintenanceEnd: 'Fine manutenzione'
+  },
+  dismiss: 'Ignora'
 };

@@ -67,5 +67,10 @@ export interface CommonTranslations {
     tabSetting: string;
     iOSSettingsHint: (navigator: string) => string;
     androidSettingsHint: (navigator: string) => string;
-  }
+  };
+  announcements: {
+    maintenanceStart: string;
+    maintenanceEnd: string;
+  };
+  dismiss: string;
 }

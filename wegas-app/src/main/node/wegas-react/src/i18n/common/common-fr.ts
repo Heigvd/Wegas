@@ -75,4 +75,9 @@ export const commonTranslationsFR: CommonTranslations = {
     iOSSettingsHint: (navigator: string) => `Vérifiez les réglages de votre iPad/iPhone (Réglages / ${navigator})`,
     androidSettingsHint: (navigator: string) => `Vérifiez les réglages de votre téléphone/tablette (Paramètres / Applications / ${navigator} / Autorisations / Appareil Photo`
   },
+  announcements: {
+    maintenanceStart: "Début de l'intervention",
+    maintenanceEnd: "Fin de l'intervention",
+  },
+  dismiss: 'fermer'
 };
