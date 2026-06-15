@@ -12,7 +12,7 @@ import { css } from '@emotion/css';
 import { AnnouncementCard } from "./AnnouncementCard";
 import { Flex } from "../Flex";
 
-const announcerStyle = css({padding: '5px', margin: '10px'})
+const announcerStyle = css({ width: '100%', padding: '20px', margin: '10px' })
 
 /**
  * Announcer component will display, based on critical prop, AnnouncementCards.

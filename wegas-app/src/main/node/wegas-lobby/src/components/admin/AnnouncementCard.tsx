@@ -35,6 +35,10 @@ import {
 import AnnouncementForm from './AnnouncementForm'
 
 const announcementCardStyle = css({
+  width: '100%',
+  minWidth: '300px',
+  maxWidth: '900px',
+  margin: '6px 0px',
   ['& > div:nth-child(2)']: {
     height: '100%',
   },

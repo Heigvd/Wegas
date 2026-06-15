@@ -69,7 +69,7 @@ export const lightMode = cx(
 const cardStyle = cx(
   lightMode,
   css({
-    width: '900px',
+    width: '100%',
     display: 'flex',
     backgroundColor: 'var(--bgColor)',
     margin: '6px auto',
@@ -100,6 +100,8 @@ const cardTitleStyle = css({
 });
 
 const announcementCardStyle = css({
+  minWidth: '300px',
+  maxWidth: '900px',
   ['& > div:nth-child(2)']: {
     height: '100%',
   },

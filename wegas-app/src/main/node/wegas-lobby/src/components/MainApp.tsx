@@ -41,7 +41,8 @@ import {
 } from './styling/color';
 import { fullPageStyle, fullWidthWarningBanner, mainHeaderHeight } from './styling/style';
 import TrainerTab from './trainer/TrainerTab';
-import AnnouncementCard from "./admin/AnnouncementCard";
+import Announcer from "./common/Announcer";
+import { FloatingLayer } from './common/FloatingLayer'
 
 
 // A custom hook that builds on useLocation to parse
@@ -77,25 +78,10 @@ export default function MainApp(): JSX.Element {
     }
   }, [currentUserStatus, dispatch]);
 
-  const { wsStatus, wegasStatus, announcements } = useAppSelector(state => ({
+  const { wsStatus, wegasStatus } = useAppSelector(state => ({
       wsStatus: state.pusher,
       wegasStatus: state.wegas.apiStatus,
-      announcements: state.announcements.active.announcements,
   }))
-
-    const criticalAnnouncements = Object.values(announcements).filter(a => {
-        const now = Date.now()
-
-        if (a.messageType === 'INCIDENT') {
-            return a
-        }
-
-        if (a.messageType === 'MAINTENANCE') {
-            if (now > a.interventionStartTime! && now < a.interventionEndTime!) {
-                return a
-            }
-        }
-    })
 
   React.useEffect(() => {
     if (wsStatus.configStatus == 'NOT_INITIALIZED') {
@@ -111,30 +97,31 @@ export default function MainApp(): JSX.Element {
 
   const reconnecting =
     wegasStatus === 'DOWN' ? (
-      <Overlay>
-        <div
-          className={css({
-            display: 'flex',
-            alignItems: 'center',
-              flexDirection: 'column'
-          })}
-        >
-            <div
-                className={css({
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px'
-                })}
-            >
-                <TumbleLoader />
-                <p>{i18n.reconnecting}</p>
-            </div>
-
-            {criticalAnnouncements.map(a => (
-                <AnnouncementCard key={a.id} announcement={a} />
-            ))}
-        </div>
-      </Overlay>
+      <>
+        <FloatingLayer>
+          <Announcer critical={true} />
+        </FloatingLayer>
+        <Overlay>
+          <div
+            className={css({
+              display: 'flex',
+              alignItems: 'center',
+                flexDirection: 'column'
+            })}
+          >
+              <div
+                  className={css({
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px'
+                  })}
+              >
+                  <TumbleLoader />
+                  <p>{i18n.reconnecting}</p>
+              </div>
+          </div>
+        </Overlay>
+      </>
     ) : null;
 
   const query = useQuery();
