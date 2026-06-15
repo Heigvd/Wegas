@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Define variables with default fallbacks
+WEGAS_PROPERTIES="${WEGAS_PROPERTIES:-./src/main/resources/wegas-override.properties}"
+DEFAULT_WEGAS_PROPERTIES="./src/main/resources/default_wegas.properties"
+
+echo "Wegas properties initialization process..."
+
+# Check if the override properties file already exists
+if [ -e "${WEGAS_PROPERTIES}" ]; then
+    echo " -> ${WEGAS_PROPERTIES} already exists. Doing nothing."
+else
+    # No wegas-override -> create it from the default properties
+    echo " -> Creating ${WEGAS_PROPERTIES} from default properties..."
+    
+    # Optional: ensure the destination directory exists before copying
+    mkdir -p "$(dirname "${WEGAS_PROPERTIES}")"
+    
+    cp "${DEFAULT_WEGAS_PROPERTIES}" "${WEGAS_PROPERTIES}"
+    echo " -> Creation successful."
+fi

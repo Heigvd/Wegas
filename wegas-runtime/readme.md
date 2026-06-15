@@ -1,52 +1,84 @@
 # Running Wegas
 
+For Wegas to run, you will need:
+* Java 17 and maven
+* Node 24 and yarn
+* Docker (PostgreSQL and MongoDB will run in containers)
+* A Pusher account
+
+
 ## Install tools
-### Mac OS
+
+### MacOS with Homebrew
+
+#### Install brew  
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
-#Install brew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
-#Install OpenJDK 17
-brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk17
-or
-brew install --cask adoptopenjdk17
 
-#Install node
-brew install node
-
-#Install yarn
-brew install yarn
-
-#Install maven
+#### Install Java 17 and maven
+```shell
+brew install --cask temurin@17
 brew install maven
+```
 
-#Install docker
-brew cask install docker
+If you don't manage several Java versions, you might want to set the JAVA_HOME env var in your `.zshrc`:
+```shell
+export JAVA_HOME=$(/usr/libexec/java_home -v 17)
+```
+
+#### Install Node (via nvm) and yarn
+
+```shell
+brew install nvm
+brew install yarn
+nvm install 24
+```
+
+I recommend using nvm to easily be able to manage/switch Node versions, but you can directly install the Node version you need without nvm.
+
+#### Install Docker or Docker desktop
+```shell
+brew install docker
+```
 or
-brew install --cask docker
-#Press ⌘ + Space to bring up Spotlight Search and enter "Docker" to launch Docker
+```shell
+brew install --cask docker-desktop
 ```
 
 ## Install services
 
 ### PostgreSQL
 
-#### Install
-```shell
-docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:14-alpine 
-```
-
-##### 2
+#### One line installation
 ```shell
 docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=1234 -e POSTGRES_USER=user -e POSTGRES_DB=wegas_dev --name wegas_postgres -d postgres:14-alpine 
 ```
 
+In this case, the user will already be created and the credentials correspond to the defaults in the config file. There is no database for testing.
+
+You can change `POSTGRES_USER` and `POSTGRES_PASSWORD` as you want but you will need to update the env vars used by the app.
+
+#### Basic installation (needs configuration)
+```shell
+docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=<YOUR_PASSWORD> --name wegas_postgres -d postgres:14-alpine 
+```
+
 #### Configure
+If you did the "One Line Installation", you can ignore this or take the parts you need.
+
 ```shell
 echo "CREATE USER \"user\" WITH PASSWORD '1234' SUPERUSER;
 CREATE DATABASE \"wegas_dev\" OWNER \"user\";
 CREATE DATABASE \"wegas_test\" OWNER \"user\";" |  docker exec -it wegas_postgres psql -U postgres
+```
+
+#### Environment Variables
+If you modified the user/password during Postgres configuration, don't forget to set the following environment variables with your values:
+```
+DB_USER
+DB_PASSWORD
 ```
 
 ### Jackrabbit backend (MongoDB)
@@ -55,29 +87,31 @@ CREATE DATABASE \"wegas_test\" OWNER \"user\";" |  docker exec -it wegas_postgre
 docker run -p 27017:27017 --name wegas_mongo -d mongo:4.2
 ```
 
+## Configuration
+
+At this point, you can run `./configure`. The script will create a `wegas-override.properties` file in `/src/main/resources`. It is also created when missing by the `run` script.
+
+### Pusher
+
+1. Go to [Pusher](https://dashboard.pusher.com/accounts/sign_in) and sign in/create an account.
+
+2. In [Channels](https://dashboard.pusher.com/channels), create a new app.
+
+3. Go to your app "App keys" and transfer the information to the `wegas-override.properties` file.
+
 ## Build
 ```shell
 mvn -f .. -DskipTests install
 ```
 
 ### Java 17
-If your default JVM is <> 17, you must provide the path to a JVM-17 to maven. E.G:
+If your default JVM is not 17, you must provide the path to a JVM-17 to maven. E.G:
 ```shell
-JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64/" mvn -DskipTests install
+JAVA_HOME="<path/to/java17>" mvn -DskipTests install
 ```
-If this fails, remove the HOME_PATH from .mavenrc (leave it blank) so it defaults to the JVM-17 path.
-
-#### Mac setup
-If the above doesn't work, try the following to add java to your `$PATH`
 
 
-Either set your `$PATH` by editing your `.zshrc` (or `.bashrc` depending on the shell you are using). Add the following line
 
-```
-export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
-```
-Or alternatively, add a file (file name is irrelevant) in `/etc/paths.d` containing the path to java e.g. `/opt/homebrew/opt/openjdk@17/bin`  
-All the files in this directory are automatically added to the `$PATH`.
 ## Test
 
 ### Private access
@@ -101,26 +135,25 @@ Run `./run` to start wegas.
 Wegas is designed to run on Java 17. If your default JVM is lower or higher than 17, you must provide the path to a JVM 17 using the -j option.
 
 #### Options
-Option | Default Value | Description 
------- | ------------- | -----------
--d | 1 | number of populating daemon
--g | *unset* | to enable debug mode
--j | /usr/bin/ | path of the java executable
--m | 2G | heap size
--p | 9009 | debug port
--t | 9 | number of http threads
--w | ../wegas-app/target/Wegas | war to deploy
+Option | Env Var | Description | Default Value
+-- | - | - | -
+-c | CLUSTER_MODE | Datagrid discovery mode | DEFAULT
+-d |  | Debug mode | 
+-g | GC | Garbage collector ZGC or G1GC | G1GC
+-s | DB_HOST | PostgreSQL host | localhost
+-i | INTERFACES | Datagrid discovery interface | 127.0.0.1
+-j | JAVA_HOME | Java path | None (Inherited from environment)
+-m | HEAP | Heap size | 2G
+-n | NB_POPULATORS | Number of populating daemons | 1
+-p | DEBUG_PORT | Debug port | 9009
+-t | NB_THREADS | Number of HTTP threads | 9
+-w | THE_WAR | WAR path | ../wegas-app/target/Wegas
 
 #### Clustering
 Running several instance (localhost) at the same time will automatically create a cluster.
-
-#### Custom Properties
-First run creates `src/main/resources/wegas-override.properties` file.
-Feel free to modify it.
 
 #### Reload after wegas-core changes
 ```
 mvn -f .. -pl wegas-app -am -DskipTests -DskipYarn install
 touch ../wegas-app/target/Wegas/.reload
 ```
-
