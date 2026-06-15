@@ -7,6 +7,7 @@
  */
 package com.wegas.core.i18n.deepl;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class DeeplTranslations {
         this.translations = translations;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static final class DeeplTranslation {
 
         private String text;

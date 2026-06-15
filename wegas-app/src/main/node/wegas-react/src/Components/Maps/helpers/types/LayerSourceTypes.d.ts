@@ -47,6 +47,7 @@ interface VectorLayerSourceObject {
   source: IScript | string;
   sourceProjection?: string;
   useSpatialIndex?: boolean;
+  isSourceZipped?: boolean;
 }
 
 type LayerSourceObject =

@@ -3,7 +3,11 @@ import u from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
-import { ILibraries, LibraryAPI, ServerLibraryType } from '../../API/library.api';
+import {
+  ILibraries,
+  LibraryAPI,
+  ServerLibraryType,
+} from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
 import { ActionCreator, manageResponseHandler } from '../../data/actions';

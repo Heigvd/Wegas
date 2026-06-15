@@ -5,8 +5,7 @@
   "workspaces": [
     "src/main/node/wegas-lobby",
     "src/main/node/wegas-react",
-    "src/main/node/wegas-react-form",
-    "src/main/node/wegas-stats"
+    "src/main/node/wegas-react-form"
   ],
   "dependencies": {},
   "scripts": {

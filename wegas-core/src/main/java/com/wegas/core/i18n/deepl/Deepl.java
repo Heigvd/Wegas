@@ -236,6 +236,7 @@ public class Deepl {
 
         StringBuilder sb = new StringBuilder();
         sb.append("&tag_handling=xml");
+        sb.append("&tag_handling_version=v1");
         if (sourceLang != null) {
             sb.append("&source_lang=").append(sourceLang);
         }

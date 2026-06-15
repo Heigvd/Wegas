@@ -45,16 +45,6 @@ export default function Admin(): JSX.Element {
           <SecondLevelLink to={`loggers`}>{i18n.loggers}</SecondLevelLink>
           <SecondLevelLink to={`locks`}>{i18n.locks}</SecondLevelLink>
           <SecondLevelLink to={`announcements`}>{i18n.announcements}</SecondLevelLink>
-          {/*<IconButton
-            title={i18n.stats}
-            className={cx(adminButtonStyle, css({ display: 'flex' }))}
-            icon={faExternalLinkAlt}
-            onClick={() => {
-              window.open('./stats.html');
-            }}
-          >
-            {i18n.stats}
-          </IconButton>*/}
         </Flex>
         <FitSpace direction="column" overflow="auto">
           <Routes>
