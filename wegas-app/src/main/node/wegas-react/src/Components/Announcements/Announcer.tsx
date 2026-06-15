@@ -10,7 +10,7 @@ import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks'
 import { getActiveAnnouncements, dismissAnnouncement } from "../../store/slices/announcement";
 import { css } from '@emotion/css';
 import { AnnouncementCard } from "./AnnouncementCard";
-import { Flex } from "../Flex";
+import { FlexList } from "../Layouts/FlexList";
 
 const announcerStyle = css({ width: '100%', padding: '20px', margin: '10px' })
 
@@ -64,10 +64,10 @@ export function Announcer({critical = false}: {critical?: boolean}): JSX.Element
   }
 
   return (
-      <Flex direction="column" className={announcerStyle}>
+      <FlexList layout={{flexDirection: "column"}} className={announcerStyle}>
         {filteredAnnouncements.map(a => (
           <AnnouncementCard key={a.id} announcement={a} onDismiss={() => dismiss(a.id)} dismissable={!critical}/>
         ))}
-      </Flex>
+      </FlexList>
   );
 }

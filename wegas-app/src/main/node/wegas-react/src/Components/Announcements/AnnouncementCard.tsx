@@ -14,7 +14,7 @@ import { commonTranslations } from "../../i18n/common/common";
 import { icons } from "../../Editor/Components/Views/FontAwesome";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { FitSpace, Flex } from "../Flex";
+import { FlexList } from "../Layouts/FlexList";
 
 export type SizeType = 'BIG' | 'MEDIUM' | 'SMALL';
 
@@ -208,19 +208,19 @@ export function AnnouncementCard({ announcement, dismissable = false, onDismiss 
       <div className={illustrationStyle('white', color, 'MEDIUM')}>
         <FontAwesomeIcon title={announcement.messageType} icon={icon} />
       </div>
-      <FitSpace direction="row" className={cardContentStyle}>
-        <Flex className={announcementCardContentStyle}>
-          <Flex direction='column'>
+      <FlexList layout={{flexDirection: 'row'}} className={cx(cardContentStyle, css({flexShrink: 1}))}>
+        <FlexList layout={{flexDirection: 'row'}} className={announcementCardContentStyle}>
+          <FlexList layout={{flexDirection: 'column'}}>
             <div className={cardTitleStyle}>{announcement.message}</div>
             {maintenanceContent()}
-          </Flex>
+          </FlexList>
           {dismissable ? (
             <div onClick={onDismiss} className={dismissStyle}>
               {i18n.dismiss}
             </div>
           ) : null}
-        </Flex>
-      </FitSpace>
+        </FlexList>
+      </FlexList>
     </div>
   )
 }
