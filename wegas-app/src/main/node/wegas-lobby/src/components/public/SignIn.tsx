@@ -22,6 +22,7 @@ import { InlineLink } from '../common/Link';
 import MelonContainer from '../common/MelonContainer';
 import PolicyDisclaimer from './PolicyDisclaimer';
 import Announcer from "../common/Announcer";
+import {FloatingLayer} from "../common/FloatingLayer";
 
 interface Props {
   redirectTo: string | null;
@@ -111,8 +112,10 @@ export default function SignInForm({ username, redirectTo }: Props): JSX.Element
 
   return (
     <>
+      <FloatingLayer>
+        <Announcer floating />
+      </FloatingLayer>
       <MelonContainer
-        top={<Announcer />}
         below={
           <Flex justify="space-evenly">
             {showEduIdButton ? (

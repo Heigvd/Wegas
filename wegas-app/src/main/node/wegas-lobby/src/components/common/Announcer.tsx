@@ -15,9 +15,14 @@ import Flex from './Flex';
 import {css, cx} from '@emotion/css';
 
 const announcerStyle = css({ padding: '5px', margin: '10px' })
-const criticalStyle = css({ alignItems: 'center', boxSizing: 'border-box', width: '100%', padding: '20px', margin: '10px' })
+const floatingStyle = css({ alignItems: 'center', boxSizing: 'border-box', width: '100%', padding: '20px', margin: '10px' })
 
-export default function Announcer({critical = false}: {critical?: boolean}): JSX.Element {
+interface announcerProps {
+  critical?: boolean,
+  floating?: boolean,
+}
+
+export default function Announcer({critical = false, floating = false}: announcerProps): JSX.Element {
   const dispatch = useAppDispatch();
 
   const { announcements, status, dismissedIds } = useAppSelector(state => ({
@@ -63,7 +68,7 @@ export default function Announcer({critical = false}: {critical?: boolean}): JSX
   }
 
   return (
-    <Flex direction="column" className={cx(announcerStyle, critical && criticalStyle)}>
+    <Flex direction="column" className={cx(announcerStyle, floating && floatingStyle)}>
       {filteredAnnouncements.map(a => (
         <AnnouncementCard key={a.id} announcement={a} onDismiss={() => dismiss(a.id)} dismissable={!critical} />
       ))}

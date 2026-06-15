@@ -58,6 +58,7 @@ const announcementCardStyle = css({
     color: announcementError.toString(),
     background: announcementErrorLight.toString(),
   },
+  pointerEvents: 'auto',
 });
 
 const announcementCardContentStyle = css({

@@ -99,7 +99,7 @@ export default function MainApp(): JSX.Element {
     wegasStatus === 'DOWN' ? (
       <>
         <FloatingLayer>
-          <Announcer critical={true} />
+          <Announcer critical floating />
         </FloatingLayer>
         <Overlay>
           <div
