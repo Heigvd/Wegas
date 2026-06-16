@@ -24,7 +24,7 @@ import {
   usePagesStateStore,
 } from '../../../data/Stores/pageStore';
 import { store } from '../../../data/Stores/store';
-import { ErrorBoundary } from '../../../Editor/Components/ErrorBoundary';
+import { ErrorBoundary } from '../../ErrorBoundary';
 import {
   DnDComponent,
   isDnDComponent,

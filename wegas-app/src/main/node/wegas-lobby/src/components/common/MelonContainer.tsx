@@ -17,13 +17,15 @@ export interface MelonProps {
   children: React.ReactNode;
   below?: React.ReactNode;
   uberBelow?: React.ReactNode;
+  top?: React.ReactNode;
 }
 
 const mediaQ = "@media (max-height: 600px)";
 
-export default function MelonContainer({children, below, uberBelow}: MelonProps): JSX.Element {
+export default function MelonContainer({children, below, uberBelow, top}: MelonProps): JSX.Element {
   return (
     <div className={cx(fullPageStyle)}>
+      {top}
       <Flex
         direction="column"
         className={cx(

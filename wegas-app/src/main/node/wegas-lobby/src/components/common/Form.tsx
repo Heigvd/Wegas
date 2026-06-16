@@ -16,6 +16,8 @@ import Checkbox from './Checkbox';
 import InlineLoading from './InlineLoading';
 import Input from './Input';
 import Toggler from './Toggler';
+import Select from 'react-select';
+import { defaultSelectStyles } from '../styling/style';
 
 const PasswordStrengthBar = React.lazy(() => import('./password/PasswordStrengthBar'));
 
@@ -24,7 +26,7 @@ const hideBar = css({
 });
 
 export interface BaseField<T> {
-  type: 'text' | 'textarea' | 'password' | 'boolean';
+  type: 'text' | 'textarea' | 'password' | 'boolean' | 'date' | 'select';
   key: keyof T;
   readonly?: boolean;
   label?: React.ReactNode;
@@ -33,6 +35,7 @@ export interface BaseField<T> {
   isMandatory: boolean;
   isErroneous?: (entity: T) => boolean;
   errorMessage?: React.ReactNode;
+  showIf?: (entity: T) => boolean;
 }
 
 export interface TextualField<T> extends BaseField<T> {
@@ -43,6 +46,7 @@ export interface PasswordFeedback {
   warning?: string;
   suggestions?: string[];
 }
+
 export interface PasswordField<T> extends BaseField<T> {
   type: 'password';
   showStrenghBar: boolean;
@@ -56,9 +60,69 @@ export interface BooleanField<T> extends BaseField<T> {
   showAs: 'toggle' | 'checkbox';
 }
 
-//type: 'text' | 'password' | 'password_with_strength_bar' | 'toggle';
+export interface DateField<T> extends BaseField<T> {
+  type: 'date';
+  /**
+   * If true uses a datetime-local input
+   */
+  withTime: boolean;
+  /**
+   * Underlying data representation
+   * timestamp = epoch value
+   * string = a parsable date string
+   * date = a Date object
+   */
+  representation: 'timestamp' | 'string' | 'date';
+}
 
-export type Field<T> = TextualField<T> | PasswordField<T> | BooleanField<T>;
+export interface SelectField<T> extends BaseField<T> {
+  type: 'select';
+  defaultValue: string;
+  values: string[];
+}
+
+function dateToInputValue(value: any, withTime: boolean): string {
+  if (value == null) return '';
+
+  let date: Date;
+
+  if (value instanceof Date) {
+    date = value;
+  } else if (typeof value === 'number') {
+    date = new Date(value);
+  } else if (typeof value === 'string') {
+    if (!value.trim()) return '';
+
+    if (/^\d+$/.test(value)) {
+      const num = Number(value);
+      date = new Date(num);
+    } else {
+      date = new Date(value);
+    }
+  } else {
+    return '';
+  }
+
+  if (isNaN(date.getTime())) return '';
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  if (withTime) {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+  return `${year}-${month}-${day}`;
+}
+
+export type Field<T> =
+  | TextualField<T>
+  | PasswordField<T>
+  | BooleanField<T>
+  | DateField<T>
+  | SelectField<T>;
 
 export interface FormProps<T> {
   fields: Readonly<Field<Readonly<T>>>[];
@@ -69,7 +133,7 @@ export interface FormProps<T> {
   children?: React.ReactNode;
 }
 
-export default function Form<T>({
+export default function Form<T extends object>({
   fields,
   value,
   submitLabel,
@@ -85,6 +149,17 @@ export default function Form<T>({
   const [erroneous, setErroneous] = React.useState(false);
 
   let globalErroneous = false;
+
+  React.useEffect(() => {
+    fields.forEach(field => {
+      if (field.showIf && !field.showIf(state)) {
+        // Only reset if the value is currently non-null
+        if (state[field.key] != null) {
+          setState(s => ({ ...s, [field.key]: undefined }));
+        }
+      }
+    });
+  }, [fields, state]);
 
   const setFormValue = React.useCallback(
     (key: keyof T, value: unknown) => {
@@ -118,7 +193,30 @@ export default function Form<T>({
     [submitCb],
   );
 
+  const convertDateAndSetFormValue = React.useCallback(
+    (key: keyof T, value: string, representation: DateField<T>['representation']) => {
+      let converted: number | string | Date;
+      switch (representation) {
+        case 'date':
+          converted = new Date(Date.parse(value));
+          break;
+        case 'timestamp':
+          converted = Date.parse(value);
+          break;
+        case 'string':
+        default:
+          converted = value;
+      }
+      setFormValue(key, converted);
+    },
+    [setFormValue],
+  );
+
   const fieldComps = fields.map(field => {
+    if (field.showIf && !field.showIf(state)) {
+      return null;
+    }
+
     const isErroneous = field.isErroneous != null ? field.isErroneous(state) : false;
     globalErroneous = globalErroneous || isErroneous;
     const fieldKey = `field-${field.key}`;
@@ -148,7 +246,13 @@ export default function Form<T>({
             value={String(state[field.key] || '')}
             label={field.label}
             placeholder={field.placeholder}
-            warning={isErroneous && (String(state[field.key]) !== '' || erroneous) ? (field.key !== 'confirm' && field.feedbackProp)?field.dynamicErrorMessage(state[field.feedbackProp] as PasswordFeedback): field.errorMessage : undefined}
+            warning={
+              isErroneous && (String(state[field.key]) !== '' || erroneous)
+                ? field.key !== 'confirm' && field.feedbackProp
+                  ? field.dynamicErrorMessage(state[field.feedbackProp] as PasswordFeedback)
+                  : field.errorMessage
+                : undefined
+            }
             mandatory={field.isMandatory}
             onChange={value => setFormValue(field.key, value)}
             readonly={field.readonly}
@@ -199,6 +303,46 @@ export default function Form<T>({
           {field.fieldFooter != null ? field.fieldFooter : null}
         </div>
       );
+    } else if (field.type === 'date') {
+      return (
+        <div key={fieldKey}>
+          <Input
+            type={field.withTime ? 'datetime-local' : 'date'}
+            inputType="input"
+            value={dateToInputValue(state[field.key], field.withTime)}
+            label={field.label}
+            placeholder={field.placeholder}
+            warning={erroneous && isErroneous ? field.errorMessage : undefined}
+            mandatory={field.isMandatory}
+            onChange={value => convertDateAndSetFormValue(field.key, value, field.representation)}
+            readonly={field.readonly}
+          />
+          {field.fieldFooter != null ? field.fieldFooter : null}
+        </div>
+      );
+    } else if (field.type === 'select') {
+      const selectValue = (state[field.key] as unknown as string) ?? field.defaultValue;
+      const entries = field.values.map(v => ({ label: v, value: v }));
+      return (
+        <div key={fieldKey}>
+          {field.label != null ? <label>{field.label}</label> : null}
+          <Select
+            defaultValue={entries.find(e => e.value === selectValue)}
+            options={entries}
+            isSearchable={false}
+            onChange={value => {
+              if (value != null) {
+                setFormValue(field.key, value.value);
+              } else {
+                setFormValue(field.key, null);
+              }
+            }}
+            styles={defaultSelectStyles}
+          />
+          {erroneous && isErroneous ? <div>{field.errorMessage}</div> : null}
+          {field.fieldFooter != null ? field.fieldFooter : null}
+        </div>
+      );
     }
   });
 
@@ -214,12 +358,12 @@ export default function Form<T>({
       })}
       onKeyDown={onEnterCb}
     >
-      <div className={css({
-        overflow: "auto"
-      })}>
-        <form>
-          {fieldComps}
-        </form>
+      <div
+        className={css({
+          overflow: 'auto',
+        })}
+      >
+        <form>{fieldComps}</form>
       </div>
       {autoSubmit ? null : (
         <Button

@@ -32,6 +32,7 @@ public class ApplicationConfig extends ResourceConfig {
             "com.wegas.resourceManagement.rest",
             "com.wegas.reviewing.rest",
             "com.wegas.admin",
-            "com.wegas.log.rest");
+            "com.wegas.log.rest",
+            "com.wegas.announcement.rest");
     }
 }

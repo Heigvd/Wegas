@@ -37,7 +37,7 @@ import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import getEditionConfig, { getClassLabel, getIcon } from '../editionConfig';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorBoundary } from '../../Components/ErrorBoundary';
 import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';

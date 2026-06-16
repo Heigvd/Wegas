@@ -42,12 +42,17 @@ export default function DropDownPanel({ onClose, state, children }: Props): JSX.
       className={cx(semiLightMode, commonStyle, state === 'COLLAPSED' ? collapsed : expanded)}
       direction="column"
     >
-      <Flex direction="row" justify="flex-end">
-        <IconButton icon={faTimes} iconSize="2x" onClick={onClose} />
-      </Flex>
-      <FitSpace direction="column" overflow="auto" align="center">
-        {children}
-      </FitSpace>
+      {state === 'EXPANDED' ? (
+          <>
+            <Flex direction="row" justify="flex-end">
+              <IconButton icon={faTimes} iconSize="2x" onClick={onClose} />
+            </Flex>
+            <FitSpace direction="column" overflow="auto" align="center">
+              {children}
+            </FitSpace>
+          </>
+      ) : null}
+
     </Flex>
   );
 }

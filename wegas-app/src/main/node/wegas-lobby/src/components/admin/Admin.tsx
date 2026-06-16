@@ -22,6 +22,7 @@ import MainAdminPanel from './MainAdminPanel';
 import Roles from './Roles';
 import Users from './Users';
 import Who from './Who';
+import Announcements from './Announcements';
 
 export default function Admin(): JSX.Element {
   const i18n = useTranslations();
@@ -43,6 +44,7 @@ export default function Admin(): JSX.Element {
           <SecondLevelLink to={`invoices`}>{i18n.gameAdmins}</SecondLevelLink>
           <SecondLevelLink to={`loggers`}>{i18n.loggers}</SecondLevelLink>
           <SecondLevelLink to={`locks`}>{i18n.locks}</SecondLevelLink>
+          <SecondLevelLink to={`announcements`}>{i18n.announcements}</SecondLevelLink>
         </Flex>
         <FitSpace direction="column" overflow="auto">
           <Routes>
@@ -66,6 +68,7 @@ export default function Admin(): JSX.Element {
                 </FitSpace>
               }
             />
+            <Route path={`announcements/*`} element={<Announcements />} />
             <Route path="*" element={<MainAdminPanel />} />
           </Routes>
         </FitSpace>

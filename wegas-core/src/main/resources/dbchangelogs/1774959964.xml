@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="xaviergood (generated)" id="1774959984613-9">
+        <createTable tableName="announcement">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="announcement_pkey"/>
+            </column>
+            <column name="creationtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="displayendtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="displaystarttime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="interventionendtime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="interventionstarttime" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="message" type="TEXT"/>
+            <column defaultValue="INFO" name="messagetype" type="VARCHAR(24)"/>
+            <column name="refid" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
