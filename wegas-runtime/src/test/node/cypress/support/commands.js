@@ -62,12 +62,14 @@ Cypress.Commands.add("login", (identifier, password) => {
   .should("have.length", 1)
   .type(password);
 
+  cy.intercept('GET', '/Wegas/rest/Editor/User/Current').as('load-user');
+  cy.intercept('GET', '/Wegas/rest/User/Account/Current').as('load-account');
+
   cy.react("Button", { props: { key: "submit", label: "login" } })
   .should("have.length", 1)
   .click();
 
-  cy.intercept('GET', '/Wegas/rest/User/Account/Current').as('load-account');
-  cy.intercept('GET', '/Wegas/rest/Editor/User/Current').as('load-user');
+
   cy.wait(['@load-user', '@load-account']).then((interception) => {
     cy.log('loaded user & account');
   });
