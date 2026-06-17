@@ -68,7 +68,6 @@
                                     <goal>clean</goal>
                                 </goals>
                                 <configuration>
-                                    <excludeDefaultDirectoriest>true</excludeDefaultDirectoriest>
                                     <filesets>
                                         <fileset>
                                             <directory>node_modules</directory>

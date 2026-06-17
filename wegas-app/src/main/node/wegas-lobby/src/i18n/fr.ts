@@ -13,6 +13,7 @@ export const fr: WegasTranslations = {
   formatDate: (timestamp: number) => new Date(timestamp).toLocaleDateString('fr'),
   pleaseProvideData: 'Merci de remplir tous les champs',
   cancel: 'annuler',
+  dismiss: 'fermer',
   agree: 'Accepter',
   confirm: 'confirmer',
   emailAddress: 'adresse e-mail',
@@ -130,7 +131,7 @@ export const fr: WegasTranslations = {
   playersCantCreateTeams: "Les joueurs ne peuvent pas créer d'équipe",
 
   playersCanLeaveTeams: 'Les joueurs peuvent quitter leur équipe',
-  playersCantLeaveTeams: "Les joueurs ne peuvent pas quitter leur équipe",
+  playersCantLeaveTeams: 'Les joueurs ne peuvent pas quitter leur équipe',
 
   //
   kickPlayer: 'supprimer le joueur',
@@ -227,7 +228,7 @@ export const fr: WegasTranslations = {
   },
 
   // Diff & Patch
-  diff: 'Mettre à jour à partir d\'un export WGZ, ZIP ou JSON ',
+  diff: "Mettre à jour à partir d'un export WGZ, ZIP ou JSON ",
   patch: 'Accepter la mise à jour',
   restart: 'Refuser la mise à jour',
 
@@ -260,12 +261,16 @@ export const fr: WegasTranslations = {
   roles: 'Groupes',
   loggers: 'Loggers',
   locks: 'Verrous',
+  announcements: 'Annonces',
+  createAnnouncement: 'Créer nouvelle annonce',
+  maintenanceStart: "Début de l'intervention",
+  maintenanceEnd: "Fin de l'intervention",
   gameAdmins: 'Facturation',
   stats: 'Stats',
   createEmptyModel: 'Créer un modèle vide',
   createEmptyReactModel: 'Créer un modèle React vide',
   clearCache: 'Vider le cache JPA',
-  clearServerScriptCache: "Vider le cache des ServerScripts",
+  clearServerScriptCache: 'Vider le cache des ServerScripts',
   deleteAllGameModels:
     'Supprimer tous les scénarios et modèles en attente de suppression définitive',
   requestClientReload:
@@ -337,7 +342,7 @@ export const fr: WegasTranslations = {
     'CREATE-ACCOUNT-TAKEN-EMAIL': 'Adresse e-mail déjà utilisée',
     'CREATE-ACCOUNT-TAKEN-USERNAME': "Nom d'utilisateur déjà utilisé",
     'ACCOUNT-UPDATE-USERNAME-DUPLICATE': "Nom d'utilisateur déjà utilisé",
-    'ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE': 'Adresse e-mail déjà utilisée'
+    'ACCOUNT-UPDATE-EMAIL-ADDRESS-DUPLICATE': 'Adresse e-mail déjà utilisée',
   },
   outadateMessagePart1: 'Vos données ne sont plus à jour. Merci de ',
   outadateMessagePart2: 'recharger',
@@ -349,10 +354,10 @@ export const fr: WegasTranslations = {
   tokenNotFound: 'Jeton introuvable',
   defaultProcessMessage: 'Poursuivre',
   processMessages: {
-    InviteToJoinToken: "Rejoindre la partie",
-    ValidateAddressToken: "Valider votre adresse",
-    ResetPasswordToken: "Mettre à jour votre mot de passe",
-    SurveyToken: "Participer au sondage",
+    InviteToJoinToken: 'Rejoindre la partie',
+    ValidateAddressToken: 'Valider votre adresse',
+    ResetPasswordToken: 'Mettre à jour votre mot de passe',
+    SurveyToken: 'Participer au sondage',
   },
   youAreConnectedAsUser: (user: string) => `Vous êtes actuellement connecté en tant que "${user}"`,
   butCraftedFor: (user: string) => `alors que votre lien a été préparé pour "${user}"`,

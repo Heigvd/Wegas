@@ -75,4 +75,9 @@ export const commonTranslationsDE: CommonTranslations = {
     iOSSettingsHint: (navigator: string) => `Überprüfen Sie Ihre iPad/iPhone-Einstellungen (Einstellungen / ${navigator})`,
     androidSettingsHint: (navigator: string) => `Überprüfen Sie die Einstellungen Ihre Smartphone/Tablet (Einstellungen / Anwendungen / ${navigator} / Berechtigungen / Kamera`,
   },
+  announcements: {
+    maintenanceStart: 'Wartungsstart',
+    maintenanceEnd: 'Wartungsende'
+  },
+  dismiss: 'Verwerfen'
 };

@@ -19,10 +19,12 @@ import teamReducer from './slices/team';
 import userReducer from './slices/user';
 import wsReducer from './slices/websocket';
 import wegasReducer from './slices/wegas';
+import announcementReducer from './slices/announcement'
 
 const rootReducer = combineReducers({
   auth: authReducer,
   admin: adminReducer,
+  announcements: announcementReducer,
   invoices: invoiceReducer,
   players: playerReducer,
   teams: teamReducer,

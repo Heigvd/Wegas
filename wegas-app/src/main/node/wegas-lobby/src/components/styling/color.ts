@@ -32,6 +32,16 @@ export const dangerColor = tinycolor('#e51c23');
 export const successColor = tinycolor('#4caf50');
 export const warningColor = tinycolor('#ff9800');
 
+// -- Announcements ---
+export const announcementInfo = tinycolor('#0A9FF1');
+export const announcementInfoLight = tinycolor('#E1F0F8');
+export const announcementWarning = tinycolor('#FFC700');
+export const announcementWarningLight = tinycolor('#FAF5E1');
+export const announcementMaintenance = tinycolor('#FF7C00');
+export const announcementMaintenanceLight = tinycolor('#FAEBE1');
+export const announcementError = tinycolor('#DC0000');
+export const announcementErrorLight = tinycolor('#F5E1E1');
+
 export const orange = tinycolor('#FF9369');
 export const orangine = tinycolor('#FFB93C');
 export const greenyellow = tinycolor('#AAFF5F');
