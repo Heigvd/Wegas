@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import produce from 'immer';
+import { produce } from 'immer';
 import { Schema } from 'jsoninput';
 import { cloneDeep, get } from 'lodash-es';
 import * as React from 'react';

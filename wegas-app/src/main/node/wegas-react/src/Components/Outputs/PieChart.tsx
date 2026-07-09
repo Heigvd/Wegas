@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { wwarn } from '../../Helper/wegaslog';
@@ -717,7 +717,7 @@ const setPieChartState = (
   oldState: PieChartState,
   action: PieChartStateAction,
 ) =>
-  u(oldState, oldState => {
+  produce(oldState, oldState => {
     switch (action.type) {
       case 'HOLE_RATIO': {
         oldState.holeRatio = boundedValue(action.holeRatio, 0, 1);

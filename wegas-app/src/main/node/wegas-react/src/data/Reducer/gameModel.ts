@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
@@ -14,7 +14,7 @@ export interface GameModelState {
 /**
  * Reducer for GameModels
  */
-const gameModels: Reducer<Readonly<GameModelState>> = u(
+const gameModels: Reducer<Readonly<GameModelState>> = produce(
   (state: GameModelState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {

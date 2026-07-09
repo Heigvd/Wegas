@@ -1,4 +1,4 @@
-import produce, { Immutable } from 'immer';
+import { produce, Immutable } from 'immer';
 import { cloneDeep } from 'lodash';
 import * as React from 'react';
 import {

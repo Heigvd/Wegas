@@ -41,5 +41,5 @@ interface PagesWithName {
 }
 
 type AllPages = Pages & {
-  index: PageIndex;
+  index?: PageIndex;
 };

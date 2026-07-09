@@ -1,6 +1,6 @@
 import { parse } from '@babel/parser';
 import { css } from '@emotion/css';
-import u from 'immer';
+import { produce } from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
 import { isArray, pick } from 'lodash-es';
@@ -77,7 +77,7 @@ type FormStateActions =
     };
 
 function setFormState(state: ExpressionEditorState, action: FormStateActions) {
-  return u(state, (state: ExpressionEditorState) => {
+  return produce(state, (state: ExpressionEditorState) => {
     switch (action.type) {
       case 'SET_IF_DEF': {
         const { attributes, error, schema } = action.payload;

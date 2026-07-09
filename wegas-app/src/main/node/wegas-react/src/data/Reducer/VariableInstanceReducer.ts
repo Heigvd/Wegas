@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { Reducer } from 'redux';
 import {
   IChoiceDescriptor,
@@ -31,7 +31,11 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { Player } from '../selectors';
-import { createEditingAction, editingStore, EditingThunkResult } from '../Stores/editingStore';
+import {
+  createEditingAction,
+  editingStore,
+  EditingThunkResult,
+} from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 import { groupBy } from 'lodash-es';
 
@@ -41,50 +45,60 @@ type EventInboxStatus = 'LOADING' | 'UPDATE_REQUIRED' | 'UPTODATE';
 export interface VariableInstanceState {
   instances: {
     [id: string]: Readonly<IVariableInstance> | undefined;
-  },
+  };
   events: {
     [id: VariableInstanceId]: //eventInboxId
     {
-      events : IEvent[],
-      status : EventInboxStatus
+      events: IEvent[];
+      status: EventInboxStatus;
     };
-  }
+  };
 }
 
-function updateEventChain(events: IEvent[], lastEventId: number | undefined | null, receivedEvents: IEvent[]):
-  { sortedEvents :IEvent[], success: boolean} {
-
-  if(!lastEventId){ // no events at all
-    return {sortedEvents : [], success: true};
+function updateEventChain(
+  events: IEvent[],
+  lastEventId: number | undefined | null,
+  receivedEvents: IEvent[],
+): { sortedEvents: IEvent[]; success: boolean } {
+  if (!lastEventId) {
+    // no events at all
+    return { sortedEvents: [], success: true };
   }
 
-  const existing : Record<number, IEvent> = events.reduce((acc : Record<number, IEvent>, e) => {
-    acc[e.id!] = e;
-    return acc;
-  }, {});
+  const existing: Record<number, IEvent> = events.reduce(
+    (acc: Record<number, IEvent>, e) => {
+      acc[e.id!] = e;
+      return acc;
+    },
+    {},
+  );
 
-  const received : Record<number, IEvent> = receivedEvents.reduce((acc : Record<number, IEvent>, e) => {
-    acc[e.id!] = e;
-    return acc;
-  }, {});
+  const received: Record<number, IEvent> = receivedEvents.reduce(
+    (acc: Record<number, IEvent>, e) => {
+      acc[e.id!] = e;
+      return acc;
+    },
+    {},
+  );
 
-  const all = {...existing, ...received};
+  const all = { ...existing, ...received };
 
-  const sorted : IEvent[] = [];
-  let curr : IEvent | undefined = all[lastEventId];
-  while(curr){
+  const sorted: IEvent[] = [];
+  let curr: IEvent | undefined = all[lastEventId];
+  while (curr) {
     sorted.push(curr);
     curr = curr.previousEventId ? all[curr.previousEventId] : undefined;
   }
 
   sorted.reverse();
   //success criterion : all events are present and the first one has no previous element
-  const success = sorted.length === Object.keys(all).length && !sorted[0].previousEventId
+  const success =
+    sorted.length === Object.keys(all).length && !sorted[0].previousEventId;
 
-  return {sortedEvents: sorted, success};
+  return { sortedEvents: sorted, success };
 }
 
-const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
+const variableInstances: Reducer<Readonly<VariableInstanceState>> = produce(
   (state: VariableInstanceState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {
@@ -93,13 +107,7 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
         const deletedIds = Object.keys(
           action.payload.deletedEntities.variableInstances,
         );
-        const updatedEventBoxes : IEventInboxInstance[] = [];
-        if(!state.instances){
-          state.instances = {};
-        }
-        if(!state.events){
-          state.events = {};
-        }
+        const updatedEventBoxes: IEventInboxInstance[] = [];
 
         Object.keys(updateList).forEach(id => {
           const newElement = updateList[id];
@@ -107,18 +115,17 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
           // merge in update prev var which have a higher version
           if (oldElement == null || newElement.version >= oldElement.version) {
             state.instances[id] = newElement;
-            if(newElement['@class'] === 'EventInboxInstance'){
-              updatedEventBoxes.push(newElement as IEventInboxInstance)
+            if (newElement['@class'] === 'EventInboxInstance') {
+              updatedEventBoxes.push(newElement as IEventInboxInstance);
             }
           }
-
         });
 
         deletedIds.forEach(id => {
           delete state.instances[id];
 
           // delete event boxes stored events
-          if(state.events[id]){
+          if (state.events[id]) {
             delete state.events[id];
           }
         });
@@ -128,13 +135,13 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
         // init empty event boxes
         updatedEventBoxes.forEach(ebox => {
           const boxId = ebox.id!;
-          if(ebox.lastEventId && !state.events[boxId]){
-            state.events[boxId] = {events: [], status:'UPDATE_REQUIRED'}
+          if (ebox.lastEventId && !state.events[boxId]) {
+            state.events[boxId] = { events: [], status: 'UPDATE_REQUIRED' };
           }
-          if(!ebox.lastEventId && state.events[boxId]){
+          if (!ebox.lastEventId && state.events[boxId]) {
             // after reset case
             // clear the events from the local state
-            state.events[boxId] = {events: [], status:'UPTODATE'}
+            state.events[boxId] = { events: [], status: 'UPTODATE' };
             ebox.events = [];
           }
         });
@@ -145,60 +152,58 @@ const variableInstances: Reducer<Readonly<VariableInstanceState>> = u(
         const events = Object.values(action.payload.updatedEntities.events);
 
         // group by event box id
-        const eventBuckets = groupBy(events, (e) => e.parentId)
+        const eventBuckets = groupBy(events, e => e.parentId);
 
         // update the boxes that have received a new event
         Object.entries(eventBuckets).forEach(([boxId, newEvts]) => {
-
           const eventBox = state.instances[boxId] as IEventInboxInstance;
-          if(eventBox){
-            const {sortedEvents, success} = updateEventChain(state.events[boxId].events, eventBox.lastEventId, newEvts);
+          if (eventBox) {
+            const { sortedEvents, success } = updateEventChain(
+              state.events[boxId].events,
+              eventBox.lastEventId,
+              newEvts,
+            );
 
-            if(success){
+            if (success) {
               state.events[boxId].events = sortedEvents;
               state.events[boxId].status = 'UPTODATE';
               //bind with eventbox instance
               eventBox.events = state.events[boxId].events;
-
             } else {
               // if verification fails, fetch all of the events again
               // TODO : more efficient and specific requests for a subset of events
               state.events[boxId].status = 'UPDATE_REQUIRED';
             }
           } //else { // should not be possible
-
-        })
+        });
 
         return;
       }
-      case ActionType.EVENT_SET_LOADING:{
-        state.events[action.payload].status ='LOADING';
+      case ActionType.EVENT_SET_LOADING: {
+        state.events[action.payload].status = 'LOADING';
       }
-
     }
   },
-  {},
+  { instances: {}, events: {} },
 );
 
 export default variableInstances;
 //ACTIONS
-
 
 /**
  * Fetches all the events of an event box and dispatches
  * @param eventInboxInstance The targetted instance to fetch events from
  */
 export function getEvents(
-  eventInboxInstance: IEventInboxInstance
-  ): EditingThunkResult<Promise<StateActions | void>> {
-    return function (dispatch, getState) {
-
-      store.dispatch(ActionCreator.EVENT_SET_LOADING(eventInboxInstance.id!))
-      return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
-        // Dispatching changes to global store and passing local store that manages editor state
-        editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
-      );
-    };
+  eventInboxInstance: IEventInboxInstance,
+): EditingThunkResult<Promise<StateActions | void>> {
+  return function (dispatch, getState) {
+    store.dispatch(ActionCreator.EVENT_SET_LOADING(eventInboxInstance.id!));
+    return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
+      // Dispatching changes to global store and passing local store that manages editor state
+      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+    );
+  };
 }
 
 export function updateInstance(
@@ -318,9 +323,12 @@ export function read(
   };
 }
 
-export const selectAndValidate = createEditingAction(async ({player, choice} : {choice: IChoiceDescriptor,
-  player?: IPlayer,}, dispatch, getState) => {
-
+export const selectAndValidate = createEditingAction(
+  async (
+    { player, choice }: { choice: IChoiceDescriptor; player?: IPlayer },
+    dispatch,
+    getState,
+  ) => {
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
@@ -330,9 +338,10 @@ export const selectAndValidate = createEditingAction(async ({player, choice} : {
       gameModelId,
       p.id,
       choice,
-    )
+    );
     return dispatch(manageResponseHandler(res, dispatch, getState()));
-})
+  },
+);
 
 export function selectChoice(
   choice: IChoiceDescriptor,

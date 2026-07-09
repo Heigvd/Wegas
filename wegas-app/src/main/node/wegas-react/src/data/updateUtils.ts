@@ -1,5 +1,5 @@
 import { omit, set, get } from 'lodash-es';
-import produce from 'immer';
+import { produce } from 'immer';
 /**
  * Update object with value at given path. returns a newly created object.
  * Immutable.

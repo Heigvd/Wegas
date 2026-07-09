@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
 import { IPlayer } from 'wegas-ts-api';
@@ -11,7 +11,7 @@ export interface PlayerState {
 /**
  * Reducer for Players
  */
-const players: Reducer<Readonly<PlayerState>> = u(
+const players: Reducer<Readonly<PlayerState>> = produce(
   (state: PlayerState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {
@@ -38,9 +38,9 @@ const players: Reducer<Readonly<PlayerState>> = u(
     }
     return state;
   },
-  CurrentGame.teams.reduce((prev, t) => {
+  CurrentGame.teams.reduce<PlayerState>((prev, t) => {
     t.players.forEach(p => (prev[p.id!] = p));
     return prev;
-  }, {} as PlayerState),
+  }, {}),
 );
 export default players;

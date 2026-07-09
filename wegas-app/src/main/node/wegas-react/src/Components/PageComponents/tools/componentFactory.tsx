@@ -1,4 +1,4 @@
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import * as React from 'react';
 import { applyMiddleware, compose, createStore, Reducer } from 'redux';
@@ -225,7 +225,7 @@ type PageComponentAction<
 const pageComponentReducer: Reducer<
   Readonly<PageComponentsState>,
   PageComponentAction
-> = u((state: PageComponentsState, action: PageComponentAction) => {
+> = produce((state: PageComponentsState, action: PageComponentAction) => {
   switch (action.type) {
     case PageComponentActionTypes.ADD_COMPONENT: {
       state[action.payload.componentName] = action.payload.component;

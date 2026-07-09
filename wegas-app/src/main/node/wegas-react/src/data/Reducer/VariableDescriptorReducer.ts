@@ -1,4 +1,4 @@
-import u, { produce } from 'immer';
+import { produce } from 'immer';
 import { Reducer } from 'redux';
 import {
   IReview,
@@ -26,7 +26,7 @@ export type VariableDescriptorState = Record<string, Readonly<IVariableDescripto
 //   [id: string]: Readonly<IVariableDescriptor> | undefined;
 // }
 
-const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = u(
+const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = produce(
   (state: VariableDescriptorState, action: StateActions) => {
     switch (action.type) {
       case ActionType.MANAGED_RESPONSE_ACTION: {

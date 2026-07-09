@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import produce from 'immer';
+import { produce } from 'immer';
 import * as React from 'react';
 import { IQuestionDescriptor, IWhQuestionDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';

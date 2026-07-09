@@ -89,7 +89,7 @@ export function getPageIndexItemFromFolder(
 export function getPageIndexItem(
   index: PageIndex,
   id: string,
-): PageIndexPage | undefined {
+): PageIndexItem | undefined {
   return getPageIndexItemFromFolder(index.root, id);
 }
 
@@ -106,8 +106,10 @@ export function pageItemsToTreeItem(
   }));
 }
 
-export function indexToTree(index: PageIndex): Item<PageIndexItem>[] {
-  return pageItemsToTreeItem(index.root.items);
+export function indexToTree(index: PageIndex | undefined): Item<PageIndexItem>[] {
+  return index?.root?.items ?
+    pageItemsToTreeItem(index.root.items):
+    [];
 }
 
 export function visitComponents(

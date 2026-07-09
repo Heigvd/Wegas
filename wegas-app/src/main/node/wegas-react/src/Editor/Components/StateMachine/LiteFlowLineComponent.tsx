@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import produce, { Immutable } from 'immer';
+import { produce, Immutable } from 'immer';
 import * as React from 'react';
 import {
   IAbstractTransition,

@@ -270,15 +270,16 @@ export function moveComponent(
 }
 
 function pageFolderToDropMenuItems(
-  folder: PageIndexFolder,
+  folder: PageIndexFolder | undefined,
 ): DropMenuItem<undefined>[] {
-  return folder.items.map(item => {
+
+  return folder?.items ? folder.items.map(item => {
     if (isPageItem(item)) {
       return { label: item.name, id: item.id! };
     } else {
       return { label: item.name, items: pageFolderToDropMenuItems(item) };
     }
-  });
+  }): [];
 }
 
 export const PAGE_EDITOR_LAYOUT_ID = 'PageEditorLayout';
@@ -311,9 +312,7 @@ export function PageContextProvider({
   const handles = React.useRef({});
   const [{ selectedPageId, editedPath }, setPageEditorState] =
     React.useState<PageEditorState>({
-      selectedPageId: store.getState().pages.index
-        ? store.getState().pages.index.defaultPageId
-        : undefined,
+      selectedPageId: store.getState().pages.index?.defaultPageId
     });
 
   const [editMode, setEditMode] = React.useState(false);
@@ -663,7 +662,7 @@ export default function PageEditor({
       <div className={cx(expandBoth, flex, itemCenter, justifyCenter)}>
         <DropMenu
           label={i18nPagesValues.noDefaultPages}
-          items={pageFolderToDropMenuItems(pages.index.root)}
+          items={pageFolderToDropMenuItems(pages.index?.root)}
           onSelect={item => {
             if (item.id != null) {
               dispatch(Actions.PageActions.setDefault(item.id));
