@@ -174,7 +174,7 @@ export function PageDeserializer({
 
   const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
 
-  const componentSeletor = React.useCallback(
+  const componentSelector = React.useCallback(
     (state: PageComponentsState) => {
       // explicit cast because component maybe undefined
       // TODO: add noUncheckedIndexedAccess (https://www.typescriptlang.org/tsconfig#noUncheckedIndexedAccess)
@@ -192,7 +192,7 @@ export function PageDeserializer({
     },
     [wegasComponent],
   );
-  const component = usePageComponentStore(componentSeletor, shallowDifferent);
+  const component = usePageComponentStore(componentSelector, shallowDifferent);
 
   const {
     WegasComponent,
@@ -214,6 +214,7 @@ export function PageDeserializer({
 
   const nbRendering = React.useRef(0);
   React.useEffect(() => {
+    // Only changes once at mount...
     nbRendering.current += 1;
   }, []);
 
@@ -222,7 +223,7 @@ export function PageDeserializer({
   }
 
   if (!component || !WegasComponent || !componentId) {
-    if (nbRendering.current === 1) {
+    if (nbRendering.current === 1) { // Equivalent to an "if true", totally useless...
       return (
         <div className={grow}>
           <TumbleLoader />

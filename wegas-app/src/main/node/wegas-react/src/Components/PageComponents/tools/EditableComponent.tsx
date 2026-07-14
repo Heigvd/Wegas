@@ -650,7 +650,7 @@ export function ComponentContainer({
   const { onDrop, editMode, handles, pageIdPath, showBorders, editedPath } =
     React.useContext(pageCTX);
 
-  const pageId = pageIdPath.slice(0, 1)[0];
+  const pageId = pageIdPath[0];
   const containerPath = [...path];
   const itemPath = containerPath.pop();
   const isNotFirstComponent = path.length > 0;
