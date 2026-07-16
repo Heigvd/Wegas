@@ -1,12 +1,10 @@
 package com.wegas.log.xapi;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 
 /*
  * Copied from gov.adlnet.xapi.model when removing learning locker + xapi logging.
@@ -36,23 +34,6 @@ public class ActivityDefinition {
     public ActivityDefinition(HashMap<String, String> name, HashMap<String, String> description) {
         this.name = name;
         this.description = description;
-    }
-
-    private JsonElement serializeMap(HashMap<String, String> map) {
-        JsonObject obj = new JsonObject();
-        for (Entry<String, String> item : map.entrySet()) {
-            obj.addProperty(item.getKey(), item.getValue());
-        }
-        return obj;
-    }
-
-    private JsonElement serializeInteractionComponents(
-            ArrayList<InteractionComponent> components) {
-        JsonArray array = new JsonArray();
-        for (InteractionComponent comp : components) {
-            array.add(comp.serialize());
-        }
-        return array;
     }
 
     public JsonElement serialize() {
