@@ -1,5 +1,3 @@
-// import PusherConstructor, { Pusher } from 'pusher-js';
-// import { inflate } from 'pako';
 import * as React from 'react';
 import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
 import { Actions } from '../data';

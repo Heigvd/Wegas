@@ -291,7 +291,7 @@ public class InboxInstance extends VariableInstance {
      * @param count
      */
     public void setUnreadCount(int count) {
-        // only used to explicitely ignore while serializing
+        // only used to explicitly ignore while serializing
     }
 
     /**

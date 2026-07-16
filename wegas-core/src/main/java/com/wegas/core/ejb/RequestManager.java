@@ -369,7 +369,7 @@ public class RequestManager implements RequestManagerI {
 
     /**
      * Internal method to pretty print logs. Call logger.trace(msg), but add whitespaces at the
-     * begining of the line, according to current logLevel
+     * beginning of the line, according to current logLevel
      *
      * @param msg  message to display
      * @param args message arguments
@@ -579,7 +579,7 @@ public class RequestManager implements RequestManagerI {
             try {
                 if (this.em != null && !this.em.contains(this.currentUser)) {
                     this.currentUser = userFacade.find(this.currentUser.getId());
-                    this.clearEffectivePermisssions();
+                    this.clearEffectivePermissions();
                 }
             } catch (NullPointerException npe) {// NOPMD We don't know where NPE came from.
                 logger.warn("NPE in getCurrnetUser()");
@@ -1470,7 +1470,7 @@ public class RequestManager implements RequestManagerI {
         log("CLEAR PERMISSIONS");
         log("*********************************************************");
         this.grantedPermissions.clear();
-        this.clearEffectivePermisssions();
+        this.clearEffectivePermissions();
     }
 
     public void logout() {
@@ -1492,7 +1492,7 @@ public class RequestManager implements RequestManagerI {
     /**
      * Used to clear permission when changing the currentUser
      */
-    public void clearEffectivePermisssions() {
+    public void clearEffectivePermissions() {
 
         if (this.effectiveRoles != null) {
             this.effectiveRoles.clear();

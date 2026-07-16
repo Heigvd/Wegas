@@ -15,7 +15,7 @@ export interface MouseDnDHandler {
    */
   onDragStart?: (e: MouseEvent, componentPosition: XYPosition) => void;
   /**
-   * onDrag - is called everytime the mouse moves during the drag sequence
+   * onDrag - is called every time the mouse moves during the drag sequence
    */
   onDrag?: (e: MouseEvent, componentPosition: XYPosition) => void;
   /**

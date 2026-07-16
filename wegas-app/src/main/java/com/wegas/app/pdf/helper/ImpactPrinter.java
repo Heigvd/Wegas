@@ -10,7 +10,6 @@ package com.wegas.app.pdf.helper;
 import com.wegas.app.pdf.uicomponent.UIGameModel.Mode;
 import com.wegas.core.exception.internal.WegasNashornException;
 import com.wegas.core.i18n.persistence.TranslatableContent;
-import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.i18n.tools.I18nHelper;
 import com.wegas.core.persistence.game.Player;
 import java.io.IOException;

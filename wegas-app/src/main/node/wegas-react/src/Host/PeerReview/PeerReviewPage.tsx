@@ -36,7 +36,6 @@ import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { InfoOverlay } from '../InfoOverlay';
 import { ExtraProps, PRChart } from './PeerReviewChart';
 import { PRTable } from './PeerReviewTable';
-// import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
   borderRadius: '10px',

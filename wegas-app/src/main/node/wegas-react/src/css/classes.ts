@@ -1,4 +1,3 @@
-//import * as Color from 'color';
 import { css, cx } from '@emotion/css';
 import { themeVar } from '../Components/Theme/ThemeVars';
 

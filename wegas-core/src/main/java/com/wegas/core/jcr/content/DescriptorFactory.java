@@ -94,7 +94,7 @@ public final class DescriptorFactory {
         try {
             node = contentConnector.getNode(absolutePath);
         } catch (PathNotFoundException ex) {
-            return new DirectoryDescriptor(absolutePath, contentConnector);     //return a directory (inexistant)
+            return new DirectoryDescriptor(absolutePath, contentConnector);     //return a directory (nonexistent)
         }
         return getDescriptor(node, contentConnector);
     }
