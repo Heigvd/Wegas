@@ -7,7 +7,7 @@ import { Value } from '../Components/Outputs/Value';
 import { schemaProps } from '../Components/PageComponents/tools/schemaProps';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { autoScroll, expandBoth, flex, flexColumn } from '../css/classes';
-//It's really important to import index.ts in order to have the widjets allready registered before using Form
+//It's really important to import index.ts in order to have the widgets already registered before using Form
 import '../Editor/Components/FormView';
 import { MessageString } from '../Editor/Components/MessageString';
 import { createScript } from '../Helper/wegasEntites';

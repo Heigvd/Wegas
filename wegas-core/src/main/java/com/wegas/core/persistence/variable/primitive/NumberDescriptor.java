@@ -204,7 +204,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      */
     @Deprecated
     public void setDefaultValue(double value) {
-        // only used to explicitely ignore while serializing
+        // only used to explicitly ignore while serializing
     }
 
     /**

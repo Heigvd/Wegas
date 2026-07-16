@@ -115,7 +115,7 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
     emails.body === '';
   return emails.to?.length === 0 ? (
     <pre>
-      All the user of this team or the game choosed to hide their e-mail adress
+      All the users of this team or the game chose to hide their e-mail address
     </pre>
   ) : (
     <div className={cx(flex, flexColumn, expandBoth)}>

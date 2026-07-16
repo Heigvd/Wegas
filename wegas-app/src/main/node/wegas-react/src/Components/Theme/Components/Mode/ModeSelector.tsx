@@ -55,8 +55,8 @@ export function ModeSelector({
                   icon: 'trash',
                 }}
                 tooltip={i18nValues.themeEditor.deleteMode}
-                onClick={sucess => {
-                  if (sucess) {
+                onClick={success => {
+                  if (success) {
                     dispatch(deleteMode(k));
                   }
                 }}
