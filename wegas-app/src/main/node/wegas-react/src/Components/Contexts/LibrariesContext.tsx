@@ -422,7 +422,7 @@ const setLibrariesState = (
           newState[libraryPath].modified = false;
           newState[libraryPath].conflict = false;
         }
-        // If the library is updated by the server and the user is allready modifying it, there is a conflict
+        // If the library is updated by the server and the user is already modifying it, there is a conflict
         else {
           if (newState[libraryPath].modified) {
             newState[libraryPath].conflict = true;
@@ -879,7 +879,7 @@ export function LibrariesLoader(
           });
           addLibrary && addLibrary({ type: 'succes', message: libraryName });
         } else {
-          // If no library is found an error occured
+          // If no library is found an error occurred
           error = 'UNKNOWN';
         }
 

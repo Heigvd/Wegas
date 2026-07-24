@@ -574,7 +574,7 @@ public class UserController {
     @POST
     @Path("SendMail")
     public void sendMail(Email email) {
-        // TODO Check persmissions !!!
+        // TODO Check permissions !!!
         // Current User should have each recipients registered in a game he leads or be such a superuser
         // well, such check is done by restricing access to account details
 

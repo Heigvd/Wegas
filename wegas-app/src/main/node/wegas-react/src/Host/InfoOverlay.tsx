@@ -70,11 +70,11 @@ function placeOverlay(
 
 interface InfoOverlayProps extends ClassStyleId {
   /**
-   * content - the title of the pop up, recieved by the the server in html tag
+   * content - the title of the pop up, received by the server in html tag
    */
   title: string;
   /**
-   * content - the content of the pop up, recieved by the the server in html tag
+   * content - the content of the pop up, received by the server in html tag
    */
   content: string;
   /**

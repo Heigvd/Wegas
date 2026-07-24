@@ -204,7 +204,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
      */
     @Deprecated
     public void setDefaultValue(double value) {
-        // only used to explicitely ignore while serializing
+        // only used to explicitly ignore while serializing
     }
 
     /**
@@ -271,7 +271,7 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> impleme
 
     /**
      * Check bound consistency.
-     * Applicable to any object which defined minValue & maxValue
+     * Applicable to any object which defined minValue and maxValue
      */
     public static class NumberDescBoundsConstraint extends And {
 

@@ -63,7 +63,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -264,7 +263,6 @@ abstract public class VariableInstance extends AbstractEntity implements Broadca
                 return this.getPlayer();
             } else {
                 return this.getGameModel();
-                //return this.findDescriptor().getGameModel();
             }
         }
     }

@@ -41,7 +41,6 @@ import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;
 import javax.jcr.RepositoryException;
 
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;

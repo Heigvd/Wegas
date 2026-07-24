@@ -48,7 +48,6 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import javax.naming.NamingException;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import jakarta.servlet.http.HttpServletRequest;

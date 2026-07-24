@@ -7,7 +7,6 @@
  */
 package com.wegas.core.persistence.variable.events;
 
-import ch.albasim.wegas.annotations.CommonView;
 import ch.albasim.wegas.annotations.View;
 import ch.albasim.wegas.annotations.WegasEntityProperty;
 import ch.albasim.wegas.annotations.WegasExtraProperty;

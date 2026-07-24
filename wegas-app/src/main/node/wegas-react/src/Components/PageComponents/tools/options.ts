@@ -181,7 +181,7 @@ export const wegasComponentActions: WegasComponentActions = {
   },
   openPopupPage: props => {
     //TODO : Discuss that with Maxence
-    wlog('Need to implement a popup modal. Or is it allready here?');
+    wlog('Need to implement a popup modal. Or is it already here?');
     wlog(props);
   },
   playSound: props => {
