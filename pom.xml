@@ -801,7 +801,7 @@
                         <printFailingErrors>true</printFailingErrors>
                         <failurePriority>2</failurePriority>
                         <rulesets>
-                            <rulset>wegas/pmd/default-ruleset.xml</rulset>
+                            <ruleset>wegas/pmd/default-ruleset.xml</ruleset>
                         </rulesets>
                         <excludeRoots>
                             <excludeRoot>target/generated-sources/plugin</excludeRoot>
