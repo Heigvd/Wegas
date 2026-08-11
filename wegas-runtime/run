@@ -59,6 +59,28 @@ DEFAULT_WEGAS_PROPERTIES_ORI=./src/main/resources/default_wegas.properties.orig
 
 GC=${GC:-G1GC}
 
+# OpenTelemetry Java agent (opt-in)
+OTEL_ENABLED="${OTEL_ENABLED:-false}"
+OTEL_AGENT_JAR="${OTEL_AGENT_JAR:-target/opentelemetry-javaagent.jar}"
+OTEL_CONFIG_FILE="${OTEL_CONFIG_FILE:-otel.properties}"
+
+# Build the -javaagent option (if enabled).
+# OTEL_STATUS is purely informational.
+OTEL_OPTS=
+if [ "${OTEL_ENABLED}" != "true" ]; then
+    OTEL_STATUS="OFF (set OTEL_ENABLED=true to attach the agent)"
+elif [ ! -f "${OTEL_AGENT_JAR}" ]; then
+    OTEL_STATUS="ENABLED but jar NOT FOUND at ${OTEL_AGENT_JAR} — agent NOT attached"
+else
+    OTEL_OPTS="-javaagent:${OTEL_AGENT_JAR}"
+    OTEL_CONFIG_INFO=""
+    if [ -f "${OTEL_CONFIG_FILE}" ]; then
+        OTEL_OPTS="${OTEL_OPTS} -Dotel.javaagent.configuration-file=${OTEL_CONFIG_FILE}"
+        OTEL_CONFIG_INFO=", config=${OTEL_CONFIG_FILE}"
+    fi
+    OTEL_STATUS="ON — agent=${OTEL_AGENT_JAR}, endpoint=${OTEL_EXPORTER_OTLP_ENDPOINT:-<default http://localhost:4318 or otel.properties>}${OTEL_CONFIG_INFO}"
+fi
+
 function show_help {
     echo "Usage: ./run [OPTIONS]"
     echo " -c CLUSTER_MODE datagrid discovery mode (default is ${CLUSTER_MODE})"
@@ -114,9 +136,9 @@ if [ "${CLUSTER_MODE}" = "DEFAULT" ]; then
       # macOs: multicast does not work...
       CLUSTERMODE_OPT="--clustermode tcpip:127.0.0.1:6900";
     fi
-else                        
+else
     CLUSTERMODE_OPT="--clustermode ${CLUSTER_MODE}";
-fi  
+fi
 
 DEBUG_OPTS=
 if [ "${DEBUG}" == "true" ]; then
@@ -194,6 +216,7 @@ echo " * DB_HOST:    ${DB_HOST}"
 echo " * DB_PORT:    ${DB_PORT}"
 echo " * MONGO_HOST: ${MONGO_HOST}"
 echo " * JAVA:       $($JAVA_EXECUTABLE --version)"
+echo " * OTel:       ${OTEL_STATUS}"
 [ -n "${DEBUG_OPTS}" ] && echo " * Debug:      ${DEBUG_OPTS}"
 echo ----------
 
@@ -226,7 +249,7 @@ if [ ! -z "${WEGAS_PROPERTIES}" ] && [ ! -f "${WEGAS_PROPERTIES}" ]; then
     WEGAS_PROPERTIES_OPTION=
 fi
 
-"${JAVA_EXECUTABLE}" ${DEBUG_OPTS} ${JAVA_EXTRA_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
+"${JAVA_EXECUTABLE}" ${OTEL_OPTS} ${DEBUG_OPTS} ${JAVA_EXTRA_OPTS} ${GC_OPT} ${HTTP2_OPTS} \
     -XX:+UnlockDiagnosticVMOptions \
     -Dproduct.name= -XX:+ParallelRefProcEnabled -XX:+UseCompressedOops -XX:-UseLoopPredicate \
     -Xms${HEAP} -Xmx${HEAP} \
