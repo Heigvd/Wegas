@@ -81,6 +81,11 @@ else
     OTEL_STATUS="ON — agent=${OTEL_AGENT_JAR}, endpoint=${OTEL_EXPORTER_OTLP_ENDPOINT:-<default http://localhost:4318 or otel.properties>}${OTEL_CONFIG_INFO}"
 fi
 
+# Payara Micro server-log verbosity based on a properties file (if present)
+LOG_PROPERTIES="${LOG_PROPERTIES:-logging.properties}"
+LOG_PROPERTIES_OPTION=
+[ -f "${LOG_PROPERTIES}" ] && LOG_PROPERTIES_OPTION="--logproperties ${LOG_PROPERTIES}"
+
 function show_help {
     echo "Usage: ./run [OPTIONS]"
     echo " -c CLUSTER_MODE datagrid discovery mode (default is ${CLUSTER_MODE})"
@@ -270,6 +275,7 @@ fi
     -jar ${PAYARA_MICRO} \
     --deploy ${THE_WAR} \
     --prebootcommandfile as_prebootcmd \
+    ${LOG_PROPERTIES_OPTION} \
     ${CLUSTERMODE_OPT} \
     --clusterName ${HZ_CLUSTER_NAME} \
     --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
