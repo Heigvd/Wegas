@@ -11,12 +11,14 @@ import {
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';
-import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
+import { manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { entityIs } from '../entities';
 import { Game, GameModel, Player } from '../selectors';
 import { EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
+import { dispatch as reduxDispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { deepRemove } from '../updateUtils';
 import { deleteState, editVariable } from './editingState';
 
@@ -61,7 +63,7 @@ export function getAll(): ThunkResult {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
       const result = dispatch(manageResponseHandler(res));
-      dispatch(ActionCreator.INIT_STATE_SET('variables', true));
+      reduxDispatch(setInitStatus({ key: 'variables', status: true }));
       return result;
     });
   };

@@ -7,6 +7,8 @@ import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { Page } from '../selectors';
 import { ThunkResult } from '../Stores/store';
+import { dispatch as reduxDispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 
 export type PageState = Readonly<AllPages>;
 
@@ -64,7 +66,7 @@ export function getAll(): ThunkResult {
         dispatch(ActionCreator.PAGE_INDEX({ index }));
         return PageAPI.getAll().then(pages => {
           const result = dispatch(ActionCreator.PAGE_FETCH({ pages }));
-          dispatch(ActionCreator.INIT_STATE_SET('pages', true));
+          reduxDispatch(setInitStatus({ key: 'pages', status: true }));
           return result;
         });
       })
