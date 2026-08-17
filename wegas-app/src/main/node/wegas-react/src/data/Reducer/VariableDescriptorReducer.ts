@@ -59,10 +59,10 @@ export default variableDescriptors;
 //ACTIONS
 
 export function getAll(): ThunkResult {
-  return function (thunkDispatch) {
+  return function (oldDispatch) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
-      const result = thunkDispatch(manageResponseHandler(res));
+      const result = oldDispatch(manageResponseHandler(res));
       dispatch(setInitStatus({ key: 'variables', status: true }));
       return result;
     });

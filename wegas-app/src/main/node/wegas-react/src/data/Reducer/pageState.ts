@@ -59,19 +59,19 @@ export function get(id: string): ThunkResult {
   };
 }
 export function getAll(): ThunkResult {
-  return function (thunkDispatch) {
+  return function (oldDispatch) {
     // Getting the index to force building it in case of old scenario
     return PageAPI.getIndex()
       .then(index => {
-        thunkDispatch(ActionCreator.PAGE_INDEX({ index }));
+        oldDispatch(ActionCreator.PAGE_INDEX({ index }));
         return PageAPI.getAll().then(pages => {
-          const result = thunkDispatch(ActionCreator.PAGE_FETCH({ pages }));
+          const result = oldDispatch(ActionCreator.PAGE_FETCH({ pages }));
           dispatch(setInitStatus({ key: 'pages', status: true }));
           return result;
         });
       })
       .catch((res: Response) =>
-        thunkDispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+        oldDispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
       );
   };
 }
