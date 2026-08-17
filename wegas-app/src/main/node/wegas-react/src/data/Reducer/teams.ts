@@ -7,7 +7,7 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { editingStore } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch as reduxDispatch } from '../../store/store';
+import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 
 export interface TeamState {
@@ -55,7 +55,7 @@ export function getTeams(): ThunkResult {
         const result = store.dispatch(
           ActionCreator.TEAM_FETCH_ALL({ teams: [res] }),
         );
-        reduxDispatch(setInitStatus({ key: 'teams', status: true }));
+        dispatch(setInitStatus({ key: 'teams', status: true }));
         return result;
       });
 
@@ -65,7 +65,7 @@ export function getTeams(): ThunkResult {
         const result = store.dispatch(
           ActionCreator.TEAM_FETCH_ALL({ teams: res }),
         );
-        reduxDispatch(setInitStatus({ key: 'teams', status: true }));
+        dispatch(setInitStatus({ key: 'teams', status: true }));
         return result;
       });
     }

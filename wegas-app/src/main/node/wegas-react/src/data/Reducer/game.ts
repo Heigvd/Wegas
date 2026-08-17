@@ -6,7 +6,7 @@ import { GameAPI } from '../../API/games.api';
 import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch as reduxDispatch } from '../../store/store';
+import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 
 export interface GameState {
@@ -45,7 +45,7 @@ export function getGame(): ThunkResult {
     const gameId = store.getState().global.currentGameId;
     return GameAPI.get(gameId).then(res => {
       const result = store.dispatch(ActionCreator.GAME_FETCH({ game: res }));
-      reduxDispatch(setInitStatus({ key: 'game', status: true }));
+      dispatch(setInitStatus({ key: 'game', status: true }));
       return result;
     });
   };

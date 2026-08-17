@@ -17,7 +17,7 @@ import { entityIs } from '../entities';
 import { Game, GameModel, Player } from '../selectors';
 import { EditingThunkResult } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch as reduxDispatch } from '../../store/store';
+import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { deepRemove } from '../updateUtils';
 import { deleteState, editVariable } from './editingState';
@@ -59,11 +59,11 @@ export default variableDescriptors;
 //ACTIONS
 
 export function getAll(): ThunkResult {
-  return function (dispatch) {
+  return function (thunkDispatch) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getAll(gameModelId).then(res => {
-      const result = dispatch(manageResponseHandler(res));
-      reduxDispatch(setInitStatus({ key: 'variables', status: true }));
+      const result = thunkDispatch(manageResponseHandler(res));
+      dispatch(setInitStatus({ key: 'variables', status: true }));
       return result;
     });
   };

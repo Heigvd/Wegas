@@ -7,7 +7,7 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { ThunkResult } from '../Stores/store';
-import { dispatch as reduxDispatch } from '../../store/store';
+import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 
 export interface GameModelState {
@@ -97,7 +97,7 @@ export function getGameModel(gameModelId: number): ThunkResult {
   return function () {
     return GameModelApi.get(gameModelId).then(res => {
       const result = editingStore.dispatch(manageResponseHandler(res));
-      reduxDispatch(setInitStatus({ key: 'gameModel', status: true }));
+      dispatch(setInitStatus({ key: 'gameModel', status: true }));
       return result;
     });
   };

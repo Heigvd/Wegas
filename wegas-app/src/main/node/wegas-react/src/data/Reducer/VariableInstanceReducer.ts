@@ -37,7 +37,7 @@ import {
   EditingThunkResult,
 } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch as reduxDispatch } from '../../store/store';
+import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { groupBy } from 'lodash-es';
 
@@ -224,7 +224,7 @@ export function getAll(): ThunkResult<Promise<StateActions>> {
   return function () {
     return VariableInstanceAPI.getByPlayer().then(res => {
       const result = editingStore.dispatch(manageResponseHandler(res));
-      reduxDispatch(setInitStatus({ key: 'instances', status: true }));
+      dispatch(setInitStatus({ key: 'instances', status: true }));
       return result;
     });
   };
