@@ -16,7 +16,6 @@ import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
-import { InitStateKey } from './Reducer/initState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
@@ -130,8 +129,6 @@ export const ActionCreator = {
   }) => createAction(ActionType.LANGUAGES_EDITON_ALLOWED, data),
   LOGGER_LEVEL_SET: (payload: { loggerName: string; level: LoggerLevel }) =>
     createAction(ActionType.LOGGER_LEVEL_SET, payload),
-  INIT_STATE_SET: (key: InitStateKey, status: boolean) =>
-    createAction(ActionType.INIT_STATE_SET, { key, status }),
 };
 
 export type StateActions<

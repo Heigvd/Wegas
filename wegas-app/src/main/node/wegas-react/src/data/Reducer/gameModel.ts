@@ -7,6 +7,8 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { ThunkResult } from '../Stores/store';
+import { dispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 
 export interface GameModelState {
   [id: string]: Readonly<IGameModel>;
@@ -92,10 +94,10 @@ export function createExtraTestPlayer(gameModelId: number): EditingThunkResult {
 }
 
 export function getGameModel(gameModelId: number): ThunkResult {
-  return function (dispatch) {
+  return function () {
     return GameModelApi.get(gameModelId).then(res => {
       const result = editingStore.dispatch(manageResponseHandler(res));
-      dispatch(ActionCreator.INIT_STATE_SET('gameModel', true));
+      dispatch(setInitStatus({ key: 'gameModel', status: true }));
       return result;
     });
   };

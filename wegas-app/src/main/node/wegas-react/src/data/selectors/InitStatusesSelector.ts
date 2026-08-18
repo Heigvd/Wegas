@@ -1,7 +1,8 @@
-import { store, useStore } from '../Stores/store';
+import { useAppSelector } from '../../store/hooks';
+import { RootState } from '../../store/store';
 
-export function selectIsReadyForClientScript(): boolean {
-  const { initStatuses } = store.getState();
+export function selectIsReadyForClientScript(state: RootState): boolean {
+  const { initStatuses } = state;
   return (
     initStatuses.instances &&
     initStatuses.variables &&
@@ -17,11 +18,11 @@ export function selectIsReadyForClientScript(): boolean {
  * This hook indicates whether or not the store is ready for client scrip execution
  */
 export function useIsReadyForClientScript(): boolean {
-  return useStore(selectIsReadyForClientScript);
+  return useAppSelector(selectIsReadyForClientScript);
 }
 
-export function selectIsReadyForPageDisplay(): boolean {
-  const { initStatuses } = store.getState();
+export function selectIsReadyForPageDisplay(state: RootState): boolean {
+  const { initStatuses } = state;
   return initStatuses.pages && initStatuses.clientScriptsEvaluationDone && initStatuses.components;
 }
 
@@ -29,5 +30,5 @@ export function selectIsReadyForPageDisplay(): boolean {
  * This hook indicates if pages are ready to be displayed.
  */
 export function useIsReadyForPageDisplay(): boolean {
-  return useStore(selectIsReadyForPageDisplay);
+  return useAppSelector(selectIsReadyForPageDisplay);
 }

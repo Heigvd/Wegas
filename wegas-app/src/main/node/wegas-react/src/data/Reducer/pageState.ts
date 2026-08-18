@@ -7,6 +7,8 @@ import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { Page } from '../selectors';
 import { ThunkResult } from '../Stores/store';
+import { dispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 
 export type PageState = Readonly<AllPages>;
 
@@ -57,19 +59,19 @@ export function get(id: string): ThunkResult {
   };
 }
 export function getAll(): ThunkResult {
-  return function (dispatch) {
+  return function (oldDispatch) {
     // Getting the index to force building it in case of old scenario
     return PageAPI.getIndex()
       .then(index => {
-        dispatch(ActionCreator.PAGE_INDEX({ index }));
+        oldDispatch(ActionCreator.PAGE_INDEX({ index }));
         return PageAPI.getAll().then(pages => {
-          const result = dispatch(ActionCreator.PAGE_FETCH({ pages }));
-          dispatch(ActionCreator.INIT_STATE_SET('pages', true));
+          const result = oldDispatch(ActionCreator.PAGE_FETCH({ pages }));
+          dispatch(setInitStatus({ key: 'pages', status: true }));
           return result;
         });
       })
       .catch((res: Response) =>
-        dispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
+        oldDispatch(ActionCreator.PAGE_ERROR({ error: res.statusText })),
       );
   };
 }

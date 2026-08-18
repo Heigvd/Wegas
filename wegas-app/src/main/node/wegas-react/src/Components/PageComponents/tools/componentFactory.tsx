@@ -7,8 +7,8 @@ import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
-import { ActionCreator } from '../../../data/actions';
-import { store } from '../../../data/Stores/store';
+import { dispatch } from '../../../store/store';
+import { setInitStatus } from '../../../store/slices/initStatus';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
@@ -252,7 +252,7 @@ export const importPageComponents = () => {
 
   Promise.all(allPromises).then(() => {
     wlog('One is glad to be of service 🤖');
-    store.dispatch(ActionCreator.INIT_STATE_SET('components', true));
+    dispatch(setInitStatus({ key: 'components', status: true }));
   });
 };
 

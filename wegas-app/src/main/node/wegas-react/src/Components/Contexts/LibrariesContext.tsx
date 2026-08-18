@@ -10,11 +10,13 @@ import {
 } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
-import { ActionCreator, manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { GameModel } from '../../data/selectors';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
 import { store } from '../../data/Stores/store';
+import { dispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
   MonacoEditor,
@@ -549,8 +551,8 @@ export function LibrariesLoader(
             wwarn(e);
           }
           // initial client script evaluation done !
-          store.dispatch(
-            ActionCreator.INIT_STATE_SET('clientScriptsEvaluationDone', true),
+          dispatch(
+            setInitStatus({ key: 'clientScriptsEvaluationDone', status: true }),
           );
         })
         .catch(() => {

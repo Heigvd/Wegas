@@ -37,6 +37,8 @@ import {
   EditingThunkResult,
 } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
+import { dispatch } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { groupBy } from 'lodash-es';
 
 type VariableInstanceId = string;
@@ -219,10 +221,10 @@ export function updateInstance(
 }
 
 export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function (dispatch) {
+  return function () {
     return VariableInstanceAPI.getByPlayer().then(res => {
       const result = editingStore.dispatch(manageResponseHandler(res));
-      dispatch(ActionCreator.INIT_STATE_SET('instances', true));
+      dispatch(setInitStatus({ key: 'instances', status: true }));
       return result;
     });
   };
