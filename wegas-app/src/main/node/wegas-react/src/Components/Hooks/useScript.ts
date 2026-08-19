@@ -31,6 +31,7 @@ import {
   usePagesContextStateStore,
 } from '../../data/Stores/pageContextStore';
 import { store, useStore } from '../../data/Stores/store';
+import { store as reduxStore } from '../../store/store';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
@@ -121,7 +122,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   const player = Player.selectCurrent();
   const gameModel = store.gameModels[store.global.currentGameModelId];
-  const teams = Object.values(store.teams);
+  const teams = Object.values(reduxStore.getState().teams);
   const pageLoaders = store.global.pageLoaders;
 
   const splayer = instantiate(player);

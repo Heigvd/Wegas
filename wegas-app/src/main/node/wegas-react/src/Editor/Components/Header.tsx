@@ -45,6 +45,7 @@ import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { useAppSelector } from '../../store/hooks';
 import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
@@ -257,9 +258,12 @@ export default function Header() {
   const loggerLevelTogglers = useLoggerLevelSelector();
   const authorizationTogglers = useAuthorizations();
 
-  const teams = useStore(s => {
-    return Object.values(s.teams);
-  }, shallowDifferent);
+  const teams = useAppSelector(
+    s => {
+      return Object.values(s.teams);
+    },
+    (a, b) => !shallowDifferent(a, b),
+  );
 
   const createExtraTestPlayerItem: DropMenuItem<unknown> = {
     label: (
@@ -370,9 +374,7 @@ export default function Header() {
                           className={cx(flex, flexRow, itemCenter)}
                         >
                           <CheckBox
-                            value={
-                              userLanguage === key
-                            }
+                            value={userLanguage === key}
                             onChange={() => {
                               dispatch(
                                 Actions.EditorActions.setEditorLanguage(

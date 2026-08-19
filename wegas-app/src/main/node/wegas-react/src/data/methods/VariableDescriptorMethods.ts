@@ -4,6 +4,7 @@ import {
   VariableInstance,
   GameModel,
   Player,
+  Team,
 } from '../selectors';
 import { store } from '../Stores/store';
 import {
@@ -129,7 +130,7 @@ export function getScopeEntity(
     case 'PlayerScope':
       return Player.select(vi.scopeKey);
     case 'TeamScope':
-      return state.teams[vi.scopeKey];
+      return Team.select(vi.scopeKey);
     case 'GameModelScope':
       return state.gameModels[vi.scopeKey];
   }

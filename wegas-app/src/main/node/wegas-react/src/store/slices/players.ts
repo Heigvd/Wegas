@@ -6,23 +6,29 @@
  * Licensed under the MIT License
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IPlayer } from 'wegas-ts-api';
+import { IPlayer, ITeam } from 'wegas-ts-api';
 
 export interface PlayersState {
   [id: string]: IPlayer;
 }
 
-const initialState: PlayersState = CurrentGame.teams.reduce<PlayersState>(
-  (prev, t) => {
+/**
+ * Players are embedded in their team's payload rather than normalized by the
+ * generic entity pipeline, so callers that fetch teams (initial state included)
+ * must extract them explicitly.
+ */
+export function playersFromTeams(teams: ITeam[]): Record<string, IPlayer> {
+  return teams.reduce<Record<string, IPlayer>>((acc, t) => {
     t.players.forEach(p => {
       if (p.id !== undefined) {
-        prev[p.id] = p;
+        acc[p.id] = p;
       }
     });
-    return prev;
-  },
-  {},
-);
+    return acc;
+  }, {});
+}
+
+const initialState: PlayersState = playersFromTeams(CurrentGame.teams);
 
 const playersSlice = createSlice({
   name: 'players',

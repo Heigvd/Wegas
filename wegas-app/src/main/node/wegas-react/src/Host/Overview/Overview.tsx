@@ -8,15 +8,15 @@ import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth, flex, flexBetween, flexRow } from '../../css/classes';
-import { TeamState } from '../../data/Reducer/teams';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
+import { useAppSelector } from '../../store/hooks';
+import { TeamsState } from '../../store/slices/teams';
 import { sortFnFactory, SortState } from '../TableSorter';
 import { OverviewHeader } from './OverviewHeader';
 import { FilterState } from './OverviewModal/FilterModalContent';
@@ -227,14 +227,14 @@ export default function Overview({
 
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
-  const teams = useStore(s => {
+  const teams = useAppSelector(s => {
     return Object.entries(s.teams)
       .filter(([, team]) => team.parentId === game.id)
-      .reduce<TeamState>((teams, [teamId, team]) => {
+      .reduce<TeamsState>((teams, [teamId, team]) => {
         teams[teamId] = team;
         return teams;
       }, {});
-  }, deepDifferent);
+  }, (a, b) => !deepDifferent(a, b));
 
   const buildFilter = (structure: OverviewDataStructure[], forcedValue?: boolean) => {
     const filtered: FilterState = {};

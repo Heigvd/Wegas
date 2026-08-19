@@ -4,7 +4,6 @@ import {
   IGameModel,
   IGameModelLanguage,
   IScript,
-  ITeam,
   WegasClassNames,
 } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
@@ -21,6 +20,7 @@ import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
 import { dispatch } from '../store/store';
 import { updatePlayers } from '../store/slices/players';
+import { updateTeams } from '../store/slices/teams';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
   return {
@@ -106,11 +106,6 @@ export const ActionCreator = {
     gameModelLanguage: IGameModelLanguage;
     gameModelId: string;
   }) => createAction(ActionType.GAMEMODEL_LANGUAGE_EDIT, data),
-
-  TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
-    createAction(ActionType.TEAM_FETCH_ALL, data),
-  TEAM_UPDATE: (data: { team: ITeam }) =>
-    createAction(ActionType.TEAM_UPDATE, data),
 
   GAME_FETCH: (data: { game: IGame }) =>
     createAction(ActionType.GAME_FETCH, data),
@@ -229,6 +224,13 @@ export function manageResponseHandler(
     updatePlayers({
       updated: updatedEntities.players,
       deleted: Object.keys(deletedEntities.players),
+    }),
+  );
+
+  dispatch(
+    updateTeams({
+      updated: updatedEntities.teams,
+      deleted: Object.keys(deletedEntities.teams),
     }),
   );
 
