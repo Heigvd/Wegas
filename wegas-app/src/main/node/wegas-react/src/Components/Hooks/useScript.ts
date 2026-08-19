@@ -22,7 +22,7 @@ import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
-import { VariableDescriptor as VDSelect } from '../../data/selectors';
+import { Player, VariableDescriptor as VDSelect } from '../../data/selectors';
 import {
   getPageState,
   PagesContextState,
@@ -119,7 +119,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     classes
   } = globalContexts;
 
-  const player = store.players[store.global.currentPlayerId];
+  const player = Player.selectCurrent();
   const gameModel = store.gameModels[store.global.currentGameModelId];
   const teams = Object.values(store.teams);
   const pageLoaders = store.global.pageLoaders;

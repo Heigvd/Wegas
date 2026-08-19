@@ -2,7 +2,6 @@ import games, { GameState } from './game';
 import gameModels, { GameModelState } from './gameModel';
 import global, { GlobalState } from './globalState';
 import pages from './pageState';
-import players, { PlayerState } from './player';
 import teams, { TeamState } from './teams';
 import variableDescriptors, {
   VariableDescriptorState,
@@ -18,7 +17,6 @@ export interface State {
   variableInstances: Readonly<VariableInstanceState>;
   global: Readonly<GlobalState>;
   pages: Readonly<AllPages>;
-  players: Readonly<PlayerState>;
   teams: Readonly<TeamState>;
 }
 
@@ -29,6 +27,5 @@ export default {
   global,
   pages,
   games,
-  players,
   teams,
 };

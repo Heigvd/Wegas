@@ -8,6 +8,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import announcementReducer from './slices/announcement';
 import initStatusReducer from './slices/initStatus';
+import playersReducer from './slices/players';
 
 /**
  * New store for react-redux
@@ -16,6 +17,7 @@ export const store = configureStore({
     reducer: {
         announcements: announcementReducer,
         initStatuses: initStatusReducer,
+        players: playersReducer,
     },
 });
 

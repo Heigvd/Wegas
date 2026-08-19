@@ -127,7 +127,7 @@ export function getScopeEntity(
   const state = store.getState();
   switch (vd.scopeType) {
     case 'PlayerScope':
-      return state.players[vi.scopeKey];
+      return Player.select(vi.scopeKey);
     case 'TeamScope':
       return state.teams[vi.scopeKey];
     case 'GameModelScope':

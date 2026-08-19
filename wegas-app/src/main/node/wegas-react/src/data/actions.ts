@@ -19,6 +19,8 @@ import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
+import { dispatch } from '../store/store';
+import { updatePlayers } from '../store/slices/players';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
   return {
@@ -222,6 +224,13 @@ export function manageResponseHandler(
   };
 
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+  dispatch(
+    updatePlayers({
+      updated: updatedEntities.players,
+      deleted: Object.keys(deletedEntities.players),
+    }),
+  );
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));

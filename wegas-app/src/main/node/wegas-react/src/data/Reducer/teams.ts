@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import { Reducer } from 'redux';
-import { ITeam } from 'wegas-ts-api';
+import { IPlayer, ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
 import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
@@ -9,6 +9,19 @@ import { editingStore } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
+import { updatePlayers } from '../../store/slices/players';
+
+// TODO Temporary until teams migration
+function extractPlayers(teams: ITeam[]): Record<string, IPlayer> {
+  return teams.reduce<Record<string, IPlayer>>((acc, t) => {
+    t.players.forEach(p => {
+      if (p.id !== undefined) {
+        acc[p.id] = p;
+      }
+    });
+    return acc;
+  }, {});
+}
 
 export interface TeamState {
   [id: string]: Readonly<ITeam>;
@@ -36,7 +49,7 @@ const teams: Reducer<Readonly<TeamState>> = produce(
   (CurrentGame.teams || {}).reduce<TeamState>((prev, t) => {
     prev[t.id!] = t;
     return prev;
-  }, {} ),
+  }, {}),
 );
 export default teams;
 
@@ -44,7 +57,7 @@ export default teams;
  * Get all teams
  */
 export function getTeams(): ThunkResult {
-  return function() {
+  return function () {
     const gameId = store.getState().global.currentGameId;
 
     if (APP_CONTEXT === 'Player') {
@@ -55,16 +68,17 @@ export function getTeams(): ThunkResult {
         const result = store.dispatch(
           ActionCreator.TEAM_FETCH_ALL({ teams: [res] }),
         );
+        dispatch(updatePlayers({ updated: extractPlayers([res]) }));
         dispatch(setInitStatus({ key: 'teams', status: true }));
         return result;
       });
-
     } else {
       // we fetch all the teams in the game
       return TeamAPI.getAll(gameId).then(res => {
         const result = store.dispatch(
           ActionCreator.TEAM_FETCH_ALL({ teams: res }),
         );
+        dispatch(updatePlayers({ updated: extractPlayers(res) }));
         dispatch(setInitStatus({ key: 'teams', status: true }));
         return result;
       });
@@ -92,8 +106,10 @@ export function changePlayerLanguage(codeLang: string): ThunkResult {
   return function () {
     const teamId: number = store.getState().global.currentTeamId;
     const playerId: number = store.getState().global.currentPlayerId;
-    return TeamAPI.changePlayerLanguage(teamId, playerId, codeLang).then(res => {
-      return store.dispatch(manageResponseHandler(res));
-    });
+    return TeamAPI.changePlayerLanguage(teamId, playerId, codeLang).then(
+      res => {
+        return store.dispatch(manageResponseHandler(res));
+      },
+    );
   };
 }
