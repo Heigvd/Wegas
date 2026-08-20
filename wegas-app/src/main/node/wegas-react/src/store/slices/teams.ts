@@ -5,8 +5,9 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
+import { TeamAPI } from '../../API/teams.api';
 
 export interface TeamsState {
   [id: string]: ITeam;
@@ -23,18 +24,28 @@ function teamsById(teams: ITeam[]): TeamsState {
 
 const initialState: TeamsState = teamsById(CurrentGame.teams || []);
 
+/**
+ * A player only ever needs their own team, so the caller resolves gameId /
+ * teamId (from the still-legacy global slice) rather than this thunk
+ * reaching into that store itself.
+ * TODO teams migration: once `global` moves to this store, gameId/teamId
+ * could be read here directly and callers wouldn't need to pass them.
+ */
+export const getTeams = createAsyncThunk(
+  'teams/getAll',
+  async (args: { gameId: number; teamId: number }) => {
+    if (APP_CONTEXT === 'Player') {
+      return [await TeamAPI.getTeam(args.gameId, args.teamId)];
+    } else {
+      return await TeamAPI.getAll(args.gameId);
+    }
+  },
+);
+
 const teamsSlice = createSlice({
   name: 'teams',
   initialState,
   reducers: {
-    setTeams: {
-      reducer(_state, action: PayloadAction<TeamsState>) {
-        return action.payload;
-      },
-      prepare(teams: ITeam[]) {
-        return { payload: teamsById(teams) };
-      },
-    },
     updateTeams(
       state,
       action: PayloadAction<{
@@ -48,7 +59,12 @@ const teamsSlice = createSlice({
       Object.assign(state, action.payload.updated);
     },
   },
+  extraReducers: builder => {
+    builder.addCase(getTeams.fulfilled, (_state, action) => {
+      return teamsById(action.payload);
+    });
+  },
 });
 
-export const { setTeams, updateTeams } = teamsSlice.actions;
+export const { updateTeams } = teamsSlice.actions;
 export default teamsSlice.reducer;

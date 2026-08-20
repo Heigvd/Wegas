@@ -5,6 +5,8 @@ import { Actions } from '..';
 import { StateActions } from '../actions';
 import { createStoreConnector } from '../connectStore';
 import reducers, { State } from '../Reducer/reducers';
+import { dispatch } from '../../store/store';
+import { getTeams } from '../../store/slices/teams';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -21,7 +23,15 @@ function storeInit() {
   store.dispatch(Actions.VariableInstanceActions.getAll());
   store.dispatch(Actions.PageActions.getAll());
   store.dispatch(Actions.GameActions.getGame());
-  store.dispatch(Actions.TeamActions.getTeams());
+  // TODO teams migration: this dispatch only lives here because gameId/teamId
+  // still come from this store's `global` slice. Once `global` moves to the
+  // react-redux store, move this call (and storeInit as a whole) there too.
+  dispatch(
+    getTeams({
+      gameId: store.getState().global.currentGameId,
+      teamId: store.getState().global.currentTeamId,
+    }),
+  );
   store.dispatch(Actions.EditorActions.getEditorLanguage());
   store.dispatch(Actions.GameModelActions.getGameModel(CurrentGM.id!));
 }

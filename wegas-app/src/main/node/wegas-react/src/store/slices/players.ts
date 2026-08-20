@@ -7,6 +7,7 @@
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IPlayer, ITeam } from 'wegas-ts-api';
+import { getTeams } from './teams';
 
 export interface PlayersState {
   [id: string]: IPlayer;
@@ -46,6 +47,11 @@ const playersSlice = createSlice({
       });
       Object.assign(state, action.payload.updated);
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(getTeams.fulfilled, (state, action) => {
+      Object.assign(state, playersFromTeams(action.payload));
+    });
   },
 });
 
