@@ -45,7 +45,7 @@ import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
-import { useAppSelector } from '../../store/hooks';
+import { shallowEqual, useAppSelector } from '../../store/hooks';
 import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
@@ -258,12 +258,9 @@ export default function Header() {
   const loggerLevelTogglers = useLoggerLevelSelector();
   const authorizationTogglers = useAuthorizations();
 
-  const teams = useAppSelector(
-    s => {
-      return Object.values(s.teams);
-    },
-    (a, b) => !shallowDifferent(a, b),
-  );
+  const teams = useAppSelector(s => {
+    return Object.values(s.teams);
+  }, shallowEqual);
 
   const createExtraTestPlayerItem: DropMenuItem<unknown> = {
     label: (

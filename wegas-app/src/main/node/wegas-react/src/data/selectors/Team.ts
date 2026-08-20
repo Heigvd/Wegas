@@ -1,15 +1,15 @@
-import { store } from '../Stores/store';
-import { store as reduxStore } from '../../store/store';
+import { store as oldStore } from '../Stores/store';
+import { store } from '../../store/store';
 
 /**
  * Get the team with id
  * @param id team's id
  */
 export function select(id: number) {
-  return reduxStore.getState().teams[id];
+  return store.getState().teams[id];
 }
 
 export function selectCurrent() {
-  const currentTeamId = store.getState().global.currentTeamId;
-  return reduxStore.getState().teams[currentTeamId];
+  const currentTeamId = oldStore.getState().global.currentTeamId;
+  return store.getState().teams[currentTeamId];
 }

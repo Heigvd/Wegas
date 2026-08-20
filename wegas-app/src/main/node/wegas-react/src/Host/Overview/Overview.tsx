@@ -1,9 +1,9 @@
 import { css, CSSInterpolation, cx } from '@emotion/css';
+import { isEqual } from 'lodash-es';
 import * as React from 'react';
 import { ITeam } from 'wegas-ts-api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { useWebsocketEvent } from '../../API/websocket';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
@@ -234,7 +234,7 @@ export default function Overview({
         teams[teamId] = team;
         return teams;
       }, {});
-  }, (a, b) => !deepDifferent(a, b));
+  }, isEqual);
 
   const buildFilter = (structure: OverviewDataStructure[], forcedValue?: boolean) => {
     const filtered: FilterState = {};
