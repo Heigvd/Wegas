@@ -12,7 +12,8 @@ import {
 import { flex, flexRow, grow, itemCenter } from '../../../css/classes';
 import { varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { GameModel, VariableDescriptor } from '../../../data/selectors';
+import { VariableDescriptor } from '../../../data/selectors';
+import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { useStore } from '../../../data/Stores/store';
 import {
   createScript,
@@ -313,9 +314,10 @@ function autoExpand<T>(items: TreeSelectItem<T>[], needle: T) {
 export function TreeVariableSelect(
   props: TreeVariableSelectProps,
 ): JSX.Element {
+  const gameModel = useGameModel();
   const genCb = React.useCallback(() => {
     const list = genVarItems(
-      GameModel.selectCurrent().itemsIds,
+      gameModel.itemsIds,
       undefined,
       scriptableClassNameToClassFilter(props.view.returnType),
     );
@@ -323,7 +325,7 @@ export function TreeVariableSelect(
     autoExpand(list, props.value || '');
 
     return list;
-  }, [props.view.returnType, props.value]);
+  }, [gameModel.itemsIds, props.view.returnType, props.value]);
 
   const varItems = useStore(genCb, deepDifferent);
 

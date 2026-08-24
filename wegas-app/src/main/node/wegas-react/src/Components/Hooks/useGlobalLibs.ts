@@ -68,7 +68,7 @@ import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScript
 import * as React from 'react';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
-import { GameModel } from '../../data/selectors';
+import { useGameModel } from './useGameModel';
 import { useStore } from '../../data/Stores/store';
 import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
@@ -151,6 +151,7 @@ export function useGlobalLibs() {
   const scriptContext = 'Client';
 
   const { classes } = React.useContext(classesCTX);
+  const gameModel = useGameModel();
 
   const libsSelector = React.useCallback(
     (s: State) => {
@@ -169,9 +170,7 @@ export function useGlobalLibs() {
       const globalMethods = s.global.clientMethods;
       const globalSchemas = s.global.schemas.views;
       const globalServerMethods = s.global.serverMethods;
-      const currentLanguages = Object.values(
-        GameModel.selectCurrent().languages,
-      )
+      const currentLanguages = Object.values(gameModel.languages)
         .map(l => `"${l.code}"`)
         .join(' | ');
 
@@ -382,7 +381,7 @@ export function useGlobalLibs() {
         return '';
       }
     },
-    [classes, scriptContext],
+    [classes, scriptContext, gameModel.languages],
   );
 
   const libs = useStore(libsSelector, deepDifferent);

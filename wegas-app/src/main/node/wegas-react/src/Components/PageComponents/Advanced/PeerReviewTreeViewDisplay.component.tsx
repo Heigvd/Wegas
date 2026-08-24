@@ -35,7 +35,7 @@ import {
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
-import { liveEdition } from '../../../data/Reducer/gameModel';
+import { liveEdition } from '../../../store/slices/gameModel';
 import {
   asynchSaveReview,
   saveReview,
