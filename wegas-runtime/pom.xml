@@ -161,25 +161,31 @@
                   <configuration>
                     <outputDirectory>${basedir}/src/main/docker/wegas</outputDirectory>
                     <resources>
-                      <resource>
-                        <directory>${basedir}</directory>
-                        <includes>
-                          <include>run</include>
-                          <include>as_prebootcmd</include>
-                        </includes>
-                    </resource>
-                      <resource>
-                          <directory>${basedir}/target</directory>
-                        <includes>
-                          <include>payara-micro.current.jar</include>
-                        </includes>
-                      </resource>
-                      <resource>
-                          <directory>${basedir}/../wegas-app/target</directory>
-                        <includes>
-                          <include>Wegas.war</include>
-                        </includes>
-                      </resource>
+                        <resource>
+                            <directory>${basedir}</directory>
+                            <includes>
+                                <include>run</include>
+                                <include>as_prebootcmd</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/target</directory>
+                            <includes>
+                                <include>payara-micro.current.jar</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/../wegas-app/target</directory>
+                            <includes>
+                                <include>Wegas.war</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>${basedir}/target</directory>
+                            <includes>
+                                <include>opentelemetry-javaagent.jar</include>
+                            </includes>
+                        </resource>
                     </resources>
                   </configuration>
                 </execution>
@@ -233,6 +239,14 @@
                                     <version>${payara.micro.version}</version>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.basedir}/target/</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>io.opentelemetry.javaagent</groupId>
+                                    <artifactId>opentelemetry-javaagent</artifactId>
+                                    <version>${otel.agent.version}</version>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.basedir}/target/</outputDirectory>
+                                    <destFileName>opentelemetry-javaagent.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
