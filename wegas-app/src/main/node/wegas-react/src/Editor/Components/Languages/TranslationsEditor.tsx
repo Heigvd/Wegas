@@ -47,7 +47,8 @@ import {
   mediumPadding_sides,
   secondaryButtonStyle,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { dispatch } from '../../../store/store';
+import { editGameModel } from '../../../store/slices/gameModel';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
@@ -59,7 +60,7 @@ import {
   editingStore,
   useEditingStore,
 } from '../../../data/Stores/editingStore';
-import { getDispatch, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -1131,14 +1132,11 @@ export function TranslationEditor() {
     }
     return {
       parentIds,
-      root: GameModel.selectCurrent(),
     };
   }, [parentId]);
 
-  const { root /*, languages*/, parentIds } = useStore(
-    translationSelector,
-    deepDifferent,
-  );
+  const { parentIds } = useStore(translationSelector, deepDifferent);
+  const root = useGameModel();
   const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);
   const [selectedLanguagesIds, setSelectedLanguagesIds] = React.useState(
@@ -1254,11 +1252,11 @@ export function TranslationEditor() {
                     icon="arrows-alt-h"
                     onClick={() => {
                       LanguagesAPI.upLanguage(language).then(res =>
-                        getDispatch()(
-                          Actions.GameModelActions.editGameModel(
-                            res,
-                            String(GameModel.selectCurrent().id),
-                          ),
+                        dispatch(
+                          editGameModel({
+                            gameModel: res,
+                            gameModelId: GameModel.selectCurrent().id!,
+                          }),
                         ),
                       );
                     }}

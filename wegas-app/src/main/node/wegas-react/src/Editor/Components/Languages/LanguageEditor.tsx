@@ -20,11 +20,11 @@ import {
   itemCenter,
   secondaryButtonStyle,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
 import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
-import { getDispatch } from '../../../data/Stores/store';
+import { dispatch } from '../../../store/store';
+import { editGameModel, editLanguage } from '../../../store/slices/gameModel';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -66,25 +66,25 @@ function moveLanguage(
   language: IGameModelLanguage | undefined | null,
   languages: IGameModelLanguage[],
 ) {
-  function dispatch(gameModel: IGameModel) {
-    getDispatch()(
-      Actions.GameModelActions.editGameModel(
+  function updateGameModel(gameModel: IGameModel) {
+    dispatch(
+      editGameModel({
         gameModel,
-        String(GameModel.selectCurrent().id),
-      ),
+        gameModelId: GameModel.selectCurrent().id!,
+      }),
     );
   }
 
   if (language != null) {
     if (up) {
-      LanguagesAPI.upLanguage(language).then(dispatch);
+      LanguagesAPI.upLanguage(language).then(updateGameModel);
     } else {
       const previousLanguage = languages.find(
         (lang: ISortedGameModelLanguage) =>
           lang.indexOrder === (language.indexOrder || 0) + 1,
       );
       if (previousLanguage != null) {
-        LanguagesAPI.upLanguage(previousLanguage).then(dispatch);
+        LanguagesAPI.upLanguage(previousLanguage).then(updateGameModel);
       }
     }
   }
@@ -217,11 +217,11 @@ export default function LanguageEditor() {
                   if (selectedLanguage.id != null) {
                     LanguagesAPI.updateLanguage(selectedLanguage)
                       .then(gameModelLanguage => {
-                        getDispatch()(
-                          Actions.GameModelActions.editLanguage(
+                        dispatch(
+                          editLanguage({
                             gameModelLanguage,
-                            String(GameModel.selectCurrent().id),
-                          ),
+                            gameModelId: GameModel.selectCurrent().id!,
+                          }),
                         );
                       })
                       .catch(e => {

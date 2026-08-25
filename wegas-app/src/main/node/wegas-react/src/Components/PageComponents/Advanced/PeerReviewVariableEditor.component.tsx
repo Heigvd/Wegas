@@ -19,7 +19,7 @@ import {
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
-import { liveEdition } from '../../../data/Reducer/gameModel';
+import { liveEdition } from '../../../store/slices/gameModel';
 import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
 import {
   asyncRunLoadedScript,
