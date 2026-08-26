@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { IGameModelLanguage } from 'wegas-ts-api';
-import { Actions } from '../../data';
 import { orderGameModelLanguages } from '../../data/i18n';
 import { useCurrentPlayer } from '../../data/selectors/Player';
-import { store } from '../../data/Stores/store';
+import { changePlayerLanguage } from '../../store/slices/teams';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { DropDownDirection } from '../DropDown';
@@ -43,7 +42,7 @@ function LanguagesContext({ children }: Readonly<LanguagesProviderProps>) {
 
   const selectLang = React.useCallback(
     (lang: string) => {
-      store.dispatch(Actions.TeamActions.changePlayerLanguage(lang))
+      void changePlayerLanguage(lang);
     },
     [],
   );

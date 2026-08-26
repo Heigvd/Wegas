@@ -6,7 +6,6 @@ import {
   Player,
   Team,
 } from '../selectors';
-import { store } from '../Stores/store';
 import {
   ITranslatableContent,
   IVariableDescriptor,
@@ -34,12 +33,17 @@ export function editorLabel(vd?: {
   //   return label;
   // }
   if (vd && vd.editorTag && label) {
-    return `${ vd.editorTag } - ${ label }`;
+    return `${vd.editorTag} - ${label}`;
   }
   return (vd && (vd.editorTag || label || vd.name)) || '';
 }
 
-export function editorTitle({label, editorTag, name, index}: {
+export function editorTitle({
+  label,
+  editorTag,
+  name,
+  index,
+}: {
   label?: ITranslatableContent;
   editorTag?: string | null;
   name?: string;
@@ -94,9 +98,9 @@ export function getInstance<I extends IVariableInstance>(
     scopeType === 'PlayerScope'
       ? player.id
       : scopeType === 'TeamScope'
-        ? player.parentId
-        : 0;
-  const cacheKey = `${ parentId }${ scopeType }${ scopeKey }`;
+      ? player.parentId
+      : 0;
+  const cacheKey = `${parentId}${scopeType}${scopeKey}`;
 
   const id = instancesCache.get(cacheKey);
   if (typeof id === 'number') {
@@ -125,7 +129,7 @@ export function getScopeEntity(
   if (vd == null || vi.scopeKey == null) {
     return undefined;
   }
-  const state = store.getState();
+
   switch (vd.scopeType) {
     case 'PlayerScope':
       return Player.select(vi.scopeKey);

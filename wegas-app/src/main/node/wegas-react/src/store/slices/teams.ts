@@ -8,6 +8,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
+import { manageResponseHandler } from '../../data/actions';
+import { editingStore } from '../../data/Stores/editingStore';
 
 export interface TeamsState {
   [id: string]: ITeam;
@@ -41,6 +43,33 @@ export const getTeams = createAsyncThunk(
     }
   },
 );
+
+/**
+ * Update a team.
+ *
+ * The resulting team lands in this slice through the managed-response funnel
+ * (manageResponseHandler dispatches `updateTeams` to this store), so there is
+ * nothing to reduce here. It is routed through the editing store as well, which
+ * the funnel does not reach on its own.
+ */
+export async function updateTeam(team: ITeam) {
+  const res = await TeamAPI.update(CurrentGM.id!, CurrentGame.id!, team);
+  editingStore.dispatch(manageResponseHandler(res));
+}
+
+/**
+ * Change the current player's language.
+ */
+export async function changePlayerLanguage(codeLang: string) {
+  const res = await TeamAPI.changePlayerLanguage(
+    CurrentTeamId,
+    CurrentPlayerId,
+    codeLang,
+  );
+  // manageResponseHandler already dispatches to the old store and fans the
+  // payload out to this one, so its returned action needs no further dispatch.
+  manageResponseHandler(res);
+}
 
 const teamsSlice = createSlice({
   name: 'teams',
