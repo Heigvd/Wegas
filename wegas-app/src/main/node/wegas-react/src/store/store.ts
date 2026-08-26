@@ -10,6 +10,8 @@ import announcementReducer from './slices/announcement';
 import initStatusReducer from './slices/initStatus';
 import playersReducer from './slices/players';
 import teamsReducer from './slices/teams';
+import gameReducer from './slices/game';
+import gameModelReducer from './slices/gameModel';
 
 /**
  * New store for react-redux
@@ -20,6 +22,8 @@ export const store = configureStore({
         initStatuses: initStatusReducer,
         players: playersReducer,
         teams: teamsReducer,
+        games: gameReducer,
+        gameModels: gameModelReducer,
     },
 });
 

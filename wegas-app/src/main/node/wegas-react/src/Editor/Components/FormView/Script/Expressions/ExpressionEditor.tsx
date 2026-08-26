@@ -6,9 +6,9 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
-import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { deepDifferent, refDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { useGameModel } from '../../../../../Components/Hooks/useGameModel';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { State } from '../../../../../data/Reducer/reducers';
 import { useStore } from '../../../../../data/Stores/store';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
@@ -46,10 +46,6 @@ interface ExpressionEditorState {
   schema?: WysiwygExpressionSchema;
   error?: string | false;
   softError?: string[];
-}
-
-function getRootLevelVariableIds(s: State) {
-  return s.gameModels[s.global.currentGameModelId].itemsIds;
 }
 
 /**
@@ -151,11 +147,19 @@ export function ExpressionEditor({
     }
   }, [error, softError, setError]);
 
-  const variablesItems = useStore(s => {
-    return genVarItems(getRootLevelVariableIds(s), selectableFn, undefined, value =>
-      makeItems(value, 'variable'),
-    );
-  }, deepDifferent);
+  const gameModel = useGameModel();
+  // genVarItems reads the variable descriptors internally (non-reactively), so we
+  // subscribe to them and keep variableDescriptors as an explicit trigger dependency
+  // to recompute the items whenever a descriptor changes.
+  const variableDescriptors = useStore(s => s.variableDescriptors, refDifferent);
+  const variablesItems = React.useMemo(
+    () =>
+      genVarItems(gameModel.itemsIds, selectableFn, undefined, value =>
+        makeItems(value, 'variable'),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [gameModel.itemsIds, variableDescriptors],
+  );
 
   const onChange = instantOnChange;
 

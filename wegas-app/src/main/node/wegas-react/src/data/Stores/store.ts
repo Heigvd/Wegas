@@ -7,6 +7,8 @@ import { createStoreConnector } from '../connectStore';
 import reducers, { State } from '../Reducer/reducers';
 import { dispatch } from '../../store/store';
 import { getTeams } from '../../store/slices/teams';
+import { getGame } from '../../store/slices/game';
+import { getGameModel } from '../../store/slices/gameModel';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -22,7 +24,6 @@ function storeInit() {
   store.dispatch(Actions.VariableDescriptorActions.getAll());
   store.dispatch(Actions.VariableInstanceActions.getAll());
   store.dispatch(Actions.PageActions.getAll());
-  store.dispatch(Actions.GameActions.getGame());
   // TODO teams migration: this dispatch only lives here because gameId/teamId
   // still come from this store's `global` slice. Once `global` moves to the
   // react-redux store, move this call (and storeInit as a whole) there too.
@@ -33,9 +34,17 @@ function storeInit() {
     }),
   );
   store.dispatch(Actions.EditorActions.getEditorLanguage());
-  store.dispatch(Actions.GameModelActions.getGameModel(CurrentGM.id!));
+  dispatch(getGame());
+  dispatch(getGameModel(CurrentGM.id!));
 }
-storeInit();
+// This module participates in a circular import with the new react-redux store
+// (store/store → slices → API/rest → data/Stores/store, and data/actions →
+// store/store for the managed-response fan-out). Running storeInit synchronously
+// at module-eval time executes it mid-cycle — while `store` here and the new
+// store's `dispatch` are still being constructed (and API/rest's `store` binding
+// is not yet populated). Deferring the whole bootstrap by one microtask lets the
+// entire module graph finish initializing first.
+void Promise.resolve().then(storeInit);
 
 export const { StoreConsumer, useStore, getDispatch } =
   createStoreConnector(store);

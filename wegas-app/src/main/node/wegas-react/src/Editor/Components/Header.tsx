@@ -39,7 +39,9 @@ import {
 } from '../../data/Reducer/editingState';
 import { LoggerLevelValues } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
-import { GameModel, Global } from '../../data/selectors';
+import { Global } from '../../data/selectors';
+import { useGameModel } from '../../Components/Hooks/useGameModel';
+import { createExtraTestPlayer } from '../../store/slices/gameModel';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
 import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
@@ -236,7 +238,6 @@ function useLoggerLevelSelector() {
 
 function globalStoreSelector(s: State) {
   return {
-    gameModel: GameModel.selectCurrent(),
     user: Global.selectCurrentUser(),
     userLanguage: selectCurrentEditorLanguage(s),
     currentPlayerId: s.global.currentPlayerId,
@@ -249,7 +250,8 @@ export default function Header() {
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage, currentPlayerId, currentTeamId } =
+  const gameModel = useGameModel();
+  const { user, userLanguage, currentPlayerId, currentTeamId } =
     useStore(globalStoreSelector);
   const dispatch = store.dispatch;
   const featuresToggler = useFeatures();
@@ -266,9 +268,7 @@ export default function Header() {
     label: (
       <div
         onClick={() => {
-          editingStore.dispatch(
-            Actions.GameModelActions.createExtraTestPlayer(gameModel.id!),
-          );
+          editingStore.dispatch(createExtraTestPlayer(gameModel.id!));
         }}
       >
         {i18nValues.header.addExtraTestPlayer}

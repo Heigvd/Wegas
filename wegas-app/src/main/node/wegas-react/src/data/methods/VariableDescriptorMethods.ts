@@ -132,7 +132,7 @@ export function getScopeEntity(
     case 'TeamScope':
       return Team.select(vi.scopeKey);
     case 'GameModelScope':
-      return state.gameModels[vi.scopeKey];
+      return GameModel.select(vi.scopeKey);
   }
 }
 

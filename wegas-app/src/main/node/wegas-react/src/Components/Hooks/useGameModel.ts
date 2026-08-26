@@ -1,10 +1,9 @@
 import { GameModel } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
-import { shallowDifferent } from './storeHookFactory';
+import { useAppSelector } from '../../store/hooks';
 
 /**
- * Hook, returns updated GameModel
+ * Hook, returns the current GameModel and re-renders when it changes.
  */
 export function useGameModel() {
-  return useStore(GameModel.selectCurrent, shallowDifferent);
+  return useAppSelector(GameModel.selectCurrent);
 }
