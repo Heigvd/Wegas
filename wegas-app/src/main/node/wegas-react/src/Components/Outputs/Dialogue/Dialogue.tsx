@@ -113,7 +113,7 @@ export function DialogueDisplay({
         // player input
         dialogueComponents.push(
           <DialogueEntry
-            key={`TRANSITION${transitionId}`}
+            key={`TRANSITION${i}_${transitionId}`}
             text={transition.getActionText()}
             player
           />,
@@ -129,7 +129,7 @@ export function DialogueDisplay({
         // game answer
         dialogueComponents.push(
           <DialogueEntry
-            key={`STATE${transitionId}`}
+            key={`STATE${i}_${transitionId}`}
             text={currentState.getText()}
             waiting={i === arr.length - 1 && waitingSystem}
           />,
