@@ -14,7 +14,6 @@ import java.util.HashMap;
  */
 
 public class Attachment {
-    private final static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     private URI usageType;                            //required
     private HashMap<String, String> display;        //required
     private HashMap<String, String> description;    //optional
@@ -22,10 +21,6 @@ public class Attachment {
     private int length;                                //required
     private String sha2;                            //required
     private URI fileUrl;                            //optional
-
-    private static String bytesToHex(byte[] bytes) {
-        return "";
-    }
 
     public static String generateSha2(byte[] bytes) throws NoSuchAlgorithmException {
         return "";
@@ -77,10 +72,6 @@ public class Attachment {
 
     public void setFileUrl(URI fileUrl) {
         this.fileUrl = fileUrl;
-    }
-
-    private JsonElement serializeHash(HashMap<String, String> map) {
-        return new JsonObject();
     }
 
     public JsonElement serialize() {
