@@ -12,9 +12,8 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../css/classes';
-import { Actions } from '../../data';
-import { store } from '../../data/Stores/store';
 import { wlog } from '../../Helper/wegaslog';
+import { updateTeam } from '../../store/slices/teams';
 import EyeIcon from '../../pictures/icon_eye.svg';
 import { ActionItem, DataItem, DataType, OverviewClickType } from './Overview';
 import {
@@ -45,7 +44,7 @@ export function OverviewRow({
         ...team.getEntity(),
         notes: value,
       };
-      store.dispatch(Actions.TeamActions.updateTeam(newTeam));
+      void updateTeam(newTeam);
     },
     [team],
   );

@@ -1,7 +1,6 @@
 import {
   IAbstractEntity,
   IScript,
-  ITeam,
   WegasClassNames,
 } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
@@ -17,6 +16,8 @@ import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
 import { dispatch } from '../store/store';
+import { updatePlayers } from '../store/slices/players';
+import { updateTeams } from '../store/slices/teams';
 import { managedResponseReceived } from '../store/actions';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
@@ -95,11 +96,6 @@ export const ActionCreator = {
 
   SERVER_STATUS: (data: { status: WegasStatus }) =>
     createAction(ActionType.SERVER_STATUS, data),
-
-  TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
-    createAction(ActionType.TEAM_FETCH_ALL, data),
-  TEAM_UPDATE: (data: { team: ITeam }) =>
-    createAction(ActionType.TEAM_UPDATE, data),
 
   LOCK_SET: (data: { token: string; locked: boolean }) =>
     createAction(ActionType.LOCK_SET, data),
@@ -210,6 +206,20 @@ export function manageResponseHandler(
   };
 
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
+  dispatch(
+    updatePlayers({
+      updated: updatedEntities.players,
+      deleted: Object.keys(deletedEntities.players),
+    }),
+  );
+
+  dispatch(
+    updateTeams({
+      updated: updatedEntities.teams,
+      deleted: Object.keys(deletedEntities.teams),
+    }),
+  );
 
   // Fan out to the new react-redux store so migrated slices (games, gameModels...)
   // receive the same managed-mode payload.

@@ -27,7 +27,7 @@ import {
 import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
-import { Game, GameModel, Player } from '../../data/selectors';
+import { Game, GameModel, Player, Team } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
@@ -186,7 +186,7 @@ function globalPRStatus(
   let globalStatus: PeerReviewStatus;
   if (overviewState != null) {
     for (const teamId in overviewState) {
-      const team = store.getState().teams[teamId];
+      const team = Team.select(Number(teamId));
       const game = Game.selectCurrent();
       const overviewTeam = overviewState[teamId];
       let teamStatus: PeerReviewTeamStatus = 'N/A';

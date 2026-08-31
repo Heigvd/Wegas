@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { getTeams } from './teams';
 
 export type InitStateKey =
   | 'variables'
@@ -43,6 +44,11 @@ const initStatusSlice = createSlice({
     ) {
       state[action.payload.key] = action.payload.status;
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(getTeams.fulfilled, state => {
+      state.teams = true;
+    });
   },
 });
 

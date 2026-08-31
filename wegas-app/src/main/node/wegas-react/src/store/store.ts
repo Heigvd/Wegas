@@ -8,6 +8,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import announcementReducer from './slices/announcement';
 import initStatusReducer from './slices/initStatus';
+import playersReducer from './slices/players';
+import teamsReducer from './slices/teams';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
 
@@ -18,6 +20,8 @@ export const store = configureStore({
     reducer: {
         announcements: announcementReducer,
         initStatuses: initStatusReducer,
+        players: playersReducer,
+        teams: teamsReducer,
         games: gameReducer,
         gameModels: gameModelReducer,
     },
