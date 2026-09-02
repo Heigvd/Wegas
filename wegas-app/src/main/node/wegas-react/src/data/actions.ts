@@ -1,8 +1,4 @@
-import {
-  IAbstractEntity,
-  IScript,
-  WegasClassNames,
-} from 'wegas-ts-api';
+import { IAbstractEntity, IScript, WegasClassNames } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { Popup } from '../Components/PopupManager';
@@ -12,7 +8,7 @@ import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor, EditingState, Edition } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
-import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
 import { dispatch } from '../store/store';
@@ -74,7 +70,7 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  EVENT_SET_LOADING: (data: number) => 
+  EVENT_SET_LOADING: (data: number) =>
     createAction(ActionType.EVENT_SET_LOADING, data),
 
   PAGE_INDEX: (data: { index: PageIndex }) =>
@@ -173,7 +169,7 @@ export function manageResponseHandler(
         updatedEntity &&
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {
-        const { edit } = getEntityActions(updatedEntity)
+        const { edit } = getEntityActions(updatedEntity);
         const newPath = selectPath
           ? selectPath
           : editState && 'path' in editState
@@ -205,8 +201,6 @@ export function manageResponseHandler(
       }) || [],
   };
 
-  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
-
   dispatch(
     updatePlayers({
       updated: updatedEntities.players,
@@ -221,14 +215,14 @@ export function manageResponseHandler(
     }),
   );
 
-  // Fan out to the new react-redux store so migrated slices (games, gameModels...)
-  // receive the same managed-mode payload.
+  // Fan out to the new react-redux store so migrated slices (games, gameModels,
+  // variableDescriptors...) receive the same managed-mode payload.
   dispatch(managedResponseReceived(managedValues));
+
+  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
   localDispatch &&
     localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
-
-
 
   return ActionCreator.MANAGED_RESPONSE_ACTION(
     localDispatch ? managedValuesOnly : managedValues,

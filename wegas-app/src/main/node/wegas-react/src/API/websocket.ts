@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
 import { Actions } from '../data';
+import { getByIds as getDescriptorsByIds } from '../store/slices/variableDescriptors';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
@@ -308,7 +309,7 @@ class WebSocketListener {
 
         if (toUpdate.descriptors.length > 0) {
           editingStore.dispatch(
-            Actions.VariableDescriptorActions.getByIds(toUpdate.descriptors),
+            getDescriptorsByIds(toUpdate.descriptors),
           );
         }
 

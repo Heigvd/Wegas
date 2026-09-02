@@ -25,7 +25,7 @@ import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { block, expandWidth, textCenter } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { updateDescriptor } from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
 import { editingStore } from '../../../data/Stores/editingStore';
@@ -105,7 +105,7 @@ export function LiteStateProcessComponentFactory<
         })(stateMachine);
 
         editingStore.dispatch(
-          Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+          updateDescriptor(newStateMachine),
         );
         setEditing(false);
       },

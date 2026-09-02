@@ -10,10 +10,9 @@ import {
   IWhQuestionInstance,
 } from 'wegas-ts-api';
 import { autoMargin, halfOpacity } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent, translate } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { State } from '../../../data/Reducer/reducers';
 import {
   updateInstance,
   validateQuestion,
@@ -59,7 +58,7 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
       items={choices}
       onSelect={item => {
         editingStore.dispatch(
-          Actions.VariableDescriptorActions.createDescriptor(
+          createDescriptor(
             {
               '@class': item.value.descriptor,
               label: createTranslatableContent(lang, 'Réponse'),
@@ -82,11 +81,20 @@ interface WhQuestionInfo {
   choicesI: (Readonly<IWhChoiceInstance> | undefined)[];
 }
 
+/**
+ * Query subtree / instance about a QuestionDescriptor
+ *
+ * Reads descriptors from the new store (via `select`) but instances from the old
+ * one (via `getInstance`), so it must stay subscribed through the old store's
+ * `useStore` until `variableInstances` migrates — `useAppSelector` would not see
+ * instance updates. Both reads are fresh because manageResponseHandler updates
+ * the new store before the old one dispatches (see data/actions.ts).
+ */
 export function whQuestionInfo(question: IWhQuestionDescriptor) {
-  return function (s: Readonly<State>): WhQuestionInfo {
+  return function (): WhQuestionInfo {
     const questionD = select<IWhQuestionDescriptor>(question.id)!;
     const choicesD = questionD.itemsIds
-      .map(id => s.variableDescriptors[id])
+      .map(id => select<IWhChoiceDescriptor>(id))
       .filter(function (
         entity: IWhChoiceDescriptor | undefined,
       ): entity is IWhChoiceDescriptor {

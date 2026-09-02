@@ -17,6 +17,13 @@ const composeEnhancers: typeof compose =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 /**
+ * TODO Remove once migration complete - temporary
+ * True until this module finishes evaluating, i.e. until `editingStore` below
+ * has been constructed. Read by the reducer — see the comment there.
+ */
+let moduleEvaluating = true;
+
+/**
  * Reducer for edition's state
  *
  * @param {any} [state=produce({}, { currentGameModelId: CurrentGM.id })]
@@ -25,6 +32,17 @@ const composeEnhancers: typeof compose =
  */
 export const editingStateReducer: Reducer<Readonly<EditingState>> = produce(
   (state: EditingState, action: EditingStateActions) => {
+    // TODO Remove once migration complete - temporary
+    // `createStore` below dispatches synchronously while this module is still
+    // evaluating. data/Reducer/editingState — which owns both handlers called
+    // here — is part of a large import cycle through this file, so at that point
+    // it can still be mid-initialization with its own imports unassigned, and
+    // calling into it throws. Any dispatch arriving this early is a
+    // store-construction artefact and is a no-op here anyway: the initial state
+    // comes from produce's base value.
+    if (moduleEvaluating) {
+      return state;
+    }
     state.events = eventManagement(state, action);
     state.editing = editorManagement(state, action);
     return state;
@@ -43,6 +61,10 @@ export const editingStoreFactory = () =>
   );
 
 export const editingStore = editingStoreFactory();
+
+// TODO Remove once migration complete - temporary
+// Module graph is settled past this point: real dispatches must reach the handlers.
+moduleEvaluating = false;
 
 export const { useStore: useEditingStore } = createStoreConnector(editingStore);
 

@@ -9,7 +9,6 @@ import {
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { State } from '../../../data/Reducer/reducers';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
@@ -38,12 +37,18 @@ export const questionStyle = cx(
 /**
  * Query subtree / instance about a QuestionDescriptor
  * @param question QuestionDescriptor to query
+ *
+ * Reads descriptors from the new store (via `select`) but instances from the old
+ * one (via `getInstance`), so it must stay subscribed through the old store's
+ * `useStore` until `variableInstances` migrates — `useAppSelector` would not see
+ * instance updates. Both reads are fresh because manageResponseHandler updates
+ * the new store before the old one dispatches (see data/actions.ts).
  */
 export function questionInfo(question: IQuestionDescriptor) {
-  return function (s: Readonly<State>): QuestionInfo {
+  return function (): QuestionInfo {
     const questionD = select<IQuestionDescriptor>(question.id);
     const choicesD = questionD?.itemsIds
-      .map(id => s.variableDescriptors[id])
+      .map(id => select<IChoiceDescriptor>(id))
       .filter(function (
         entity: IChoiceDescriptor | undefined,
       ): entity is IChoiceDescriptor {
