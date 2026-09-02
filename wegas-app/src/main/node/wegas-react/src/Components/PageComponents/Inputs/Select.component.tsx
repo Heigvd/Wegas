@@ -4,7 +4,6 @@ import { entityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -26,6 +25,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -127,7 +127,7 @@ function PlayerSelectInput({
         if (handleOnChange) {
           handleOnChange(newValue);
         } else if (typeof descriptor === 'object') {
-          editingStore.dispatch(
+          dispatch(
             runScript(
               `Variable.find(gameModel,"${descriptor.getName()}").setValue(self, ${
                 entityIs(descriptor, 'NumberDescriptor')

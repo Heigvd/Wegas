@@ -16,12 +16,12 @@ import {
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';
+import { dispatch } from '../../../store/store';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -182,7 +182,7 @@ export function DialogueDisplay({
               label={transition.getActionText()}
               onClick={() => {
                 setWaitingUser(true);
-                editingStore.dispatch(
+                dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),

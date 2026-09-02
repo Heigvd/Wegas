@@ -25,13 +25,14 @@ import {
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, mediumPadding } from '../../../css/classes';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import { store } from '../../../data/Stores/store';
 import { findComponent } from '../../../Helper/pages';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { FormAction } from '../Form';
 import { AvailableSchemas } from '../FormView';
 import { pageCTX } from './PageEditor';
+import { EditingDispatch } from '../../../store/localEdition';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -54,7 +55,7 @@ interface EditorProps<T = WegasComponentForm> {
     message: string;
     onVanish: () => void;
   };
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
 }
 
 // Importing Form as a Lazy componenet prevents circular import statements
@@ -246,7 +247,7 @@ export interface ComponentPropertiesProps {
   parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: FormAction<WegasComponentForm>[] | undefined;
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
 }
 
 export function ComponentProperties({

@@ -1,6 +1,5 @@
 import { Immutable, produce } from 'immer';
 import { Schema } from 'jsoninput';
-import { cloneDeep } from 'lodash-es';
 import {
   IAbstractContentDescriptor,
   IAbstractEntity,
@@ -19,292 +18,74 @@ import {
 import { Actions as ACTIONS, Actions } from '..';
 import { FileAPI } from '../../API/files.api';
 import { AvailableViews } from '../../Editor/Components/FormView';
+import {
+  discardUnsavedChanges,
+  fileEdit,
+  fsmEdit,
+  selectEdition,
+  variableCreate,
+  VariableCreateEdition,
+  variableEdit,
+} from '../../store/slices/edition';
+import {
+  editorEventAdded,
+  editorEventRead as editorEventReadAction,
+  editorEventRemoved,
+} from '../../store/slices/editorEvents';
+import { AppThunk, dispatch } from '../../store/store';
 import { triggerEventHandlers } from '../actions';
-import { ActionType, ActionTypeValues } from '../actionTypes';
-import { NormalizedData } from '../normalize';
 import { VariableDescriptor } from '../selectors';
-import { editingStore, EditingThunkResult } from '../Stores/editingStore';
 import { store } from '../Stores/store';
 
-function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
-  return {
-    type,
-    payload,
-  };
-}
-const variableEditAction =
-  <TA extends ActionTypeValues>(type: TA) =>
-  <TE extends IAbstractEntity>(data: {
-    entity: TE;
-    config?: Schema<AvailableViews>;
-    path?: TA extends ValueOf<typeof ActionType.FSM_EDIT>
-      ? string[]
-      : (string | number)[];
-  }) =>
-    createAction(type, data);
-
-/**
- * Simple action creators.
- */
-export const EditingActionCreator = {
-  EDITOR_EVENT_REMOVE: (data: { timestamp: number }) =>
-    createAction(ActionType.EDITOR_EVENT_REMOVE, data),
-  EDITOR_EVENT_READ: (data: { timestamp: number }) =>
-    createAction(ActionType.EDITOR_EVENT_READ, data),
-  EDITOR_EVENT: (data: WegasEvent) =>
-    createAction(ActionType.EDITOR_EVENT, data),
-  VARIABLE_EDIT: variableEditAction(ActionType.VARIABLE_EDIT),
-  FSM_EDIT: variableEditAction(ActionType.FSM_EDIT),
-  INSTANCE_EDIT: (data: { instance?: IAbstractEntity }) =>
-    createAction(ActionType.INSTANCE_EDIT, data),
-  INSTANCE_SAVE: () => createAction(ActionType.INSTANCE_SAVE, {}),
-  INSTANCE_EDITOR: (data: { open: boolean }) =>
-    createAction(ActionType.INSTANCE_EDITOR, data),
-  EDITION_CHANGES: (data: { newEntity: IAbstractEntity }) =>
-    createAction(ActionType.EDITION_CHANGES, data),
-  EDITION_HIGHLIGHT: (data: { highlight: boolean }) =>
-    createAction(ActionType.EDITION_HIGHLIGHT, data),
-  FILE_EDIT: (data: {
-    entity: IAbstractContentDescriptor;
-    cb?: (newEntity: IAbstractContentDescriptor) => void;
-  }) => createAction(ActionType.FILE_EDIT, data),
-  VARIABLE_CREATE: (data: {
-    '@class': IAbstractEntity['@class'];
-    parentId?: number;
-    parentType?: string;
-    subtype?: VariableCreateEdition['subtype'];
-  }) => createAction(ActionType.VARIABLE_CREATE, data),
-
-  CLOSE_EDITOR: () => createAction(ActionType.CLOSE_EDITOR, {}),
-  DISCARD_UNSAVED_CHANGES: () =>
-    createAction(ActionType.DISCARD_UNSAVED_CHANGES, {}),
-
-  MANAGED_RESPONSE_ACTION: (data: {
-    // Nearly empty shells
-    deletedEntities: {
-      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
-    };
-    updatedEntities: NormalizedData;
-    events: WegasEvent[];
-  }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
-};
-
-export type EditingStateActions<
-  A extends keyof typeof EditingActionCreator = keyof typeof EditingActionCreator,
-> = ReturnType<typeof EditingActionCreator[A]>;
-
-export interface EditionState {
-  newEntity?: IAbstractEntity;
-  highlight?: boolean;
-}
-
-export interface VariableEdition extends EditionState {
-  type: 'Variable' | 'VariableFSM';
-  entity: IAbstractEntity;
-  instanceEditing?: {
-    editedInstance?: { instance: IAbstractEntity; saved: boolean };
-  };
-  config?: Schema<AvailableViews>;
-  path?: (string | number)[];
-}
-
-export interface VariableCreateEdition extends EditionState {
-  type: 'VariableCreate';
-  subtype?: 'Choice' | 'Feedback' | 'Comments';
-  '@class': IVariableDescriptor['@class'];
-  parentId?: number;
-  parentType?: string;
-  config?: Schema<AvailableViews>;
-  path?: (string | number)[];
-}
-
-// export interface ComponentEdition extends EditionState {
-//   type: 'Component';
-//   page: string;
-//   path: (string | number)[];
-//   config?: Schema<AvailableViews>;
-// }
-
-export interface FileEdition extends EditionState {
-  type: 'File';
-  entity: IAbstractContentDescriptor;
-  cb?: (updatedValue: IMergeable) => void;
-}
-
-export type Edition =
-  | VariableEdition
-  | VariableCreateEdition
-  // | ComponentEdition
-  | FileEdition;
-
-export interface EditingState {
-  editing?: Edition;
-  events: WegasEvent[];
-}
-
-/**
+/* ------------------------------------------------------------------------- *
+ * Re-exports
  *
- * @param state
- * @param action
- */
-export function eventManagement(
-  state: EditingState,
-  action: EditingStateActions,
-): WegasEvent[] {
-  switch (action.type) {
-    case ActionType.MANAGED_RESPONSE_ACTION:
-      return [...state.events, ...action.payload.events];
-    case ActionType.EDITOR_EVENT_REMOVE: {
-      const newEvents = [...state.events];
-      const indexOfRemoved = newEvents.findIndex(
-        e => e.timestamp === action.payload.timestamp,
-      );
-      if (indexOfRemoved !== -1) {
-        newEvents.splice(indexOfRemoved, 1);
-      }
-      return newEvents;
-    }
-    case ActionType.EDITOR_EVENT_READ: {
-      const readEventIndex = state.events.findIndex(
-        e => e.timestamp === action.payload.timestamp,
-      );
-      if (readEventIndex !== -1) {
-        const event = cloneDeep(state.events[readEventIndex]);
-        const before = state.events.slice(0, readEventIndex);
-        const after = state.events.slice(readEventIndex + 1);
-        const ret = [...before, { ...event, unread: false }, ...after];
-        return ret;
-      } else {
-        return state.events;
-      }
-    }
-    case ActionType.EDITOR_EVENT:
-      return [...state.events, action.payload];
-    default:
-      return state.events;
-  }
-}
+ * The edition state itself now lives in store/slices/edition. These keep the
+ * existing import sites working; new code should import from the slice.
+ * ------------------------------------------------------------------------- */
 
-/**
- *  This is a separate switch-case only for editor actions management
- * @param state
- * @param action
- */
-export function editorManagement(
-  state: EditingState,
-  action: EditingStateActions,
-): Edition | undefined {
-  switch (action.type) {
-    case ActionType.VARIABLE_EDIT:
-    case ActionType.FSM_EDIT:
-      return {
-        type:
-          action.type === ActionType.VARIABLE_EDIT ? 'Variable' : 'VariableFSM',
-        entity: action.payload.entity,
-        config: action.payload.config,
-        path: action.payload.path,
-        newEntity:
-          state.editing?.newEntity == null ||
-          state.editing?.newEntity?.id === action.payload.entity.id
-            ? state.editing?.newEntity
-            : undefined,
-      };
-    case ActionType.INSTANCE_EDITOR:
-      if (
-        state.editing?.type === 'Variable' ||
-        state.editing?.type === 'VariableFSM'
-      ) {
-        state.editing.instanceEditing = action.payload.open ? {} : undefined;
-      }
-      break;
-    case ActionType.INSTANCE_EDIT:
-      if (
-        action.payload.instance != null &&
-        (state.editing?.type === 'Variable' ||
-          state.editing?.type === 'VariableFSM')
-      ) {
-        state.editing.instanceEditing = {
-          editedInstance: { instance: action.payload.instance, saved: false },
-        };
-      }
-      break;
-    case ActionType.INSTANCE_SAVE:
-      if (
-        (state.editing?.type === 'Variable' ||
-          state.editing?.type === 'VariableFSM') &&
-        state.editing.instanceEditing?.editedInstance != null
-      ) {
-        state.editing.instanceEditing.editedInstance.saved = true;
-      }
-      break;
-    case ActionType.EDITION_CHANGES:
-      if (state.editing != null) {
-        state.editing.newEntity = action.payload.newEntity;
-      }
-      break;
-    case ActionType.EDITION_HIGHLIGHT:
-      if (state.editing != null) {
-        state.editing.highlight = action.payload.highlight;
-      }
-      break;
+export type {
+  Edition,
+  EditionSliceState,
+  EditionState,
+  FileEdition,
+  VariableCreateEdition,
+  VariableEdition,
+} from '../../store/slices/edition';
+export {
+  closeEditor,
+  discardUnsavedChanges,
+  isEditingVariable,
+} from '../../store/slices/edition';
 
-    case ActionType.VARIABLE_CREATE:
-      return {
-        type: 'VariableCreate',
-        subtype: action.payload.subtype,
-        '@class': action.payload['@class'] as IVariableDescriptor['@class'],
-        parentId: action.payload.parentId,
-        parentType: action.payload.parentType,
-        newEntity: undefined,
-      };
-    case ActionType.FILE_EDIT:
-      return {
-        type: 'File',
-        ...action.payload,
-        newEntity: undefined,
-      };
-    case ActionType.DISCARD_UNSAVED_CHANGES:
-      if (
-        state.editing?.type === 'Variable' ||
-        state.editing?.type === 'VariableFSM'
-      ) {
-        state.editing.newEntity = undefined;
-      }
-      break;
-    case ActionType.CLOSE_EDITOR:
-      return undefined;
-  }
-  return state.editing;
-}
+/* ------------------------------------------------------------------------- *
+ * Thunks
+ *
+ * They live here rather than in the slice because they reach into
+ * VariableDescriptorActions, which imports the store back.
+ * ------------------------------------------------------------------------- */
 
 /**
  * Edit VariableDescriptor
  * @param entity
  * @param path
  * @param config
- * @param actions
  */
 export function editVariable(
   entity: IVariableDescriptor,
   path: (string | number)[] = [],
   config?: Schema<AvailableViews>,
-): EditingThunkResult {
-  return function (dispatch) {
-    dispatch(
-      EditingActionCreator.VARIABLE_EDIT({
-        entity,
-        config,
-        path,
-      }),
-    );
+): AppThunk {
+  return function (scopedDispatch) {
+    scopedDispatch(variableEdit({ entity, config, path }));
   };
 }
 
 export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
   stateMachine: Immutable<T>,
   index: number,
-): EditingThunkResult {
-  return function (dispatch) {
+): AppThunk {
+  return function (scopedDispatch) {
     const newStateMachine = produce((stateMachine: T) => {
       const { states } = stateMachine;
 
@@ -317,7 +98,7 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
       }
     })(stateMachine);
 
-    return dispatch(
+    return scopedDispatch(
       Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
     );
   };
@@ -329,14 +110,14 @@ export function deleteTransition<
   stateMachine: Immutable<T>,
   stateId: number,
   transitionIndex: number,
-): EditingThunkResult {
-  return function (dispatch) {
+): AppThunk {
+  return function (scopedDispatch) {
     const newStateMachine = produce((stateMachine: T) => {
       const transitions = stateMachine.states[stateId].transitions;
       transitions.splice(transitionIndex, 1);
     })(stateMachine);
 
-    return dispatch(
+    return scopedDispatch(
       Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
     );
   };
@@ -352,17 +133,12 @@ export function editStateMachine(
   entity: Immutable<IAbstractStateMachineDescriptor>,
   path: string[] = [],
   config?: Schema<AvailableViews>,
-): EditingThunkResult {
-  return function (dispatch) {
-    dispatch(
-      EditingActionCreator.FSM_EDIT({
-        entity,
-        config,
-        path,
-      }),
-    );
+): AppThunk {
+  return function (scopedDispatch) {
+    scopedDispatch(fsmEdit({ entity, config, path }));
   };
 }
+
 /**
  * Edit File
  * @param entity
@@ -372,11 +148,9 @@ export function editFile(
   entity: IAbstractContentDescriptor,
   cb?: (updatedValue: IAbstractContentDescriptor) => void,
 ) {
-  return EditingActionCreator.FILE_EDIT({
-    entity,
-    cb,
-  });
+  return fileEdit({ entity, cb });
 }
+
 /**
  * Create a variableDescriptor
  *
@@ -395,7 +169,7 @@ export function createVariable(
     | IPeerReviewDescriptor,
   subtype?: VariableCreateEdition['subtype'],
 ) {
-  return EditingActionCreator.VARIABLE_CREATE({
+  return variableCreate({
     '@class': cls,
     parentId: parent ? parent.id : undefined,
     parentType: parent ? parent['@class'] : undefined,
@@ -403,34 +177,28 @@ export function createVariable(
   });
 }
 
-// export function editComponent(page: string, path: string[]) {
-//   return EditionActionCreator.PAGE_EDIT({ page, path });
-// }
-
 /**
  * Save the content from the editor
  *
- * The dispatch argument of the save function is not used to ensure that modifications are made in the global state
- *
  * @export
  * @param {IAbstractEntity} value
- * @returns {ThunkResult}
+ * @returns {AppThunk}
  */
 export function saveEditor(
   value: IMergeable,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-): EditingThunkResult {
-  return function save(dispatch, getState) {
-    dispatch(discardUnsavedChanges());
-    const editMode = getState().editing;
+): AppThunk {
+  return function save(scopedDispatch, getState) {
+    scopedDispatch(discardUnsavedChanges());
+    const editMode = selectEdition(getState());
     if (editMode == null) {
       return;
     }
     switch (editMode.type) {
       case 'Variable':
       case 'VariableFSM':
-        return dispatch(
+        return scopedDispatch(
           ACTIONS.VariableDescriptorActions.updateDescriptor(
             value as IVariableDescriptor,
             selectUpdatedEntity,
@@ -438,7 +206,7 @@ export function saveEditor(
           ),
         );
       case 'VariableCreate':
-        return dispatch(
+        return scopedDispatch(
           ACTIONS.VariableDescriptorActions.createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
@@ -451,25 +219,25 @@ export function saveEditor(
           return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
             .then((res: IAbstractContentDescriptor) => {
               if (selectUpdatedEntity) {
-                editingStore.dispatch(editFile(res));
+                // the scope that opened the file re-selects it: used to be
+                // hard-coded to the global editing store, so a file saved from
+                // a nested form re-selected in the main editor
+                scopedDispatch(editFile(res));
               }
               editMode.cb && editMode.cb(res);
             })
             .catch((res: Error) => {
-              editingStore.dispatch(editorErrorEvent(res.message));
+              // events are global only, never route them through a local scope
+              dispatch(editorErrorEvent(res.message));
             });
         });
     }
   };
 }
 
-export function closeEditor() {
-  return EditingActionCreator.CLOSE_EDITOR();
-}
-
-export function discardUnsavedChanges() {
-  return EditingActionCreator.DISCARD_UNSAVED_CHANGES();
-}
+/* ------------------------------------------------------------------------- *
+ * Events
+ * ------------------------------------------------------------------------- */
 
 export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
   const event: WegasEvent = {
@@ -478,7 +246,7 @@ export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
     unread: true,
   };
   triggerEventHandlers(event);
-  return EditingActionCreator.EDITOR_EVENT(event);
+  return editorEventAdded(event);
 }
 
 export function editorErrorEvent(error: string) {
@@ -486,18 +254,9 @@ export function editorErrorEvent(error: string) {
 }
 
 export function editorEventRemove(timestamp: number) {
-  return EditingActionCreator.EDITOR_EVENT_REMOVE({ timestamp });
+  return editorEventRemoved({ timestamp });
 }
 
 export function editorEventRead(timestamp: number) {
-  return EditingActionCreator.EDITOR_EVENT_READ({ timestamp });
-}
-
-export function isEditingVariable(
-  edition: Edition | undefined,
-): edition is VariableEdition {
-  return (
-    edition != null &&
-    (edition.type === 'Variable' || edition.type === 'VariableFSM')
-  );
+  return editorEventReadAction({ timestamp });
 }

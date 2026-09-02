@@ -33,17 +33,13 @@ import {
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import {
-  EditingState,
-  editorEventRemove,
-} from '../../data/Reducer/editingState';
+import { editorEventRemove } from '../../data/Reducer/editingState';
 import { LoggerLevelValues } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { Global } from '../../data/selectors';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
-import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -52,6 +48,9 @@ import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
+import { dispatch } from '../../store/store';
+import { useAppSelector } from '../../store/hooks';
+import { selectEditorEvents } from '../../store/slices/editorEvents';
 
 /*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -111,15 +110,11 @@ const headerElementsStyle = css({
   },
 });
 
-function wegasEventSelector(s: EditingState) {
-  return s.events;
-}
-
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const wegasEvents = useEditingStore(wegasEventSelector);
+  const wegasEvents = useAppSelector(selectEditorEvents);
   const [receivedEvents, setReceivedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
@@ -167,7 +162,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
-                  editingStore.dispatch(editorEventRemove(event.timestamp));
+                  dispatch(editorEventRemove(event.timestamp));
                 }}
               />
             </div>
@@ -189,7 +184,7 @@ function useLoggerLevelSelector() {
     shallowDifferent,
   );
 
-  const dispatch = store.dispatch;
+  const oldDispatch = store.dispatch;
 
   return {
     value: 'logger',
@@ -204,7 +199,7 @@ function useLoggerLevelSelector() {
             label: (
               <div
                 onClick={() => {
-                  dispatch(
+                  oldDispatch(
                     ActionCreator.LOGGER_LEVEL_SET({
                       loggerName: loggerName,
                       level: currentLevel !== value ? value : 'OFF',
@@ -218,7 +213,7 @@ function useLoggerLevelSelector() {
                   value={value === currentLevel}
                   label={value}
                   onChange={(v: boolean) => {
-                    dispatch(
+                    oldDispatch(
                       ActionCreator.LOGGER_LEVEL_SET({
                         loggerName: loggerName,
                         level: v ? value : 'OFF',
@@ -252,7 +247,7 @@ export default function Header() {
   const gameModel = useGameModel();
   const { user, userLanguage, currentPlayerId, currentTeamId } =
     useStore(globalStoreSelector);
-  const dispatch = store.dispatch;
+  const oldDispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
@@ -267,7 +262,7 @@ export default function Header() {
     label: (
       <div
         onClick={() => {
-          editingStore.dispatch(createExtraTestPlayer(gameModel.id!));
+          dispatch(createExtraTestPlayer(gameModel.id!));
         }}
       >
         {i18nValues.header.addExtraTestPlayer}
@@ -361,7 +356,7 @@ export default function Header() {
                       label: (
                         <div
                           onClick={() => {
-                            dispatch(
+                            oldDispatch(
                               Actions.EditorActions.setEditorLanguage(
                                 key as EditorLanguagesCode,
                               ),
@@ -374,7 +369,7 @@ export default function Header() {
                               userLanguage === key
                             }
                             onChange={() => {
-                              dispatch(
+                              oldDispatch(
                                 Actions.EditorActions.setEditorLanguage(
                                   key as EditorLanguagesCode,
                                 ),
@@ -434,10 +429,10 @@ export default function Header() {
               label={i18nValues.restart}
               icon={'redo'}
               onClick={() => {
-                editingStore.dispatch(
+                dispatch(
                   Actions.VariableDescriptorActions.reset(),
                 );
-                dispatch(Actions.EditorActions.resetPageLoader());
+                oldDispatch(Actions.EditorActions.resetPageLoader());
               }}
               className={componentMarginRight}
             />

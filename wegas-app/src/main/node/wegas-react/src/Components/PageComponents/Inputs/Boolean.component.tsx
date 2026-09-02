@@ -2,7 +2,6 @@ import * as React from 'react';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -22,6 +21,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -85,7 +85,7 @@ function PlayerBoolean({
         if (handleOnChange) {
           handleOnChange(v);
         } else if (typeof bool === 'object') {
-          editingStore.dispatch(
+          dispatch(
             Actions.VariableInstanceActions.runScript(
               `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
             ),

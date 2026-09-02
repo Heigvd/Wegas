@@ -21,10 +21,6 @@ import {
 import { Actions } from '../../../data';
 import { createVariable, Edition } from '../../../data/Reducer/editingState';
 import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -34,30 +30,33 @@ import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { IconComp } from '../Views/FontAwesome';
 import { buildMenuItems } from './AddMenu';
 import { CTree } from './CTree';
+import { dispatch } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 const addVariableContainerStyle = css({
   position: 'absolute',
   left: '1.5rem',
   bottom: '5px',
-  // zIndex: 1,
 });
+
 const addVariableButtonStyle = css({
   height: '2rem',
   boxShadow: '0px 0px 8px rgba(0, 0, 0, 0.5)',
   padding: '5px 5px',
 });
+
 const deepSearchButtonOffStyle = css({
   color: themeVar.colors.DisabledColor,
   '&:hover, &:focus': { color: themeVar.colors.DisabledColor },
 });
-export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 
+export const TREEVIEW_ITEM_TYPE = 'TREEVIEW_VARIABLE_ITEM';
 const TREECONTENTID = 'TREECONTENT';
 
 export interface SharedTreeProps extends DisabledReadonly {
   noHeader?: boolean;
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: EditingStoreDispatch;
+  localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -65,7 +64,7 @@ interface TreeProps extends SharedTreeProps {
   root: IParentDescriptor;
   noHeader?: boolean;
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: EditingStoreDispatch;
+  localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -82,11 +81,9 @@ export function VariableTreeView({
   }>({});
 
   const data = buildMenuItems(root);
-
   const i18nValues = useInternalTranslate(commonTranslations);
-
-  const globalDispatch = editingStore.dispatch;
   const actionAllowed = isActionAllowed(options);
+
   const { value, deep } = useStore(
     s => ({
       value: s.global.search.value,
@@ -94,6 +91,7 @@ export function VariableTreeView({
     }),
     deepDifferent,
   );
+
   const searchFn = useDebounceFn(
     (value: string) =>
       store.dispatch(
@@ -111,11 +109,10 @@ export function VariableTreeView({
       const parentVariable = to.data;
 
       if (movedVariable != null && index != null) {
-        let dispatch = editingStore.dispatch;
-        if (forceLocalDispatch && localDispatch) {
-          dispatch = localDispatch;
-        }
-        dispatch(
+        const scopedDispatch =
+          (forceLocalDispatch && localDispatch) || dispatch;
+
+        scopedDispatch(
           moveDescriptor(
             movedVariable,
             index,
@@ -211,7 +208,7 @@ export function VariableTreeView({
               if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
                 localDispatch(createVariable(i.value, root));
               } else {
-                globalDispatch(createVariable(i.value, root));
+                dispatch(createVariable(i.value, root));
                 focusTab(mainLayoutId, 'Variable Properties');
               }
             });

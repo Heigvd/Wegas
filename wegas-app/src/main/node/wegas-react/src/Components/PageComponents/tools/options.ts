@@ -19,7 +19,6 @@ import { ActionCreator } from '../../../data/actions';
 import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { createScript, isScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
@@ -31,6 +30,7 @@ import {
 } from '../../Hooks/useScript';
 import { PlayerInfoBulletProps } from './InfoBullet';
 import { schemaProps } from './schemaProps';
+import { dispatch } from '../../../store/store';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +168,7 @@ export const wegasComponentActions: WegasComponentActions = {
   },
   impactVariable: props => {
     try {
-      editingStore.dispatch(runScript(props.impact, Player.selectCurrent()));
+      dispatch(runScript(props.impact, Player.selectCurrent()));
     } catch (error) {
       wwarn(error);
     }

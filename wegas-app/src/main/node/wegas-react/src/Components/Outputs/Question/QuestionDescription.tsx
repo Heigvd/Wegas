@@ -3,7 +3,6 @@ import { produce } from 'immer';
 import * as React from 'react';
 import { IQuestionDescriptor, IWhQuestionDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { createTranslatableContent } from '../../../data/i18n';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -19,6 +18,7 @@ import {
   flexColumn,
   toolboxHeaderStyle,
 } from '../../../css/classes';
+import { dispatch } from '../../../store/store';
 
 const descriptionStyle = css({
   position: 'relative',
@@ -69,7 +69,7 @@ export function QuestionDescription({
         },
       )(questionD);
 
-      editingStore.dispatch(
+      dispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newQuestion),
       );
       setEditing(false);

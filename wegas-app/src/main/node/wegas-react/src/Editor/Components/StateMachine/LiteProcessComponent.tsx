@@ -28,13 +28,13 @@ import { block, expandWidth, textCenter } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty, classOrNothing } from '../../../Helper/className';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
 import {IconComp} from "../Views/FontAwesome";
 import {useInternalTranslate} from "../../../i18n/internalTranslator";
 import {commonTranslations} from "../../../i18n/common/common";
+import { dispatch } from '../../../store/store';
 
 const customProcessComponentEditingStyle = css({
   zIndex: 1000,
@@ -104,7 +104,7 @@ export function LiteStateProcessComponentFactory<
           }
         })(stateMachine);
 
-        editingStore.dispatch(
+        dispatch(
           Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
         );
         setEditing(false);

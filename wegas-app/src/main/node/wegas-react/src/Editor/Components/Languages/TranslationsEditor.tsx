@@ -47,19 +47,15 @@ import {
   mediumPadding_sides,
   secondaryButtonStyle,
 } from '../../../css/classes';
-import { dispatch } from '../../../store/store';
+import { RootState, dispatch } from '../../../store/store';
 import { editGameModel } from '../../../store/slices/gameModel';
 import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { EditingState } from '../../../data/Reducer/editingState';
 import { GlobalState } from '../../../data/Reducer/globalState';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
-import {
-  editingStore,
-  useEditingStore,
-} from '../../../data/Stores/editingStore';
+
 import { useStore } from '../../../data/Stores/store';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -75,6 +71,11 @@ import {
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
 import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
+import { useAppSelector } from '../../../store/hooks';
+import {
+  isEditingVariable,
+  selectEdition,
+} from '../../../store/slices/edition';
 
 const langaugeVisitorHeaderStyle = css({
   borderBottom: `solid 1px ${themeVar.colors.PrimaryColor}`,
@@ -423,19 +424,19 @@ function TranslatableContentView({
       onSave={() => {
         LanguagesAPI.updateTranslation(translationObject).then(res => {
           setValue(languageCode)(undefined);
-          editingStore.dispatch(manageResponseHandler(res));
+          dispatch(manageResponseHandler(res));
         });
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
         LanguagesAPI.outdateTranslations(translationObject).then(res => {
-          editingStore.dispatch(manageResponseHandler(res));
+          dispatch(manageResponseHandler(res));
         });
       }}
       onOutdate={outdate => {
         LanguagesAPI.setTranslationStatus(translationObject, !outdate).then(
           res => {
-            editingStore.dispatch(manageResponseHandler(res));
+            dispatch(manageResponseHandler(res));
           },
         );
       }}
@@ -550,11 +551,6 @@ function ScriptView({
   let offsetIndex = 0;
 
   for (const expression of parsedExpressions) {
-
-    // incompatible with babel 7.20.x
-    //const expressionCode = generate(program([expression])as any).code;
-    //const attributes = testCode(expressionCode, mode) as | ExtractedAttributes | string;
-
     let attributes = null;
     if(expression.start != null && expression.end != null){
       const expressionCode = value.content.substring(expression.start, expression.end);
@@ -799,26 +795,6 @@ interface LanguagesVisitorProps {
   showOptions: boolean;
 }
 
-// function itemSelector() {
-//   return function (itemId: number) {
-//     return {
-//       item: VariableDescriptor.select(itemId),
-//     };
-//   };
-// }
-
-// function editionSelector(s: EditingState) {
-//   return function (itemId: number) {
-//     return {
-//       editing:
-//         s.editing !== undefined &&
-//         (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
-//         s.editing.entity &&
-//         itemId === s.editing.entity.id,
-//     };
-//   };
-// }
-
 function LanguagesVisitor({
   itemId,
   parentIds,
@@ -835,20 +811,15 @@ function LanguagesVisitor({
   }, [itemId]);
 
   const editionSelector = React.useCallback(
-    (s: EditingState) => {
-      return {
-        editing:
-          s.editing !== undefined &&
-          (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
-          s.editing.entity &&
-          itemId === s.editing.entity.id,
-      };
+    (state: RootState) => {
+      const edition = selectEdition(state);
+      return isEditingVariable(edition) && itemId === edition.entity.id;
     },
     [itemId],
   );
 
   const { item } = useStore(itemSelector, deepDifferent);
-  const { editing } = useEditingStore(editionSelector, deepDifferent);
+  const editing = useAppSelector(editionSelector);
 
   React.useEffect(() => {
     if (editing) {
@@ -1056,7 +1027,7 @@ function TranslationHeader({
                   language.code,
                 ).then(res => {
                   resetLanguage(language.code);
-                  editingStore.dispatch(manageResponseHandler(res));
+                  dispatch(manageResponseHandler(res));
                 });
               } else if (
                 item.type === 'CLEAR_OUTDATED' ||
@@ -1077,7 +1048,7 @@ function TranslationHeader({
             onClick={() => {
               LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
                 resetLanguage(language.code);
-                editingStore.dispatch(manageResponseHandler(res));
+                dispatch(manageResponseHandler(res));
               });
             }}
             className={cx(itemCenter, css({ padding: 0 }))}
@@ -1105,14 +1076,9 @@ export const translationCTX = React.createContext<{
   resetLanguage: () => {},
 });
 
-function parentIdSelector(s: EditingState) {
-  if (
-    s.editing !== undefined &&
-    (s.editing.type === 'Variable' || s.editing.type === 'VariableFSM') &&
-    s.editing.entity
-  ) {
-    return s.editing.entity.parentId;
-  } else return undefined;
+function parentIdSelector(state: RootState) {
+  const edition = selectEdition(state);
+  return isEditingVariable(edition) ? edition.entity.parentId : undefined;
 }
 
 export function TranslationEditor() {
@@ -1121,7 +1087,7 @@ export function TranslationEditor() {
   const [languageAction, setLanguageAction] = React.useState<LanguageAction>();
   const [showOptions, setShowOptions] = React.useState(false);
 
-  const parentId = useEditingStore(parentIdSelector);
+  const parentId = useAppSelector(parentIdSelector);
 
   const translationSelector = React.useCallback(() => {
     let newParentId = parentId;
@@ -1331,14 +1297,14 @@ export function TranslationEditor() {
                       languageAction.language,
                       languageAction.sourceLanguage,
                     ).then(res => {
-                      editingStore.dispatch(manageResponseHandler(res));
+                      dispatch(manageResponseHandler(res));
                     });
                   } else {
                     LanguagesAPI.clearTranslations(
                       languageAction.language,
                       languageAction.type === 'CLEAR_OUTDATED',
                     ).then(res => {
-                      editingStore.dispatch(manageResponseHandler(res));
+                      dispatch(manageResponseHandler(res));
                     });
                   }
 

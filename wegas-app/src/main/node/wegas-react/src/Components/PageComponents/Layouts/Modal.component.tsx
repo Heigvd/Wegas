@@ -3,7 +3,6 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
@@ -29,6 +28,7 @@ import {
 } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
 import { childrenDeserializerFactory } from './FlexList.component';
+import { dispatch } from '../../../store/store';
 
 export const emptyLayoutItemStyle = css({
   display: 'flex',
@@ -95,7 +95,7 @@ function PlayerModal({
             });
           }
           if (server) {
-            editingStore.dispatch(
+            dispatch(
               runLoadedScript(
                 server,
                 Player.selectCurrent(),

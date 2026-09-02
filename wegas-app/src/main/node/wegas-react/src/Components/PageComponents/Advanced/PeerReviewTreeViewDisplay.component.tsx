@@ -44,7 +44,6 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -70,6 +69,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+import { dispatch } from '../../../store/store';
 
 const prPhaseComponentStyle = css({
   minWidth: '120px',
@@ -282,7 +282,7 @@ function EvalutationEditor({
   const onChangeNotify = React.useCallback(
     (val: string | number) => {
       if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
-        editingStore.dispatch(
+        dispatch(
           liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
             ...iEvaluation.getEntity(),
             value: val,
@@ -413,7 +413,7 @@ function EvalutationsEditor({
         if (type === 'TextEvaluationInstance') {
           asynchSaveReview(modifiedReview.current);
         } else {
-          editingStore.dispatch(saveReview(modifiedReview.current));
+          dispatch(saveReview(modifiedReview.current));
         }
       }, 500);
     },
@@ -442,7 +442,7 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          editingStore.dispatch(submitReview(modifiedReview.current));
+          dispatch(submitReview(modifiedReview.current));
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>

@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
-import { createStoreConnector } from '../../../data/connectStore';
 import { Player } from '../../../data/selectors';
-import { editingStoreFactory } from '../../../data/Stores/editingStore';
+import { useLocalEdition } from '../../../store/localEdition';
 import {
   ComponentWithForm,
   ComponentWithFormFlexValues,
@@ -10,7 +9,6 @@ import {
 } from '../../../Editor/Components/FormView/ComponentWithForm';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { StateMachineEditor } from '../../../Editor/Components/StateMachine/StateMachineEditor';
-import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
 import {
   pageComponentFactory,
@@ -41,15 +39,13 @@ export default function PlayerStateMachine({
   options,
 }: PlayerStateMachineProps) {
   const { editMode } = React.useContext(pageCTX);
+  const { edition: localEdition, dispatch: localDispatch } = useLocalEdition();
+
   const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
   const instance = FSM?.getInstance(Player.self()).getEntity();
 
-  const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
-    React.useMemo(() => createStoreConnector(editingStoreFactory()), []);
-  const localState = useLocalStore(s => s, shallowDifferent);
-  const localDispatch = getLocalDispatch();
 
   return descriptor == null || instance == null ? (
     <pre className={className} style={style} id={id}>
@@ -62,9 +58,7 @@ export default function PlayerStateMachine({
       stateMachineInstance={instance}
       localDispatch={localDispatch}
       editPath={
-        localState.editing?.type === 'VariableFSM'
-          ? localState.editing.path
-          : undefined
+        localEdition?.type === 'VariableFSM' ? localEdition.path : undefined
       }
       disabled={editMode || options.disabled || options.locked}
       readOnly={options.readOnly}

@@ -17,17 +17,9 @@ import {
   mediumPadding,
 } from '../../../css/classes';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  EditingActionCreator,
-  Edition,
-  VariableEdition,
-} from '../../../data/Reducer/editingState';
+import { Edition, VariableEdition } from '../../../data/Reducer/editingState';
 import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
 import { VariableDescriptor } from '../../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -38,6 +30,12 @@ import {
   WindowedEditor,
 } from '../EntityEditor';
 import { VariableTreeTitle } from './VariableTreeTitle';
+import { EditingDispatch } from '../../../store/localEdition';
+import {
+  instanceEdit,
+  instanceEditor,
+  instanceSave,
+} from '../../../store/slices/edition';
 
 const listBox = css({
   width: '100%',
@@ -69,12 +67,12 @@ function isEditingVariable(editing?: Edition): editing is VariableEdition {
   );
 }
 
-export interface InstancePropertiesProps
+interface InstancePropertiesProps
   extends ThemeComponent,
     DisabledReadonly {
   editing: Edition;
   events: WegasEvent[];
-  dispatch: EditingStoreDispatch | undefined;
+  dispatch: EditingDispatch;
   actions?: EditorProps<IVariableInstance>['actions'];
   highlight?: boolean;
 }
@@ -82,7 +80,7 @@ export interface InstancePropertiesProps
 export function InstanceProperties({
   editing,
   events,
-  dispatch,
+  dispatch: scopedDispatch,
   actions,
   highlight,
   ...options
@@ -135,16 +133,14 @@ export function InstanceProperties({
   );
 
   const onEditionChanges = useOnEditionChangesModal(
-    dispatch != null,
+    true,
     editing,
-    dispatch || editingStore.dispatch,
+    scopedDispatch,
   );
 
   const closeCb = React.useCallback(() => {
-    (dispatch || editingStore.dispatch)(
-      EditingActionCreator.INSTANCE_EDITOR({ open: false }),
-    );
-  }, [dispatch]);
+    scopedDispatch(instanceEditor({ open: false }));
+  }, [scopedDispatch]);
 
   return (
     <Toolbar className={mediumPadding}>
@@ -171,9 +167,7 @@ export function InstanceProperties({
                     )}
                     onClick={e => {
                       onEditionChanges(i.id!, e, () => {
-                        (dispatch || editingStore.dispatch)(
-                          EditingActionCreator.INSTANCE_EDIT({ instance: i }),
-                        );
+                        scopedDispatch(instanceEdit({ instance: i }));
                       });
                     }}
                   >
@@ -196,12 +190,9 @@ export function InstanceProperties({
               getEditionConfig(si)
             }
             update={(entity: IVariableInstance) =>
-              (dispatch || editingStore.dispatch)(updateInstance(entity)).then(
-                () => {
+              scopedDispatch(updateInstance(entity)).then(() => {
                   getInstances(descriptor);
-                  (dispatch || editingStore.dispatch)(
-                    EditingActionCreator.INSTANCE_SAVE(),
-                  );
+                scopedDispatch(instanceSave());
                 },
               )
             }
@@ -209,12 +200,12 @@ export function InstanceProperties({
             error={parseEventFromIndex(events)}
             actions={actions}
             onChange={newEntity => {
-              EditingActionCreator.INSTANCE_EDIT({
+              instanceEdit({
                 instance: newEntity as IVariableInstance,
               });
             }}
             highlight={highlight}
-            localDispatch={dispatch}
+            localDispatch={scopedDispatch}
             {...options}
           />
         )}

@@ -7,7 +7,6 @@ import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
 import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
-import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
 import {
   deleteTheme,
@@ -18,6 +17,7 @@ import {
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
+import { dispatch } from '../store/store';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -247,7 +247,7 @@ class WebSocketListener {
     // see : websocketFacade.java , EntityUpdatedEvent.java
     switch (event) {
       case 'EntityUpdatedEvent':
-        return editingStore.dispatch(
+        return dispatch(
           manageResponseHandler(
             {
               '@class': 'ManagedResponse',
@@ -261,7 +261,7 @@ class WebSocketListener {
         );
       // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
       case 'EntityDestroyedEvent':
-        return editingStore.dispatch(
+        return dispatch(
           manageResponseHandler(
             {
               '@class': 'ManagedResponse',
@@ -301,13 +301,13 @@ class WebSocketListener {
         }
 
         if (toUpdate.instances.length > 0) {
-          editingStore.dispatch(
+          dispatch(
             Actions.VariableInstanceActions.getByIds(toUpdate.instances),
           );
         }
 
         if (toUpdate.descriptors.length > 0) {
-          editingStore.dispatch(
+          dispatch(
             Actions.VariableDescriptorActions.getByIds(toUpdate.descriptors),
           );
         }
@@ -333,7 +333,7 @@ class WebSocketListener {
         return;
       }
       case 'CustomEvent':
-        return editingStore.dispatch(editorEvent(data as CustomEvent));
+        return dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':
         store.dispatch(Actions.PageActions.get(data as string));
         return;

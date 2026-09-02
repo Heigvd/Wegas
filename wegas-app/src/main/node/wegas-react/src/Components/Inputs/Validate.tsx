@@ -3,7 +3,6 @@ import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
 import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
 import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
@@ -13,6 +12,7 @@ import { clientAndServerScriptChoices } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { themeVar } from '../Theme/ThemeVars';
 import { Button } from './Buttons/Button';
+import { dispatch } from '../../store/store';
 
 const validatorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -174,7 +174,7 @@ export function useOnCancelAction(
       });
     }
     if (server) {
-      editingStore.dispatch(
+      dispatch(
         runLoadedScript(
           server,
           Player.selectCurrent(),

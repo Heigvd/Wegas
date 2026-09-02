@@ -28,7 +28,6 @@ import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
 import { store, useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -36,6 +35,7 @@ import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
 import { InfoOverlay } from '../InfoOverlay';
 import { ExtraProps, PRChart } from './PeerReviewChart';
 import { PRTable } from './PeerReviewTable';
+import { dispatch } from '../../store/store';
 // import { testPRData } from './PRinterfaceTests';
 
 const prStateStyle = css({
@@ -464,7 +464,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
                       ...peerReview,
                       includeEvicted: value,
                     };
-                    editingStore.dispatch(updateDescriptor(newPR));
+                    dispatch(updateDescriptor(newPR));
                   }}
                   disabled={status !== 'NOT_STARTED'}
                 />

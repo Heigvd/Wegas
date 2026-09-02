@@ -22,7 +22,6 @@ import {
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { GameModel } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { dispatch } from '../../../store/store';
 import { editGameModel, editLanguage } from '../../../store/slices/gameModel';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -237,8 +236,7 @@ export default function LanguageEditor() {
                             .map(event => parseEvent(event).message)
                             .join('\n'),
                         );
-                        editingStore.dispatch(
-                          manageResponseHandler({
+                        dispatch(manageResponseHandler({
                             '@class': 'ManagedResponse',
                             deletedEntities,
                             updatedEntities,

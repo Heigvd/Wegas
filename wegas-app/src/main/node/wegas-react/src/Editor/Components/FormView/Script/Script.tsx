@@ -10,7 +10,6 @@ import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import { flex, grow, secondaryButtonStyle } from '../../../../css/classes';
 import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../../data/selectors';
-import { editingStore } from '../../../../data/Stores/editingStore';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { wwarn } from '../../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
@@ -21,6 +20,7 @@ import { Labeled, LabeledView } from '../labeled';
 import { parseCodeIntoExpressions } from './Expressions/astManagement';
 import { removeFinalSemicolon } from './Expressions/expressionEditorHelpers';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
+import { dispatch } from '../../../../store/store';
 
 /**
  * Try to extract error message from error
@@ -103,7 +103,7 @@ export function Script({
   const testScript = React.useCallback(
     (value: string | IScript) => {
       try {
-        editingStore.dispatch(
+        dispatch(
           runScript(value, Player.selectCurrent(), context),
         );
         setError(undefined);

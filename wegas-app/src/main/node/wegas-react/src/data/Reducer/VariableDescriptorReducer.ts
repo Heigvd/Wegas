@@ -15,18 +15,14 @@ import { manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { entityIs } from '../entities';
 import { Game, GameModel, Player } from '../selectors';
-import { EditingThunkResult } from '../Stores/editingStore';
+import { selectEdition } from '../../store/slices/edition';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch } from '../../store/store';
+import { AppThunk, dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { deepRemove } from '../updateUtils';
 import { deleteState, editVariable } from './editingState';
 
 export type VariableDescriptorState = Record<string, Readonly<IVariableDescriptor> | undefined>
-
-// export interface VariableDescriptorState {
-//   [id: string]: Readonly<IVariableDescriptor> | undefined;
-// }
 
 const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = produce(
   (state: VariableDescriptorState, action: StateActions) => {
@@ -73,7 +69,7 @@ export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-): EditingThunkResult<Promise<StateActions | void>> {
+): AppThunk<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
@@ -82,7 +78,7 @@ export function updateDescriptor(
           manageResponseHandler(
             res,
             dispatch,
-            getState(),
+            selectEdition(getState()),
             selectUpdatedEntity,
             selectPath,
           ),
@@ -94,14 +90,18 @@ export function updateDescriptor(
 export function duplicateDescriptor(
   variableDescriptor: IVariableDescriptor,
   path?: (number | string)[],
-): EditingThunkResult<Promise<StateActions | void>> {
+): AppThunk<Promise<StateActions | void>> {
   const gameModelId = store.getState().global.currentGameModelId;
   if (path == null || path.length === 0) {
     return function (dispatch, getState) {
       return VariableDescriptorAPI.duplicate(
         gameModelId,
         variableDescriptor,
-      ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+      ).then(res =>
+        dispatch(
+          manageResponseHandler(res, dispatch, selectEdition(getState())),
+        ),
+      );
     };
   } else {
     const newEntity = produce(variableDescriptor, v => {
@@ -161,7 +161,7 @@ export function moveDescriptor(
   variableDescriptor: IVariableDescriptor,
   index: number,
   parent?: IParentDescriptor,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.move(
@@ -170,14 +170,16 @@ export function moveDescriptor(
       index,
       parent,
     ).then(res => {
-      return dispatch(manageResponseHandler(res, dispatch, getState()));
+      return dispatch(
+        manageResponseHandler(res, dispatch, selectEdition(getState())),
+      );
     });
   };
 }
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.post(
@@ -185,7 +187,7 @@ export function createDescriptor(
       variableDescriptor,
       parent,
     ).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, getState()));
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())));
       // Assume entity[0] is what we just created.
       return dispatch(
         editVariable(res.updatedEntities[0] as IVariableDescriptor),
@@ -196,7 +198,7 @@ export function createDescriptor(
 export function deleteDescriptor(
   variableDescriptor: IVariableDescriptor,
   path: string[] = [],
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     if (path.length > 0) {
       // Manage state deletion specificaly
@@ -212,16 +214,21 @@ export function deleteDescriptor(
     }
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState())),
+      res =>
+        dispatch(
+          manageResponseHandler(res, dispatch, selectEdition(getState())),
+        ),
     );
   };
 }
 
-export function reset(): EditingThunkResult {
+export function reset(): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.reset(gameModelId).then(res => {
-      const r = dispatch(manageResponseHandler(res, dispatch, getState()));
+      const r = dispatch(
+        manageResponseHandler(res, dispatch, selectEdition(getState())),
+      );
       // unmount and remount effects
       unmountEffects();
       runEffects();
@@ -230,11 +237,11 @@ export function reset(): EditingThunkResult {
   };
 }
 
-export function getByIds(ids: number[]): EditingThunkResult {
+export function getByIds(ids: number[]): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -242,24 +249,28 @@ export function getByIds(ids: number[]): EditingThunkResult {
 export function setPRState(
   peerReviewId: number,
   state: PeerReviewStateSelector,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.setState(
       GameModel.selectCurrent().id!,
       peerReviewId,
       Game.selectCurrent().id!,
       state,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+    );
   };
 }
 
-export function submitToReview(peerReviewId: number): EditingThunkResult {
+export function submitToReview(peerReviewId: number): AppThunk {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.submitToReview(
       GameModel.selectCurrent().id!,
       peerReviewId,
       Player.selectCurrent().id!,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+    );
   };
 }
 
@@ -271,10 +282,10 @@ export function asynchSaveReview(review: IReview) {
   );
 }
 
-export function saveReview(review: IReview): EditingThunkResult {
+export function saveReview(review: IReview): AppThunk {
   return function (dispatch, getState) {
     return asynchSaveReview(review).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -282,14 +293,14 @@ export function saveReview(review: IReview): EditingThunkResult {
 export function submitReview(
   review: IReview,
   cb?: () => void,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.submitReview(
       GameModel.selectCurrent().id!,
       Player.selectCurrent().id!,
       review,
     ).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, getState()));
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())));
       cb && cb();
     });
   };

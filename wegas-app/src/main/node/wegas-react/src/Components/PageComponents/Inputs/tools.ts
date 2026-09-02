@@ -2,13 +2,13 @@ import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
 import { createScript } from '../../../Helper/wegasEntites';
 import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
 import { assembleStateAndContext } from '../tools/EditableComponent';
 import { clientAndServerScriptChoices } from '../tools/options';
 import { schemaProps } from '../tools/schemaProps';
+import { dispatch } from '../../../store/store';
 
 export interface ClientAndServerAction {
   /**
@@ -84,7 +84,7 @@ export function useOnVariableChange(
         });
       }
       if (server) {
-        editingStore.dispatch(
+        dispatch(
           runLoadedScript(
             server,
             Player.selectCurrent(),

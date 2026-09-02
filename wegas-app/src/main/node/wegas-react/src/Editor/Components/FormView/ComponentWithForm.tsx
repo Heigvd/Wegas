@@ -2,20 +2,14 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
 import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
-import { createStoreConnector } from '../../../data/connectStore';
-import {
-  EditingActionCreator,
-  Edition,
-} from '../../../data/Reducer/editingState';
-import {
-  editingStoreFactory,
-  useEditingStore,
-} from '../../../data/Stores/editingStore';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import { Edition } from '../../../data/Reducer/editingState';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { EditingDispatch, useLocalEdition } from '../../../store/localEdition';
+import { closeEditor, selectEdition } from '../../../store/slices/edition';
+import { selectEditorEvents } from '../../../store/slices/editorEvents';
 import { getEntity, VariableForm } from '../EntityEditor';
 
 const growBig = css({
@@ -24,7 +18,7 @@ const growBig = css({
 
 export interface ComponentWithFormChildrenProps {
   localState: Readonly<Edition> | undefined;
-  localDispatch: StoreDispatch;
+  localDispatch: EditingDispatch;
 }
 
 export interface ComponentWithFormFlexValues {
@@ -78,15 +72,17 @@ export function ComponentWithForm({
 }: ComponentWithFormProps) {
   const { fullscreen } = React.useContext(fullscreenCTX);
 
-  const { useStore: useLocalStore, getDispatch: getLocalDispatch } =
-    React.useMemo(() => createStoreConnector(editingStoreFactory()), []);
+  const appDispatch = useAppDispatch();
+  const globalEdition = useAppSelector(selectEdition);
+  const events = useAppSelector(selectEditorEvents);
+  const local = useLocalEdition();
 
-  const localState = (fullscreen ? useEditingStore : useLocalStore)(
-    s => s,
-    shallowDifferent,
-  );
-  const localDispatch = fullscreen ? store.dispatch : getLocalDispatch();
-  const localEntity = getEntity(localState.editing);
+  // Fullscreen drives the global edition
+  const editing = fullscreen ? globalEdition : local.edition;
+  const scopedDispatch: EditingDispatch = fullscreen
+    ? appDispatch
+    : local.dispatch;
+  const localEntity = getEntity(editing);
 
   return (
     <ReflexContainer
@@ -100,12 +96,12 @@ export function ComponentWithForm({
         className={cx(flex, growBig, autoScroll)}
       >
         {children({
-          localState: localState.editing,
-          localDispatch,
+          localState: editing,
+          localDispatch: scopedDispatch,
         })}
       </ReflexElement>
-      {localState.editing && localEntity && <ReflexSplitter />}
-      {localState.editing && localEntity && (
+      {editing && localEntity && <ReflexSplitter />}
+      {editing && localEntity && (
         <>
           <ReflexElement
             flex={
@@ -115,15 +111,15 @@ export function ComponentWithForm({
             <IconButton
               icon="times"
               onClick={() => {
-                localDispatch(EditingActionCreator.CLOSE_EDITOR() as any);
+                scopedDispatch(closeEditor());
               }}
             />
             <VariableForm
-              editing={localState.editing}
-              entity={getEntity(localState.editing)}
-              events={localState.events}
+              editing={editing}
+              entity={localEntity}
+              events={events}
               readOnly={readOnly}
-              localDispatch={localDispatch}
+              localDispatch={scopedDispatch}
             />
           </ReflexElement>
         </>

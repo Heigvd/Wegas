@@ -4,7 +4,6 @@ import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { Actions } from '../../../data';
 import { entityIs } from '../../../data/entities';
 import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -28,6 +27,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerNumberSliderProps extends WegasComponentProps {
   /**
@@ -90,7 +90,7 @@ function PlayerNumberSlider({
       if (handleOnChange) {
         handleOnChange(newValue);
       } else if (entityIs(number, 'NumberDescriptor')) {
-        editingStore.dispatch(
+        dispatch(
           Actions.VariableInstanceActions.runScript(
             `Variable.find(gameModel,"${(
               number as SNumberDescriptor

@@ -16,10 +16,6 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -33,6 +29,8 @@ import {
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
+import { dispatch } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -46,7 +44,7 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
     <AddMenu
       items={choices}
       onSelect={item => {
-        editingStore.dispatch(
+        dispatch(
           Actions.VariableDescriptorActions.createDescriptor(
             {
               '@class': item.value.descriptor,
@@ -85,7 +83,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
-          editingStore.dispatch(
+          dispatch(
             Actions.VariableDescriptorActions.createDescriptor(
               {
                 '@class': 'SingleResultChoiceDescriptor',
@@ -154,7 +152,7 @@ function SimpleChoiceDisplay({
 }
 
 interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
-  dispatch: EditingStoreDispatch;
+  dispatch: EditingDispatch;
   editMode?: boolean;
 }
 

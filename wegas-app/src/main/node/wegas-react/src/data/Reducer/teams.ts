@@ -5,7 +5,6 @@ import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
 import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
-import { editingStore } from '../Stores/editingStore';
 import { store, ThunkResult } from '../Stores/store';
 import { dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
@@ -80,7 +79,7 @@ export function updateTeam(team: ITeam): ThunkResult {
     const gameModelId = store.getState().global.currentGameModelId;
     const gameId = store.getState().global.currentGameId;
     return TeamAPI.update(gameModelId, gameId, team).then(res => {
-      return editingStore.dispatch(manageResponseHandler(res));
+      return dispatch(manageResponseHandler(res));
     });
   };
 }

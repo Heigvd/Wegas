@@ -31,15 +31,12 @@ import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { getInstance } from '../methods/VariableDescriptorMethods';
 import { Player } from '../selectors';
-import {
-  createEditingAction,
-  editingStore,
-  EditingThunkResult,
-} from '../Stores/editingStore';
+import { selectEdition } from '../../store/slices/edition';
 import { store, ThunkResult } from '../Stores/store';
-import { dispatch } from '../../store/store';
+import { AppThunk, dispatch } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { groupBy } from 'lodash-es';
+import { createEditingAction } from '../../store/localEdition';
 
 type VariableInstanceId = string;
 type EventInboxStatus = 'LOADING' | 'UPDATE_REQUIRED' | 'UPTODATE';
@@ -198,24 +195,24 @@ export default variableInstances;
  */
 export function getEvents(
   eventInboxInstance: IEventInboxInstance,
-): EditingThunkResult<Promise<StateActions | void>> {
+): AppThunk<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     store.dispatch(ActionCreator.EVENT_SET_LOADING(eventInboxInstance.id!));
     return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
 
 export function updateInstance(
   variableInstance: IVariableInstance,
-): EditingThunkResult<Promise<StateActions | void>> {
+): AppThunk<Promise<StateActions | void>> {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -223,7 +220,7 @@ export function updateInstance(
 export function getAll(): ThunkResult<Promise<StateActions>> {
   return function () {
     return VariableInstanceAPI.getByPlayer().then(res => {
-      const result = editingStore.dispatch(manageResponseHandler(res));
+      const result = dispatch(manageResponseHandler(res));
       dispatch(setInitStatus({ key: 'instances', status: true }));
       return result;
     });
@@ -257,13 +254,15 @@ export function runScript(
   script: string | IScript,
   player?: IPlayer,
   context?: IVariableDescriptor,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return asyncRunScript(gameModelId, script, player, context).then(
       res =>
         res != null &&
-        dispatch(manageResponseHandler(res, dispatch, getState())),
+        dispatch(
+          manageResponseHandler(res, dispatch, selectEdition(getState())),
+        ),
     );
   };
 }
@@ -295,7 +294,7 @@ export function runLoadedScript(
   player?: IPlayer,
   currentDescriptor?: IVariableDescriptor,
   payload?: { [key: string]: unknown },
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     return asyncRunLoadedScript(
@@ -304,7 +303,9 @@ export function runLoadedScript(
       player,
       currentDescriptor,
       payload,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+    );
   };
 }
 
@@ -312,7 +313,7 @@ export function runLoadedScript(
 export function read(
   choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
@@ -320,7 +321,7 @@ export function read(
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.read(gameModelId, p.id, choice).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -341,14 +342,16 @@ export const selectAndValidate = createEditingAction(
       p.id,
       choice,
     );
-    return dispatch(manageResponseHandler(res, dispatch, getState()));
+    return dispatch(
+      manageResponseHandler(res, dispatch, selectEdition(getState())),
+    );
   },
 );
 
 export function selectChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
@@ -356,7 +359,10 @@ export function selectChoice(
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.selectChoice(gameModelId, p.id, choice).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState())),
+      res =>
+        dispatch(
+          manageResponseHandler(res, dispatch, selectEdition(getState())),
+        ),
     );
   };
 }
@@ -364,7 +370,7 @@ export function selectChoice(
 export function cancelReply(
   reply: IReply,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
@@ -372,7 +378,10 @@ export function cancelReply(
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.cancelReply(gameModelId, p.id, reply).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState())),
+      res =>
+        dispatch(
+          manageResponseHandler(res, dispatch, selectEdition(getState())),
+        ),
     );
   };
 }
@@ -383,7 +392,7 @@ export function cancelReply(
 export function toggleReply(
   choice: IChoiceDescriptor,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   const p = player != null ? player : Player.selectCurrent();
 
   const ci = getInstance<IChoiceInstance>(choice, p);
@@ -399,7 +408,7 @@ export function toggleReply(
 export function validateQuestion(
   question: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = store.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
@@ -413,7 +422,9 @@ export function validateQuestion(
       gameModelId,
       p.id,
       instance,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+    );
   };
 }
 
@@ -422,7 +433,7 @@ export function validateQuestion(
 export function readMessage(
   message: IMessage,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (message.id == null) {
@@ -432,7 +443,7 @@ export function readMessage(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessage(message.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -440,7 +451,7 @@ export function readMessage(
 export function readMessages(
   inbox: IInboxDescriptor,
   player?: IPlayer,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (inbox.id == null) {
@@ -450,7 +461,7 @@ export function readMessages(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessages(inbox.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }
@@ -459,7 +470,7 @@ export function applyFSMTransition(
   stateMachine: IFSMDescriptor | IDialogueDescriptor,
   transition: ITransition | IDialogueTransition,
   cbFn?: () => void,
-): EditingThunkResult {
+): AppThunk {
   return function (dispatch, getState) {
     if (stateMachine.id == null) {
       throw Error('Missing statemachine id');
@@ -468,16 +479,16 @@ export function applyFSMTransition(
       throw Error('Missing transition id');
     }
     return FSM_API.applyTransition(stateMachine.id, transition.id).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, getState()));
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())));
       cbFn && cbFn();
     });
   };
 }
 
-export function getByIds(ids: number[]): EditingThunkResult {
+export function getByIds(ids: number[]): AppThunk {
   return function (dispatch, getState) {
     return VariableInstanceAPI.getByIds(ids).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
     );
   };
 }

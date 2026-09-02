@@ -22,7 +22,6 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
 import { instantiate } from '../../data/scriptable';
 import { Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
 import { useStore } from '../../data/Stores/store';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
@@ -39,6 +38,7 @@ import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { translate } from '../../data/i18n';
 import { wwarn } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
+import { dispatch } from '../../store/store';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -158,7 +158,7 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   const handleClick = () => {
     props.onClick();
     if (!props.disabled) {
-      editingStore.dispatch(readMessage(message));
+      dispatch(readMessage(message));
     }
   };
 

@@ -19,16 +19,14 @@ import {
   expandHeight,
   grow,
 } from '../../css/classes';
-import { EditingActionCreator } from '../../data/Reducer/editingState';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../data/Stores/editingStore';
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { MessageString } from './MessageString';
 import { Icon, IconComp } from './Views/FontAwesome';
+import { dispatch } from '../../store/store';
+import { EditingDispatch } from '../../store/localEdition';
+import { editionHighlight } from '../../store/slices/edition';
 
 const toolboxButtonStyle = css({
   margin: '0 5px',
@@ -87,7 +85,7 @@ interface EditorProps<T> extends DisabledReadonly {
   onChange?: (newEntity: T) => void;
   label?: React.ReactNode;
   highlight?: boolean;
-  localDispatch: EditingStoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
   error?: {
     message: string;
     onVanish: () => void;
@@ -111,6 +109,7 @@ export function Form<T>({
   error,
 }: EditorProps<T>) {
   const form = React.useRef<JSONForm>(null);
+  const scopedDispatch = localDispatch ?? dispatch;
 
   // keep track of previous received entity props
   const oldReceivedEntity = React.useRef(entity);
@@ -260,9 +259,7 @@ export function Form<T>({
         })}
         onMouseMove={() => {
           if (highlight) {
-            (localDispatch || editingStore.dispatch)(
-              EditingActionCreator.EDITION_HIGHLIGHT({ highlight: false }),
-            );
+            scopedDispatch(editionHighlight({ highlight: false }));
           }
         }}
       >

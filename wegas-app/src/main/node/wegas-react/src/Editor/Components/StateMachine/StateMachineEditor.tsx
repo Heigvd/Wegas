@@ -30,20 +30,15 @@ import {
   getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
 import {
-  EditingState,
   Edition,
   editStateMachine,
   saveEditor,
 } from '../../../data/Reducer/editingState';
 import { State as RState } from '../../../data/Reducer/reducers';
-// import * as ReactDOMServer from 'react-dom/server';
 import { VariableDescriptor } from '../../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-  useEditingStore,
-} from '../../../data/Stores/editingStore';
-import { store, useStore } from '../../../data/Stores/store';
+import { store as oldStore, useStore } from '../../../data/Stores/store';
+import { selectEdition } from '../../../store/slices/edition';
+import { RootState, dispatch, store } from '../../../store/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -54,6 +49,8 @@ import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { LiteFlowLineComponentFactory } from './LiteFlowLineComponent';
 import { LiteStateProcessComponentFactory } from './LiteProcessComponent';
 import { StateMachineLegend } from './StateMachineLegend';
+import { EditingDispatch } from '../../../store/localEdition';
+import { customStateEquals, useAppSelector } from '../../../store/hooks';
 
 const emptyPath: (string | number)[] = [];
 const defaultProcessInitialSize = {
@@ -76,7 +73,7 @@ interface StateMachineEditorProps<
   stateMachineInstance: IFSM['defaultInstance'];
   localState?: Readonly<Edition> | undefined;
 
-  localDispatch?: EditingStoreDispatch;
+  localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
   search?: RState['global']['search'];
   title?: string;
@@ -109,11 +106,8 @@ export function StateMachineEditor<
     localDispatch,
   );
 
-  const dispatch = React.useMemo(
-    () =>
-      localDispatch != null && forceLocalDispatch
-        ? localDispatch!
-        : editingStore.dispatch,
+  const scopedDispatch = React.useMemo(
+    () => (localDispatch && forceLocalDispatch ? localDispatch : dispatch),
     [forceLocalDispatch, localDispatch],
   );
 
@@ -188,7 +182,6 @@ export function StateMachineEditor<
           target.transitions = (target.transitions as TTransition[]).filter(
             t => transition == null || t.id !== transition.transition.id,
           ) as typeof target.transitions;
-          // (source.transitions as IAbstractTransition[]).push(newTransition);
         } else {
           source.transitions = (source.transitions as TTransition[]).filter(
             t => transition == null || t.id !== transition.transition.id,
@@ -197,22 +190,21 @@ export function StateMachineEditor<
         (source.transitions as IAbstractTransition[]).push(newTransition);
       })(stateMachine);
 
-      dispatch(
+      scopedDispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
-    [createTransition, dispatch, stateMachine],
+    [createTransition, scopedDispatch, stateMachine],
   );
 
   const onStateClick = React.useCallback(
     (e: ModifierKeysEvent, state: StateProcess) => {
-      const dispatchLocal =
-        (e.ctrlKey === true || forceLocalDispatch === true) &&
-        localDispatch != null;
+      const isLocal = localDispatch && (e.ctrlKey || forceLocalDispatch);
+      const scopedDispatch = isLocal ? localDispatch : dispatch;
 
-      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
-      dispatch(editStateMachine(stateMachine, ['states', state.id]));
-      if (!dispatchLocal) {
+      scopedDispatch(editStateMachine(stateMachine, ['states', state.id]));
+
+      if (!isLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
@@ -228,13 +220,13 @@ export function StateMachineEditor<
 
   const updateStatePosition = React.useCallback(
     (sourceState: StateProcess, position: XYPosition) => {
-      const state = editingStore.getState();
+      const edition = selectEdition(store.getState());
 
       const currentState =
-        state.editing?.type === 'VariableFSM' &&
-        state.editing.newEntity != null &&
-        state.editing.newEntity.id === sourceState.state.id
-          ? (state.editing.newEntity as unknown as StateProcess['state'])
+        edition?.type === 'VariableFSM' &&
+        edition.newEntity != null &&
+        edition.newEntity.id === sourceState.state.id
+          ? (edition.newEntity as unknown as StateProcess['state'])
           : sourceState.state;
 
       const newCurrentState: IState | IDialogueState = {
@@ -244,13 +236,13 @@ export function StateMachineEditor<
       };
 
       const oldFSM = cloneDeep(
-        store.getState().variableDescriptors[newCurrentState.parentId!]!,
+        oldStore.getState().variableDescriptors[newCurrentState.parentId!]!,
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
-      dispatch(saveEditor(oldFSM, false));
+      scopedDispatch(saveEditor(oldFSM, false));
     },
-    [dispatch],
+    [scopedDispatch],
   );
 
   const safeUpdateStatePosition = React.useCallback(
@@ -317,17 +309,17 @@ export function StateMachineEditor<
         }
       })(stateMachine);
 
-      const dispatchLocal =
-        (e.ctrlKey === true || forceLocalDispatch === true) &&
-        localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
+      const isLocal = localDispatch && (e.ctrlKey || forceLocalDispatch);
+      const scopedDispatch = isLocal ? localDispatch : dispatch;
 
-      if (!dispatchLocal) {
+      if (!isLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
       }
 
-      dispatch(editStateMachine(stateMachine, ['states', String(newStateId)]));
-      dispatch(
+      scopedDispatch(
+        editStateMachine(stateMachine, ['states', String(newStateId)]),
+      );
+      scopedDispatch(
         Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
       );
     },
@@ -360,18 +352,18 @@ export function StateMachineEditor<
       startProcess: StateProcess,
       flowline: TransitionFlowLine,
     ) => {
-      const dispatchLocal =
-        (e.ctrlKey === true || forceLocalDispatch === true) &&
-        localDispatch != null;
-      const dispatch = dispatchLocal ? localDispatch! : editingStore.dispatch;
-      dispatch(
+      const isLocal = localDispatch && (e.ctrlKey || forceLocalDispatch);
+      const scopedDispatch = isLocal ? localDispatch : dispatch;
+
+      scopedDispatch(
         editStateMachine(
           stateMachine,
           ['states', startProcess.id, 'transitions', flowline.id],
           undefined,
         ),
       );
-      if (!dispatchLocal) {
+
+      if (!isLocal) {
         focusTab(mainLayoutId, 'Variable Properties');
       }
     },
@@ -425,11 +417,11 @@ export function StateMachineEditor<
 
   const Flowline = React.useMemo(() => {
     if (lite) {
-      return LiteFlowLineComponentFactory(stateMachine, dispatch);
+      return LiteFlowLineComponentFactory(stateMachine, scopedDispatch);
     } else {
       return TransitionFlowLineComponent;
     }
-  }, [dispatch, lite, stateMachine]);
+  }, [scopedDispatch, lite, stateMachine]);
 
   return (
     <FlowChart
@@ -451,7 +443,8 @@ export function StateMachineEditor<
   );
 }
 
-export function editingStateSelector(s: EditingState) {
+export function editingStateSelector(state: RootState) {
+  const s = { editing: selectEdition(state) };
   let editedVariable: IFSMDescriptor | IDialogueDescriptor | undefined =
     undefined;
   let editPath: (string | number)[] | undefined = undefined;
@@ -494,7 +487,7 @@ export function globalStateSelector(s: RState) {
 
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localState?: Readonly<Edition> | undefined;
-  localDispatch?: EditingStoreDispatch;
+  localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
 }
 
@@ -504,7 +497,9 @@ export function ConnectedStateMachineEditor({
   forceLocalDispatch,
   ...options
 }: ConnectedStateMachineEditorProps) {
-  const editingState = useEditingStore(editingStateSelector);
+  // the selector builds a fresh object, so it needs an equality fn: the app
+  // store sees far more actions than the old editing store did
+  const editingState = useAppSelector(editingStateSelector, customStateEquals);
   const search = useStore(globalStateSelector);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 

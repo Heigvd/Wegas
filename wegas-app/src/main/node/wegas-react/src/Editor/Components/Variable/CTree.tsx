@@ -21,16 +21,11 @@ import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import {
   createVariable,
-  EditingState,
   Edition,
   VariableEdition,
 } from '../../../data/Reducer/editingState';
 import { State } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
-import {
-  editingStore,
-  useEditingStore,
-} from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -47,6 +42,9 @@ import {
 } from './AddMenu';
 import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
+import { RootState, dispatch } from '../../../store/store';
+import { useAppSelector } from '../../../store/hooks';
+import { selectEdition } from '../../../store/slices/edition';
 
 const nodeStyle = css({
   borderStyle: 'solid',
@@ -195,16 +193,12 @@ export function CTree({
   );
 
   const editingInfoSelector = React.useCallback(
-    (state: EditingState) => {
-      return {
-        editing: isEditing(variableId, subPath, state.editing),
-      };
-    },
+    (state: RootState) => isEditing(variableId, subPath, selectEdition(state)),
     [subPath, variableId],
   );
 
   const { variable, match, searching, open } = useStore(globalInfoSelector);
-  const { editing } = useEditingStore(editingInfoSelector);
+  const editing = useAppSelector(editingInfoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
 
@@ -216,9 +210,10 @@ export function CTree({
 
   const onClickAction = React.useCallback(
     (e: ModifierKeysEvent) => {
-      let dispatch = editingStore.dispatch;
-      if ((forceLocalDispatch || e.ctrlKey) && localDispatch) {
-        dispatch = localDispatch;
+      let scopedDispatch = dispatch;
+
+      if (localDispatch && (forceLocalDispatch || e.ctrlKey)) {
+        scopedDispatch = localDispatch;
       } else {
         if (
           entityIs(variable, 'FSMDescriptor') ||
@@ -226,12 +221,12 @@ export function CTree({
         ) {
           focusTab(mainLayoutId, 'State Machine');
         }
+
         focusTab(mainLayoutId, 'Variable Properties');
       }
 
       const { edit } = getEntityActions(variable!)
-      dispatch(edit(VariableDescriptor.select(variableId)!, subPath));
-      
+      scopedDispatch(edit(VariableDescriptor.select(variableId)!, subPath));
     },
     [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );
@@ -244,15 +239,15 @@ export function CTree({
         entityIs(variable, 'QuestionDescriptor') ||
         entityIs(variable, 'WhQuestionDescriptor')
       ) {
-        let dispatch = editingStore.dispatch;
+        let scopedDispatch = dispatch;
 
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(createVariable(i.value, variable));
+        scopedDispatch(createVariable(i.value, variable));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -263,14 +258,15 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'ChoiceDescriptor')) {
-        let dispatch = editingStore.dispatch;
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        let scopedDispatch = dispatch;
+
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(createVariable(i.value, variable, 'Choice'));
+        scopedDispatch(createVariable(i.value, variable, 'Choice'));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -281,9 +277,10 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'EvaluationDescriptorContainer')) {
-        let dispatch = editingStore.dispatch;
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        let scopedDispatch = dispatch;
+
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
@@ -293,22 +290,19 @@ export function CTree({
         );
 
         const path = subPath![0] as 'feedback' | 'fbComments';
-        if (path != null) {
-          switch (path) {
-            case 'fbComments':
-              dispatch(createVariable(i.value, parent, 'Comments'));
-              break;
-            case 'feedback':
-              dispatch(createVariable(i.value, parent, 'Feedback'));
-              break;
-            default:
-              wwarn(
-                'A subpath must was set but it refers to an unknown prop ' +
-                  path,
-              );
-          }
-        } else {
-          wwarn('A subpath must be set but was undefined');
+
+        switch (path) {
+          case 'fbComments':
+            scopedDispatch(createVariable(i.value, parent, 'Comments'));
+            break;
+          case 'feedback':
+            scopedDispatch(createVariable(i.value, parent, 'Feedback'));
+            break;
+          default:
+            path != null
+              ? wwarn(`A subpath was set but refers to an unknown prop ${path}`)
+              : wwarn('A subpath must be set but was undefined');
+            break;
         }
       }
     },

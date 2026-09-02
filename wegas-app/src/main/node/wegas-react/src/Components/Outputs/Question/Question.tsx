@@ -11,13 +11,13 @@ import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { State } from '../../../data/Reducer/reducers';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
 import { defaultEntityDisplay } from '../../EntityChooser';
+import { dispatch } from '../../../store/store';
 
 export interface QuestionInfo {
   questionD?: Readonly<IQuestionDescriptor>;
@@ -76,13 +76,13 @@ export function ConnectedSimpleQuestionDisplay({
   return state.questionD.cbx ? (
     <CbxQuestionDisplay
       {...state}
-      dispatch={editingStore.dispatch}
+      dispatch={dispatch}
       {...options}
     />
   ) : (
     <SimpleQuestionDisplay
       {...state}
-      dispatch={editingStore.dispatch}
+      dispatch={dispatch}
       {...options}
     />
   );
