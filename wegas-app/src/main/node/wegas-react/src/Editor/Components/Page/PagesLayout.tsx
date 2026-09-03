@@ -31,12 +31,12 @@ import {
 import { Actions } from '../../../data';
 import { State } from '../../../data/Reducer/reducers';
 // import { ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import {
-  isComponentFocused,
-  pagesStateStore,
-  PageStateAction,
-  usePagesStateStore,
-} from '../../../data/Stores/pageStore';
+  focusKeyOf,
+  setFocused,
+  unsetFocused,
+} from '../../../store/slices/pageEditor';
 import { store, useStore } from '../../../data/Stores/store';
 import { isFolderItem, isPageItem } from '../../../Helper/pages';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -172,7 +172,7 @@ export function IndexItemAdder({
   tooltip,
 }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
-  const { dispatch } = store;
+  const { dispatch: oldDispatch } = store;
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
@@ -223,7 +223,7 @@ export function IndexItemAdder({
                   if (success) {
                     switch (modalState.type) {
                       case 'newpage':
-                        dispatch(
+                        oldDispatch(
                           Actions.PageActions.createItem(
                             path,
                             {
@@ -235,7 +235,7 @@ export function IndexItemAdder({
                         );
                         break;
                       case 'newfolder':
-                        dispatch(
+                        oldDispatch(
                           Actions.PageActions.createItem(path, {
                             '@class': 'Folder',
                             name: value,
@@ -276,7 +276,7 @@ function IndexItemModifer({
   tooltip,
 }: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
-  const { dispatch } = store;
+  const { dispatch: oldDispatch } = store;
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nEditorValues = useInternalTranslate(editorTabsTranslations);
 
@@ -314,7 +314,7 @@ function IndexItemModifer({
                 });
               } else {
                 if (success) {
-                  dispatch(
+                  oldDispatch(
                     Actions.PageActions.updateIndexItem(path, {
                       ...indexItem,
                       name: value,
@@ -453,8 +453,6 @@ function LayoutNodeTitle({
   );
 }
 
-const pageDispatch = pagesStateStore.dispatch;
-
 interface WegasComponentTitleProps {
   component: WegasComponent;
   pageId: string;
@@ -495,8 +493,10 @@ function WegasComponentTitle({
 
   const isSelected =
     pageId === selectedPageId && isEqual(componentPath, selectedComponentPath);
-  const isFocused = usePagesStateStore(
-    isComponentFocused(editMode, pageId, componentPath),
+  const dispatch = useAppDispatch();
+  const focusKey = focusKeyOf(pageId, componentPath);
+  const isFocused = useAppSelector(
+    s => editMode && s.pageEditor.focusKey === focusKey,
   );
 
   const {
@@ -530,13 +530,13 @@ function WegasComponentTitle({
       onMouseOver={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
-          pageDispatch(PageStateAction.setFocused(pageId, componentPath));
+          dispatch(setFocused({ pageId, componentPath }));
         }
       }}
       onMouseOut={e => {
         if (editMode /*&& !isDragging*/) {
           e.stopPropagation();
-          pageDispatch(PageStateAction.unsetFocused());
+          dispatch(unsetFocused());
         }
       }}
       className={cx({
@@ -696,7 +696,7 @@ function PageIndexTitle({
 }: PageIndexTitleProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { onPageClick, selectedPageId } = React.useContext(pageCTX);
-  const { dispatch } = store;
+  const { dispatch: oldDispatch } = store;
   const folderIsNotEmpty =
     isFolderItem(indexItem) && indexItem.items.length > 0;
 
@@ -735,7 +735,7 @@ function PageIndexTitle({
                 : 'star'
             }
             onClick={() => {
-              dispatch(Actions.PageActions.setDefault(indexItem.id!));
+              oldDispatch(Actions.PageActions.setDefault(indexItem.id!));
             }}
             tooltip={i18nValues.pageEditor.defaultPage}
             className={cx({
@@ -752,7 +752,7 @@ function PageIndexTitle({
                 : 'magic'
             }
             onClick={() => {
-              dispatch(
+              oldDispatch(
                 Actions.PageActions.updateIndexItem(newPath, {
                   ...indexItem,
                   scenaristPage: !indexItem.scenaristPage,
@@ -772,7 +772,7 @@ function PageIndexTitle({
                 : 'chalkboard-teacher'
             }
             onClick={() => {
-              dispatch(
+              oldDispatch(
                 Actions.PageActions.updateIndexItem(newPath, {
                   ...indexItem,
                   trainerPage: !indexItem.trainerPage,
@@ -792,7 +792,7 @@ function PageIndexTitle({
       <ConfirmButton
         icon="trash"
         onAction={success =>
-          success && dispatch(Actions.PageActions.deleteIndexItem(newPath))
+          success && oldDispatch(Actions.PageActions.deleteIndexItem(newPath))
         }
         disabled={folderIsNotEmpty}
         tooltip={
@@ -811,7 +811,7 @@ function PageIndexTitle({
           icon="copy"
           onClick={() => {
             const currentPage = store.getState().pages[indexItem.id!];
-            dispatch(
+            oldDispatch(
               Actions.PageActions.createItem(
                 newPath.slice(0, -1),
                 { ...indexItem, name: indexItem.name + ' - copy' },

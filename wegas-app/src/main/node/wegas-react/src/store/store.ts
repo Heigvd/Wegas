@@ -12,6 +12,7 @@ import playersReducer from './slices/players';
 import teamsReducer from './slices/teams';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
+import pageEditorReducer from './slices/pageEditor';
 
 /**
  * New store for react-redux
@@ -24,6 +25,7 @@ export const store = configureStore({
         teams: teamsReducer,
         games: gameReducer,
         gameModels: gameModelReducer,
+        pageEditor: pageEditorReducer,
     },
 });
 
