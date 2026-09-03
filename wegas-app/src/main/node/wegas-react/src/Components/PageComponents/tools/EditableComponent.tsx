@@ -13,10 +13,8 @@ import {
   createEditingAction,
   editingStore,
 } from '../../../data/Stores/editingStore';
-import {
-  PagesContextState,
-  pagesContextStateStore,
-} from '../../../data/Stores/pageContextStore';
+import { getLivePageContext } from '../../../store/pageContextState';
+import { PageContextValues } from '../../../store/slices/pageContext';
 import {
   isComponentFocused,
   pagesStateStore,
@@ -111,11 +109,11 @@ const showBordersStyle = css({
 
 export function assembleStateAndContext(
   context: PageComponentContext = {},
-  state?: PagesContextState,
+  state?: PageContextValues,
 ) {
   return {
     Context: {
-      ...addSetterToState(state || pagesContextStateStore.getState()),
+      ...addSetterToState(state || getLivePageContext()),
       ...context,
     },
   };
