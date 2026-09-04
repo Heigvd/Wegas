@@ -18,7 +18,7 @@ import { entityIs } from '../../data/entities';
 import { LibraryAPI, NOCONTENTMESSAGE, ServerLibraryType } from '../../API/library.api';
 import { IManagedResponse } from '../../API/rest';
 import { store } from '../../data/Stores/store';
-import type { RootState } from '../store';
+import type { LoadingStatus, RootState } from '../store';
 
 export function libraryToTheme(library: IGameModelContent) {
   const theme: Theme = JSON.parse(library.content);
@@ -150,7 +150,19 @@ export const deleteTheme = createAsyncThunk<
   },
 );
 
-export const getSelectedThemes = createAsyncThunk<SelectedThemes, void>(
+/**
+ * A thunk is safe to (re-)run when it has never been attempted, or its last
+ * attempt failed. 'LOADING' means one is already in flight; 'READY' means
+ * it already succeeded - either way there's nothing to do.
+ */
+const notAlreadyLoaded = (status: LoadingStatus) =>
+  status === 'NOT_INITIALIZED' || status === 'ERROR';
+
+export const getSelectedThemes = createAsyncThunk<
+  SelectedThemes,
+  void,
+  { state: RootState }
+>(
   'theme/getSelectedThemes',
   async () => {
     try {
@@ -175,10 +187,20 @@ export const getSelectedThemes = createAsyncThunk<SelectedThemes, void>(
       throw error;
     }
   },
+  {
+    // Safe to dispatch from every ThemeProvider mount (including PageLoader's
+    // nested, frequently remounted one) - only the first one actually fetches.
+    condition: (_, { getState }) =>
+      notAlreadyLoaded(getState().themes.selectedThemesStatus),
+  },
 )
 
 
-export const getAllThemes = createAsyncThunk<Themes, void>(
+export const getAllThemes = createAsyncThunk<
+  Themes,
+  void,
+  { state: RootState }
+>(
   'theme/getAllThemes',
   async () => {
     try {
@@ -206,6 +228,10 @@ export const getAllThemes = createAsyncThunk<Themes, void>(
       );
       throw error;
     }
+  },
+  {
+    condition: (_, { getState }) =>
+      notAlreadyLoaded(getState().themes.themesStatus),
   },
 )
 
@@ -411,9 +437,26 @@ export const setSelectedTheme = createAsyncThunk<
   },
 );
 
+/**
+ * ThemesState plus the fetch-status tracking that lets getAllThemes/
+ * getSelectedThemes safely no-op when dispatched from every ThemeProvider
+ * mount - it's slice-only, not part of the shared ThemesState type consumed
+ * by non-redux code.
+ */
+interface ThemeSliceState extends ThemesState {
+  themesStatus: LoadingStatus;
+  selectedThemesStatus: LoadingStatus;
+}
+
+const initialState: ThemeSliceState = {
+  ...defaultThemesState,
+  themesStatus: 'NOT_INITIALIZED',
+  selectedThemesStatus: 'NOT_INITIALIZED',
+};
+
 const themeSlice = createSlice({
   name: 'themes',
-  initialState: defaultThemesState,
+  initialState,
   reducers: {
     updateTheme(
       state,
@@ -460,11 +503,25 @@ const themeSlice = createSlice({
       state.editedThemeName = previousKey;
       delete state.themes[themeName];
     })
+    .addCase(getSelectedThemes.pending, state => {
+      state.selectedThemesStatus = 'LOADING';
+    })
     .addCase(getSelectedThemes.fulfilled, (state, action) => {
       state.selectedThemes = action.payload;
+      state.selectedThemesStatus = 'READY';
+    })
+    .addCase(getSelectedThemes.rejected, state => {
+      state.selectedThemesStatus = 'ERROR';
+    })
+    .addCase(getAllThemes.pending, state => {
+      state.themesStatus = 'LOADING';
     })
     .addCase(getAllThemes.fulfilled, (state, action: PayloadAction<Themes>) => {
       state.themes = action.payload;
+      state.themesStatus = 'READY';
+    })
+    .addCase(getAllThemes.rejected, state => {
+      state.themesStatus = 'ERROR';
     })
     .addCase(addNewLib.fulfilled, (state, action) => {
       if (action.payload.libType === 'Theme') {
