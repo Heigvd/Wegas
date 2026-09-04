@@ -12,12 +12,12 @@ import { store } from '../data/Stores/store';
 import {
   deleteTheme,
   getThemeDispatch,
-  libraryToTheme,
   themeActionCreator,
 } from '../data/Stores/themeStore';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
+import { libraryToTheme } from '../store/slices/theme';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',

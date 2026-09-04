@@ -152,20 +152,6 @@ export const themeStore = createStore(
 export const { useStore: useThemeStore, getDispatch: getThemeDispatch } =
   createStoreConnector(themeStore);
 
-export function libraryToTheme(library: IGameModelContent) {
-  const theme: Theme = JSON.parse(library.content);
-  // Updating css classes in browser
-  theme.modeClasses = Object.entries(theme.modes).reduce((o, [k, v]) => {
-    try {
-      modeClass(theme.values, v);
-    } catch (e) {
-      wwarn(e);
-    }
-
-    return { ...o, [k]: modeClass(theme.values, v) };
-  }, {});
-  return theme;
-}
 
 export type ThemeThunkResult<R = void> = ThunkAction<
   R,
