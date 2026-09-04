@@ -52,7 +52,7 @@ type ThemeLibResult =
  * Consuming this (as opposed to constructing/passing it) still needs one
  * cast at the write site - TS can't carry the section/key/value correlation
  * through an indexed assignment without narrowing `section` explicitly for
- * every branch, which isn't worth it for an internal implementation detail.
+ * every branch.
  */
 type SectionValueArg<V> = ValueOf<{
   [T in keyof V]: ValueOf<{
@@ -229,7 +229,7 @@ export const addNewLib = createAsyncThunk<
 
 /**
  * Shared by the `updateTheme` reducer and every thunk that resolves through
- * saveLib/createLib with libType 'Theme' - they all land the same shape.
+ * saveLib/createLib with libType 'Theme'
  */
 function applyThemeUpdate(
   state: ThemesState,
@@ -473,18 +473,11 @@ const themeSlice = createSlice({
         state.selectedThemes = action.payload.selectedThemes;
       }
     })
-    // The reverse case: setSelectedTheme always resolves with libType
-    // 'SelectedThemes', so the Theme branch can never fire here.
     .addCase(setSelectedTheme.fulfilled, (state, action) => {
       if (action.payload.libType === 'SelectedThemes') {
         state.selectedThemes = action.payload.selectedThemes;
       }
     })
-    // All of these resolve through saveLib with libType 'Theme' (never
-    // 'SelectedThemes'), so the else branch can never fire for any of them.
-    // addMatcher must come after every addCase in this chain (RTK checks
-    // cases before matchers, and the builder type stops offering addCase
-    // once addMatcher has been called).
     .addMatcher(
       isAnyOf(
         setBaseMode.fulfilled,
