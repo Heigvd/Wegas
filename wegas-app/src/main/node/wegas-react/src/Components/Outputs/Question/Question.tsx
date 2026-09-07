@@ -11,7 +11,7 @@ import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { State } from '../../../data/Reducer/reducers';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
@@ -74,17 +74,9 @@ export function ConnectedSimpleQuestionDisplay({
     return null;
   }
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay
-      {...state}
-      dispatch={dispatch}
-      {...options}
-    />
+    <CbxQuestionDisplay {...state} dispatch={dispatch} {...options} />
   ) : (
-    <SimpleQuestionDisplay
-      {...state}
-      dispatch={dispatch}
-      {...options}
-    />
+    <SimpleQuestionDisplay {...state} dispatch={dispatch} {...options} />
   );
 }
 
@@ -103,7 +95,7 @@ export function ConnectedWhQuestionDisplay({
   return (
     <WhQuestionDisplay
       {...state}
-      dispatch={store.dispatch}
+      dispatch={dispatch}
       disabled={disabled}
       readOnly={readOnly}
       editMode={editMode}
