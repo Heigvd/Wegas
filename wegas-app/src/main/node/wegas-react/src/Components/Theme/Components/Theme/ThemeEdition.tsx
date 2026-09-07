@@ -11,40 +11,41 @@ import {
   itemCenter,
   justifyEnd,
 } from '../../../../css/classes';
-import {
-  getThemeDispatch,
-  setThemeValue,
-  useThemeStore,
-} from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
-import { deepDifferent } from '../../../Hooks/storeHookFactory';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
 import { Theme, ThemeValues } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
-
-const dispatch = getThemeDispatch();
-
-function onValueChange<
-  T extends keyof ThemeValues,
-  K extends keyof ThemeValues[T],
-  V extends ThemeValues[T][K],
->(section: T) {
-  return function (k: K, v: V) {
-    dispatch(setThemeValue(section, k, v));
-  };
-}
+import { customStateEquals, useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { SectionValueArg, setThemeValue } from '../../../../store/slices/theme';
 
 export function ThemeEdition() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
-  const { currentTheme, editedValues } = useThemeStore(s => {
-    const currentTheme = s.themes[s.editedThemeName];
+  const dispatch = useAppDispatch();
+
+  const onValueChange = React.useCallback(
+    function <
+      T extends keyof ThemeValues,
+      K extends keyof ThemeValues[T],
+      V extends ThemeValues[T][K],
+    >(section: T) {
+      return function (key: K, value: V | null) {
+        dispatch(
+          setThemeValue({ section, key, value } as SectionValueArg<ThemeValues>),
+        );
+      };
+    },
+    [dispatch],
+  );
+
+  const { currentTheme, editedValues } = useAppSelector(s => {
+    const currentTheme = s.themes.themes[s.themes.editedThemeName];
     return { currentTheme, editedValues: currentTheme?.values || {} };
-  }, deepDifferent);
+  }, customStateEquals);
 
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof Theme['values']]?: boolean }

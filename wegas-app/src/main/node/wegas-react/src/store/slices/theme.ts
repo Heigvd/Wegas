@@ -49,14 +49,39 @@ type ThemeLibResult =
  * exact `key`, which is tied to the exact `section` - a call site can't pass
  * a value from the wrong section or the wrong type for that key.
  *
- * Consuming this (as opposed to constructing/passing it) still needs one
- * cast at the write site - TS can't carry the section/key/value correlation
- * through an indexed assignment without narrowing `section` explicitly for
- * every branch.
+ * `value` allows `null` for setThemeValue's delete-this-key behavior (see
+ * its payload creator below). Nothing stops a ModeValues caller from also
+ * passing null, but ModeValueModifier's onChange never offers one, and
+ * setModeValue's payload creator has no null-handling - so it's a harmless
+ * widening there, not a real capability.
+ *
+ * Constructing this from generic type parameters (as opposed to a literal
+ * object) still needs one cast at the construction site - TS can't carry a
+ * generic-parameter correlation through a flattened mapped-type union,
+ * confirmed against the compiler rather than assumed.
  */
-type SectionValueArg<V> = ValueOf<{
-  [T in keyof V]: ValueOf<{
-    [K in keyof V[T]]: { section: T; key: K; value: V[T][K] };
+/**
+ * Drops index-signature keys (string/number), keeping only literal-named ones.
+ *
+ * Needed because ModeValues is `ModeComponent<...>`, which intersects
+ * `Record<string, unknown>` with its section objects - so a bare `keyof
+ * ModeValues` is `string`, not 'colors'|'dimensions'|'others', which
+ * collapsed SectionValueArg<ModeValues> all the way to `never`.
+ */
+type KnownKeys<T> = keyof {
+  [K in keyof T as string extends K
+    ? never
+    : number extends K
+    ? never
+    : K]: T[K];
+};
+
+export type SectionValueArg<V> = ValueOf<{
+  // KnownKeys only at the section level: the sections themselves (ThemeColors
+  // etc.) carry an index signature on purpose, since the theme editor lets
+  // users add custom entries - so inner keys stay open.
+  [T in KnownKeys<V>]: ValueOf<{
+    [K in keyof V[T]]: { section: T; key: K; value: V[T][K] | null };
   }>;
 }>;
 
