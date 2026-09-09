@@ -19,12 +19,17 @@ import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
 import { Theme, ThemeValues } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
-import { customStateEquals, useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import {
+  customStateEquals,
+  useAppDispatch,
+  useAppSelector,
+} from '../../../../store/hooks';
 import { SectionValueArg, setThemeValue } from '../../../../store/slices/theme';
+
+const EMPTY_VALUES = {};
 
 export function ThemeEdition() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-
   const dispatch = useAppDispatch();
 
   const onValueChange = React.useCallback(
@@ -35,7 +40,11 @@ export function ThemeEdition() {
     >(section: T) {
       return function (key: K, value: V | null) {
         dispatch(
-          setThemeValue({ section, key, value } as SectionValueArg<ThemeValues>),
+          setThemeValue({
+            section,
+            key,
+            value,
+          } as SectionValueArg<ThemeValues>),
         );
       };
     },
@@ -44,7 +53,7 @@ export function ThemeEdition() {
 
   const { currentTheme, editedValues } = useAppSelector(s => {
     const currentTheme = s.themes.themes[s.themes.editedThemeName];
-    return { currentTheme, editedValues: currentTheme?.values || {} };
+    return { currentTheme, editedValues: currentTheme?.values || EMPTY_VALUES };
   }, customStateEquals);
 
   const [selectedSection, setSelectedSection] = React.useState<
