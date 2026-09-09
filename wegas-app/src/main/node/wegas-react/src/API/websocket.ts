@@ -12,7 +12,11 @@ import { store } from '../data/Stores/store';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
-import { deleteTheme, libraryToTheme, updateTheme } from '../store/slices/theme';
+import {
+  deleteTheme,
+  libraryToTheme,
+  updateTheme,
+} from '../store/slices/theme';
 import { dispatch } from '../store/store';
 
 const CHANNEL_PREFIX = {
@@ -103,7 +107,7 @@ const webSocketEvents = [
   'PageUpdate',
   'LibraryUpdate-Theme',
   'LibraryUpdate-SelectedThemes', // TODO
-  'LibraryDestroy-Theme',
+  'LibraryDestroy-Theme', // TODO
   'LibraryDestroy-SelectedThemes', // TODO
   'LibraryUpdate-CSS',
   'LibraryUpdate-ClientScript',
@@ -119,7 +123,7 @@ const webSocketEvents = [
 
 export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
 
-interface OutadatedEntitiesEvent {
+interface OutdatedEntitiesEvent {
   '@class': 'OutdatedEntitiesEvent';
   updatedEntities: { type: WegasClassNames; id: number }[];
 }
@@ -273,7 +277,7 @@ class WebSocketListener {
           ),
         );
       case 'OutdatedEntitiesEvent': {
-        const { updatedEntities } = data as OutadatedEntitiesEvent;
+        const { updatedEntities } = data as OutdatedEntitiesEvent;
 
         const toUpdate: { instances: number[]; descriptors: number[] } = {
           instances: [],
@@ -314,11 +318,11 @@ class WebSocketListener {
         const themeName = String(data);
         LibraryAPI.getLibrary('Theme', themeName).then(
           (library: IGameModelContent) => {
-            dispatch(updateTheme(
-              {
+            dispatch(
+              updateTheme({
                 themeName: themeName,
                 theme: libraryToTheme(library),
-              })
+              }),
             );
           },
         );
