@@ -17,14 +17,10 @@ import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
-import { Theme, ThemeValues } from '../../ThemeVars';
+import { Theme } from '../../ThemeVars';
 import { ThemeValueModifier } from './ThemeValueModifier';
-import {
-  customStateEquals,
-  useAppDispatch,
-  useAppSelector,
-} from '../../../../store/hooks';
-import { SectionValueArg, setThemeValue } from '../../../../store/slices/theme';
+import { customStateEquals, useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { setThemeValue, ThemeValueArgs } from '../../../../store/slices/theme';
 
 const EMPTY_VALUES = {};
 
@@ -32,22 +28,29 @@ export function ThemeEdition() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const dispatch = useAppDispatch();
 
-  const onValueChange = React.useCallback(
-    function <
-      T extends keyof ThemeValues,
-      K extends keyof ThemeValues[T],
-      V extends ThemeValues[T][K],
-    >(section: T) {
-      return function (key: K, value: V | null) {
-        dispatch(
-          setThemeValue({
-            section,
-            key,
-            value,
-          } as SectionValueArg<ThemeValues>),
-        );
-      };
-    },
+  // One closure per section: the literal `section` is what lets TS check the
+  // payload against ThemeValueArg's union directly, with no cast.
+  const onColorChange = React.useCallback(
+    (
+      key: ThemeValueArgs['colors']['key'],
+      value: ThemeValueArgs['colors']['value'],
+    ) => dispatch(setThemeValue({ section: 'colors', key, value })),
+    [dispatch],
+  );
+
+  const onDimensionChange = React.useCallback(
+    (
+      key: ThemeValueArgs['dimensions']['key'],
+      value: ThemeValueArgs['dimensions']['value'],
+    ) => dispatch(setThemeValue({ section: 'dimensions', key, value })),
+    [dispatch],
+  );
+
+  const onOtherChange = React.useCallback(
+    (
+      key: ThemeValueArgs['others']['key'],
+      value: ThemeValueArgs['others']['value'],
+    ) => dispatch(setThemeValue({ section: 'others', key, value })),
     [dispatch],
   );
 
@@ -106,7 +109,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="colors"
-                onChange={onValueChange('colors')}
+                onChange={onColorChange}
               />
             </ReflexElement>
           )}
@@ -119,7 +122,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="dimensions"
-                onChange={onValueChange('dimensions')}
+                onChange={onDimensionChange}
               />
             </ReflexElement>
           )}
@@ -131,7 +134,7 @@ export function ThemeEdition() {
               <ThemeValueModifier
                 theme={currentTheme}
                 section="others"
-                onChange={onValueChange('others')}
+                onChange={onOtherChange}
               />
             </ReflexElement>
           )}

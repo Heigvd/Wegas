@@ -44,45 +44,39 @@ type ThemeLibResult =
   | { libType: 'SelectedThemes'; selectedThemes: SelectedThemes };
 
 /**
- * A precise {section, key, value} triple for a nested "sections of named
- * values" type like ModeValues/ThemeValues: `value`'s type is tied to the
- * exact `key`, which is tied to the exact `section` - a call site can't pass
- * a value from the wrong section or the wrong type for that key.
+ * The {section, key, value} triple each theme edit dispatches, one arm per
+ * section. Mapping over `keyof ThemeValues` - the fixed 'colors'|'dimensions'|
+ * 'others' - rather than `keyof V` is what keeps this simple: `keyof ModeValues`
+ * collapses to `string` (ModeComponent intersects Record<string, unknown>), but
+ * indexing `ModeValues[S]` by a known section name does not.
  *
- * `value` allows `null` for setThemeValue's delete-this-key behavior (see
- * its payload creator below). Nothing stops a ModeValues caller from also
- * passing null, but ModeValueModifier's onChange never offers one, and
- * setModeValue's payload creator has no null-handling - so it's a harmless
- * widening there, not a real capability.
- *
- * Constructing this from generic type parameters (as opposed to a literal
- * object) still needs one cast at the construction site - TS can't carry a
- * generic-parameter correlation through a flattened mapped-type union,
- * confirmed against the compiler rather than assumed.
+ * Section keys stay open and `value` is section-wide, because ThemeColors/
+ * ThemeDimensions/ThemeOthers carry index signatures on purpose - the theme
+ * editor lets users add custom entries.
  */
-/**
- * Drops index-signature keys (string/number), keeping only literal-named ones.
- *
- * Needed because ModeValues is `ModeComponent<...>`, which intersects
- * `Record<string, unknown>` with its section objects - so a bare `keyof
- * ModeValues` is `string`, not 'colors'|'dimensions'|'others', which
- * collapsed SectionValueArg<ModeValues> all the way to `never`.
- */
-type KnownKeys<T> = keyof {
-  [K in keyof T as string extends K
-    ? never
-    : number extends K
-    ? never
-    : K]: T[K];
+export type ThemeValueArgs = {
+  [S in keyof ThemeValues]: {
+    section: S;
+    key: keyof ThemeValues[S];
+    /** `null` deletes the key - see setThemeValue below. */
+    value: ValueOf<ThemeValues[S]> | null;
+  };
 };
+type ThemeValueArg = ValueOf<ThemeValueArgs>;
 
-export type SectionValueArg<V> = ValueOf<{
-  // KnownKeys only at the section level: the sections themselves (ThemeColors
-  // etc.) carry an index signature on purpose, since the theme editor lets
-  // users add custom entries - so inner keys stay open.
-  [T in KnownKeys<V>]: ValueOf<{
-    [K in keyof V[T]]: { section: T; key: K; value: V[T][K] | null };
-  }>;
+/**
+ * Same triple for a mode. Mode entries are a closed set per section, so keys
+ * stay precise here. `value` is a plain string: it names a theme value -
+ * including user-added ones - or is the 'undefined' sentinel that
+ * ModeValueModifier's DropMenu emits, neither of which fits ModeColor/
+ * ModeDimension/ModeOther. No `| null`: setModeValue never deletes.
+ */
+export type ModeValueArg = ValueOf<{
+  [S in keyof ThemeValues]: {
+    section: S;
+    key: keyof ModeValues[S];
+    value: string;
+  };
 }>;
 
 function applyLibResponse(
@@ -362,7 +356,7 @@ export const deleteMode = createAsyncThunk<
 
 export const setModeValue = createAsyncThunk<
   ThemeLibResult,
-  SectionValueArg<ModeValues>,
+  ModeValueArg,
   { state: RootState }
 >(
   'theme/setModeValue',
@@ -415,7 +409,7 @@ export const resetTheme = createAsyncThunk<
 
 export const setThemeValue = createAsyncThunk<
   ThemeLibResult,
-  SectionValueArg<ThemeValues>,
+  ThemeValueArg,
   { state: RootState }
 >(
   'theme/setThemeValue',
