@@ -78,7 +78,9 @@ else
         OTEL_OPTS="${OTEL_OPTS} -Dotel.javaagent.configuration-file=${OTEL_CONFIG_FILE}"
         OTEL_CONFIG_INFO=", config=${OTEL_CONFIG_FILE}"
     fi
-    OTEL_STATUS="ON — agent=${OTEL_AGENT_JAR}, endpoint=${OTEL_EXPORTER_OTLP_ENDPOINT:-<default http://localhost:4318 or otel.properties>}${OTEL_CONFIG_INFO}"
+    # Stable per-instance identity. The wegas.* gauges are per-node
+    export OTEL_RESOURCE_ATTRIBUTES="${OTEL_RESOURCE_ATTRIBUTES:-service.instance.id=$(hostname)}"
+    OTEL_STATUS="ON — agent=${OTEL_AGENT_JAR}, endpoint=${OTEL_EXPORTER_OTLP_ENDPOINT:-<default http://localhost:4318 or otel.properties>}${OTEL_CONFIG_INFO}, resource=${OTEL_RESOURCE_ATTRIBUTES}"
 fi
 
 # Payara Micro server-log verbosity based on a properties file (if present)
