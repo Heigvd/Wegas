@@ -22,7 +22,7 @@ import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { grow, mediumPadding } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { updateDescriptor } from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
 import {
@@ -43,7 +43,7 @@ import {
   EditingStoreDispatch,
   useEditingStore,
 } from '../../../data/Stores/editingStore';
-import { store, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -198,7 +198,7 @@ export function StateMachineEditor<
       })(stateMachine);
 
       dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+        updateDescriptor(newStateMachine),
       );
     },
     [createTransition, dispatch, stateMachine],
@@ -244,7 +244,7 @@ export function StateMachineEditor<
       };
 
       const oldFSM = cloneDeep(
-        store.getState().variableDescriptors[newCurrentState.parentId!]!,
+        VariableDescriptor.select(newCurrentState.parentId!)!,
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
@@ -328,7 +328,7 @@ export function StateMachineEditor<
 
       dispatch(editStateMachine(stateMachine, ['states', String(newStateId)]));
       dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+        updateDescriptor(newStateMachine),
       );
     },
     [createTransition, forceLocalDispatch, lang, localDispatch, stateMachine],

@@ -4,7 +4,7 @@ import { entityIs } from '../data/entities';
 import {
   deleteDescriptor,
   updateDescriptor,
-} from '../data/Reducer/VariableDescriptorReducer';
+} from '../store/slices/variableDescriptors';
 import {
   asyncRunLoadedScript,
   updateInstance,

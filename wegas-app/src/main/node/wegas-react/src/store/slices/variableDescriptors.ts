@@ -1,6 +1,14 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { produce } from 'immer';
-import { Reducer } from 'redux';
 import {
+  IPeerReviewDescriptor,
   IReview,
   IVariableDescriptor,
   WegasClassNamesAndClasses,
@@ -10,64 +18,46 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
+import { manageResponseHandler, StateActions } from '../../data/actions';
+import { entityIs } from '../../data/entities';
+import { deleteState, editVariable } from '../../data/Reducer/editingState';
+import { Game, Player } from '../../data/selectors';
+import { EditingThunkResult } from '../../data/Stores/editingStore';
+import { deepRemove } from '../../data/updateUtils';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';
-import { manageResponseHandler, StateActions } from '../actions';
-import { ActionType } from '../actionTypes';
-import { entityIs } from '../entities';
-import { Game, GameModel, Player } from '../selectors';
-import { EditingThunkResult } from '../Stores/editingStore';
-import { store, ThunkResult } from '../Stores/store';
-import { dispatch } from '../../store/store';
-import { setInitStatus } from '../../store/slices/initStatus';
-import { deepRemove } from '../updateUtils';
-import { deleteState, editVariable } from './editingState';
+import { managedResponseReceived } from '../actions';
+import { RootState, store } from '../store';
+import { setInitStatus } from './initStatus';
 
-export type VariableDescriptorState = Record<string, Readonly<IVariableDescriptor> | undefined>
+export type VariableDescriptorState = Record<
+  string,
+  Readonly<IVariableDescriptor> | undefined
+>;
 
-// export interface VariableDescriptorState {
-//   [id: string]: Readonly<IVariableDescriptor> | undefined;
-// }
+const initialState: VariableDescriptorState = {};
 
-const variableDescriptors: Reducer<Readonly<VariableDescriptorState>> = produce(
-  (state: VariableDescriptorState, action: StateActions) => {
-    switch (action.type) {
-      case ActionType.MANAGED_RESPONSE_ACTION: {
-        const updateList = action.payload.updatedEntities.variableDescriptors;
-        const deletedIds = Object.keys(
-          action.payload.deletedEntities.variableDescriptors,
-        );
-        Object.keys(updateList).forEach(id => {
-          const newElement = updateList[id];
-          const oldElement = state[id];
-          // merge in update prev var which have a higher version
-          if (oldElement == null || newElement.version >= oldElement.version) {
-            state[id] = newElement;
-          }
-        });
-        deletedIds.forEach(id => {
-          delete state[id];
-        });
-
-        return;
-      }
-    }
-  },
-  {},
-);
-export default variableDescriptors;
-
-//ACTIONS
-
-export function getAll(): ThunkResult {
-  return function (oldDispatch) {
-    const gameModelId = store.getState().global.currentGameModelId;
-    return VariableDescriptorAPI.getAll(gameModelId).then(res => {
-      const result = oldDispatch(manageResponseHandler(res));
-      dispatch(setInitStatus({ key: 'variables', status: true }));
-      return result;
-    });
-  };
+/**
+ * The gameModelId every descriptor request is scoped to.
+ *
+ * Reads the id field, NOT `selectCurrent().id` — the gameModel slice's
+ * managedResponseReceived reducer deletes any gameModel named in a delete
+ * payload, so the entity can go away while the id cannot.
+ */
+function currentGameModelId() {
+  return store.getState().gameModels.currentGameModelId;
 }
+
+/**
+ * Fetch every descriptor of the current game model.
+ */
+export const getAll = createAsyncThunk(
+  'variableDescriptors/getAll',
+  async (_: void, thunkAPI) => {
+    const res = await VariableDescriptorAPI.getAll(currentGameModelId());
+    manageResponseHandler(res);
+    thunkAPI.dispatch(setInitStatus({ key: 'variables', status: true }));
+  },
+);
 
 export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
@@ -75,7 +65,7 @@ export function updateDescriptor(
   selectPath?: (string | number)[],
 ): EditingThunkResult<Promise<StateActions | void>> {
   return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
       res => {
         dispatch(
@@ -91,15 +81,15 @@ export function updateDescriptor(
     );
   };
 }
+
 export function duplicateDescriptor(
   variableDescriptor: IVariableDescriptor,
   path?: (number | string)[],
 ): EditingThunkResult<Promise<StateActions | void>> {
-  const gameModelId = store.getState().global.currentGameModelId;
   if (path == null || path.length === 0) {
     return function (dispatch, getState) {
       return VariableDescriptorAPI.duplicate(
-        gameModelId,
+        currentGameModelId(),
         variableDescriptor,
       ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
     };
@@ -163,7 +153,7 @@ export function moveDescriptor(
   parent?: IParentDescriptor,
 ): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.move(
       gameModelId,
       variableDescriptor,
@@ -174,12 +164,13 @@ export function moveDescriptor(
     });
   };
 }
+
 export function createDescriptor(
   variableDescriptor: IVariableDescriptor,
   parent?: IParentDescriptor,
 ): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.post(
       gameModelId,
       variableDescriptor,
@@ -193,6 +184,7 @@ export function createDescriptor(
     });
   };
 }
+
 export function deleteDescriptor(
   variableDescriptor: IVariableDescriptor,
   path: string[] = [],
@@ -210,7 +202,7 @@ export function deleteDescriptor(
       const vs = deepRemove(variableDescriptor, path) as IVariableDescriptor;
       return dispatch(updateDescriptor(vs));
     }
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
       res => dispatch(manageResponseHandler(res, dispatch, getState())),
     );
@@ -219,7 +211,7 @@ export function deleteDescriptor(
 
 export function reset(): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.reset(gameModelId).then(res => {
       const r = dispatch(manageResponseHandler(res, dispatch, getState()));
       // unmount and remount effects
@@ -232,7 +224,7 @@ export function reset(): EditingThunkResult {
 
 export function getByIds(ids: number[]): EditingThunkResult {
   return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
       dispatch(manageResponseHandler(res, dispatch, getState())),
     );
@@ -245,7 +237,7 @@ export function setPRState(
 ): EditingThunkResult {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.setState(
-      GameModel.selectCurrent().id!,
+      currentGameModelId(),
       peerReviewId,
       Game.selectCurrent().id!,
       state,
@@ -256,7 +248,7 @@ export function setPRState(
 export function submitToReview(peerReviewId: number): EditingThunkResult {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.submitToReview(
-      GameModel.selectCurrent().id!,
+      currentGameModelId(),
       peerReviewId,
       Player.selectCurrent().id!,
     ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
@@ -265,7 +257,7 @@ export function submitToReview(peerReviewId: number): EditingThunkResult {
 
 export function asynchSaveReview(review: IReview) {
   return PeerReviewDescriptorAPI.saveReview(
-    GameModel.selectCurrent().id!,
+    currentGameModelId(),
     Player.selectCurrent().id!,
     review,
   );
@@ -285,7 +277,7 @@ export function submitReview(
 ): EditingThunkResult {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.submitReview(
-      GameModel.selectCurrent().id!,
+      currentGameModelId(),
       Player.selectCurrent().id!,
       review,
     ).then(res => {
@@ -294,3 +286,59 @@ export function submitReview(
     });
   };
 }
+
+/**
+ * Every PeerReviewDescriptor of the game model
+ */
+export function selectPeerReviewDescriptors(state: RootState) {
+  return Object.values(state.variableDescriptors).filter(descriptor =>
+    entityIs(descriptor, 'PeerReviewDescriptor'),
+  ) as IPeerReviewDescriptor[];
+}
+
+/**
+ * Every descriptor's @class and id, keyed by descriptor name. Feeds the
+ * generated `VariableClasses` typings in useGlobalLibs
+ */
+export function selectVariableClasses(state: RootState) {
+  return Object.values(state.variableDescriptors).reduce<{
+    [variable: string]: { class: string; id: number };
+  }>((newObject, variable) => {
+    if (variable !== undefined && variable.name !== undefined) {
+      newObject[variable.name] = {
+        class: variable['@class'],
+        id: variable.id!,
+      };
+    }
+    return newObject;
+  }, {});
+}
+
+const variableDescriptorsSlice = createSlice({
+  name: 'variableDescriptors',
+  initialState,
+  reducers: {},
+  extraReducers: builder => {
+    builder.addCase(managedResponseReceived, (state, action) => {
+      const updateList = action.payload.updatedEntities.variableDescriptors;
+      const deletedIds = Object.keys(
+        action.payload.deletedEntities.variableDescriptors,
+      );
+
+      Object.keys(updateList).forEach(id => {
+        const newElement = updateList[id];
+        const oldElement = state[id];
+        // merge in update prev var which have a higher version
+        if (oldElement == null || newElement.version >= oldElement.version) {
+          state[id] = newElement;
+        }
+      });
+
+      deletedIds.forEach(id => {
+        delete state[id];
+      });
+    });
+  },
+});
+
+export default variableDescriptorsSlice.reducer;

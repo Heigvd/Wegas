@@ -31,6 +31,7 @@ import {
   itemsTop,
 } from '../../css/classes';
 import { Actions } from '../../data';
+import { reset as resetVariables } from '../../store/slices/variableDescriptors';
 import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import {
@@ -434,7 +435,7 @@ export default function Header() {
               icon={'redo'}
               onClick={() => {
                 editingStore.dispatch(
-                  Actions.VariableDescriptorActions.reset(),
+                  resetVariables(),
                 );
                 dispatch(Actions.EditorActions.resetPageLoader());
               }}

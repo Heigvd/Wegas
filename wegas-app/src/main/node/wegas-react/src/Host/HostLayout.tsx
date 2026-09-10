@@ -1,7 +1,6 @@
 /* global module*/
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { IPeerReviewDescriptor } from 'wegas-ts-api/typings/WegasEntities';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
 import { TumbleLoader } from '../Components/Loader';
 import {
@@ -9,10 +8,12 @@ import {
   TabLayoutComponent,
 } from '../Components/TabLayout/TabLayout';
 import { themeVar } from '../Components/Theme/ThemeVars';
-import { entityIs } from '../data/entities';
 import { translate } from '../data/i18n';
 import { State } from '../data/Reducer/reducers';
 import { useStore } from '../data/Stores/store';
+import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { shallowEqual, useAppSelector } from '../store/hooks';
+import { selectPeerReviewDescriptors } from '../store/slices/variableDescriptors';
 import {
   fullScreenLoaderStyle,
   MAIN_PAGE_EXPOSE_SIZE_AS,
@@ -50,22 +51,12 @@ export const tabsLineStyle = css({
 
 export const trainerLayoutId = 'TrainerLayout';
 
-interface TrainerPagesSelector {
-  trainerPages: PageIndexPage[];
-  peerReviews: IPeerReviewDescriptor[];
-}
-
-function trainerPagesSelector(s: State): TrainerPagesSelector {
-  return {
-    trainerPages: s.pages.index
-      ? visitIndex(s.pages.index.root, item => item).filter(
-          item => item.trainerPage,
-        )
-      : [],
-    peerReviews: Object.values(s.variableDescriptors).filter(descriptor =>
-      entityIs(descriptor, 'PeerReviewDescriptor'),
-    ) as IPeerReviewDescriptor[],
-  };
+function trainerPagesSelector(s: State): PageIndexPage[] {
+  return s.pages.index
+    ? visitIndex(s.pages.index.root, item => item).filter(
+        item => item.trainerPage,
+      )
+    : [];
 }
 
 const availableLayoutTabs: TabLayoutComponent[] = [
@@ -79,8 +70,12 @@ export default function HostLayout() {
   const timer = React.useRef<Timer | undefined>();
   const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
-  const { trainerPages, peerReviews } =
-    useStore<TrainerPagesSelector>(trainerPagesSelector);
+  // `pages` still lives in the old store, peer reviews in the new one.
+  const trainerPages = useStore(trainerPagesSelector, shallowDifferent);
+  const peerReviews = useAppSelector(
+    selectPeerReviewDescriptors,
+    shallowEqual,
+  );
   const trainerTabs = trainerPages.map<TabLayoutComponent>(page => ({
     tabId: page.name,
     content: (

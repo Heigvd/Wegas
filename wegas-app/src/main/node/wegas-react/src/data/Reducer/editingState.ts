@@ -16,7 +16,10 @@ import {
   IVariableDescriptor,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
-import { Actions as ACTIONS, Actions } from '..';
+import {
+  createDescriptor,
+  updateDescriptor,
+} from '../../store/slices/variableDescriptors';
 import { FileAPI } from '../../API/files.api';
 import { AvailableViews } from '../../Editor/Components/FormView';
 import { triggerEventHandlers } from '../actions';
@@ -318,7 +321,7 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
     })(stateMachine);
 
     return dispatch(
-      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+      updateDescriptor(newStateMachine),
     );
   };
 }
@@ -337,7 +340,7 @@ export function deleteTransition<
     })(stateMachine);
 
     return dispatch(
-      Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+      updateDescriptor(newStateMachine),
     );
   };
 }
@@ -431,7 +434,7 @@ export function saveEditor(
       case 'Variable':
       case 'VariableFSM':
         return dispatch(
-          ACTIONS.VariableDescriptorActions.updateDescriptor(
+          updateDescriptor(
             value as IVariableDescriptor,
             selectUpdatedEntity,
             selectPath,
@@ -439,7 +442,7 @@ export function saveEditor(
         );
       case 'VariableCreate':
         return dispatch(
-          ACTIONS.VariableDescriptorActions.createDescriptor(
+          createDescriptor(
             value as IVariableDescriptor,
             VariableDescriptor.select(editMode.parentId) as
               | IParentDescriptor
