@@ -9,6 +9,7 @@ import { dispatch } from '../../store/store';
 import { getTeams } from '../../store/slices/teams';
 import { getGame } from '../../store/slices/game';
 import { getGameModel } from '../../store/slices/gameModel';
+import { getAll as getAllInstances } from '../../store/slices/variableInstances';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -22,7 +23,7 @@ export const store = createStore(
 );
 function storeInit() {
   store.dispatch(Actions.VariableDescriptorActions.getAll());
-  store.dispatch(Actions.VariableInstanceActions.getAll());
+  dispatch(getAllInstances());
   store.dispatch(Actions.PageActions.getAll());
   // TODO teams migration: this dispatch only lives here because gameId/teamId
   // still come from this store's `global` slice. Once `global` moves to the

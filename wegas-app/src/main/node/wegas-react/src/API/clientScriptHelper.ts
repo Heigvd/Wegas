@@ -8,7 +8,7 @@ import {
 import {
   asyncRunLoadedScript,
   updateInstance,
-} from '../data/Reducer/VariableInstanceReducer';
+} from '../store/slices/variableInstances';
 import { instantiate } from '../data/scriptable';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';

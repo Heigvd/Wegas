@@ -8,7 +8,7 @@ import {
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
-import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
 import {
   createEditingAction,
   editingStore,

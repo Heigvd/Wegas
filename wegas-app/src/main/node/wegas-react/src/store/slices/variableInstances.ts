@@ -1,5 +1,12 @@
-import { produce } from 'immer';
-import { Reducer } from 'redux';
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { groupBy } from 'lodash-es';
 import {
   IChoiceDescriptor,
   IChoiceInstance,
@@ -26,20 +33,19 @@ import { InboxAPI } from '../../API/inbox.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { createScript } from '../../Helper/wegasEntites';
-import { ActionCreator, manageResponseHandler, StateActions } from '../actions';
-import { ActionType } from '../actionTypes';
-import { getInstance } from '../methods/VariableDescriptorMethods';
-import { Player } from '../selectors';
+import { manageResponseHandler, StateActions } from '../../data/actions';
+import { getInstance } from '../../data/methods/VariableDescriptorMethods';
+import { Player } from '../../data/selectors';
 import {
   createEditingAction,
   editingStore,
   EditingThunkResult,
-} from '../Stores/editingStore';
-import { store, ThunkResult } from '../Stores/store';
-import { dispatch } from '../../store/store';
-import { setInitStatus } from '../../store/slices/initStatus';
-import { groupBy } from 'lodash-es';
+} from '../../data/Stores/editingStore';
+import { store as oldStore } from '../../data/Stores/store';
+import { createScript } from '../../Helper/wegasEntites';
+import { managedResponseReceived } from '../actions';
+import { dispatch } from '../store';
+import { setInitStatus } from './initStatus';
 
 type VariableInstanceId = string;
 type EventInboxStatus = 'LOADING' | 'UPDATE_REQUIRED' | 'UPTODATE';
@@ -56,6 +62,13 @@ export interface VariableInstanceState {
     };
   };
 }
+
+const initialState: VariableInstanceState = { instances: {}, events: {} };
+
+/**
+ * TODO global migration: the thunks below read `currentGameModelId` from the old
+ * store's `global` slice. Once `global` moves here, `oldStore` can go away.
+ */
 
 function updateEventChain(
   events: IEvent[],
@@ -100,96 +113,103 @@ function updateEventChain(
   return { sortedEvents: sorted, success };
 }
 
-const variableInstances: Reducer<Readonly<VariableInstanceState>> = produce(
-  (state: VariableInstanceState, action: StateActions) => {
-    switch (action.type) {
-      case ActionType.MANAGED_RESPONSE_ACTION: {
-        // Update instances
-        const updateList = action.payload.updatedEntities.variableInstances;
-        const deletedIds = Object.keys(
-          action.payload.deletedEntities.variableInstances,
-        );
-        const updatedEventBoxes: IEventInboxInstance[] = [];
-
-        Object.keys(updateList).forEach(id => {
-          const newElement = updateList[id];
-          const oldElement = state.instances[id];
-          // merge in update prev var which have a higher version
-          if (oldElement == null || newElement.version >= oldElement.version) {
-            state.instances[id] = newElement;
-            if (newElement['@class'] === 'EventInboxInstance') {
-              updatedEventBoxes.push(newElement as IEventInboxInstance);
-            }
-          }
-        });
-
-        deletedIds.forEach(id => {
-          delete state.instances[id];
-
-          // delete event boxes stored events
-          if (state.events[id]) {
-            delete state.events[id];
-          }
-        });
-
-        // EVENT BOXES UPDATE
-
-        // init empty event boxes
-        updatedEventBoxes.forEach(ebox => {
-          const boxId = ebox.id!;
-          if (ebox.lastEventId && !state.events[boxId]) {
-            state.events[boxId] = { events: [], status: 'UPDATE_REQUIRED' };
-          }
-          if (!ebox.lastEventId && state.events[boxId]) {
-            // after reset case
-            // clear the events from the local state
-            state.events[boxId] = { events: [], status: 'UPTODATE' };
-            ebox.events = [];
-          }
-        });
-
-        // events are present in two cases
-        // - a new event has been added to the event box
-        // - a list of events are present by the result of an API call to getEvents(boxId)
-        const events = Object.values(action.payload.updatedEntities.events);
-
-        // group by event box id
-        const eventBuckets = groupBy(events, e => e.parentId);
-
-        // update the boxes that have received a new event
-        Object.entries(eventBuckets).forEach(([boxId, newEvts]) => {
-          const eventBox = state.instances[boxId] as IEventInboxInstance;
-          if (eventBox) {
-            const { sortedEvents, success } = updateEventChain(
-              state.events[boxId].events,
-              eventBox.lastEventId,
-              newEvts,
-            );
-
-            if (success) {
-              state.events[boxId].events = sortedEvents;
-              state.events[boxId].status = 'UPTODATE';
-              //bind with eventbox instance
-              eventBox.events = state.events[boxId].events;
-            } else {
-              // if verification fails, fetch all of the events again
-              // TODO : more efficient and specific requests for a subset of events
-              state.events[boxId].status = 'UPDATE_REQUIRED';
-            }
-          } //else { // should not be possible
-        });
-
-        return;
-      }
-      case ActionType.EVENT_SET_LOADING: {
-        state.events[action.payload].status = 'LOADING';
-      }
-    }
+const variableInstancesSlice = createSlice({
+  name: 'variableInstances',
+  initialState,
+  reducers: {
+    /**
+     * TODO: unguarded — throws when the event box is not in `state.events` yet.
+     * Pre-existing behaviour, ported as-is with the slice.
+     */
+    setEventLoading(state, action: PayloadAction<number>) {
+      state.events[action.payload].status = 'LOADING';
+    },
   },
-  { instances: {}, events: {} },
-);
+  extraReducers: builder => {
+    builder.addCase(managedResponseReceived, (state, action) => {
+      // Update instances
+      const updateList = action.payload.updatedEntities.variableInstances;
+      const deletedIds = Object.keys(
+        action.payload.deletedEntities.variableInstances,
+      );
+      const updatedEventBoxes: IEventInboxInstance[] = [];
 
-export default variableInstances;
+      Object.keys(updateList).forEach(id => {
+        const newElement = updateList[id];
+        const oldElement = state.instances[id];
+        // merge in update prev var which have a higher version
+        if (oldElement == null || newElement.version >= oldElement.version) {
+          state.instances[id] = newElement;
+          if (newElement['@class'] === 'EventInboxInstance') {
+            updatedEventBoxes.push(newElement as IEventInboxInstance);
+          }
+        }
+      });
+
+      deletedIds.forEach(id => {
+        delete state.instances[id];
+
+        // delete event boxes stored events
+        if (state.events[id]) {
+          delete state.events[id];
+        }
+      });
+
+      // EVENT BOXES UPDATE
+
+      // init empty event boxes
+      updatedEventBoxes.forEach(ebox => {
+        const boxId = ebox.id!;
+        if (ebox.lastEventId && !state.events[boxId]) {
+          state.events[boxId] = { events: [], status: 'UPDATE_REQUIRED' };
+        }
+        if (!ebox.lastEventId && state.events[boxId]) {
+          // after reset case
+          // clear the events from the local state
+          state.events[boxId] = { events: [], status: 'UPTODATE' };
+          ebox.events = [];
+        }
+      });
+
+      // events are present in two cases
+      // - a new event has been added to the event box
+      // - a list of events are present by the result of an API call to getEvents(boxId)
+      const events = Object.values(action.payload.updatedEntities.events);
+
+      // group by event box id
+      const eventBuckets = groupBy(events, e => e.parentId);
+
+      // update the boxes that have received a new event
+      Object.entries(eventBuckets).forEach(([boxId, newEvts]) => {
+        const eventBox = state.instances[boxId] as IEventInboxInstance;
+        if (eventBox) {
+          // TODO: `state.events[boxId]` is read unguarded — throws when a bucket
+          // references a box absent from `state.events`. Pre-existing behaviour.
+          const { sortedEvents, success } = updateEventChain(
+            state.events[boxId].events,
+            eventBox.lastEventId,
+            newEvts,
+          );
+
+          if (success) {
+            state.events[boxId].events = sortedEvents;
+            state.events[boxId].status = 'UPTODATE';
+            //bind with eventbox instance
+            eventBox.events = state.events[boxId].events;
+          } else {
+            // if verification fails, fetch all of the events again
+            // TODO : more efficient and specific requests for a subset of events
+            state.events[boxId].status = 'UPDATE_REQUIRED';
+          }
+        } //else { // should not be possible
+      });
+    });
+  },
+});
+
+export const { setEventLoading } = variableInstancesSlice.actions;
+export default variableInstancesSlice.reducer;
+
 //ACTIONS
 
 /**
@@ -199,11 +219,13 @@ export default variableInstances;
 export function getEvents(
   eventInboxInstance: IEventInboxInstance,
 ): EditingThunkResult<Promise<StateActions | void>> {
-  return function (dispatch, getState) {
-    store.dispatch(ActionCreator.EVENT_SET_LOADING(eventInboxInstance.id!));
+  return function (thunkDispatch, getState) {
+    dispatch(setEventLoading(eventInboxInstance.id!));
     return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      editingStore.dispatch(
+        manageResponseHandler(res, thunkDispatch, getState()),
+      ),
     );
   };
 }
@@ -211,24 +233,28 @@ export function getEvents(
 export function updateInstance(
   variableInstance: IVariableInstance,
 ): EditingThunkResult<Promise<StateActions | void>> {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      editingStore.dispatch(
+        manageResponseHandler(res, thunkDispatch, getState()),
+      ),
     );
   };
 }
 
-export function getAll(): ThunkResult<Promise<StateActions>> {
-  return function () {
-    return VariableInstanceAPI.getByPlayer().then(res => {
-      const result = editingStore.dispatch(manageResponseHandler(res));
-      dispatch(setInitStatus({ key: 'instances', status: true }));
-      return result;
-    });
-  };
-}
+/**
+ * Fetch every instance the current player can see.
+ */
+export const getAll = createAsyncThunk(
+  'variableInstances/getAll',
+  async (_, thunkAPI) => {
+    const res = await VariableInstanceAPI.getByPlayer();
+    editingStore.dispatch(manageResponseHandler(res));
+    thunkAPI.dispatch(setInitStatus({ key: 'instances', status: true }));
+  },
+);
 
 export const asyncRunScript = async (
   gameModelId: number,
@@ -258,12 +284,12 @@ export function runScript(
   player?: IPlayer,
   context?: IVariableDescriptor,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     return asyncRunScript(gameModelId, script, player, context).then(
       res =>
         res != null &&
-        dispatch(manageResponseHandler(res, dispatch, getState())),
+        thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -296,15 +322,17 @@ export function runLoadedScript(
   currentDescriptor?: IVariableDescriptor,
   payload?: { [key: string]: unknown },
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     return asyncRunLoadedScript(
       gameModelId,
       script,
       player,
       currentDescriptor,
       payload,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
+    );
   };
 }
 
@@ -313,14 +341,14 @@ export function read(
   choice: IChoiceDescriptor | IQuestionDescriptor | IWhQuestionDescriptor,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.read(gameModelId, p.id, choice).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -328,10 +356,10 @@ export function read(
 export const selectAndValidate = createEditingAction(
   async (
     { player, choice }: { choice: IChoiceDescriptor; player?: IPlayer },
-    dispatch,
+    thunkDispatch,
     getState,
   ) => {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
@@ -341,7 +369,7 @@ export const selectAndValidate = createEditingAction(
       p.id,
       choice,
     );
-    return dispatch(manageResponseHandler(res, dispatch, getState()));
+    return thunkDispatch(manageResponseHandler(res, thunkDispatch, getState()));
   },
 );
 
@@ -349,14 +377,15 @@ export function selectChoice(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.selectChoice(gameModelId, p.id, choice).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState())),
+      res =>
+        thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -365,14 +394,15 @@ export function cancelReply(
   reply: IReply,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }
     return QuestionDescriptorAPI.cancelReply(gameModelId, p.id, reply).then(
-      res => dispatch(manageResponseHandler(res, dispatch, getState())),
+      res =>
+        thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -400,8 +430,8 @@ export function validateQuestion(
   question: Readonly<IQuestionDescriptor | IWhQuestionDescriptor>,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
-    const gameModelId = store.getState().global.currentGameModelId;
+  return function (thunkDispatch, getState) {
+    const gameModelId = oldStore.getState().global.currentGameModelId;
     const p = player != null ? player : Player.selectCurrent();
     const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
       question,
@@ -413,7 +443,9 @@ export function validateQuestion(
       gameModelId,
       p.id,
       instance,
-    ).then(res => dispatch(manageResponseHandler(res, dispatch, getState())));
+    ).then(res =>
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
+    );
   };
 }
 
@@ -423,7 +455,7 @@ export function readMessage(
   message: IMessage,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
+  return function (thunkDispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (message.id == null) {
       throw Error('Missing message id');
@@ -432,7 +464,7 @@ export function readMessage(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessage(message.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -441,7 +473,7 @@ export function readMessages(
   inbox: IInboxDescriptor,
   player?: IPlayer,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
+  return function (thunkDispatch, getState) {
     const p = player != null ? player : Player.selectCurrent();
     if (inbox.id == null) {
       throw Error('Missing message id');
@@ -450,7 +482,7 @@ export function readMessages(
       throw Error('Missing persisted player');
     }
     return InboxAPI.readMessages(inbox.id, p.id).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, getState())),
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState())),
     );
   };
 }
@@ -460,7 +492,7 @@ export function applyFSMTransition(
   transition: ITransition | IDialogueTransition,
   cbFn?: () => void,
 ): EditingThunkResult {
-  return function (dispatch, getState) {
+  return function (thunkDispatch, getState) {
     if (stateMachine.id == null) {
       throw Error('Missing statemachine id');
     }
@@ -468,16 +500,18 @@ export function applyFSMTransition(
       throw Error('Missing transition id');
     }
     return FSM_API.applyTransition(stateMachine.id, transition.id).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, getState()));
+      thunkDispatch(manageResponseHandler(res, thunkDispatch, getState()));
       cbFn && cbFn();
     });
   };
 }
 
 export function getByIds(ids: number[]): EditingThunkResult {
-  return function (dispatch, getState) {
+  return function (thunkDispatch, getState) {
     return VariableInstanceAPI.getByIds(ids).then(res =>
-      editingStore.dispatch(manageResponseHandler(res, dispatch, getState())),
+      editingStore.dispatch(
+        manageResponseHandler(res, thunkDispatch, getState()),
+      ),
     );
   };
 }
