@@ -62,15 +62,15 @@ export function first<T extends IVariableInstance>(
 }
 /**
  * Select first matching VariableInstance
- * @param o the shape the VariableInstance should match
+ * @param criteria the shape the VariableInstance should match
  */
 export function firstMatch<T extends IVariableInstance>(
-  o: Partial<T>,
+  criteria: Partial<T>,
   state: RootState = store.getState(),
 ) {
   for (const vi in state.variableInstances.instances) {
     const s = state.variableInstances.instances[vi] as T;
-    if (isMatch(s, o)) {
+    if (isMatch(s, criteria)) {
       return s;
     }
   }
