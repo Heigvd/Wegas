@@ -14,7 +14,7 @@ import {
   halfOpacity,
   itemCenter,
 } from '../../../css/classes';
-import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
+import { applyFSMTransition } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { isActionAllowed } from '../../PageComponents/tools/options';

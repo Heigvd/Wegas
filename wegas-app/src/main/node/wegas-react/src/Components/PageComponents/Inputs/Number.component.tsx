@@ -1,6 +1,6 @@
 import React from 'react';
 import { SNumberDescriptor } from 'wegas-ts-api';
-import { Actions } from '../../../data';
+import { runScript } from '../../../store/slices/variableInstances';
 import { entityIs } from '../../../data/entities';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
@@ -66,7 +66,7 @@ function PlayerNumberInput({
         handleOnChange(newValue);
       } else if (entityIs(number, 'NumberDescriptor')) {
         editingStore.dispatch(
-          Actions.VariableInstanceActions.runScript(
+          runScript(
             `Variable.find(gameModel,"${(
               number as SNumberDescriptor
             ).getName()}").setValue(self, ${newValue});`,

@@ -6,7 +6,7 @@ import {
   selectChoice,
   toggleReply,
   validateQuestion,
-} from '../../../data/Reducer/VariableInstanceReducer';
+} from '../../../store/slices/variableInstances';
 import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
 import { MessageString } from '../../../Editor/Components/MessageString';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';

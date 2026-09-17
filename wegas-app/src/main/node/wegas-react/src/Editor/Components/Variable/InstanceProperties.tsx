@@ -22,7 +22,7 @@ import {
   Edition,
   VariableEdition,
 } from '../../../data/Reducer/editingState';
-import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
+import { updateInstance } from '../../../store/slices/variableInstances';
 import { VariableDescriptor } from '../../../data/selectors';
 import {
   editingStore,

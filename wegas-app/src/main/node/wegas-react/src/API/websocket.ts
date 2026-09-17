@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
 import { Actions } from '../data';
+import { getByIds } from '../store/slices/variableInstances';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
@@ -301,9 +302,7 @@ class WebSocketListener {
         }
 
         if (toUpdate.instances.length > 0) {
-          editingStore.dispatch(
-            Actions.VariableInstanceActions.getByIds(toUpdate.instances),
-          );
+          editingStore.dispatch(getByIds(toUpdate.instances));
         }
 
         if (toUpdate.descriptors.length > 0) {
