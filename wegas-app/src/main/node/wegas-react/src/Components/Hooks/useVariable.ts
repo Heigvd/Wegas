@@ -6,6 +6,7 @@ import { useAppSelector } from '../../store/hooks';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 import { instantiate } from '../../data/scriptable';
 import { RootState } from '../../store/store';
+import { shallowEqual } from 'react-redux';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -40,7 +41,7 @@ export function useVariableInstance<
     },
     [descriptor, player],
   );
-  const instance = useAppSelector(getInstanceForDescriptor);
+  const instance = useAppSelector(getInstanceForDescriptor, shallowEqual);
 
   return instantiate(instance);
 }

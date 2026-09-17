@@ -40,7 +40,6 @@ import {
 } from '../../data/Stores/pageContextStore';
 import { store as oldStore, useStore } from '../../data/Stores/store';
 import { store } from '../../store/store';
-import { useAppSelector } from '../../store/hooks';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
@@ -810,12 +809,6 @@ export function useScript<T>(
   React.useEffect(() => {
     isFirstRun.current = true;
   }, [fn]);
-
-  // Variable instances live in the new store, but the evaluation below still runs
-  // inside the old store's `useStore`. Subscribing here is what makes a script
-  // re-evaluate when an instance changes: the re-render gives the inline selector
-  // below a fresh identity, so `useStore` re-runs it. Do not remove as "unused".
-  useAppSelector(s => s.variableInstances.instances);
 
   const returnValue = useStore(s => {
     //ref +state.reloading
