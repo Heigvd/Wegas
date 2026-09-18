@@ -13,6 +13,8 @@ import teamsReducer from './slices/teams';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
 import pageContextReducer from './slices/pageContext';
+import pageEditorReducer from './slices/pageEditor';
+import themeReducer from './slices/theme';
 
 /**
  * New store for react-redux
@@ -26,6 +28,8 @@ export const store = configureStore({
         games: gameReducer,
         gameModels: gameModelReducer,
         pageContext: pageContextReducer,
+        pageEditor: pageEditorReducer,
+        themes: themeReducer
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
