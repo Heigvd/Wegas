@@ -31,15 +31,17 @@ import {
   Player,
   VariableDescriptor as VDSelect,
 } from '../../data/selectors';
-import {
-  getPageState,
-  PagesContextState,
-  pagesContextStateStore,
-  setPagesContextState,
-  usePagesContextStateStore,
-} from '../../data/Stores/pageContextStore';
 import { store as oldStore, useStore } from '../../data/Stores/store';
-import { store } from '../../store/store';
+import {
+  getLivePageContext,
+  getPageState,
+  usePageContext,
+} from '../../store/pageContextState';
+import {
+  PageContextValues,
+  setContextValue,
+} from '../../store/slices/pageContext';
+import { dispatch, store } from '../../store/store';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
@@ -540,7 +542,7 @@ function transpileToFunction(
   );
 }
 
-export function addSetterToState(state: PagesContextState) {
+export function addSetterToState(state: PageContextValues) {
   return Object.entries(state.context).reduce((o, [k, s]) => {
     if (typeof s === 'object' && s !== null && 'state' in s) {
       return {
@@ -552,7 +554,7 @@ export function addSetterToState(state: PagesContextState) {
               typeof newState === 'function'
                 ? newState((s as { state: unknown }).state)
                 : newState;
-            setPagesContextState(k, newS);
+            dispatch(setContextValue({ exposeAs: k, value: newS }));
           },
         },
       };
@@ -573,13 +575,11 @@ const memoClientScriptEval = (() => {
   return <T>(
     script?: string | IScript | ScriptCallback,
     context: PageComponentContext = {},
-    state?: PagesContextState,
+    state?: PageContextValues,
     options?: TranspileOptions,
     argValues: unknown[] = [],
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
-    const currentState = addSetterToState(
-      state || pagesContextStateStore.getState(),
-    );
+    const currentState = addSetterToState(state || getLivePageContext());
     globals.Context = { ...currentState, ...context };
 
     let scriptAsFunction;
@@ -654,7 +654,7 @@ export function clientScriptEval<T>(
         [name: string]: unknown;
       }
     | undefined,
-  state: PagesContextState | undefined,
+  state: PageContextValues | undefined,
   options: TranspileOptions | undefined,
   argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -721,7 +721,7 @@ export function safeClientScriptEval<T>(
       }
     | undefined,
   catchCB: ((e: Error) => void) | undefined,
-  state: PagesContextState | undefined,
+  state: PageContextValues | undefined,
   options: TranspileOptions | undefined,
   argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -775,7 +775,7 @@ export function useScript<T>(
 
   const globalContexts = useGlobalContexts();
 
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   //  const toStr = (s: IScript | string | undefined) =>
   //    entityIs(s, 'Script') ? s.content : s || '';
@@ -1042,7 +1042,7 @@ export function computeCB<T extends AnyFunction>(
       callbackScript,
       contextRef?.current,
       undefined,
-      pagesContextStateStore.getState(),
+      getLivePageContext(),
       {
         injectReturn: true,
       },
