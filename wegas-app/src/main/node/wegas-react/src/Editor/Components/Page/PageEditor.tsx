@@ -43,11 +43,6 @@ export interface Handles {
   [path: string]: { jsx: JSX.Element; dom: React.RefObject<HTMLDivElement> };
 }
 
-export interface FocusedComponent {
-  pageId: string;
-  componentPath: number[];
-}
-
 export type PageEditorComponent = DnDComponent | PageComponentNode;
 
 interface PageEditorState {
