@@ -13,7 +13,7 @@ import {
 } from '../../../css/classes';
 import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
-import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { selectAndValidate } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import {

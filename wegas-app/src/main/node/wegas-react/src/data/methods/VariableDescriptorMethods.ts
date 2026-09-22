@@ -17,6 +17,7 @@ import {
 } from 'wegas-ts-api';
 import { SVariableDescriptor, SVariableInstance, SPlayer } from 'wegas-ts-api';
 import { instantiate } from '../scriptable';
+import { RootState } from '../../store/store';
 
 export function editorLabel(vd?: {
   label?: ITranslatableContent;
@@ -83,11 +84,19 @@ export function getScriptableInstance<T extends SVariableInstance>(
   }
 }
 
+/**
+ * Resolve a descriptor's instance for a player.
+ *
+ * `state` is optional so this stays synchronous and imperative for the scriptable
+ * layer (user scripts call it through `getScriptableInstance`). Pass a state to use
+ * it as a selector inside useAppSelector, so React re-reads on instance changes.
+ */
 export function getInstance<I extends IVariableInstance>(
   vd:
     | IVariableDescriptor<I>
     | SVariableDescriptor<ScriptableEntity<IVariableInstance>>,
   self?: IPlayer,
+  state?: RootState,
 ): Readonly<I> | undefined {
   type IorUndef = Readonly<I> | undefined;
   const player = self != null ? self : Player.selectCurrent();
@@ -104,7 +113,7 @@ export function getInstance<I extends IVariableInstance>(
 
   const id = instancesCache.get(cacheKey);
   if (typeof id === 'number') {
-    const instance = VariableInstance.select<I>(id);
+    const instance = VariableInstance.select<I>(id, state);
     // Check if instance still exists and has the right parentId and scopeKey.
     if (instance != null) {
       return instance;
@@ -112,10 +121,13 @@ export function getInstance<I extends IVariableInstance>(
     instancesCache.delete(cacheKey);
   }
 
-  const instance = VariableInstance.firstMatch<IVariableInstance>({
-    parentId,
-    scopeKey,
-  }) as IorUndef;
+  const instance = VariableInstance.firstMatch<IVariableInstance>(
+    {
+      parentId,
+      scopeKey,
+    },
+    state,
+  ) as IorUndef;
   if (instance != null && instance.id != null) {
     instancesCache.set(cacheKey, instance.id!);
   }

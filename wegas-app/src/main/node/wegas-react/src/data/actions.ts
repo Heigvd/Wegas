@@ -70,9 +70,6 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  EVENT_SET_LOADING: (data: number) =>
-    createAction(ActionType.EVENT_SET_LOADING, data),
-
   PAGE_INDEX: (data: { index: PageIndex }) =>
     createAction(ActionType.PAGE_INDEX, data),
   PAGE_FETCH: (data: { pages: Pages }) =>
@@ -201,6 +198,11 @@ export function manageResponseHandler(
       }) || [],
   };
 
+  // The new store MUST be updated before the old one. Redux notifies subscribers
+  // synchronously, and old-store `useStore` selectors read migrated slices
+  // (instances, players, teams...) straight from the new store. Dispatching to the
+  // old store first would let those selectors latch a one-tick-stale value with
+  // nothing left to re-notify them.
   dispatch(
     updatePlayers({
       updated: updatedEntities.players,
@@ -216,7 +218,7 @@ export function manageResponseHandler(
   );
 
   // Fan out to the new react-redux store so migrated slices (games, gameModels,
-  // variableDescriptors...) receive the same managed-mode payload.
+  // variableDescriptors, variableInstances...) receive the same managed-mode payload.
   dispatch(managedResponseReceived(managedValues));
 
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));

@@ -16,7 +16,7 @@ import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import {
   updateInstance,
   validateQuestion,
-} from '../../../data/Reducer/VariableInstanceReducer';
+} from '../../../store/slices/variableInstances';
 import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,

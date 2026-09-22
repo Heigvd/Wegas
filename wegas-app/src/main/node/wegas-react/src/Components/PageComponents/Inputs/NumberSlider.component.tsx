@@ -1,7 +1,7 @@
 import { debounce } from 'lodash-es';
 import * as React from 'react';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
-import { Actions } from '../../../data';
+import { runScript } from '../../../store/slices/variableInstances';
 import { entityIs } from '../../../data/entities';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
@@ -44,8 +44,8 @@ interface PlayerNumberSliderProps extends WegasComponentProps {
    */
   displayValues?: DisplayMode;
   /**
-  * placeholder - the grey text inside the box when nothing is written
-  */
+   * placeholder - the grey text inside the box when nothing is written
+   */
   placeholder?: IScript;
   onVariableChange?: OnVariableChange;
 }
@@ -76,7 +76,6 @@ function PlayerNumberSlider({
   );
   const placeholderText = useScript<string>(placeholder, context);
 
-
   const value = useStore(() =>
     entityIs(number, 'NumberDescriptor')
       ? (number as SNumberDescriptor).getValue(Player.self())
@@ -91,7 +90,7 @@ function PlayerNumberSlider({
         handleOnChange(newValue);
       } else if (entityIs(number, 'NumberDescriptor')) {
         editingStore.dispatch(
-          Actions.VariableInstanceActions.runScript(
+          runScript(
             `Variable.find(gameModel,"${(
               number as SNumberDescriptor
             ).getName()}").setValue(self, ${newValue});`,

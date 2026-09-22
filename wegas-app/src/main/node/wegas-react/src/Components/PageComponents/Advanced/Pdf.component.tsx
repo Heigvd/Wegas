@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { usePageContext } from '../../../store/pageContextState';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import {
   safeClientScriptEval
@@ -54,7 +54,7 @@ function PdfPrinter({
   options,
   context
 }: PdfPrinterProps) {
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   const onClickCb = React.useCallback(() => {
     const data = safeClientScriptEval<string>(text, context, undefined, state, undefined);

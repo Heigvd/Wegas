@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runLoadedScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
-import { usePagesContextStateStore } from '../../../data/Stores/pageContextStore';
+import { usePageContext } from '../../../store/pageContextState';
 import { createScript } from '../../../Helper/wegasEntites';
 import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
 import { assembleStateAndContext } from '../tools/EditableComponent';
@@ -72,7 +72,7 @@ export function useOnVariableChange(
 
   const exposeAs = useScript<string>(exposeFileAs, context) || 'value';
 
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   const handleOnChange = React.useCallback(
     (variable: any) => {

@@ -29,7 +29,7 @@ import {
 } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { read } from '../../../data/Reducer/VariableInstanceReducer';
+import { read } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
