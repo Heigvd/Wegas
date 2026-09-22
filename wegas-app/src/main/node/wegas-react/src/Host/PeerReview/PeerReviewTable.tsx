@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
 import { themeVar } from '../../Components/Theme/ThemeVars';
-import { store } from '../../data/Stores/store';
+import { Team } from '../../data/selectors';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { trainerTranslations } from '../../i18n/trainer/trainer';
 import { trainerCellStyleI } from '../Overview/Overview';
@@ -51,11 +51,11 @@ export function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
     (a: [string, DataItem], b: [string, DataItem]) => {
       const newA =
         sortState?.sortedValue === 'team'
-          ? store.getState().teams[a[0]]?.name
+          ? Team.select(Number(a[0]))?.name
           : a[1][sortState?.sortedValue as keyof typeof a[1]];
       const newB =
         sortState?.sortedValue === 'team'
-          ? store.getState().teams[b[0]]?.name
+          ? Team.select(Number(b[0]))?.name
           : b[1][sortState?.sortedValue as keyof typeof b[1]];
       return sortFnFactory(sortState)(newA, newB);
     },
@@ -128,7 +128,7 @@ export function PRTable({ structures, data, onShowOverlay }: PRTableProps) {
           .map(([key, value]) => (
             <tr key={key}>
               <TeamTD
-                team={store.getState().teams[key]}
+                team={Team.select(Number(key))}
                 value={value.variable}
                 onShowOverlay={onShowOverlay}
               />

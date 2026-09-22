@@ -13,7 +13,7 @@ import {
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { createTranslatableContent } from '../../../data/i18n';
-import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { selectAndValidate } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';

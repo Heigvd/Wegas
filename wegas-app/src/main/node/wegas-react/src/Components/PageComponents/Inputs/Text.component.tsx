@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';

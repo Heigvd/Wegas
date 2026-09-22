@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
-import { Actions } from '../../../data';
+import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
@@ -86,7 +86,7 @@ function PlayerBoolean({
           handleOnChange(v);
         } else if (typeof bool === 'object') {
           dispatch(
-            Actions.VariableInstanceActions.runScript(
+            runScript(
               `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
             ),
           );

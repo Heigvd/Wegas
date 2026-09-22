@@ -16,7 +16,7 @@ import {
 } from 'wegas-ts-api';
 import { fileURL } from '../../../API/files.api';
 import { ActionCreator } from '../../../data/actions';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
 import { store, useStore } from '../../../data/Stores/store';

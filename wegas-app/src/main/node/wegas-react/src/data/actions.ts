@@ -1,7 +1,6 @@
 import {
   IAbstractEntity,
   IScript,
-  ITeam,
   WegasClassNames,
 } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
@@ -17,6 +16,8 @@ import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
 import { Edition } from '../store/slices/edition';
+import { updatePlayers } from '../store/slices/players';
+import { updateTeams } from '../store/slices/teams';
 import { managedResponseReceived } from '../store/actions';
 
 function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
@@ -73,9 +74,6 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  EVENT_SET_LOADING: (data: number) => 
-    createAction(ActionType.EVENT_SET_LOADING, data),
-
   PAGE_INDEX: (data: { index: PageIndex }) =>
     createAction(ActionType.PAGE_INDEX, data),
   PAGE_FETCH: (data: { pages: Pages }) =>
@@ -95,11 +93,6 @@ export const ActionCreator = {
 
   SERVER_STATUS: (data: { status: WegasStatus }) =>
     createAction(ActionType.SERVER_STATUS, data),
-
-  TEAM_FETCH_ALL: (data: { teams: ITeam[] }) =>
-    createAction(ActionType.TEAM_FETCH_ALL, data),
-  TEAM_UPDATE: (data: { team: ITeam }) =>
-    createAction(ActionType.TEAM_UPDATE, data),
 
   LOCK_SET: (data: { token: string; locked: boolean }) =>
     createAction(ActionType.LOCK_SET, data),
@@ -214,13 +207,33 @@ export function manageResponseHandler(
       }) || [],
   };
 
-  // old store: variableDescriptors, variableInstances, teams, pages, global...
-  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+  // The new store MUST be updated before the old one. Redux notifies subscribers
+  // synchronously, and old-store `useStore` selectors read migrated slices
+  // (instances, players, teams...) straight from the new store. Dispatching to the
+  // old store first would let those selectors latch a one-tick-stale value with
+  // nothing left to re-notify them.
+  dispatch(
+    updatePlayers({
+      updated: updatedEntities.players,
+      deleted: Object.keys(deletedEntities.players),
+    }),
+  );
+
+  dispatch(
+    updateTeams({
+      updated: updatedEntities.teams,
+      deleted: Object.keys(deletedEntities.teams),
+    }),
+  );
 
   // new store: entity slices, plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
 
+  // old store: variableDescriptors, pages, global...
+  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
+
   // The events are already in the editorEvents slice, so the action returned for
-  // old-store callers never carries them.
+  // old-store callers never carries them. The local edition scope gets no
+  // MANAGED_RESPONSE_ACTION either: it holds only an edition, and would ignore it.
   return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
 }

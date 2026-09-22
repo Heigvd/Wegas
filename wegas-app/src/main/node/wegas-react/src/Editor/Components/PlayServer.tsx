@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { defaultMargin } from '../../css/classes';
 import { manageResponseHandler } from '../../data/actions';
-import { asyncRunScript } from '../../data/Reducer/VariableInstanceReducer';
+import { asyncRunScript } from '../../store/slices/variableInstances';
 import { Player } from '../../data/selectors';
 import { handleError } from './FormView/Script/Script';
 import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';

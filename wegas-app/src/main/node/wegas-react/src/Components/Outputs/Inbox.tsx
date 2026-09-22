@@ -19,7 +19,7 @@ import {
   unreadSignalStyle,
 } from '../../css/classes';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
-import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
+import { readMessage } from '../../store/slices/variableInstances';
 import { instantiate } from '../../data/scriptable';
 import { Player } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';

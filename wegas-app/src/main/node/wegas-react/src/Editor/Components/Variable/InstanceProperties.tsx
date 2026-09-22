@@ -18,7 +18,7 @@ import {
 } from '../../../css/classes';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { Edition, VariableEdition } from '../../../data/Reducer/editingState';
-import { updateInstance } from '../../../data/Reducer/VariableInstanceReducer';
+import { updateInstance } from '../../../store/slices/variableInstances';
 import { VariableDescriptor } from '../../../data/selectors';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';

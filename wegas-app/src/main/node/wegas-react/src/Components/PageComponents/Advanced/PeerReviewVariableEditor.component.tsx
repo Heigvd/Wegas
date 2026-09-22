@@ -24,7 +24,7 @@ import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer'
 import {
   asyncRunLoadedScript,
   getAll,
-} from '../../../data/Reducer/VariableInstanceReducer';
+} from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';

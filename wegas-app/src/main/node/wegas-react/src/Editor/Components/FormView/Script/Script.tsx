@@ -8,7 +8,7 @@ import { DropMenu } from '../../../../Components/DropMenu';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import { flex, grow, secondaryButtonStyle } from '../../../../css/classes';
-import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
+import { runScript } from '../../../../store/slices/variableInstances';
 import { Player } from '../../../../data/selectors';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { wwarn } from '../../../../Helper/wegaslog';

@@ -17,7 +17,7 @@ import { State } from '../../../data/Reducer/reducers';
 import {
   updateInstance,
   validateQuestion,
-} from '../../../data/Reducer/VariableInstanceReducer';
+} from '../../../store/slices/variableInstances';
 import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,

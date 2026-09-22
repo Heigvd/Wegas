@@ -17,26 +17,42 @@ import { downloadFile, fileURL } from '../../API/files.api';
 import { Actions } from '../../data';
 import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
-import { createTranslatableContent, createTranslation, translate } from '../../data/i18n';
+import {
+  createTranslatableContent,
+  createTranslation,
+  translate,
+} from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
-import { GameModel, VariableDescriptor as VDSelect } from '../../data/selectors';
 import {
+  GameModel,
+  Player,
+  VariableDescriptor as VDSelect,
+} from '../../data/selectors';
+import { store as oldStore, useStore } from '../../data/Stores/store';
+import {
+  getLivePageContext,
   getPageState,
-  PagesContextState,
-  pagesContextStateStore,
-  setPagesContextState,
-  usePagesContextStateStore,
-} from '../../data/Stores/pageContextStore';
-import { store, useStore } from '../../data/Stores/store';
+  usePageContext,
+} from '../../store/pageContextState';
+import {
+  PageContextValues,
+  setContextValue,
+} from '../../store/slices/pageContext';
+import { dispatch, store } from '../../store/store';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
 import { getLogger, wlog, wwarn } from '../../Helper/wegaslog';
 import { ClassesContext, classesCTX } from '../Contexts/ClassesProvider';
-import { defaultFeatures, FeatureContext, featuresCTX, isFeatureEnabled } from '../Contexts/FeaturesProvider';
+import {
+  defaultFeatures,
+  FeatureContext,
+  featuresCTX,
+  isFeatureEnabled,
+} from '../Contexts/FeaturesProvider';
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
@@ -45,7 +61,13 @@ import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
-import { feature, lineString, multiLineString, multiPolygon, polygon } from '@turf/helpers';
+import {
+  feature,
+  lineString,
+  multiLineString,
+  multiPolygon,
+  polygon,
+} from '@turf/helpers';
 import * as lineIntersect from '@turf/line-intersect';
 import * as bboxClip from '@turf/bbox-clip';
 
@@ -54,9 +76,8 @@ import * as VectorSource from 'ol/source/Vector';
 import { transformExtent } from 'ol/proj';
 import { initializeProjection } from '../Maps/helpers/proj4js';
 
-
 export interface IClientScript {
-  "@class": "ClientScript";
+  '@class': 'ClientScript';
   language: 'TypeScript';
   content: string;
   returnType: string | undefined;
@@ -86,11 +107,11 @@ function downloadDataAsFile(filename: string, data: string) {
   pom.click();
 }
 
-function getWegasUrl() : string {
-  return (location.origin + API_ENDPOINT).replace(/rest\/$/, "");
+function getWegasUrl(): string {
+  return (location.origin + API_ENDPOINT).replace(/rest\/$/, '');
 }
 
-const globalDispatch = store.dispatch;
+const globalDispatch = oldStore.dispatch;
 
 type GlobalContexts = FeatureContext & LanguagesContext & ClassesContext;
 
@@ -107,7 +128,7 @@ export function useGlobalContexts(): GlobalContexts {
   //  }, [featuresContext, languagesContext, classesContext]);
 }
 
-export function setGlobals(globalContexts: GlobalContexts, store: State) {
+export function setGlobals(globalContexts: GlobalContexts, state: State) {
   const {
     lang,
     selectLang,
@@ -116,13 +137,13 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     removeFeature,
     addClass,
     removeClass,
-    classes
+    classes,
   } = globalContexts;
 
-  const player = store.players[store.global.currentPlayerId];
+  const player = Player.selectCurrent();
   const gameModel = GameModel.selectCurrent();
-  const teams = Object.values(store.teams);
-  const pageLoaders = store.global.pageLoaders;
+  const teams = Object.values(store.getState().teams);
+  const pageLoaders = state.global.pageLoaders;
 
   const splayer = instantiate(player);
 
@@ -130,9 +151,8 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.gameModel = instantiate(gameModel);
   globals.teams = instantiate(teams);
 
-
   globals.self = instantiate(player);
-  globals.currentUserName = store.global.currentUser.name ?? 'someone';
+  globals.currentUserName = state.global.currentUser.name ?? 'someone';
 
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
@@ -238,7 +258,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.ClientMethods = {
     addMethod: addMethod,
     getMethod: (name: string) => {
-      return store.global.clientMethods[name]
+      return state.global.clientMethods[name]
         .method as () => WegasScriptEditorReturnType;
     },
   };
@@ -300,7 +320,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.Classes = {
     addClass,
     removeClass,
-    classes
+    classes,
   };
 
   globals.Popups = {
@@ -315,7 +335,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
   globals.WegasEvents = {
     addEventHandler: (id, type, cb) => {
       if (id != null && type != null && cb != null) {
-        if (store.global.eventsHandlers[type][id] == null) {
+        if (state.global.eventsHandlers[type][id] == null) {
           globalDispatch(
             ActionCreator.EDITOR_ADD_EVENT_HANDLER({
               id,
@@ -329,7 +349,7 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     removeEventHandler: (id, type) => {
       if (id != null && type != null) {
         7;
-        if (store.global.eventsHandlers[type][id] != null) {
+        if (state.global.eventsHandlers[type][id] != null) {
           globalDispatch(
             ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
           );
@@ -379,9 +399,12 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
 
   globals.APIMethods = APIScriptMethods;
 
-  const scrollIntoView = (selector: string, options: ScrollIntoViewOptions): void => {
+  const scrollIntoView = (
+    selector: string,
+    options: ScrollIntoViewOptions,
+  ): void => {
     document.querySelector(selector)?.scrollIntoView(options);
-  }
+  };
 
   globals.Helpers = {
     cloneDeep: cloneDeep,
@@ -419,24 +442,27 @@ export function setGlobals(globalContexts: GlobalContexts, store: State) {
     multiLineString: multiLineString,
     polygon: polygon,
     multiPolygon: multiPolygon,
-    feature : feature,
-    bboxClip: bboxClip.default
-  }
+    feature: feature,
+    bboxClip: bboxClip.default,
+  };
 
   globals.OpenLayer = {
-    format :{
-      GeoJSON : GeoJSON.default,
+    format: {
+      GeoJSON: GeoJSON.default,
     },
-    source : {
-      VectorSource : VectorSource.default
+    source: {
+      VectorSource: VectorSource.default,
     },
-    transformExtent : transformExtentWrapper
-  }
-
+    transformExtent: transformExtentWrapper,
+  };
 }
 
-function transformExtentWrapper(ext: ExtentLikeObject, srcProj: string, destProj: string, opt_stops: number | undefined ): ExtentLikeObject {
-
+function transformExtentWrapper(
+  ext: ExtentLikeObject,
+  srcProj: string,
+  destProj: string,
+  opt_stops: number | undefined,
+): ExtentLikeObject {
   initializeProjection(srcProj);
   initializeProjection(destProj);
   return transformExtent(ext, srcProj, destProj, opt_stops) as ExtentLikeObject;
@@ -468,7 +494,6 @@ export const insertReturn = (val: string) => {
     const lastStatement =
       sourceFile.statements[sourceFile.statements.length - 1];
     if (lastStatement) {
-
       if (!ts.isReturnStatement(lastStatement)) {
         const p = lastStatement.getStart();
         code = code.substring(0, p) + 'return ' + code.substring(p);
@@ -517,7 +542,7 @@ function transpileToFunction(
   );
 }
 
-export function addSetterToState(state: PagesContextState) {
+export function addSetterToState(state: PageContextValues) {
   return Object.entries(state.context).reduce((o, [k, s]) => {
     if (typeof s === 'object' && s !== null && 'state' in s) {
       return {
@@ -529,7 +554,7 @@ export function addSetterToState(state: PagesContextState) {
               typeof newState === 'function'
                 ? newState((s as { state: unknown }).state)
                 : newState;
-            setPagesContextState(k, newS);
+            dispatch(setContextValue({ exposeAs: k, value: newS }));
           },
         },
       };
@@ -550,13 +575,11 @@ const memoClientScriptEval = (() => {
   return <T>(
     script?: string | IScript | ScriptCallback,
     context: PageComponentContext = {},
-    state?: PagesContextState,
+    state?: PageContextValues,
     options?: TranspileOptions,
     argValues: unknown[] = [],
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
-    const currentState = addSetterToState(
-      state || pagesContextStateStore.getState(),
-    );
+    const currentState = addSetterToState(state || getLivePageContext());
     globals.Context = { ...currentState, ...context };
 
     let scriptAsFunction;
@@ -569,7 +592,9 @@ const memoClientScriptEval = (() => {
       if (!script.content) {
         return undefined as any;
       }
-      const scriptKey = `IR_${ options?.injectReturn ?? 'nope' }::M_${ options?.moduleName ?? 'nope' }::${ script.content}`
+      const scriptKey = `IR_${options?.injectReturn ?? 'nope'}::M_${
+        options?.moduleName ?? 'nope'
+      }::${script.content}`;
 
       if (!transpiledCache.has(scriptKey)) {
         // IScript not in cache -> transpile it
@@ -597,7 +622,7 @@ const memoClientScriptEval = (() => {
           // and add it to modules store
           globals.__WegasModules[options?.moduleName] = exports;
         }
-        globals.__WegasCurrentModule = options.moduleName
+        globals.__WegasCurrentModule = options.moduleName;
       }
       if (WEGAS_SAFE_MODE) {
         wlog('Drop script exec !');
@@ -614,7 +639,7 @@ const memoClientScriptEval = (() => {
         ...argValues,
       );
       // clear current module
-      globals.__WegasCurrentModule = undefined
+      globals.__WegasCurrentModule = undefined;
       return v;
     } else {
       return undefined as any;
@@ -629,7 +654,7 @@ export function clientScriptEval<T>(
         [name: string]: unknown;
       }
     | undefined,
-  state: PagesContextState | undefined,
+  state: PageContextValues | undefined,
   options: TranspileOptions | undefined,
   argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -644,13 +669,18 @@ export function customClientScriptEval<T>(
       }
     | undefined,
 ): T extends WegasScriptEditorReturnType ? T : unknown {
-  return memoClientScriptEval({
-    "@class": "Script",
-    language: 'TypeScript',
-    content: script.content
-  }, context, undefined, {
-    injectReturn: !!script.returnType
-  });
+  return memoClientScriptEval(
+    {
+      '@class': 'Script',
+      language: 'TypeScript',
+      content: script.content,
+    },
+    context,
+    undefined,
+    {
+      injectReturn: !!script.returnType,
+    },
+  );
 }
 
 interface WegasScriptError extends Error {
@@ -691,7 +721,7 @@ export function safeClientScriptEval<T>(
       }
     | undefined,
   catchCB: ((e: Error) => void) | undefined,
-  state: PagesContextState | undefined,
+  state: PageContextValues | undefined,
   options: TranspileOptions | undefined,
   argValues: unknown[] = [],
 ): T extends WegasScriptEditorReturnType ? T : unknown {
@@ -745,7 +775,7 @@ export function useScript<T>(
 
   const globalContexts = useGlobalContexts();
 
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   //  const toStr = (s: IScript | string | undefined) =>
   //    entityIs(s, 'Script') ? s.content : s || '';
@@ -905,7 +935,9 @@ export function parseAndRunClientScript(
     : scriptContent;
 }
 */
-export type ContextRef = React.MutableRefObject<UnknownValuesObject | undefined>;
+export type ContextRef = React.MutableRefObject<
+  UnknownValuesObject | undefined
+>;
 
 export function useUpdatedContextRef(context: UnknownValuesObject | undefined) {
   const contextRef = React.useRef(context);
@@ -942,7 +974,6 @@ export function isScriptCallback(script: unknown): script is ScriptCallback {
     (script as { '@class': string })['@class'] === 'ScriptCallback'
   );
 }
-
 
 export function useScriptObjectWithFallback<
   T extends Record<string, unknown>,
@@ -1011,7 +1042,7 @@ export function computeCB<T extends AnyFunction>(
       callbackScript,
       contextRef?.current,
       undefined,
-      pagesContextStateStore.getState(),
+      getLivePageContext(),
       {
         injectReturn: true,
       },
