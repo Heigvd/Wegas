@@ -10,15 +10,15 @@ import { editorEvent } from '../data/Reducer/editingState';
 import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
 import { editingStore } from '../data/Stores/editingStore';
 import { store } from '../data/Stores/store';
-import {
-  deleteTheme,
-  getThemeDispatch,
-  libraryToTheme,
-  themeActionCreator,
-} from '../data/Stores/themeStore';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
+import {
+  deleteTheme,
+  libraryToTheme,
+  updateTheme,
+} from '../store/slices/theme';
+import { dispatch } from '../store/store';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -106,7 +106,7 @@ const webSocketEvents = [
   'EntityDestroyedEvent',
   'CustomEvent',
   'PageUpdate',
-  'LibraryUpdate-Theme', // TODO
+  'LibraryUpdate-Theme',
   'LibraryUpdate-SelectedThemes', // TODO
   'LibraryDestroy-Theme', // TODO
   'LibraryDestroy-SelectedThemes', // TODO
@@ -124,7 +124,7 @@ const webSocketEvents = [
 
 export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
 
-interface OutadatedEntitesEvent {
+interface OutdatedEntitiesEvent {
   '@class': 'OutdatedEntitiesEvent';
   updatedEntities: { type: WegasClassNames; id: number }[];
 }
@@ -209,7 +209,7 @@ class WebSocketListener {
           //pusher events
           return;
         }
-        this.eventReveived(processed.event as WebSocketEvent, processed.data);
+        this.eventReceived(processed.event as WebSocketEvent, processed.data);
       });
     this.socket?.channels;
   }
@@ -234,7 +234,7 @@ class WebSocketListener {
     }
   }
 
-  private eventReveived(event: WebSocketEvent, data: unknown) {
+  private eventReceived(event: WebSocketEvent, data: unknown) {
     let eventFound = false;
     // Dispatch outisde managed events
     if (this.events[event] !== undefined) {
@@ -278,7 +278,7 @@ class WebSocketListener {
           ),
         );
       case 'OutdatedEntitiesEvent': {
-        const { updatedEntities } = data as OutadatedEntitesEvent;
+        const { updatedEntities } = data as OutdatedEntitiesEvent;
 
         const toUpdate: { instances: number[]; descriptors: number[] } = {
           instances: [],
@@ -317,18 +317,18 @@ class WebSocketListener {
         const themeName = String(data);
         LibraryAPI.getLibrary('Theme', themeName).then(
           (library: IGameModelContent) => {
-            getThemeDispatch()(
-              themeActionCreator.UPDATE_THEME(
-                themeName,
-                libraryToTheme(library),
-              ),
+            dispatch(
+              updateTheme({
+                themeName: themeName,
+                theme: libraryToTheme(library),
+              }),
             );
           },
         );
         return;
       }
       case 'LibraryDestroy-Theme': {
-        getThemeDispatch()(deleteTheme(String(data)));
+        dispatch(deleteTheme(String(data)));
         return;
       }
       case 'CustomEvent':

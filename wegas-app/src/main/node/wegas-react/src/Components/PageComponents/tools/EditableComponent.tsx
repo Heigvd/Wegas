@@ -13,16 +13,13 @@ import {
   createEditingAction,
   editingStore,
 } from '../../../data/Stores/editingStore';
+import { getLivePageContext } from '../../../store/pageContextState';
+import { PageContextValues } from '../../../store/slices/pageContext';
 import {
-  PagesContextState,
-  pagesContextStateStore,
-} from '../../../data/Stores/pageContextStore';
-import {
-  isComponentFocused,
-  pagesStateStore,
-  PageStateAction,
-  usePagesStateStore,
-} from '../../../data/Stores/pageStore';
+  focusKeyOf,
+  setFocused,
+  unsetFocused,
+} from '../../../store/slices/pageEditor';
 import { store } from '../../../data/Stores/store';
 import { ErrorBoundary } from '../../ErrorBoundary';
 import {
@@ -111,11 +108,11 @@ const showBordersStyle = css({
 
 export function assembleStateAndContext(
   context: PageComponentContext = {},
-  state?: PagesContextState,
+  state?: PageContextValues,
 ) {
   return {
     Context: {
-      ...addSetterToState(state || pagesContextStateStore.getState()),
+      ...addSetterToState(state || getLivePageContext()),
       ...context,
     },
   };
@@ -133,7 +130,7 @@ const asynExecute = createEditingAction(
       ][];
       context?: PageComponentContext;
     },
-    dispatch,
+    oldDispatch,
     getState,
   ) => {
     const sortedActions = actions.sort(
@@ -155,7 +152,7 @@ const asynExecute = createEditingAction(
             assembleStateAndContext(context),
           );
 
-          dispatch(manageResponseHandler(result, dispatch, getState()));
+          oldDispatch(manageResponseHandler(result, oldDispatch, getState()));
         }
       } else if (k === 'localScriptEval') {
         const result = wegasComponentActions.localScriptEval({
@@ -464,18 +461,12 @@ const lockedOverlayStyle = css({
 
 interface LockedOverlayProps {
   locked?: boolean;
-  // confirmClick: boolean;
-  // onConfirmClick: (
-  //   confirmed: boolean,
-  //   event: React.MouseEvent<HTMLElement, MouseEvent>,
-  // ) => void;
 }
 
 function LockedOverlay({ locked }: LockedOverlayProps) {
   return (
     <div onClick={e => e.stopPropagation()} className={lockedOverlayStyle}>
       {locked && <TumbleLoader />}
-      {/* {confirmClick && <ConfirmButton onAction={onConfirmClick} />} */}
     </div>
   );
 }
@@ -619,8 +610,6 @@ interface ComponentContainerProps extends WegasComponentProps {
   onClickManaged: boolean;
 }
 
-const pageDispatch = pagesStateStore.dispatch;
-
 export function ComponentContainer({
   componentType,
   path,
@@ -660,8 +649,10 @@ export function ComponentContainer({
   const [loading, setLoading] = React.useState(false);
 
   const isSelected = isEqual(path, editedPath);
-  const isFocused = usePagesStateStore(
-    isComponentFocused(editMode, pageId, path),
+  const dispatch = useAppDispatch();
+  const focusKey = focusKeyOf(pageId, path);
+  const isFocused = useAppSelector(
+    s => editMode && s.pageEditor.focusKey === focusKey,
   );
 
   const onClick = React.useMemo(() => {
@@ -687,20 +678,20 @@ export function ComponentContainer({
           if (!stackedHandles) {
             setStackedHandles(() => computeHandles(handles, path));
           }
-          pageDispatch(PageStateAction.setFocused(pageId, path));
+          dispatch(setFocused({ pageId, componentPath: path }));
         }
       }
     },
-    [editable, handles, pageId, path, stackedHandles],
+    [dispatch, editable, handles, pageId, path, stackedHandles],
   );
 
   const onMouseLeave = React.useCallback(() => {
     mouseOver.current = false;
     if (editable) {
       setStackedHandles(undefined);
-      pageDispatch(PageStateAction.unsetFocused());
+      dispatch(unsetFocused());
     }
-  }, [editable]);
+  }, [dispatch, editable]);
 
   const dragEnter = React.useCallback(
     (e: React.DragEvent) => {

@@ -4,7 +4,7 @@ import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 import { runLoadedScript } from '../../store/slices/variableInstances';
 import { Player } from '../../data/selectors';
 import { editingStore } from '../../data/Stores/editingStore';
-import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
+import { usePageContext } from '../../store/pageContextState';
 import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
@@ -165,7 +165,7 @@ export function useOnCancelAction(
     ? onCancel.server
     : undefined;
 
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   const handleOnCancel = React.useCallback(() => {
     if (client) {
