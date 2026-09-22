@@ -2,8 +2,11 @@ import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
 import { useStore } from '../../data/Stores/store';
+import { useAppSelector } from '../../store/hooks';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 import { instantiate } from '../../data/scriptable';
+import { RootState } from '../../store/store';
+import { shallowEqual } from 'react-redux';
 
 type instanceOf<D> = D extends IVariableDescriptor<infer U> ? U : never;
 /**
@@ -27,13 +30,18 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
 export function useVariableInstance<
   D extends IVariableDescriptor | SVariableDescriptor,
 >(descriptor?: D, player: IPlayer = Player.selectCurrent()) {
-  const getInstanceForDescriptor = React.useCallback(() => {
-    if (descriptor) {
-      return getInstance(descriptor, player) as instanceOf<D>;
-    }
-    return;
-  }, [descriptor, player]);
-  const instance = useStore(getInstanceForDescriptor);
+  // Instances live in the new store, so subscribe there: `getInstance` is handed
+  // the state it should read from rather than reaching for the store itself.
+  const getInstanceForDescriptor = React.useCallback(
+    (state: RootState) => {
+      if (descriptor) {
+        return getInstance(descriptor, player, state) as instanceOf<D>;
+      }
+      return;
+    },
+    [descriptor, player],
+  );
+  const instance = useAppSelector(getInstanceForDescriptor, shallowEqual);
 
   return instantiate(instance);
 }

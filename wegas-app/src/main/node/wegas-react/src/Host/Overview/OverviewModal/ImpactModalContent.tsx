@@ -20,7 +20,7 @@ import {
   hidden,
   textCenter,
 } from '../../../css/classes';
-import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
 import { Game } from '../../../data/selectors';
 import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';

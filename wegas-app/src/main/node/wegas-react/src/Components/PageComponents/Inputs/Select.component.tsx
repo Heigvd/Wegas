@@ -2,7 +2,7 @@ import * as React from 'react';
 import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';

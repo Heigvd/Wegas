@@ -12,6 +12,7 @@ import playersReducer from './slices/players';
 import teamsReducer from './slices/teams';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
+import variableInstancesReducer from './slices/variableInstances';
 import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
 import themeReducer from './slices/theme';
@@ -27,6 +28,7 @@ export const store = configureStore({
         teams: teamsReducer,
         games: gameReducer,
         gameModels: gameModelReducer,
+        variableInstances: variableInstancesReducer,
         pageContext: pageContextReducer,
         pageEditor: pageEditorReducer,
         themes: themeReducer

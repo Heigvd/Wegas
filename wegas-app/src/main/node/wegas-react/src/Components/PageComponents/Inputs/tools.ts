@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
-import { runLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
+import { runLoadedScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { editingStore } from '../../../data/Stores/editingStore';
 import { usePageContext } from '../../../store/pageContextState';
