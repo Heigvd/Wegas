@@ -1,7 +1,7 @@
-import { store } from '../Stores/store';
 import { isMatch } from 'lodash-es';
-import { varIsList } from '../entities';
 import { IVariableDescriptor } from 'wegas-ts-api';
+import { RootState, store } from '../../store/store';
+import { varIsList } from '../entities';
 
 /**
  * Find a variableDescriptor for an id
@@ -12,6 +12,7 @@ import { IVariableDescriptor } from 'wegas-ts-api';
  */
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
   id?: number | null,
+  state?: RootState,
 ): Readonly<T> | undefined;
 /**
  * Find a list of variableDescriptor for a list of ids
@@ -22,14 +23,15 @@ export function select<T extends IVariableDescriptor = IVariableDescriptor>(
  */
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
   id: number[],
+  state?: RootState,
 ): (Readonly<T> | undefined)[];
 export function select<T extends IVariableDescriptor = IVariableDescriptor>(
   id?: number | number[] | null,
+  state: RootState = store.getState(),
 ) {
   if (id == null) {
     return;
   }
-  const state = store.getState();
   if (Array.isArray(id)) {
     return id.map(i => state.variableDescriptors[i] as T);
   }

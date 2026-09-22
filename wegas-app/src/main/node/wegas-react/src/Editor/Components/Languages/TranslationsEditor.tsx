@@ -61,6 +61,7 @@ import {
   useEditingStore,
 } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
+import { deepEqual, useAppSelector } from '../../../store/hooks';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -763,9 +764,9 @@ function TranslationView({
   depth,
 }: TranslationViewProps) {
   const [translations, setTranslations] = React.useState<Translations>({});
-  const variable = useStore(
+  const variable = useAppSelector(
     s => s.variableDescriptors[variableId],
-    deepDifferent,
+    deepEqual,
   );
 
   React.useEffect(() => {

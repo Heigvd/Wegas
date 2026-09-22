@@ -68,13 +68,14 @@ import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScript
 import * as React from 'react';
 import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
+import { deepEqual, useAppSelector } from '../../store/hooks';
+import { selectVariableClasses } from '../../store/slices/variableDescriptors';
 import { useGameModel } from './useGameModel';
 import { useStore } from '../../data/Stores/store';
 import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
 import { deepDifferent } from './storeHookFactory';
-
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -126,7 +127,7 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
   { content: layerStyleTypes, name: 'layerStyleTypes.d' },
   { content: layerSourceTypes, name: 'layerSourceTypes.d' },
   { content: overlayTypes, name: 'overlayTypes.d' },
-  { content: interactionTypes, name: 'olInteractionTypes.d'}
+  { content: interactionTypes, name: 'olInteractionTypes.d' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [
@@ -152,21 +153,10 @@ export function useGlobalLibs() {
 
   const { classes } = React.useContext(classesCTX);
   const gameModel = useGameModel();
+  const variableClasses = useAppSelector(selectVariableClasses, deepEqual);
 
   const libsSelector = React.useCallback(
     (s: State) => {
-      const variableClasses = Object.values(s.variableDescriptors).reduce<{
-        [variable: string]: { class: string; id: number };
-      }>((newObject, variable) => {
-        if (variable !== undefined && variable.name !== undefined) {
-          newObject[variable.name] = {
-            class: variable['@class'],
-            id: variable.id!,
-          };
-        }
-        return newObject;
-      }, {});
-
       const globalMethods = s.global.clientMethods;
       const globalSchemas = s.global.schemas.views;
       const globalServerMethods = s.global.serverMethods;
@@ -381,7 +371,7 @@ export function useGlobalLibs() {
         return '';
       }
     },
-    [classes, scriptContext, gameModel.languages],
+    [classes, scriptContext, gameModel.languages, variableClasses],
   );
 
   const libs = useStore(libsSelector, deepDifferent);

@@ -21,7 +21,12 @@ import {
   justifyCenter,
   unreadSignalStyle,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import {
+  createDescriptor,
+  deleteDescriptor,
+  duplicateDescriptor,
+  updateDescriptor,
+} from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../store/slices/variableInstances';
@@ -144,7 +149,7 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           editingStore.dispatch(
-            Actions.VariableDescriptorActions.createDescriptor(
+            createDescriptor(
               {
                 '@class': 'QuestionDescriptor',
                 label: createTranslatableContent(lang, 'Titre de la question'),
@@ -197,7 +202,7 @@ export function QuestionLabel({
       )(questionD);
 
       editingStore.dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newQuestion),
+        updateDescriptor(newQuestion),
       );
       onFinishEditing && onFinishEditing();
     },
@@ -429,7 +434,7 @@ function QuestionChooserEdition({
             onClick={e => {
               e.stopPropagation();
               editingStore.dispatch(
-                Actions.VariableDescriptorActions.duplicateDescriptor(entity),
+                duplicateDescriptor(entity),
               );
             }}
           />
@@ -437,7 +442,7 @@ function QuestionChooserEdition({
             onClick={e => {
               e.stopPropagation();
               editingStore.dispatch(
-                Actions.VariableDescriptorActions.deleteDescriptor(entity),
+                deleteDescriptor(entity),
               );
             }}
           />

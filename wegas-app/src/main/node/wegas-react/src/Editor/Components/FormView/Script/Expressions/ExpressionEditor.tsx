@@ -6,10 +6,10 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { isArray, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
-import { deepDifferent, refDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../../../Components/Hooks/useGameModel';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { useStore } from '../../../../../data/Stores/store';
+import { useAppSelector } from '../../../../../store/hooks';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
@@ -151,7 +151,7 @@ export function ExpressionEditor({
   // genVarItems reads the variable descriptors internally (non-reactively), so we
   // subscribe to them and keep variableDescriptors as an explicit trigger dependency
   // to recompute the items whenever a descriptor changes.
-  const variableDescriptors = useStore(s => s.variableDescriptors, refDifferent);
+  const variableDescriptors = useAppSelector(s => s.variableDescriptors);
   const variablesItems = React.useMemo(
     () =>
       genVarItems(gameModel.itemsIds, selectableFn, undefined, value =>

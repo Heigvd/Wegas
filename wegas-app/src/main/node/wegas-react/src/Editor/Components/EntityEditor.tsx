@@ -25,7 +25,11 @@ import {
   saveEditor,
   VariableEdition,
 } from '../../data/Reducer/editingState';
-import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
+import {
+  deleteDescriptor,
+  duplicateDescriptor,
+  updateDescriptor,
+} from '../../store/slices/variableDescriptors';
 import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
 import {
   editingStore,
@@ -425,7 +429,7 @@ export function editionActions<T extends IVariableDescriptor>(
       label: 'Delete',
       action: (entity: IVariableDescriptor, path?: string[]) => {
         dispatch(
-          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+          deleteDescriptor(entity, path),
         );
       },
       confirm: true,
@@ -436,7 +440,7 @@ export function editionActions<T extends IVariableDescriptor>(
       icon: 'clone',
       action: (entity: T) => {
         dispatch(
-          Actions.VariableDescriptorActions.duplicateDescriptor(
+          duplicateDescriptor(
             entity,
             editionState.path,
           ),
@@ -517,7 +521,7 @@ function VariableEditionPanel({
               const index = newChoice.results.length - 1;
 
               dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(
+                updateDescriptor(
                   newChoice,
                   true,
                   ['results', String(index)],
@@ -537,7 +541,7 @@ function VariableEditionPanel({
               });
               const index = newChoice[path].evaluations.length - 1;
               dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(
+                updateDescriptor(
                   newChoice,
                   true,
                   [path, 'evaluations', String(index)],

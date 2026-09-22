@@ -12,6 +12,7 @@ import playersReducer from './slices/players';
 import teamsReducer from './slices/teams';
 import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
+import variableDescriptorsReducer from './slices/variableDescriptors';
 import variableInstancesReducer from './slices/variableInstances';
 import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
@@ -28,10 +29,11 @@ export const store = configureStore({
         teams: teamsReducer,
         games: gameReducer,
         gameModels: gameModelReducer,
+        variableDescriptors: variableDescriptorsReducer,
         variableInstances: variableInstancesReducer,
         pageContext: pageContextReducer,
         pageEditor: pageEditorReducer,
-        themes: themeReducer
+        themes: themeReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
