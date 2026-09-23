@@ -1,8 +1,4 @@
-import {
-  IAbstractEntity,
-  IScript,
-  WegasClassNames,
-} from 'wegas-ts-api';
+import { IAbstractEntity, IScript, WegasClassNames } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { Popup } from '../Components/PopupManager';
@@ -12,7 +8,7 @@ import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
-import { VariableDescriptorState } from './Reducer/VariableDescriptorReducer';
+import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
 import { Edition } from '../store/slices/edition';
@@ -226,10 +222,11 @@ export function manageResponseHandler(
     }),
   );
 
-  // new store: entity slices, plus the editorEvents slice which owns the events
+  // new store: entity slices (games, gameModels, variableDescriptors,
+  // variableInstances...), plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
 
-  // old store: variableDescriptors, pages, global...
+  // old store: pages, global...
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
   // The events are already in the editorEvents slice, so the action returned for

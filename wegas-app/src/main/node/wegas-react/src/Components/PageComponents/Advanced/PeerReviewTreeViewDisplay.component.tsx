@@ -40,7 +40,7 @@ import {
   asynchSaveReview,
   saveReview,
   submitReview,
-} from '../../../data/Reducer/VariableDescriptorReducer';
+} from '../../../store/slices/variableDescriptors';
 import { instantiate } from '../../../data/scriptable';
 import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';

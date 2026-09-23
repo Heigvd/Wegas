@@ -22,7 +22,7 @@ import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { grow, mediumPadding } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { updateDescriptor } from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
 import {
@@ -36,7 +36,7 @@ import {
 } from '../../../data/Reducer/editingState';
 import { State as RState } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
-import { store as oldStore, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
 import { selectEdition } from '../../../store/slices/edition';
 import { RootState, dispatch, store } from '../../../store/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
@@ -190,9 +190,7 @@ export function StateMachineEditor<
         (source.transitions as IAbstractTransition[]).push(newTransition);
       })(stateMachine);
 
-      scopedDispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-      );
+      scopedDispatch(updateDescriptor(newStateMachine));
     },
     [createTransition, scopedDispatch, stateMachine],
   );
@@ -236,7 +234,7 @@ export function StateMachineEditor<
       };
 
       const oldFSM = cloneDeep(
-        oldStore.getState().variableDescriptors[newCurrentState.parentId!]!,
+        VariableDescriptor.select(newCurrentState.parentId!)!,
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
@@ -319,9 +317,7 @@ export function StateMachineEditor<
       scopedDispatch(
         editStateMachine(stateMachine, ['states', String(newStateId)]),
       );
-      scopedDispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
-      );
+      scopedDispatch(updateDescriptor(newStateMachine));
     },
     [createTransition, forceLocalDispatch, lang, localDispatch, stateMachine],
   );

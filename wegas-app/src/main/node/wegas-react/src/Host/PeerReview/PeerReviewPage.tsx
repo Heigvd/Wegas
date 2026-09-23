@@ -25,7 +25,7 @@ import {
   showOverflow,
 } from '../../css/classes';
 import { createTranslatableContent, translate } from '../../data/i18n';
-import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
+import { updateDescriptor } from '../../store/slices/variableDescriptors';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player, Team } from '../../data/selectors';
 import { store, useStore } from '../../data/Stores/store';

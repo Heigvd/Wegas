@@ -11,7 +11,7 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
@@ -45,7 +45,7 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
       items={choices}
       onSelect={item => {
         dispatch(
-          Actions.VariableDescriptorActions.createDescriptor(
+          createDescriptor(
             {
               '@class': item.value.descriptor,
               label: createTranslatableContent(lang, ''),
@@ -84,7 +84,7 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
           dispatch(
-            Actions.VariableDescriptorActions.createDescriptor(
+            createDescriptor(
               {
                 '@class': 'SingleResultChoiceDescriptor',
                 label: createTranslatableContent(lang, ''),

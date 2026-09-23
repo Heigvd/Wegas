@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { produce } from 'immer';
 import * as React from 'react';
 import { IQuestionDescriptor, IWhQuestionDescriptor } from 'wegas-ts-api';
-import { Actions } from '../../../data';
+import { updateDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
@@ -70,7 +70,7 @@ export function QuestionDescription({
       )(questionD);
 
       dispatch(
-        Actions.VariableDescriptorActions.updateDescriptor(newQuestion),
+        updateDescriptor(newQuestion),
       );
       setEditing(false);
     },

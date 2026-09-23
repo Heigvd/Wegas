@@ -15,6 +15,7 @@ import gameReducer from './slices/game';
 import gameModelReducer from './slices/gameModel';
 import editionReducer from './slices/edition';
 import editorEventsReducer from './slices/editorEvents';
+import variableDescriptorsReducer from './slices/variableDescriptors';
 import variableInstancesReducer from './slices/variableInstances';
 import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
@@ -33,6 +34,7 @@ export const store = configureStore({
         gameModels: gameModelReducer,
         edition: editionReducer,
         editorEvents: editorEventsReducer,
+        variableDescriptors: variableDescriptorsReducer,
         variableInstances: variableInstancesReducer,
         pageContext: pageContextReducer,
         pageEditor: pageEditorReducer,

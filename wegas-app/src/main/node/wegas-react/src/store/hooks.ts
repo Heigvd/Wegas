@@ -5,10 +5,21 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+import { isEqual } from 'lodash-es';
 import { shallowEqual, TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from './store';
 
 export { shallowEqual };
+
+/**
+ * Deep equality, for use as useAppSelector's 2nd argument.
+ *
+ * NOTE the orientation: react-redux equality functions return true when the
+ * values are EQUAL (skip the re-render). This is the opposite of the
+ * `deepDifferent` / `shallowDifferent` predicates the old store's useStore
+ * takes, so those must never be passed to useAppSelector.
+ */
+export const deepEqual = <T,>(a: T, b: T): boolean => isEqual(a, b);
 
 // pre-typed hooks. Use these throughout the app instead of the bare
 // react-redux useDispatch / useSelector.

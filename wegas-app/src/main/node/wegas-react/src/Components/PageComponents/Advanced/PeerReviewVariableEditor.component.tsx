@@ -20,7 +20,7 @@ import {
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
 import { liveEdition } from '../../../store/slices/gameModel';
-import { submitToReview } from '../../../data/Reducer/VariableDescriptorReducer';
+import { submitToReview } from '../../../store/slices/variableDescriptors';
 import {
   asyncRunLoadedScript,
   getAll,

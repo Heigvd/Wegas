@@ -11,7 +11,10 @@ import {
   flexRow,
   stretch,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import {
+  deleteDescriptor,
+  updateDescriptor,
+} from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
@@ -229,7 +232,7 @@ export function ChoiceDisplay({
     )(descriptor);
 
     dispatch(
-      Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+      updateDescriptor(newChoice),
     );
     setEditing(false);
   }, [descriptor, lang, values]);
@@ -404,7 +407,7 @@ export function ChoiceDisplay({
             onClick={e => {
               e.stopPropagation();
               dispatch(
-                Actions.VariableDescriptorActions.deleteDescriptor(descriptor),
+                deleteDescriptor(descriptor),
               );
             }}
           />

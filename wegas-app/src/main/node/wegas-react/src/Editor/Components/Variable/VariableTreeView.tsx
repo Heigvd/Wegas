@@ -20,7 +20,7 @@ import {
 } from '../../../css/classes';
 import { Actions } from '../../../data';
 import { createVariable, Edition } from '../../../data/Reducer/editingState';
-import { moveDescriptor } from '../../../data/Reducer/VariableDescriptorReducer';
+import { moveDescriptor } from '../../../store/slices/variableDescriptors';
 import { store, useStore } from '../../../data/Stores/store';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';

@@ -1,17 +1,17 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { IPeerReviewDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { expandWidth } from '../../css/classes';
-import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
+import { shallowEqual, useAppSelector } from '../../store/hooks';
+import { selectPeerReviewDescriptors } from '../../store/slices/variableDescriptors';
 import { visitIndex } from '../../Helper/pages';
 import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
@@ -230,11 +230,10 @@ export default function Layout() {
     }),
   );
 
-  const peerReviews = useStore(s => {
-    return Object.values(s.variableDescriptors).filter(descriptor =>
-      entityIs(descriptor, 'PeerReviewDescriptor'),
-    ) as IPeerReviewDescriptor[];
-  });
+  const peerReviews = useAppSelector(
+    selectPeerReviewDescriptors,
+    shallowEqual,
+  );
 
   const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
     tabId: `Peer review ${translate(peerReview?.label, lang)}`,
