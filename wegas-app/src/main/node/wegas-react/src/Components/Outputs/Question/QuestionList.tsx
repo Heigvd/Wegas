@@ -33,7 +33,6 @@ import { read } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { useStore } from '../../../data/Stores/store';
 import {
   IconComp,
@@ -64,6 +63,7 @@ import {
 } from './Question';
 import { entityIs } from '../../../data/entities';
 import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { dispatch } from '../../../store/store';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -148,7 +148,7 @@ function AddQuestionButton({ questionList }: AddQuestionsMenuProps) {
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
-          editingStore.dispatch(
+          dispatch(
             createDescriptor(
               {
                 '@class': 'QuestionDescriptor',
@@ -201,7 +201,7 @@ export function QuestionLabel({
         },
       )(questionD);
 
-      editingStore.dispatch(
+      dispatch(
         updateDescriptor(newQuestion),
       );
       onFinishEditing && onFinishEditing();
@@ -304,7 +304,7 @@ function QuestionChooser(
       const questionInstance = questionDescriptor.getInstance(player);
 
       if (questionInstance.isUnread()) {
-        editingStore.dispatch(read(questionDescriptor.getEntity()));
+        dispatch(read(questionDescriptor.getEntity()));
       }
     }
   };
@@ -319,7 +319,7 @@ function QuestionChooser(
         className={cx(flex, flexRow, itemCenter, defaultPadding)}
         /* onClick={() => {
           !props.disabled &&
-          editingStore.dispatch(read(instantiate(props.entity).getEntity()));
+          dispatch(read(instantiate(props.entity).getEntity()));
         }}*/
       >
         {props.mobile && (
@@ -433,7 +433,7 @@ function QuestionChooserEdition({
           <Copy
             onClick={e => {
               e.stopPropagation();
-              editingStore.dispatch(
+              dispatch(
                 duplicateDescriptor(entity),
               );
             }}
@@ -441,7 +441,7 @@ function QuestionChooserEdition({
           <Trash
             onClick={e => {
               e.stopPropagation();
-              editingStore.dispatch(
+              dispatch(
                 deleteDescriptor(entity),
               );
             }}
@@ -497,7 +497,7 @@ export default function QuestionList({
       const questionInstance = questionDescriptor.getInstance(player);
 
       if (questionInstance.isUnread()) {
-        editingStore.dispatch(read(questionDescriptor.getEntity()));
+        dispatch(read(questionDescriptor.getEntity()));
       }
     }
   }, [autoOpenFirst, entities]);

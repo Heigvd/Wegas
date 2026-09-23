@@ -1,8 +1,8 @@
 import { IEventInboxInstance } from "wegas-ts-api";
-import { editingStore } from "../../data/Stores/editingStore";
 import { getEvents } from "../../store/slices/variableInstances";
 import { shallowEqual, useAppSelector } from "../../store/hooks";
 import * as React from "react";
+import { dispatch } from '../../store/store';
 
 
 /**
@@ -20,7 +20,7 @@ export default function EventInstanceManager({
   React.useEffect(() => {
     outdatedEventBoxes.forEach((e) => {
       if(e){
-        editingStore.dispatch(getEvents(e as IEventInboxInstance))
+        dispatch(getEvents(e as IEventInboxInstance))
       }
     });
   }, [outdatedEventBoxes]);

@@ -9,9 +9,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import { GameModelApi } from '../../API/gameModel.api';
 import { manageResponseHandler } from '../../data/actions';
-import { editingStore, EditingThunkResult } from '../../data/Stores/editingStore';
 import { managedResponseReceived } from '../actions';
+import { selectEdition } from './edition';
 import { setInitStatus } from './initStatus';
+import { AppThunk, dispatch } from '../../store/store';
 
 export interface GameModelState {
   /** Immutable, seeded from the server-injected CurrentGM global. */
@@ -32,7 +33,7 @@ export const getGameModel = createAsyncThunk(
   async (gameModelId: number, thunkAPI) => {
     const res = await GameModelApi.get(gameModelId);
 
-    editingStore.dispatch(manageResponseHandler(res));
+    dispatch(manageResponseHandler(res));
     thunkAPI.dispatch(setInitStatus({ key: 'gameModel', status: true }));
   },
 );
@@ -44,17 +45,17 @@ export const getGameModel = createAsyncThunk(
 export function liveEdition<T extends IMergeable>(
   channel: string,
   entity: T,
-): EditingThunkResult {
+): AppThunk {
   return async (dispatch, getState) => {
     const res = await GameModelApi.liveEdition(channel, entity)
-    editingStore.dispatch(manageResponseHandler(res, dispatch, getState()))
+    dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())))
   };
 }
 
-export function createExtraTestPlayer(gameModelId: number): EditingThunkResult {
+export function createExtraTestPlayer(gameModelId: number): AppThunk {
   return async (dispatch, getState) => {
     const res = await GameModelApi.createExtraTestPlayer(gameModelId)
-    editingStore.dispatch(manageResponseHandler(res, dispatch, getState()))
+    dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())))
   };
 }
 

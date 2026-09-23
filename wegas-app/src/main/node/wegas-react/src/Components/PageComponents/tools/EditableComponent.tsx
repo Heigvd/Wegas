@@ -9,10 +9,7 @@ import {
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../data/actions';
 import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
-import {
-  createEditingAction,
-  editingStore,
-} from '../../../data/Stores/editingStore';
+import { selectEdition } from '../../../store/slices/edition';
 import { getLivePageContext } from '../../../store/pageContextState';
 import { PageContextValues } from '../../../store/slices/pageContext';
 import {
@@ -56,6 +53,8 @@ import {
   WegasComponentOptionsActions,
 } from './options';
 import { OptionsState } from './OptionsComponent';
+import { dispatch } from '../../../store/store';
+import { createEditingAction } from '../../../store/localEdition';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -130,7 +129,7 @@ const asynExecute = createEditingAction(
       ][];
       context?: PageComponentContext;
     },
-    oldDispatch,
+    dispatch,
     getState,
   ) => {
     const sortedActions = actions.sort(
@@ -152,7 +151,9 @@ const asynExecute = createEditingAction(
             assembleStateAndContext(context),
           );
 
-          oldDispatch(manageResponseHandler(result, oldDispatch, getState()));
+          dispatch(
+            manageResponseHandler(result, dispatch, selectEdition(getState())),
+          );
         }
       } else if (k === 'localScriptEval') {
         const result = wegasComponentActions.localScriptEval({
@@ -208,8 +209,7 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      return editingStore
-        .dispatch(asynExecute({ actions: onClickActions, context }))
+      return dispatch(asynExecute({ actions: onClickActions, context }))
         .then(() => {
           setLoading(false);
         });

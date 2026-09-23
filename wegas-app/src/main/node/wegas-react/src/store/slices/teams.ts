@@ -9,7 +9,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
 import { manageResponseHandler } from '../../data/actions';
-import { editingStore } from '../../data/Stores/editingStore';
+import { dispatch } from '../store';
 
 export interface TeamsState {
   [id: string]: ITeam;
@@ -54,7 +54,7 @@ export const getTeams = createAsyncThunk(
  */
 export async function updateTeam(team: ITeam) {
   const res = await TeamAPI.update(CurrentGM.id!, CurrentGame.id!, team);
-  editingStore.dispatch(manageResponseHandler(res));
+  dispatch(manageResponseHandler(res));
 }
 
 /**

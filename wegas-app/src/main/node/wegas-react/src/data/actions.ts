@@ -6,12 +6,12 @@ import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
-import { closeEditor, EditingState, Edition } from './Reducer/editingState';
+import { closeEditor } from './Reducer/editingState';
 import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
-import { EditingStoreDispatch } from './Stores/editingStore';
 import { store } from './Stores/store';
-import { dispatch } from '../store/store';
+import { AppDispatch, dispatch } from '../store/store';
+import { Edition } from '../store/slices/edition';
 import { updatePlayers } from '../store/slices/players';
 import { updateTeams } from '../store/slices/teams';
 import { managedResponseReceived } from '../store/actions';
@@ -116,7 +116,7 @@ export type StateActions<
 
 export const closeEditorWhenDeletedVariable = (
   deletedVariables: VariableDescriptorState,
-  dispatch: EditingStoreDispatch,
+  dispatch: AppDispatch,
   editing?: Readonly<Edition>,
 ) =>
   editing &&
@@ -135,25 +135,30 @@ export function triggerEventHandlers(event: WegasEvent) {
 
 export function manageResponseHandler(
   payload: IManagedResponse,
-  localDispatch?: EditingStoreDispatch,
-  localState?: EditingState,
+  /**
+   * Dispatch of the edition scope the caller belongs to: the app dispatch for
+   * the main editor, a nested form's own dispatch when one is active. Omitted
+   * when the caller has no edition to reconcile.
+   */
+  localDispatch?: AppDispatch,
+  /** That scope's current edition, i.e. selectEdition(getState()). */
+  localEditing?: Edition,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
 ) {
   const deletedEntities = normalizeData(payload.deletedEntities);
-  if (localDispatch && localState) {
+  const updatedEntities = normalizeData(payload.updatedEntities);
+
+  if (localDispatch) {
     closeEditorWhenDeletedVariable(
       deletedEntities.variableDescriptors,
       localDispatch,
-      localState.editing,
+      localEditing,
     );
-  }
-  const updatedEntities = normalizeData(payload.updatedEntities);
-  if (localState && localDispatch) {
-    const editState = localState.editing;
+
     const currentEditingEntity =
-      editState && 'entity' in editState && 'id' in editState.entity
-        ? editState.entity
+      localEditing && 'entity' in localEditing && 'id' in localEditing.entity
+        ? localEditing.entity
         : undefined;
 
     if (currentEditingEntity && currentEditingEntity.id !== undefined) {
@@ -167,11 +172,11 @@ export function manageResponseHandler(
         shallowDifferent(updatedEntity, currentEditingEntity)
       ) {
         const { edit } = getEntityActions(updatedEntity);
-        const newPath = selectPath
-          ? selectPath
-          : editState && 'path' in editState
-          ? editState.path
-          : undefined;
+        const newPath =
+          selectPath ??
+          (localEditing && 'path' in localEditing
+            ? localEditing.path
+            : undefined);
         localDispatch(edit(updatedEntity, newPath));
       }
     }
@@ -180,7 +185,7 @@ export function manageResponseHandler(
   const managedValuesOnly = {
     deletedEntities,
     updatedEntities,
-    events: [],
+    events: [] as WegasEvent[],
   };
 
   const managedValues = {
@@ -217,16 +222,15 @@ export function manageResponseHandler(
     }),
   );
 
-  // Fan out to the new react-redux store so migrated slices (games, gameModels,
-  // variableDescriptors, variableInstances...) receive the same managed-mode payload.
+  // new store: entity slices (games, gameModels, variableDescriptors,
+  // variableInstances...), plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
 
+  // old store: pages, global...
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
-  localDispatch &&
-    localDispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
-
-  return ActionCreator.MANAGED_RESPONSE_ACTION(
-    localDispatch ? managedValuesOnly : managedValues,
-  );
+  // The events are already in the editorEvents slice, so the action returned for
+  // old-store callers never carries them. The local edition scope gets no
+  // MANAGED_RESPONSE_ACTION either: it holds only an edition, and would ignore it.
+  return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
 }

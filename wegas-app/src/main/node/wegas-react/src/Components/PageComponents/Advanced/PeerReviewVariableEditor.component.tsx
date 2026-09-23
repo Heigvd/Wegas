@@ -28,7 +28,6 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { store, useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -50,6 +49,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+import { dispatch } from '../../../store/store';
 
 const submissionStyle = css({
   border: '1px solid ' + themeVar.colors.DisabledColor,
@@ -141,7 +141,7 @@ export default function PeerReviewVariableEditor({
     (val: string | number | undefined) => {
       setValue(val);
       if (variableToReview != null && val != null) {
-        editingStore.dispatch(
+        dispatch(
           liveEdition(
             `private-Team-${Team.selectCurrent().id!}`,
             produce((variable: INumberInstance | ITextInstance) => {
@@ -255,7 +255,7 @@ export default function PeerReviewVariableEditor({
             )}
             <OkCancelModal
               onOk={() => {
-                editingStore.dispatch(submitToReview(sPR.getId()!));
+                dispatch(submitToReview(sPR.getId()!));
                 store.dispatch(getAll());
               }}
             >

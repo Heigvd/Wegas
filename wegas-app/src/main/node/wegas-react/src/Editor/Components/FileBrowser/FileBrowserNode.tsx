@@ -25,10 +25,6 @@ import {
 } from '../../../css/classes';
 import { editFile } from '../../../data/Reducer/editingState';
 import { GameModel } from '../../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {
   formatFileSize,
@@ -42,6 +38,8 @@ import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { MessageString } from '../MessageString';
 import { TextPrompt } from '../TextPrompt';
+import { dispatch } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -247,7 +245,7 @@ export interface FileBrowserNodeProps extends ClassStyleId, DisabledReadonly {
   /**
    * localDispatch
    */
-  localDispatch?: EditingStoreDispatch;
+  localDispatch?: EditingDispatch;
 }
 
 export function FileBrowserNode({
@@ -621,11 +619,8 @@ export function FileBrowserNode({
             ) {
               onFileClick(currentFile, setCurrentFile);
               if (!pickOnly) {
-                const dispatch =
-                  e.ctrlKey && localDispatch
-                    ? localDispatch
-                    : editingStore.dispatch;
-                dispatch(editFile(currentFile, setCurrentFile));
+                const scopedDispatch = (e.ctrlKey && localDispatch) || dispatch;
+                scopedDispatch(editFile(currentFile, setCurrentFile));
               }
             }
           }}
