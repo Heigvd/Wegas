@@ -20,6 +20,7 @@ import variableInstancesReducer from './slices/variableInstances';
 import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
 import themeReducer from './slices/theme';
+import userReducer from './slices/user';
 
 /**
  * New store for react-redux
@@ -28,6 +29,7 @@ export const store = configureStore({
     reducer: {
         announcements: announcementReducer,
         initStatuses: initStatusReducer,
+        user: userReducer,
         players: playersReducer,
         teams: teamsReducer,
         games: gameReducer,

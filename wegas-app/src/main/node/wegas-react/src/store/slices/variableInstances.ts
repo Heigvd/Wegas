@@ -36,12 +36,12 @@ import { VariableInstanceAPI } from '../../API/variableInstance.api';
 import { manageResponseHandler, StateActions } from '../../data/actions';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player } from '../../data/selectors';
-import { store as oldStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { managedResponseReceived } from '../actions';
 import { createEditingAction } from '../localEdition';
 import { AppThunk, dispatch } from '../store';
 import { selectEdition } from './edition';
+import { selectCurrentGameModelId } from './gameModel';
 import { setInitStatus } from './initStatus';
 
 type VariableInstanceId = string;
@@ -61,11 +61,6 @@ export interface VariableInstanceState {
 }
 
 const initialState: VariableInstanceState = { instances: {}, events: {} };
-
-/**
- * TODO global migration: the thunks below read `currentGameModelId` from the old
- * store's `global` slice. Once `global` moves here, `oldStore` can go away.
- */
 
 function updateEventChain(
   events: IEvent[],
@@ -229,7 +224,7 @@ export function updateInstance(
   variableInstance: IVariableInstance,
 ): AppThunk<Promise<StateActions | void>> {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>
       // Dispatching changes to global store and passing local store that manages editor state
       dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
@@ -278,7 +273,7 @@ export function runScript(
   context?: IVariableDescriptor,
 ): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     return asyncRunScript(gameModelId, script, player, context).then(
       res =>
         res != null &&
@@ -318,7 +313,7 @@ export function runLoadedScript(
   payload?: { [key: string]: unknown },
 ): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     return asyncRunLoadedScript(
       gameModelId,
       script,
@@ -337,7 +332,7 @@ export function read(
   player?: IPlayer,
 ): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
@@ -354,7 +349,7 @@ export const selectAndValidate = createEditingAction(
     dispatch,
     getState,
   ) => {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
@@ -375,7 +370,7 @@ export function selectChoice(
   player?: IPlayer,
 ): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null) {
       throw Error('Missing persisted player');
@@ -391,7 +386,7 @@ export function selectChoice(
 
 export function cancelReply(reply: IReply, player?: IPlayer): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     const p = player != null ? player : Player.selectCurrent();
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
@@ -429,7 +424,7 @@ export function validateQuestion(
   player?: IPlayer,
 ): AppThunk {
   return function (dispatch, getState) {
-    const gameModelId = oldStore.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     const p = player != null ? player : Player.selectCurrent();
     const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
       question,

@@ -72,7 +72,6 @@ import {
 } from '../FormView/Script/Expressions/expressionEditorHelpers';
 import { isClientMode } from '../FormView/Script/Script';
 import { IconComp, withDefault } from '../Views/FontAwesome';
-import { useAppSelector } from '../../../store/hooks';
 import {
   isEditingVariable,
   selectEdition,

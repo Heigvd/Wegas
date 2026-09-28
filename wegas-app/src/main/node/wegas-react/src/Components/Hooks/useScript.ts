@@ -32,6 +32,7 @@ import {
   VariableDescriptor as VDSelect,
 } from '../../data/selectors';
 import { store as oldStore, useStore } from '../../data/Stores/store';
+import { selectCurrentUser } from '../../store/slices/user';
 import {
   getLivePageContext,
   getPageState,
@@ -142,7 +143,7 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
 
   const player = Player.selectCurrent();
   const gameModel = GameModel.selectCurrent();
-  const teams = Object.values(store.getState().teams);
+  const teams = Object.values(store.getState().teams.entities);
   const pageLoaders = state.global.pageLoaders;
 
   const splayer = instantiate(player);
@@ -152,7 +153,7 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.teams = instantiate(teams);
 
   globals.self = instantiate(player);
-  globals.currentUserName = state.global.currentUser.name ?? 'someone';
+  globals.currentUserName = selectCurrentUser().name ?? 'someone';
 
   globals.schemaProps = schemaProps;
   globals.API_VIEW = API_VIEW;
