@@ -1,24 +1,28 @@
 import { instantiate } from '../scriptable';
-import { store as oldStore, useStore } from '../Stores/store';
 import { useAppSelector } from '../../store/hooks';
-import { store } from '../../store/store';
+import { RootState, store } from '../../store/store';
 
 /**
  * Get the player with id
  * @param id player's id
  */
-export function select(id: number) {
-  return store.getState().players[id];
+export function select(id: number, state: RootState = store.getState()) {
+  return state.players.entities[id];
 }
 
-export function selectCurrent() {
-  const currentPlayerId = oldStore.getState().global.currentPlayerId;
-  return store.getState().players[currentPlayerId];
+/**
+ * Get the current player.
+ *
+ * Dual-use: called with no argument it reads the store synchronously
+ * (imperative, non-React callers); passed to useAppSelector it receives the
+ * state and acts as a reactive selector.
+ */
+export function selectCurrent(state: RootState = store.getState()) {
+  return state.players.entities[state.players.currentPlayerId];
 }
 
 export function useCurrentPlayer() {
-  const currentPlayerId = useStore(state => state.global.currentPlayerId);
-  const player = useAppSelector(state => state.players[currentPlayerId]);
+  const player = useAppSelector(selectCurrent);
   return instantiate(player);
 }
 

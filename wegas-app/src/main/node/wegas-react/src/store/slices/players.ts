@@ -8,9 +8,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IPlayer, ITeam } from 'wegas-ts-api';
 import { getTeams } from './teams';
+import { RootState, store } from '../store';
 
 export interface PlayersState {
-  [id: string]: IPlayer;
+  /** Immutable, seeded from the server-injected CurrentPlayerId global. */
+  currentPlayerId: number;
+  entities: Record<string, IPlayer>;
 }
 
 /**
@@ -29,7 +32,10 @@ export function playersFromTeams(teams: ITeam[]): Record<string, IPlayer> {
   }, {});
 }
 
-const initialState: PlayersState = playersFromTeams(CurrentGame.teams);
+const initialState: PlayersState = {
+  currentPlayerId: CurrentPlayerId,
+  entities: playersFromTeams(CurrentGame.teams),
+};
 
 const playersSlice = createSlice({
   name: 'players',
@@ -43,17 +49,20 @@ const playersSlice = createSlice({
       }>,
     ) {
       action.payload.deleted?.forEach(id => {
-        delete state[id];
+        delete state.entities[id];
       });
-      Object.assign(state, action.payload.updated);
+      Object.assign(state.entities, action.payload.updated);
     },
   },
   extraReducers: builder => {
     builder.addCase(getTeams.fulfilled, (state, action) => {
-      Object.assign(state, playersFromTeams(action.payload));
+      Object.assign(state.entities, playersFromTeams(action.payload));
     });
   },
 });
+
+export const selectCurrentPlayerId = (state: RootState = store.getState()) =>
+  state.players.currentPlayerId;
 
 export const { updatePlayers } = playersSlice.actions;
 export default playersSlice.reducer;

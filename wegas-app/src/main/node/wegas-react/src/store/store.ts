@@ -21,6 +21,7 @@ import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
 import pagesReducer from './slices/pages';
 import themeReducer from './slices/theme';
+import userReducer from './slices/user';
 
 /**
  * New store for react-redux
@@ -29,6 +30,7 @@ export const store = configureStore({
     reducer: {
         announcements: announcementReducer,
         initStatuses: initStatusReducer,
+        user: userReducer,
         players: playersReducer,
         teams: teamsReducer,
         games: gameReducer,

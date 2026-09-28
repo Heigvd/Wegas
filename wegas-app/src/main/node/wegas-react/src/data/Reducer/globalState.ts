@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { omit } from 'lodash';
 import { Reducer } from 'redux';
-import { IScript, IUser, WegasClassNames } from 'wegas-ts-api';
+import { IScript, WegasClassNames } from 'wegas-ts-api';
 import { LockEventData } from '../../API/websocket';
 import { Popup } from '../../Components/PopupManager';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
@@ -84,11 +84,6 @@ export type LoggerLevel = typeof LoggerLevelValues[number];
 export type WegasStatus = 'DOWN' | 'READY' | 'OUTDATED';
 
 export interface GlobalState {
-  currentGameModelId: number;
-  currentGameId: number;
-  currentPlayerId: number;
-  currentTeamId: number;
-  currentUser: Readonly<IUser>;
   currentPageId?: string;
   search: { value: string | undefined; deep: boolean };
   pusherStatus: {
@@ -130,11 +125,6 @@ export interface GlobalState {
 }
 
 const defaultGlobalState: GlobalState = {
-  currentGameModelId: CurrentGM.id!,
-  currentGameId: CurrentGame.id!,
-  currentPlayerId: CurrentPlayerId,
-  currentTeamId: CurrentTeamId,
-  currentUser: CurrentUser,
   pusherStatus: { status: 'disconnected' },
   serverStatus: 'READY',
   search: { value: undefined, deep: false },
