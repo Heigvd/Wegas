@@ -85,7 +85,6 @@ export type WegasStatus = 'DOWN' | 'READY' | 'OUTDATED';
 
 export interface GlobalState {
   currentPageId?: string;
-  pageError?: string;
   search: { value: string | undefined; deep: boolean };
   pusherStatus: {
     status: string;
@@ -173,9 +172,6 @@ const defaultGlobalState: GlobalState = {
 const global: Reducer<Readonly<GlobalState>> = produce(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.PAGE_ERROR:
-        state.pageError = action.payload.error;
-        return;
       case ActionType.SEARCH:
         state.search.value = action.payload.searchString;
         return;

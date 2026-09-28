@@ -9,9 +9,7 @@ import {
 } from '../Components/TabLayout/TabLayout';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { translate } from '../data/i18n';
-import { State } from '../data/Reducer/reducers';
-import { useStore } from '../data/Stores/store';
-import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { RootState } from '../store/store';
 import { shallowEqual, useAppSelector } from '../store/hooks';
 import { selectPeerReviewDescriptors } from '../store/slices/variableDescriptors';
 import {
@@ -51,7 +49,7 @@ export const tabsLineStyle = css({
 
 export const trainerLayoutId = 'TrainerLayout';
 
-function trainerPagesSelector(s: State): PageIndexPage[] {
+function trainerPagesSelector(s: RootState): PageIndexPage[] {
   return s.pages.index
     ? visitIndex(s.pages.index.root, item => item).filter(
         item => item.trainerPage,
@@ -70,8 +68,7 @@ export default function HostLayout() {
   const timer = React.useRef<Timer | undefined>();
   const { lang } = React.useContext(languagesCTX);
   const [loading, setLoading] = React.useState(true);
-  // `pages` still lives in the old store, peer reviews in the new one.
-  const trainerPages = useStore(trainerPagesSelector, shallowDifferent);
+  const trainerPages = useAppSelector(trainerPagesSelector, shallowEqual);
   const peerReviews = useAppSelector(
     selectPeerReviewDescriptors,
     shallowEqual,

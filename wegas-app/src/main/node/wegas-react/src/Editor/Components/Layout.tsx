@@ -8,9 +8,9 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { expandWidth } from '../../css/classes';
 import { translate } from '../../data/i18n';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
 import { useStore } from '../../data/Stores/store';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
+import { RootState } from '../../store/store';
 import { selectPeerReviewDescriptors } from '../../store/slices/variableDescriptors';
 import { visitIndex } from '../../Helper/pages';
 import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
@@ -186,7 +186,7 @@ function filterAllowedInitTabs(initTabs: (string | string[])[], allowedTabs: tru
 }
 
 
-function scenaristPagesSelector(s: State) {
+function scenaristPagesSelector(s: RootState) {
   return s.pages.index
     ? visitIndex(s.pages.index.root, item => item).filter(
         item => item.scenaristPage,
@@ -215,7 +215,10 @@ export default function Layout() {
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
 
-  const scenaristPages = useStore(scenaristPagesSelector).map(
+  const scenaristPages = useAppSelector(
+    scenaristPagesSelector,
+    shallowEqual,
+  ).map(
     ({ name, id }) => ({
       tabId: name,
       content: (

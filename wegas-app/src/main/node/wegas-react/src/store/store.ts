@@ -19,6 +19,7 @@ import variableDescriptorsReducer from './slices/variableDescriptors';
 import variableInstancesReducer from './slices/variableInstances';
 import pageContextReducer from './slices/pageContext';
 import pageEditorReducer from './slices/pageEditor';
+import pagesReducer from './slices/pages';
 import themeReducer from './slices/theme';
 import userReducer from './slices/user';
 
@@ -40,6 +41,7 @@ export const store = configureStore({
         variableInstances: variableInstancesReducer,
         pageContext: pageContextReducer,
         pageEditor: pageEditorReducer,
+        pages: pagesReducer,
         themes: themeReducer,
     },
     middleware: getDefaultMiddleware =>

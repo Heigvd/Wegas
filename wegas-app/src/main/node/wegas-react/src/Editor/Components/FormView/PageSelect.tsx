@@ -3,13 +3,13 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { DropMenu } from '../../../Components/DropMenu';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { State } from '../../../data/Reducer/reducers';
-import { useStore } from '../../../data/Stores/store';
 import {
   getPageIndexItem,
   indexToTree,
   isPageItem,
 } from '../../../Helper/pages';
+import { shallowEqual, useAppSelector } from '../../../store/hooks';
+import { selectPageIndex } from '../../../store/slices/pages';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
 
@@ -19,17 +19,13 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
   onChange: (code: string) => void;
 }
 
-function pageIndexSelector(s: State) {
-  return s.pages.index;
-}
-
 export default function PageSelect({
   value,
   onChange,
   view,
   errorMessage,
 }: PageSelectProps) {
-  const index = useStore(pageIndexSelector);
+  const index = useAppSelector(selectPageIndex, shallowEqual);
 
   const onPageChange = React.useCallback(
     (value?: string) => {

@@ -70,13 +70,6 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  PAGE_INDEX: (data: { index: PageIndex }) =>
-    createAction(ActionType.PAGE_INDEX, data),
-  PAGE_FETCH: (data: { pages: Pages }) =>
-    createAction(ActionType.PAGE_FETCH, data),
-  PAGE_ERROR: (data: { error: string }) =>
-    createAction(ActionType.PAGE_ERROR, data),
-
   SEARCH: (data: { searchString: string | undefined }) =>
     createAction(ActionType.SEARCH, data),
   SEARCH_DEEP: (data: { searchString: string | undefined }) =>
@@ -226,7 +219,7 @@ export function manageResponseHandler(
   // variableInstances...), plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
 
-  // old store: pages, global...
+  // old store: global
   store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
 
   // The events are already in the editorEvents slice, so the action returned for

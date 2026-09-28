@@ -21,14 +21,18 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
-import { State } from '../../../data/Reducer/reducers';
-import { store, useStore } from '../../../data/Stores/store';
 import { findComponent, isPageItem } from '../../../Helper/pages';
 import { mergeDeep } from '../../../Helper/tools';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
+import { shallowEqual, useAppSelector } from '../../../store/hooks';
+import {
+  patch,
+  selectDefaultPageId,
+  setDefault,
+} from '../../../store/slices/pages';
+import { dispatch, RootState, store } from '../../../store/store';
 import { focusTab, MainLinearLayout } from '../LinearTabLayout/LinearLayout';
 import ComponentPalette, {
   DnDComponent,
@@ -130,7 +134,7 @@ export const defaultPageCTX: PageContext = {
 export const pageCTX = React.createContext<PageContext>(defaultPageCTX);
 
 export function patchPage(selectedPageId: string, page: WegasComponent) {
-  store.dispatch(Actions.PageActions.patch(selectedPageId, page));
+  dispatch(patch({ id: selectedPageId, page }));
 }
 
 export function createComponent(
@@ -307,7 +311,7 @@ export function PageContextProvider({
   const handles = React.useRef({});
   const [{ selectedPageId, editedPath }, setPageEditorState] =
     React.useState<PageEditorState>({
-      selectedPageId: store.getState().pages.index?.defaultPageId
+      selectedPageId: selectDefaultPageId(store.getState()),
     });
 
   const [editMode, setEditMode] = React.useState(false);
@@ -316,7 +320,7 @@ export function PageContextProvider({
 
   const components = usePageComponentStore(s => s);
   const pageInfoSelector = React.useCallback(
-    (s: State) => ({
+    (s: RootState) => ({
       selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
       defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
       loading: selectedPageId == null || s.pages.index == null,
@@ -324,7 +328,10 @@ export function PageContextProvider({
     }),
     [selectedPageId],
   );
-  const { selectedPage, defaultPageId, loading } = useStore(pageInfoSelector);
+  const { selectedPage, defaultPageId, loading } = useAppSelector(
+    pageInfoSelector,
+    shallowEqual,
+  );
 
   React.useEffect(() => {
     if (selectedPageId == null && defaultPageId != null) {
@@ -613,7 +620,7 @@ export default function PageEditor({
   const { selectedPageId, onPageClick } = React.useContext(pageCTX);
 
   const pageInfoSelector = React.useCallback(
-    (s: State) => ({
+    (s: RootState) => ({
       selectedPage: selectedPageId ? s.pages[selectedPageId] : undefined,
       defaultPageId: s.pages.index ? s.pages.index.defaultPageId : undefined,
       loading: selectedPageId == null || s.pages.index == null,
@@ -621,8 +628,10 @@ export default function PageEditor({
     }),
     [selectedPageId],
   );
-  const { defaultPageId, pages } = useStore(pageInfoSelector);
-  const { dispatch } = store;
+  const { defaultPageId, pages } = useAppSelector(
+    pageInfoSelector,
+    shallowEqual,
+  );
 
   const availableLayoutTabs = React.useMemo(
     () => [
@@ -660,7 +669,7 @@ export default function PageEditor({
           items={pageFolderToDropMenuItems(pages.index?.root)}
           onSelect={item => {
             if (item.id != null) {
-              dispatch(Actions.PageActions.setDefault(item.id));
+              dispatch(setDefault(item.id));
               onPageClick(item.id);
             }
           }}
