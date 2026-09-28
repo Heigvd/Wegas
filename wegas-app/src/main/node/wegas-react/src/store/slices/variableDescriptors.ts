@@ -25,7 +25,7 @@ import { Game, Player } from '../../data/selectors';
 import { deepRemove } from '../../data/updateUtils';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';
 import { managedResponseReceived } from '../actions';
-import { AppThunk, dispatch, RootState, store } from '../store';
+import { AppThunk, RootState, store } from '../store';
 import { selectEdition } from './edition';
 import { setInitStatus } from './initStatus';
 

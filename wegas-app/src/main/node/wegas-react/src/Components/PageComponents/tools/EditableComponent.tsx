@@ -55,6 +55,7 @@ import {
 import { OptionsState } from './OptionsComponent';
 import { dispatch } from '../../../store/store';
 import { createEditingAction } from '../../../store/localEdition';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -209,10 +210,11 @@ export function onComponentClick(
       // eslint-disable-next-line no-alert
       confirm(confirmClick)
     ) {
-      return dispatch(asynExecute({ actions: onClickActions, context }))
-        .then(() => {
+      return dispatch(asynExecute({ actions: onClickActions, context })).then(
+        () => {
           setLoading(false);
-        });
+        },
+      );
     } else {
       setLoading(false);
     }

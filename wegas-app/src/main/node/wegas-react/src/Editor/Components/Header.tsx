@@ -51,7 +51,6 @@ import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 import { dispatch } from '../../store/store';
-import { useAppSelector } from '../../store/hooks';
 import { selectEditorEvents } from '../../store/slices/editorEvents';
 
 /*const transparentDropDownButton = css({
