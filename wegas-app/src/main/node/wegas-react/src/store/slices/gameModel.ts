@@ -12,7 +12,7 @@ import { manageResponseHandler } from '../../data/actions';
 import { managedResponseReceived } from '../actions';
 import { selectEdition } from './edition';
 import { setInitStatus } from './initStatus';
-import { AppThunk, dispatch } from '../../store/store';
+import { AppThunk, dispatch, RootState, store } from '../../store/store';
 
 export interface GameModelState {
   /** Immutable, seeded from the server-injected CurrentGM global. */
@@ -101,6 +101,10 @@ const gameModelSlice = createSlice({
     });
   },
 });
+
+export const selectCurrentGameModelId = (
+  state: RootState = store.getState(),
+) => state.gameModels.currentGameModelId;
 
 export const { editGameModel, editLanguage } = gameModelSlice.actions;
 export default gameModelSlice.reducer;

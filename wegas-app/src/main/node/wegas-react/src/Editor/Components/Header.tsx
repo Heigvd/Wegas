@@ -37,7 +37,7 @@ import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import { editorEventRemove } from '../../data/Reducer/editingState';
 import { LoggerLevelValues } from '../../data/Reducer/globalState';
 import { State } from '../../data/Reducer/reducers';
-import { Global } from '../../data/selectors';
+import { selectCurrentUser } from '../../store/slices/user';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
 import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
@@ -50,8 +50,10 @@ import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
-import { dispatch } from '../../store/store';
+import { dispatch, RootState } from '../../store/store';
 import { selectEditorEvents } from '../../store/slices/editorEvents';
+import { selectCurrentPlayerId } from '../../store/slices/players';
+import { selectCurrentTeamId } from '../../store/slices/teams';
 
 /*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -233,10 +235,15 @@ function useLoggerLevelSelector() {
 
 function globalStoreSelector(s: State) {
   return {
-    user: Global.selectCurrentUser(),
     userLanguage: selectCurrentEditorLanguage(s),
-    currentPlayerId: s.global.currentPlayerId,
-    currentTeamId: s.global.currentTeamId,
+  };
+}
+
+function sessionSelector(s: RootState) {
+  return {
+    user: selectCurrentUser(s),
+    currentPlayerId: selectCurrentPlayerId(s),
+    currentTeamId: selectCurrentTeamId(s),
   };
 }
 
@@ -246,8 +253,11 @@ export default function Header() {
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
   const gameModel = useGameModel();
-  const { user, userLanguage, currentPlayerId, currentTeamId } =
-    useStore(globalStoreSelector);
+  const { userLanguage } = useStore(globalStoreSelector);
+  const { user, currentPlayerId, currentTeamId } = useAppSelector(
+    sessionSelector,
+    shallowEqual,
+  );
   const oldDispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
@@ -256,7 +266,7 @@ export default function Header() {
   const authorizationTogglers = useAuthorizations();
 
   const teams = useAppSelector(s => {
-    return Object.values(s.teams);
+    return Object.values(s.teams.entities);
   }, shallowEqual);
 
   const createExtraTestPlayerItem: DropMenuItem<unknown> = {

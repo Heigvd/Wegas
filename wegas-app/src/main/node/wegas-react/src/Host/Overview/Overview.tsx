@@ -228,9 +228,9 @@ export default function Overview({
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
   const teams = useAppSelector(s => {
-    return Object.entries(s.teams)
+    return Object.entries(s.teams.entities)
       .filter(([, team]) => team.parentId === game.id)
-      .reduce<TeamsState>((teams, [teamId, team]) => {
+      .reduce<TeamsState['entities']>((teams, [teamId, team]) => {
         teams[teamId] = team;
         return teams;
       }, {});

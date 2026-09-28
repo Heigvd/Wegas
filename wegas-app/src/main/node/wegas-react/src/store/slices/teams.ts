@@ -9,14 +9,16 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
 import { manageResponseHandler } from '../../data/actions';
-import { dispatch } from '../store';
+import { dispatch, RootState, store } from '../store';
 
 export interface TeamsState {
-  [id: string]: ITeam;
+  /** Immutable, seeded from the server-injected CurrentTeamId global. */
+  currentTeamId: number;
+  entities: Record<string, ITeam>;
 }
 
-function teamsById(teams: ITeam[]): TeamsState {
-  return teams.reduce<TeamsState>((acc, t) => {
+function teamsById(teams: ITeam[]): TeamsState['entities'] {
+  return teams.reduce<TeamsState['entities']>((acc, t) => {
     if (t.id !== undefined) {
       acc[t.id] = t;
     }
@@ -24,25 +26,26 @@ function teamsById(teams: ITeam[]): TeamsState {
   }, {});
 }
 
-const initialState: TeamsState = teamsById(CurrentGame.teams || []);
+const initialState: TeamsState = {
+  currentTeamId: CurrentTeamId,
+  entities: teamsById(CurrentGame.teams || []),
+};
 
 /**
- * A player only ever needs their own team, so the caller resolves gameId /
- * teamId (from the still-legacy global slice) rather than this thunk
- * reaching into that store itself.
- * TODO teams migration: once `global` moves to this store, gameId/teamId
- * could be read here directly and callers wouldn't need to pass them.
+ * A player only ever needs their own team, hence the two shapes.
+ *
+ * The ids come from the server-injected globals rather than from getState():
+ * they are what seeds this slice and the games one in the first place, and
+ * reading them here would make the thunk's type depend on RootState, which is
+ * itself derived from this reducer.
  */
-export const getTeams = createAsyncThunk(
-  'teams/getAll',
-  async (args: { gameId: number; teamId: number }) => {
-    if (APP_CONTEXT === 'Player') {
-      return [await TeamAPI.getTeam(args.gameId, args.teamId)];
-    } else {
-      return await TeamAPI.getAll(args.gameId);
-    }
-  },
-);
+export const getTeams = createAsyncThunk('teams/getAll', async () => {
+  if (APP_CONTEXT === 'Player') {
+    return [await TeamAPI.getTeam(CurrentGame.id!, CurrentTeamId)];
+  } else {
+    return await TeamAPI.getAll(CurrentGame.id!);
+  }
+});
 
 /**
  * Update a team.
@@ -83,17 +86,20 @@ const teamsSlice = createSlice({
       }>,
     ) {
       action.payload.deleted?.forEach(id => {
-        delete state[id];
+        delete state.entities[id];
       });
-      Object.assign(state, action.payload.updated);
+      Object.assign(state.entities, action.payload.updated);
     },
   },
   extraReducers: builder => {
-    builder.addCase(getTeams.fulfilled, (_state, action) => {
-      return teamsById(action.payload);
+    builder.addCase(getTeams.fulfilled, (state, action) => {
+      state.entities = teamsById(action.payload);
     });
   },
 });
+
+export const selectCurrentTeamId = (state: RootState = store.getState()) =>
+  state.teams.currentTeamId;
 
 export const { updateTeams } = teamsSlice.actions;
 export default teamsSlice.reducer;

@@ -17,7 +17,7 @@ import {
   setFocused,
   unsetFocused,
 } from '../../../store/slices/pageEditor';
-import { store } from '../../../data/Stores/store';
+import { selectCurrentGameModelId } from '../../../store/slices/gameModel';
 import { ErrorBoundary } from '../../ErrorBoundary';
 import {
   DnDComponent,
@@ -54,6 +54,7 @@ import {
 } from './options';
 import { OptionsState } from './OptionsComponent';
 import { dispatch } from '../../../store/store';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createEditingAction } from '../../../store/localEdition';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
@@ -142,7 +143,7 @@ const asynExecute = createEditingAction(
       if (k === 'impactVariable') {
         const action = v as WegasComponentOptionsActions['impactVariable'];
         if (action) {
-          const gameModelId = store.getState().global.currentGameModelId;
+          const gameModelId = selectCurrentGameModelId();
 
           const result = await asyncRunLoadedScript(
             gameModelId,

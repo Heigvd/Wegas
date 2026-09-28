@@ -10,7 +10,7 @@ import {
   updateInstance,
 } from '../store/slices/variableInstances';
 import { instantiate } from '../data/scriptable';
-import { store } from '../data/Stores/store';
+import { selectCurrentGameModelId } from '../store/slices/gameModel';
 import { IManagedResponse } from './rest';
 import { UtilsAPI } from './utils.api';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
@@ -31,7 +31,7 @@ export const APIScriptMethods: APIMethodsClass = {
     });
   },
   duplicateVariable: (variable, callback) => {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     VariableDescriptorAPI.duplicate(gameModelId, variable).then(res => {
       dispatch(manageResponseHandler(res));
       if (callback) {
@@ -45,7 +45,7 @@ export const APIScriptMethods: APIMethodsClass = {
   },
   moveVariable: (variable, parent, index, callback) => {
     // dispatch(moveDescriptor(variable, index, parent))
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     return VariableDescriptorAPI.move(
       gameModelId,
       variable,
@@ -72,7 +72,7 @@ export const APIScriptMethods: APIMethodsClass = {
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
   runScript: async (script, context): Promise<IManagedResponse> => {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
 
     const result = await asyncRunLoadedScript(
       gameModelId,
