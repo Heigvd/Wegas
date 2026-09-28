@@ -6,7 +6,6 @@ import {
   isFeatureEnabled,
 } from '../../../Components/Contexts/FeaturesProvider';
 import { DropMenu } from '../../../Components/DropMenu';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../../Components/Inputs/Buttons/ConfirmButton';
 import {
@@ -28,16 +27,27 @@ import {
   itemCenter,
   thinHoverColorInsetShadowStyle,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
-import { State } from '../../../data/Reducer/reducers';
 // import { ItemDescription, isItemDescription } from '../Views/TreeView/TreeView';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import {
+  deepEqual,
+  shallowEqual,
+  useAppDispatch,
+  useAppSelector,
+} from '../../../store/hooks';
 import {
   focusKeyOf,
   setFocused,
   unsetFocused,
 } from '../../../store/slices/pageEditor';
-import { store, useStore } from '../../../data/Stores/store';
+import {
+  createItem,
+  deleteIndexItem,
+  moveIndexItem,
+  selectPageIndex,
+  setDefault,
+  updateIndexItem,
+} from '../../../store/slices/pages';
+import { RootState, store } from '../../../store/store';
 import { isFolderItem, isPageItem } from '../../../Helper/pages';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
@@ -172,7 +182,7 @@ export function IndexItemAdder({
   tooltip,
 }: IndexItemAdderProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
-  const { dispatch: oldDispatch } = store;
+  const dispatch = useAppDispatch();
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   return (
@@ -223,23 +233,26 @@ export function IndexItemAdder({
                   if (success) {
                     switch (modalState.type) {
                       case 'newpage':
-                        oldDispatch(
-                          Actions.PageActions.createItem(
-                            path,
-                            {
+                        dispatch(
+                          createItem({
+                            folderPath: path,
+                            newItem: {
                               '@class': 'Page',
                               name: value,
                             },
-                            defaultPage,
-                          ),
+                            pageContent: defaultPage,
+                          }),
                         );
                         break;
                       case 'newfolder':
-                        oldDispatch(
-                          Actions.PageActions.createItem(path, {
-                            '@class': 'Folder',
-                            name: value,
-                            items: [],
+                        dispatch(
+                          createItem({
+                            folderPath: path,
+                            newItem: {
+                              '@class': 'Folder',
+                              name: value,
+                              items: [],
+                            },
                           }),
                         );
                         break;
@@ -276,7 +289,7 @@ function IndexItemModifer({
   tooltip,
 }: IndexItemModiferProps) {
   const [modalState, setModalState] = React.useState<LayoutModalStates>();
-  const { dispatch: oldDispatch } = store;
+  const dispatch = useAppDispatch();
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nEditorValues = useInternalTranslate(editorTabsTranslations);
 
@@ -314,10 +327,13 @@ function IndexItemModifer({
                 });
               } else {
                 if (success) {
-                  oldDispatch(
-                    Actions.PageActions.updateIndexItem(path, {
-                      ...indexItem,
-                      name: value,
+                  dispatch(
+                    updateIndexItem({
+                      itemPath: path,
+                      item: {
+                        ...indexItem,
+                        name: value,
+                      },
                     }),
                   );
                   setModalState(undefined);
@@ -696,7 +712,7 @@ function PageIndexTitle({
 }: PageIndexTitleProps) {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
   const { onPageClick, selectedPageId } = React.useContext(pageCTX);
-  const { dispatch: oldDispatch } = store;
+  const dispatch = useAppDispatch();
   const folderIsNotEmpty =
     isFolderItem(indexItem) && indexItem.items.length > 0;
 
@@ -735,7 +751,7 @@ function PageIndexTitle({
                 : 'star'
             }
             onClick={() => {
-              oldDispatch(Actions.PageActions.setDefault(indexItem.id!));
+              dispatch(setDefault(indexItem.id!));
             }}
             tooltip={i18nValues.pageEditor.defaultPage}
             className={cx({
@@ -752,10 +768,13 @@ function PageIndexTitle({
                 : 'magic'
             }
             onClick={() => {
-              oldDispatch(
-                Actions.PageActions.updateIndexItem(newPath, {
-                  ...indexItem,
-                  scenaristPage: !indexItem.scenaristPage,
+              dispatch(
+                updateIndexItem({
+                  itemPath: newPath,
+                  item: {
+                    ...indexItem,
+                    scenaristPage: !indexItem.scenaristPage,
+                  },
                 }),
               );
             }}
@@ -772,10 +791,13 @@ function PageIndexTitle({
                 : 'chalkboard-teacher'
             }
             onClick={() => {
-              oldDispatch(
-                Actions.PageActions.updateIndexItem(newPath, {
-                  ...indexItem,
-                  trainerPage: !indexItem.trainerPage,
+              dispatch(
+                updateIndexItem({
+                  itemPath: newPath,
+                  item: {
+                    ...indexItem,
+                    trainerPage: !indexItem.trainerPage,
+                  },
                 }),
               );
             }}
@@ -791,9 +813,7 @@ function PageIndexTitle({
       />
       <ConfirmButton
         icon="trash"
-        onAction={success =>
-          success && oldDispatch(Actions.PageActions.deleteIndexItem(newPath))
-        }
+        onAction={success => success && dispatch(deleteIndexItem(newPath))}
         disabled={folderIsNotEmpty}
         tooltip={
           folderIsNotEmpty
@@ -811,12 +831,12 @@ function PageIndexTitle({
           icon="copy"
           onClick={() => {
             const currentPage = store.getState().pages[indexItem.id!];
-            oldDispatch(
-              Actions.PageActions.createItem(
-                newPath.slice(0, -1),
-                { ...indexItem, name: indexItem.name + ' - copy' },
-                currentPage,
-              ),
+            dispatch(
+              createItem({
+                folderPath: newPath.slice(0, -1),
+                newItem: { ...indexItem, name: indexItem.name + ' - copy' },
+                pageContent: currentPage,
+              }),
             );
           }}
           className={CONTROLS_CLASSNAME}
@@ -841,7 +861,7 @@ function PageIndexItemNode({
   const { selectedPageId, editedPath } = React.useContext(pageCTX);
 
   const pageSelector = React.useCallback(
-    (s: State) => {
+    (s: RootState) => {
       if (isPageItem(indexItem)) {
         return s.pages[indexItem.id!];
       }
@@ -849,7 +869,7 @@ function PageIndexItemNode({
     },
     [indexItem],
   );
-  const page = useStore(pageSelector);
+  const page = useAppSelector(pageSelector, shallowEqual);
   const newPath = [
     ...path,
     isPageItem(indexItem) ? indexItem.id! : indexItem.name,
@@ -919,7 +939,8 @@ export default function PagesLayout() {
     [path: string]: boolean | undefined;
   }>({});
 
-  const index = useStore(s => s.pages.index, deepDifferent);
+  const dispatch = useAppDispatch();
+  const index = useAppSelector(selectPageIndex, deepEqual);
   const i18nValues = useInternalTranslate(commonTranslations);
 
   const rootData: NodeBasicInfo<PageNode> = {
@@ -961,12 +982,12 @@ export default function PagesLayout() {
           // Checking if a page or a folder is moved into another folder
           // It's impossible to drop a page or a folder on another page as page nodes are undroppable
           else if (isPageIndexNode(from.data) && isPageIndexNode(to.data)) {
-            store.dispatch(
-              Actions.PageActions.moveIndexItem(
-                from.data.pagePath,
-                to.data.pagePath,
-                index,
-              ),
+            dispatch(
+              moveIndexItem({
+                itemPath: from.data.pagePath,
+                folderPath: to.data.pagePath,
+                pos: index,
+              }),
             );
           }
         }
@@ -988,7 +1009,7 @@ export default function PagesLayout() {
         }
       }
     },
-    [onMoveLayoutComponent, onNewLayoutComponent],
+    [dispatch, onMoveLayoutComponent, onNewLayoutComponent],
   );
 
   return (

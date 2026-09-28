@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { store } from '../../../data/Stores/store';
+import { store } from '../../../store/store';
 import {
   patchPage,
   updateComponent,

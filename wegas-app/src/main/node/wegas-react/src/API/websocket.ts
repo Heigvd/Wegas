@@ -5,6 +5,7 @@ import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
 import { Actions } from '../data';
 import { getByIds as getDescriptorsByIds } from '../store/slices/variableDescriptors';
 import { getByIds } from '../store/slices/variableInstances';
+import { get as getPage } from '../store/slices/pages';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
@@ -334,7 +335,7 @@ class WebSocketListener {
       case 'CustomEvent':
         return dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data as string));
+        dispatch(getPage(data as string));
         return;
       case 'LockEvent':
         store.dispatch(Actions.EditorActions.setLock(data as LockEventData));

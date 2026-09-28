@@ -11,6 +11,7 @@ import { getGame } from '../../store/slices/game';
 import { getGameModel } from '../../store/slices/gameModel';
 import { getAll as getAllVariableDescriptors } from '../../store/slices/variableDescriptors';
 import { getAll as getAllVariableInstances } from '../../store/slices/variableInstances';
+import { getAll as getAllPages } from '../../store/slices/pages';
 
 // Used by redux dev tool extension
 const composeEnhancers: typeof compose =
@@ -25,7 +26,7 @@ export const store = createStore(
 function storeInit() {
   dispatch(getAllVariableDescriptors());
   dispatch(getAllVariableInstances());
-  store.dispatch(Actions.PageActions.getAll());
+  dispatch(getAllPages());
   // TODO teams migration: this dispatch only lives here because gameId/teamId
   // still come from this store's `global` slice. Once `global` moves to the
   // react-redux store, move this call (and storeInit as a whole) there too.

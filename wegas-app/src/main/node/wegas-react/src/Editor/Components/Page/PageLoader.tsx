@@ -1,20 +1,19 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { FlexItem } from '../../../Components/Layouts/FlexList';
 import { TextLoader, TumbleLoader } from '../../../Components/Loader';
 import { PageDeserializer } from '../../../Components/PageComponents/tools/PageDeserializer';
 import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
 import { SelectedThemes } from '../../../Components/Theme/ThemeVars';
 import { expandBoth, flex } from '../../../css/classes';
-import { State } from '../../../data/Reducer/reducers';
 import { useIsReadyForPageDisplay } from '../../../data/selectors/InitStatusesSelector';
-import { useStore } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
+import { deepEqual, useAppSelector } from '../../../store/hooks';
+import { RootState } from '../../../store/store';
 import ResizeObserver from 'resize-observer-polyfill';
 
 export const PAGE_LOADER_DEFAULT_ID = 'PAGE_LOADER_DEFAULT_ID';
@@ -72,10 +71,10 @@ export function PageLoader({
   const i18nCommonValues = useInternalTranslate(commonTranslations);
   const i18nPagesValues = useInternalTranslate(pagesTranslations);
   const selectedPageSelector = React.useCallback(
-    (s: State) => (selectedPageId ? s.pages[selectedPageId] : undefined),
+    (s: RootState) => (selectedPageId ? s.pages[selectedPageId] : undefined),
     [selectedPageId],
   );
-  const selectedPage = useStore(selectedPageSelector, deepDifferent);
+  const selectedPage = useAppSelector(selectedPageSelector, deepEqual);
   const { currentContext, currentMode } = React.useContext(themeCTX);
 
   const [waiting, setWaiting] = React.useState(false);

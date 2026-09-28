@@ -4,6 +4,8 @@ import { ActionCreator } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { State } from '../../../data/Reducer/reducers';
 import { store, useStore } from '../../../data/Stores/store';
+import { selectDefaultPageId } from '../../../store/slices/pages';
+import { store as appStore } from '../../../store/store';
 import {
   defaultPageCTX,
   pageCTX,
@@ -32,7 +34,7 @@ interface PlayerPageLoaderProps
 
 const defaultPageAsScript = () =>
   createScript(
-    JSON.stringify(store.getState().pages.index?.defaultPageId ?? ''),
+    JSON.stringify(selectDefaultPageId(appStore.getState()) ?? ''),
     'TypeScript',
   );
 
