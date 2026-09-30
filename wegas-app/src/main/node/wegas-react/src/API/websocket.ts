@@ -2,14 +2,12 @@
 // import { inflate } from 'pako';
 import * as React from 'react';
 import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
-import { Actions } from '../data';
 import { getByIds as getDescriptorsByIds } from '../store/slices/variableDescriptors';
 import { getByIds } from '../store/slices/variableInstances';
 import { get as getPage } from '../store/slices/pages';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
-import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
 import { store } from '../data/Stores/store';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
@@ -20,6 +18,12 @@ import {
   updateTheme,
 } from '../store/slices/theme';
 import { dispatch } from '../store/store';
+import {
+  lockChanged,
+  pusherStatusChanged,
+  serverStatusChanged,
+  WegasStatus,
+} from '../store/slices/connection';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -183,7 +187,12 @@ class WebSocketListener {
         ) => {
           this.status = state.current;
           this.socketId = this.socket!.connection.socket_id;
-          store.dispatch(updatePusherStatus(state.current, this.socketId));
+          dispatch(
+            pusherStatusChanged({
+              status: state.current,
+              socket_id: this.socketId,
+            }),
+          );
         },
       );
       const channels = [
@@ -338,16 +347,11 @@ class WebSocketListener {
         dispatch(getPage(data as string));
         return;
       case 'LockEvent':
-        store.dispatch(Actions.EditorActions.setLock(data as LockEventData));
+        dispatch(lockChanged(data as LockEventData));
         return;
-      case 'LifeCycleEvent': {
-        store.dispatch(
-          Actions.EditorActions.updateServerStatus(
-            (data as LifeCycleEventData).status,
-          ),
-        );
+      case 'LifeCycleEvent':
+        dispatch(serverStatusChanged((data as LifeCycleEventData).status));
         return;
-      }
       default:
         if (!eventFound) {
           werror(`Event [${event}] unchecked`);

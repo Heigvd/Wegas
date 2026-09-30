@@ -2,7 +2,6 @@ import { produce } from 'immer';
 import { omit } from 'lodash';
 import { Reducer } from 'redux';
 import { IScript, WegasClassNames } from 'wegas-ts-api';
-import { LockEventData } from '../../API/websocket';
 import { Popup } from '../../Components/PopupManager';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
 import { ActionCreator, StateActions } from '../actions';
@@ -81,16 +80,9 @@ export const LoggerLevelValues = [
 
 export type LoggerLevel = typeof LoggerLevelValues[number];
 
-export type WegasStatus = 'DOWN' | 'READY' | 'OUTDATED';
-
 export interface GlobalState {
   currentPageId?: string;
   search: { value: string | undefined; deep: boolean };
-  pusherStatus: {
-    status: string;
-    socket_id?: string;
-  };
-  serverStatus: WegasStatus;
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
@@ -106,7 +98,6 @@ export interface GlobalState {
     };
   };
   pageLoaders: { [name: string]: IScript };
-  locks: { [token: string]: boolean };
   roles: {
     rolesId: string;
     defaultRoleId: string;
@@ -125,8 +116,6 @@ export interface GlobalState {
 }
 
 const defaultGlobalState: GlobalState = {
-  pusherStatus: { status: 'disconnected' },
-  serverStatus: 'READY',
   search: { value: undefined, deep: false },
   clientMethods: {},
   serverMethods: { ...commonServerMethods },
@@ -137,7 +126,6 @@ const defaultGlobalState: GlobalState = {
     views: {},
   },
   pageLoaders: {},
-  locks: {},
   roles: {
     rolesId: 'DEFAULT_ROLES',
     defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
@@ -181,12 +169,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         return;
       case ActionType.SEARCH_SET_DEEP:
         state.search.deep = action.payload.deep;
-        return;
-      case ActionType.PUSHER_SOCKET:
-        state.pusherStatus = action.payload;
-        return;
-      case ActionType.SERVER_STATUS:
-        state.serverStatus = action.payload.status;
         return;
       case ActionType.EDITOR_SET_CLIENT_METHOD:
         state.clientMethods[action.payload.name] = {
@@ -267,9 +249,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         state.roles.defaultRoleId = action.payload.defaultRoleId;
         state.roles.rolesId = action.payload.rolesId;
         return;
-      case ActionType.LOCK_SET:
-        state.locks[action.payload.token] = action.payload.locked;
-        return;
       case ActionType.ADD_POPUP: {
         state.popups[action.payload.id] = action.payload;
         return;
@@ -308,14 +287,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
   defaultGlobalState,
 );
 export default global;
-
-export function updatePusherStatus(status: string, socket_id: string) {
-  return ActionCreator.PUSHER_SOCKET({ socket_id, status });
-}
-
-export function updateServerStatus(status: WegasStatus) {
-  return ActionCreator.SERVER_STATUS({ status });
-}
 
 export function search(searchString: string) {
   return ActionCreator.SEARCH({ searchString });
@@ -426,13 +397,6 @@ export function registerPageLoader(name: string, pageId: IScript) {
  */
 export function resetPageLoader() {
   return ActionCreator.EDITOR_RESET_PAGE_LOADER();
-}
-
-export function setLock(data: LockEventData) {
-  return ActionCreator.LOCK_SET({
-    token: data.token,
-    locked: data.status === 'lock',
-  });
 }
 
 export function getEditorLanguage() {

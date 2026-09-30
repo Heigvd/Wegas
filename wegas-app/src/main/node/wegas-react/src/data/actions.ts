@@ -7,7 +7,7 @@ import { ActionType, ActionTypeValues } from './actionTypes';
 import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
-import { GlobalState, LoggerLevel, WegasStatus } from './Reducer/globalState';
+import { GlobalState, LoggerLevel } from './Reducer/globalState';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
@@ -76,15 +76,6 @@ export const ActionCreator = {
     createAction(ActionType.SEARCH_DEEP, data),
   SEARCH_SET_DEEP: (data: { deep: boolean }) =>
     createAction(ActionType.SEARCH_SET_DEEP, data),
-
-  PUSHER_SOCKET: (data: { socket_id: string; status: string }) =>
-    createAction(ActionType.PUSHER_SOCKET, data),
-
-  SERVER_STATUS: (data: { status: WegasStatus }) =>
-    createAction(ActionType.SERVER_STATUS, data),
-
-  LOCK_SET: (data: { token: string; locked: boolean }) =>
-    createAction(ActionType.LOCK_SET, data),
 
   ADD_POPUP: (data: Popup & { id: string }) =>
     createAction(ActionType.ADD_POPUP, data),

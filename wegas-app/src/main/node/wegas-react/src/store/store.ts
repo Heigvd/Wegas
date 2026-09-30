@@ -22,6 +22,7 @@ import pageEditorReducer from './slices/pageEditor';
 import pagesReducer from './slices/pages';
 import themeReducer from './slices/theme';
 import userReducer from './slices/user';
+import connectionReducer from './slices/connection';
 
 /**
  * New store for react-redux
@@ -43,6 +44,7 @@ export const store = configureStore({
         pageEditor: pageEditorReducer,
         pages: pagesReducer,
         themes: themeReducer,
+        connection: connectionReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
