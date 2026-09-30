@@ -34,10 +34,9 @@ import {
   editStateMachine,
   saveEditor,
 } from '../../../data/Reducer/editingState';
-import { State as RState } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
 import { selectEdition } from '../../../store/slices/edition';
+import { SearchState, selectSearch } from '../../../store/slices/search';
 import { RootState, dispatch, store } from '../../../store/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -75,7 +74,7 @@ interface StateMachineEditorProps<
 
   localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
-  search?: RState['global']['search'];
+  search?: SearchState;
   title?: string;
   editPath?: (string | number)[] | undefined;
   /**
@@ -477,10 +476,6 @@ export function editingStateSelector(state: RootState) {
   }
 }
 
-export function globalStateSelector(s: RState) {
-  return s.global.search;
-}
-
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localState?: Readonly<Edition> | undefined;
   localDispatch?: EditingDispatch;
@@ -496,7 +491,7 @@ export function ConnectedStateMachineEditor({
   // the selector builds a fresh object, so it needs an equality fn: the app
   // store sees far more actions than the old editing store did
   const editingState = useAppSelector(editingStateSelector, customStateEquals);
-  const search = useStore(globalStateSelector);
+  const search = useAppSelector(selectSearch);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in editingState) {

@@ -70,13 +70,6 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  SEARCH: (data: { searchString: string | undefined }) =>
-    createAction(ActionType.SEARCH, data),
-  SEARCH_DEEP: (data: { searchString: string | undefined }) =>
-    createAction(ActionType.SEARCH_DEEP, data),
-  SEARCH_SET_DEEP: (data: { deep: boolean }) =>
-    createAction(ActionType.SEARCH_SET_DEEP, data),
-
   ADD_POPUP: (data: Popup & { id: string }) =>
     createAction(ActionType.ADD_POPUP, data),
   REMOVE_POPUP: (data: { id: string }) =>

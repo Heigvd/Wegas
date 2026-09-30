@@ -82,7 +82,6 @@ export type LoggerLevel = typeof LoggerLevelValues[number];
 
 export interface GlobalState {
   currentPageId?: string;
-  search: { value: string | undefined; deep: boolean };
   clientMethods: {
     [name: string]: Omit<ClientMethodPayload, 'name'>;
   };
@@ -116,7 +115,6 @@ export interface GlobalState {
 }
 
 const defaultGlobalState: GlobalState = {
-  search: { value: undefined, deep: false },
   clientMethods: {},
   serverMethods: { ...commonServerMethods },
   serverVariableMethods: {},
@@ -160,16 +158,6 @@ const defaultGlobalState: GlobalState = {
 const global: Reducer<Readonly<GlobalState>> = produce(
   (state: GlobalState, action: StateActions) => {
     switch (action.type) {
-      case ActionType.SEARCH:
-        state.search.value = action.payload.searchString;
-        return;
-      case ActionType.SEARCH_DEEP:
-        state.search.value = action.payload.searchString;
-        state.search.deep = true;
-        return;
-      case ActionType.SEARCH_SET_DEEP:
-        state.search.deep = action.payload.deep;
-        return;
       case ActionType.EDITOR_SET_CLIENT_METHOD:
         state.clientMethods[action.payload.name] = {
           parameters: action.payload.parameters,
@@ -287,22 +275,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
   defaultGlobalState,
 );
 export default global;
-
-export function search(searchString: string) {
-  return ActionCreator.SEARCH({ searchString });
-}
-
-export function clearSearch() {
-  return ActionCreator.SEARCH({ searchString: undefined });
-}
-
-export function searchDeep(searchString: string) {
-  return ActionCreator.SEARCH_DEEP({ searchString });
-}
-
-export function searchSetDeep(deep: boolean) {
-  return ActionCreator.SEARCH_SET_DEEP({ deep });
-}
 
 /**
  * Add a custom client method that can be used in client scripts

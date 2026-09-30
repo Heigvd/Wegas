@@ -2,7 +2,6 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { IVariableDescriptor } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useDebounceFn } from '../../../Components/Hooks/useDebounce';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
@@ -18,10 +17,15 @@ import {
   flexBetween,
   flexRow,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
 import { createVariable, Edition } from '../../../data/Reducer/editingState';
 import { moveDescriptor } from '../../../store/slices/variableDescriptors';
-import { store, useStore } from '../../../data/Stores/store';
+import { useAppSelector } from '../../../store/hooks';
+import {
+  clearSearch,
+  selectSearch,
+  setSearchDeep,
+  setSearchValue,
+} from '../../../store/slices/search';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { mainLayoutId } from '../../layouts';
@@ -84,21 +88,11 @@ export function VariableTreeView({
   const i18nValues = useInternalTranslate(commonTranslations);
   const actionAllowed = isActionAllowed(options);
 
-  const { value, deep } = useStore(
-    s => ({
-      value: s.global.search.value,
-      deep: s.global.search.deep,
-    }),
-    deepDifferent,
-  );
+  const { value, deep } = useAppSelector(selectSearch);
 
   const searchFn = useDebounceFn(
     (value: string) =>
-      store.dispatch(
-        value.length < 2
-          ? Actions.EditorActions.clearSearch()
-          : Actions.EditorActions.search(value),
-      ),
+      dispatch(value.length < 2 ? clearSearch() : setSearchValue(value)),
     500,
   );
 
@@ -158,7 +152,7 @@ export function VariableTreeView({
                 )}
                 tooltip={i18nValues.deepSearch}
                 onClick={() => {
-                  store.dispatch(Actions.EditorActions.searchSetDeep(!deep));
+                  dispatch(setSearchDeep(!deep));
                 }}
               />
             </div>

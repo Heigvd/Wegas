@@ -23,6 +23,7 @@ import pagesReducer from './slices/pages';
 import themeReducer from './slices/theme';
 import userReducer from './slices/user';
 import connectionReducer from './slices/connection';
+import searchReducer from './slices/search';
 
 /**
  * New store for react-redux
@@ -45,6 +46,7 @@ export const store = configureStore({
         pages: pagesReducer,
         themes: themeReducer,
         connection: connectionReducer,
+        search: searchReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({

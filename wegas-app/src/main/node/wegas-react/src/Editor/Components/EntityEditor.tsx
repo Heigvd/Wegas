@@ -13,7 +13,7 @@ import {
   IVariableDescriptor,
 } from 'wegas-ts-api';
 import { mediumPadding } from '../../css/classes';
-import { Actions } from '../../data';
+import { searchDeep } from '../../store/slices/search';
 import { entityIs, entityIsPersisted } from '../../data/entities';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
 import {
@@ -458,7 +458,7 @@ export function editionActions<T extends IVariableDescriptor>(
         icon: 'search',
         action: (entity: IVariableDescriptor) => {
           if (entityIsPersisted(entity) && entity.name != null) {
-            store.dispatch(Actions.EditorActions.searchDeep(entity.name));
+            dispatch(searchDeep(entity.name));
           }
         },
       });

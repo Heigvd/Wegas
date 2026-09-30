@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -24,9 +25,7 @@ import {
   Edition,
   VariableEdition,
 } from '../../../data/Reducer/editingState';
-import { State } from '../../../data/Reducer/reducers';
 import { VariableDescriptor } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -43,8 +42,9 @@ import {
 import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
 import { RootState, dispatch } from '../../../store/store';
-import { useAppSelector } from '../../../store/hooks';
+import { shallowEqual, useAppSelector } from '../../../store/hooks';
 import { selectEdition } from '../../../store/slices/edition';
+import { selectSearch } from '../../../store/slices/search';
 
 const nodeStyle = css({
   borderStyle: 'solid',
@@ -84,11 +84,18 @@ export const actionNodeContentStyle = cx(
   }),
 );
 
+type Descriptors = RootState['variableDescriptors'];
+
 /**
  * test a variable and children's editorLabel against a text
  */
-function isMatch(variableId: number, search: string, deep: boolean): boolean {
-  const variable = VariableDescriptor.select(variableId);
+function isMatch(
+  descriptors: Descriptors,
+  variableId: number,
+  search: string,
+  deep: boolean,
+): boolean {
+  const variable = descriptors[variableId];
   if (variable == null) {
     return false;
   }
@@ -104,7 +111,9 @@ function isMatch(variableId: number, search: string, deep: boolean): boolean {
     return true;
   }
   if (varIsList(variable)) {
-    return variable.itemsIds.some(id => isMatch(id, search, deep));
+    return variable.itemsIds.some(id =>
+      isMatch(descriptors, id, search, deep),
+    );
   }
   return false;
 }
@@ -112,13 +121,20 @@ function isMatch(variableId: number, search: string, deep: boolean): boolean {
 /**
  * test a variable and children's editorLabel against a text
  */
-function isOpen(variableId: number, search: string, deep: boolean): boolean {
-  const variable = VariableDescriptor.select(variableId);
+function isOpen(
+  descriptors: Descriptors,
+  variableId: number,
+  search: string,
+  deep: boolean,
+): boolean {
+  const variable = descriptors[variableId];
   if (variable == null) {
     return false;
   }
   if (varIsList(variable)) {
-    return variable.itemsIds.some(id => isMatch(id, search, deep));
+    return variable.itemsIds.some(id =>
+      isMatch(descriptors, id, search, deep),
+    );
   }
   return false;
 }
@@ -159,36 +175,43 @@ export function CTree({
     readOnly: readOnly,
   });
 
-  const globalInfoSelector = React.useCallback(
-    (state: State) => {
-      let variable:
-        | undefined
-        | IVariableDescriptor
-        | IResult
-        | IEvaluationDescriptorContainer =
-        VariableDescriptor.select(variableId);
-      if (Array.isArray(subPath) && subPath.length > 0) {
-        variable = get(variable, subPath) as
-          | IVariableDescriptor
-          | IResult
-          | IEvaluationDescriptorContainer;
-      }
+  // Memoized on the descriptors map and the search state: every tree node runs
+  // this on every dispatch, and a deep search stringifies each variable.
+  const globalInfoSelector = React.useMemo(
+    () =>
+      createSelector(
+        [(state: RootState) => state.variableDescriptors, selectSearch],
+        (descriptors, search) => {
+          let variable:
+            | undefined
+            | IVariableDescriptor
+            | IResult
+            | IEvaluationDescriptorContainer = descriptors[variableId];
+          if (Array.isArray(subPath) && subPath.length > 0) {
+            variable = get(variable, subPath) as
+              | IVariableDescriptor
+              | IResult
+              | IEvaluationDescriptorContainer;
+          }
 
-      return {
-        variable: variable,
-        open: isOpen(
-          variableId,
-          state.global.search.value || '',
-          state.global.search.deep,
-        ),
-        match: isMatch(
-          variableId,
-          state.global.search.value || '',
-          state.global.search.deep,
-        ),
-        searching: state.global.search.value != null,
-      };
-    },
+          return {
+            variable: variable,
+            open: isOpen(
+              descriptors,
+              variableId,
+              search.value || '',
+              search.deep,
+            ),
+            match: isMatch(
+              descriptors,
+              variableId,
+              search.value || '',
+              search.deep,
+            ),
+            searching: search.value != null,
+          };
+        },
+      ),
     [subPath, variableId],
   );
 
@@ -197,7 +220,10 @@ export function CTree({
     [subPath, variableId],
   );
 
-  const { variable, match, searching, open } = useStore(globalInfoSelector);
+  const { variable, match, searching, open } = useAppSelector(
+    globalInfoSelector,
+    shallowEqual,
+  );
   const editing = useAppSelector(editingInfoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
