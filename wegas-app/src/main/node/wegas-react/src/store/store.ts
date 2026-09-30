@@ -27,6 +27,7 @@ import searchReducer from './slices/search';
 import languagesReducer from './slices/languages';
 import popupsReducer from './slices/popups';
 import logLevelsReducer from './slices/logLevels';
+import rolesReducer from './slices/roles';
 
 /**
  * New store for react-redux
@@ -53,6 +54,7 @@ export const store = configureStore({
         languages: languagesReducer,
         popups: popupsReducer,
         logLevels: logLevelsReducer,
+        roles: rolesReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({

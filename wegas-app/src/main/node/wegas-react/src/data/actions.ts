@@ -41,11 +41,6 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
   EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
-  EDITOR_SET_ROLES: (data: {
-    roles: { [id: string]: Role };
-    defaultRoleId: string;
-    rolesId: string;
-  }) => createAction(ActionType.EDITOR_SET_ROLES, data),
   EDITOR_ADD_EVENT_HANDLER: (data: {
     id: string;
     type: keyof WegasEvents;

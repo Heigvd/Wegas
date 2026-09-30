@@ -1,9 +1,12 @@
 import * as React from 'react';
 import { defaultPaddingLeft } from '../../css/classes';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { useStore } from '../../data/Stores/store';
 import { useAppSelector } from '../../store/hooks';
 import { selectCurrentEditorLanguage } from '../../store/slices/languages';
+import {
+  DEFAULT_ROLES,
+  selectDefaultRoleId,
+  selectRoles,
+} from '../../store/slices/roles';
 import { commonTranslations } from '../../i18n/common/common';
 import {
   internalTranslate,
@@ -28,8 +31,8 @@ export const roleCTX = React.createContext<RoleContext>({
 function RoleContext({
   children,
 }: React.PropsWithChildren<UnknownValuesObject>) {
-  const defaultRoleId = useStore(s => s.global.roles.defaultRoleId);
-  const availableRoles = useStore(s => s.global.roles.roles);
+  const defaultRoleId = useAppSelector(selectDefaultRoleId);
+  const availableRoles = useAppSelector(selectRoles);
 
   const [storedRole, setRole] = React.useState<string>(
     window.localStorage.getItem(EditorRoleData) || defaultRoleId,
@@ -63,7 +66,7 @@ function RoleContext({
 export const RoleProvider = React.memo(RoleContext);
 
 export function useRolesToggler() {
-  const availableRoles = useStore(s => s.global.roles.roles);
+  const availableRoles = useAppSelector(selectRoles);
   const { currentRole, setRole } = React.useContext(roleCTX);
   const lang = useAppSelector(selectCurrentEditorLanguage);
   const i18nValues = useInternalTranslate(commonTranslations);

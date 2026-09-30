@@ -23,7 +23,7 @@ import {
   translate,
 } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
+import { DEFAULT_ROLES, rolesSet } from '../../store/slices/roles';
 import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
 import {
@@ -425,8 +425,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
 
   globals.Roles = {
     setRoles: (roles, defaultRoleId, rolesId) => {
-      globalDispatch(
-        ActionCreator.EDITOR_SET_ROLES({
+      dispatch(
+        rolesSet({
           roles: { ...roles, ...DEFAULT_ROLES },
           defaultRoleId: defaultRoleId as string,
           rolesId,

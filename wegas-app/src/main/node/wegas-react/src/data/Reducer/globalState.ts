@@ -7,23 +7,6 @@ import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
 import { commonServerMethods } from '../methods/CommonServerMethods';
 
-interface Roles {
-  [id: string]: Role;
-}
-
-export const DEFAULT_ROLES: Roles = {
-  SCENARIO_EDITOR: {
-    id: 'SCENARIO_EDITOR',
-    label: {
-      EN: 'Scenario editor',
-      FR: 'Editeur de scenario',
-      IT: 'Editore di scenario',
-      DE: 'Redakteur für Szenario',
-    },
-    availableTabs: true,
-  },
-};
-
 export function isServerMethod(
   serverObject: ServerGlobalMethod | ServerGlobalObject | undefined,
 ): serverObject is ServerGlobalMethod {
@@ -79,11 +62,6 @@ export interface GlobalState {
     };
   };
   pageLoaders: { [name: string]: IScript };
-  roles: {
-    rolesId: string;
-    defaultRoleId: string;
-    roles: Roles;
-  };
   eventsHandlers: WegasEventHandlers;
 }
 
@@ -97,11 +75,6 @@ const defaultGlobalState: GlobalState = {
     views: {},
   },
   pageLoaders: {},
-  roles: {
-    rolesId: 'DEFAULT_ROLES',
-    defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
-    roles: DEFAULT_ROLES,
-  },
   eventsHandlers: {
     ExceptionEvent: {},
     ClientEvent: {},
@@ -192,11 +165,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         return;
       case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
         delete state.pageLoaders[action.payload.name];
-        return;
-      case ActionType.EDITOR_SET_ROLES:
-        state.roles.roles = action.payload.roles;
-        state.roles.defaultRoleId = action.payload.defaultRoleId;
-        state.roles.rolesId = action.payload.rolesId;
         return;
 
 

@@ -39,13 +39,14 @@ import {
   selectLogLevels,
 } from '../../store/slices/logLevels';
 import { selectCurrentUser } from '../../store/slices/user';
+import { selectRolesId } from '../../store/slices/roles';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
 import {
   selectCurrentEditorLanguage,
   setEditorLanguage,
 } from '../../store/slices/languages';
-import { store } from '../../data/Stores/store';
+import { store as oldStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
@@ -54,7 +55,7 @@ import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
-import { dispatch, RootState } from '../../store/store';
+import { dispatch, RootState, store } from '../../store/store';
 import { selectEditorEvents } from '../../store/slices/editorEvents';
 import { selectCurrentPlayerId } from '../../store/slices/players';
 import { selectCurrentTeamId } from '../../store/slices/teams';
@@ -251,7 +252,7 @@ export default function Header() {
     sessionSelector,
     shallowEqual,
   );
-  const oldDispatch = store.dispatch;
+  const oldDispatch = oldStore.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
@@ -389,7 +390,7 @@ export default function Header() {
                       onClick={() => {
                         removeLayoutInLocal(
                           mainLayoutId,
-                          store.getState().global.roles.rolesId,
+                          selectRolesId(store.getState()),
                           currentRole,
                         );
                         window.location.reload();
