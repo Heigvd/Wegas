@@ -12,7 +12,6 @@ import {
   useRolesToggler,
 } from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
@@ -32,10 +31,13 @@ import {
 } from '../../css/classes';
 import { Actions } from '../../data';
 import { reset as resetVariables } from '../../store/slices/variableDescriptors';
-import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import { editorEventRemove } from '../../data/Reducer/editingState';
-import { LoggerLevelValues } from '../../data/Reducer/globalState';
+import {
+  loggerLevelSet,
+  LoggerLevelValues,
+  selectLogLevels,
+} from '../../store/slices/logLevels';
 import { selectCurrentUser } from '../../store/slices/user';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
@@ -43,7 +45,7 @@ import {
   selectCurrentEditorLanguage,
   setEditorLanguage,
 } from '../../store/slices/languages';
-import { store, useStore } from '../../data/Stores/store';
+import { store } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
@@ -184,12 +186,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 }
 
 function useLoggerLevelSelector() {
-  const currentLevels = useStore(
-    state => state.global.logLevels,
-    shallowDifferent,
-  );
-
-  const oldDispatch = store.dispatch;
+  const currentLevels = useAppSelector(selectLogLevels);
 
   return {
     value: 'logger',
@@ -204,8 +201,8 @@ function useLoggerLevelSelector() {
             label: (
               <div
                 onClick={() => {
-                  oldDispatch(
-                    ActionCreator.LOGGER_LEVEL_SET({
+                  dispatch(
+                    loggerLevelSet({
                       loggerName: loggerName,
                       level: currentLevel !== value ? value : 'OFF',
                     }),
@@ -218,8 +215,8 @@ function useLoggerLevelSelector() {
                   value={value === currentLevel}
                   label={value}
                   onChange={(v: boolean) => {
-                    oldDispatch(
-                      ActionCreator.LOGGER_LEVEL_SET({
+                    dispatch(
+                      loggerLevelSet({
                         loggerName: loggerName,
                         level: v ? value : 'OFF',
                       }),

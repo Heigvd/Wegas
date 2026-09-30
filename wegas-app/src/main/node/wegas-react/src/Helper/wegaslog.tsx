@@ -1,7 +1,12 @@
 import { globals } from '../Components/Hooks/sandbox';
-import { ActionCreator } from '../data/actions';
-import { LoggerLevel } from '../data/Reducer/globalState';
-import { store } from '../data/Stores/store';
+import {
+  defaultLogLevel,
+  LoggerLevel,
+  loggerLevelSet,
+  loggerRegistered,
+  selectLogLevels,
+} from '../store/slices/logLevels';
+import { dispatch, store } from '../store/store';
 
 const LoggerLevels: Record<LoggerLevel, number> = {
   OFF: 0,
@@ -42,34 +47,35 @@ function mapArgs(...args: unknown[]): unknown[] {
   });
 }
 
+// TODO Evaluate and verify after migration completion
+/**
+ * This module is imported nearly everywhere, slices included, so it can run
+ * while the store module is still being evaluated (import cycle), when `store`
+ * is not initialized yet. Until then every logger is at its default level.
+ */
+function currentLevel(name: string): LoggerLevel {
+  try {
+    return selectLogLevels(store.getState())[name] ?? defaultLogLevel(name);
+  } catch {
+    return defaultLogLevel(name);
+  }
+}
+
 function getLogger(name: string): Logger {
   const logger = loggers[name];
   if (logger == null) {
-    const level = store.getState().global.logLevels[name];
-    if (level == undefined) {
-      store.dispatch(
-        ActionCreator.LOGGER_LEVEL_SET({
-          loggerName: name,
-          level: 'WARN',
-        }),
-      );
-    }
+    // Deferred for the same reason, and because loggers are often created
+    // during a render (useLogger), where dispatching would update other
+    // components mid-render.
+    queueMicrotask(() => dispatch(loggerRegistered(name)));
 
-    const getLevel = () => {
-      return store.getState().global.logLevels[name];
-    };
+    const getLevel = () => currentLevel(name);
 
-    // let currentLevel: LoggerLevel = LoggerLevels.WARN;
     const prefix = '[' + name + ']';
     const logger: Logger = {
       getLevel,
       setLevel: (level: LoggerLevel) => {
-        store.dispatch(
-          ActionCreator.LOGGER_LEVEL_SET({
-            loggerName: name,
-            level: level,
-          }),
-        );
+        dispatch(loggerLevelSet({ loggerName: name, level }));
       },
       debug: (...params: unknown[]): void => {
         const currentLevel = LoggerLevels[getLevel()];

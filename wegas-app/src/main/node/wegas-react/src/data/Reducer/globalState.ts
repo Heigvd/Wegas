@@ -62,17 +62,6 @@ export function buildGlobalServerMethods(
     }, '');
 }
 
-export const LoggerLevelValues = [
-  'OFF' as const,
-  'ERROR' as const,
-  'WARN' as const,
-  'LOG' as const,
-  'INFO' as const,
-  'DEBUG' as const,
-];
-
-export type LoggerLevel = typeof LoggerLevelValues[number];
-
 export interface GlobalState {
   currentPageId?: string;
   clientMethods: {
@@ -95,7 +84,6 @@ export interface GlobalState {
     defaultRoleId: string;
     roles: Roles;
   };
-  logLevels: Record<string, LoggerLevel>;
   eventsHandlers: WegasEventHandlers;
 }
 
@@ -113,9 +101,6 @@ const defaultGlobalState: GlobalState = {
     rolesId: 'DEFAULT_ROLES',
     defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
     roles: DEFAULT_ROLES,
-  },
-  logLevels: {
-    default: 'LOG',
   },
   eventsHandlers: {
     ExceptionEvent: {},
@@ -215,10 +200,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         return;
 
 
-      case ActionType.LOGGER_LEVEL_SET: {
-        state.logLevels[action.payload.loggerName] = action.payload.level;
-        return;
-      }
       case ActionType.EDITOR_ADD_EVENT_HANDLER:
         state.eventsHandlers[action.payload.type][action.payload.id] =
           action.payload.cb;

@@ -35,7 +35,6 @@ export const ActionType = {
 
 
 
-  LOGGER_LEVEL_SET: 'LOGGER/LEVEL/SET',
 } as const;
 
 export type ActionTypeValues = ValueOf<typeof ActionType>;

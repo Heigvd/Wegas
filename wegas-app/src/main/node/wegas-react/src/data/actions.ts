@@ -5,7 +5,6 @@ import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
-import { LoggerLevel } from './Reducer/globalState';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
@@ -66,8 +65,6 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
-  LOGGER_LEVEL_SET: (payload: { loggerName: string; level: LoggerLevel }) =>
-    createAction(ActionType.LOGGER_LEVEL_SET, payload),
 };
 
 export type StateActions<
