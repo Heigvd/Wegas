@@ -27,15 +27,7 @@ function storeInit() {
   dispatch(getAllVariableDescriptors());
   dispatch(getAllVariableInstances());
   dispatch(getAllPages());
-  // TODO teams migration: this dispatch only lives here because gameId/teamId
-  // still come from this store's `global` slice. Once `global` moves to the
-  // react-redux store, move this call (and storeInit as a whole) there too.
-  dispatch(
-    getTeams({
-      gameId: store.getState().global.currentGameId,
-      teamId: store.getState().global.currentTeamId,
-    }),
-  );
+  dispatch(getTeams());
   store.dispatch(Actions.EditorActions.getEditorLanguage());
   dispatch(getGame());
   dispatch(getGameModel(CurrentGM.id!));

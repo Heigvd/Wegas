@@ -56,7 +56,6 @@ import { OptionsState } from './OptionsComponent';
 import { dispatch } from '../../../store/store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createEditingAction } from '../../../store/localEdition';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {

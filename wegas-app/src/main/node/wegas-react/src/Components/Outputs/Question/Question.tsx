@@ -38,11 +38,10 @@ export const questionStyle = cx(
  * Query subtree / instance about a QuestionDescriptor
  * @param question QuestionDescriptor to query
  *
- * Reads descriptors from the new store (via `select`) but instances from the old
- * one (via `getInstance`), so it must stay subscribed through the old store's
- * `useStore` until `variableInstances` migrates — `useAppSelector` would not see
- * instance updates. Both reads are fresh because manageResponseHandler updates
- * the new store before the old one dispatches (see data/actions.ts).
+ * Reads descriptors (via `select`) and instances (via `getInstance`) from the
+ * react-redux store imperatively, but is still subscribed through the old store's
+ * `useStore`: it only re-renders when the old store dispatches, which
+ * manageResponseHandler does after updating the new store (see data/actions.ts).
  */
 export function questionInfo(question: IQuestionDescriptor) {
   return function (): QuestionInfo {
