@@ -28,7 +28,7 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
@@ -41,7 +41,7 @@ import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
-import { addPopup } from '../../PopupManager';
+import { addPopup } from '../../../store/slices/popups';
 import { themeVar } from '../../Theme/ThemeVars';
 import {
   pageComponentFactory,
@@ -120,7 +120,7 @@ export default function PeerReviewVariableEditor({
         )
           .catch(e => {
             e.json().then((error: WegasErrorMessage) => {
-              store.dispatch(
+              dispatch(
                 addPopup(
                   error.message + new Date().getTime(),
                   createTranslatableContent(lang, error.message),
@@ -256,7 +256,7 @@ export default function PeerReviewVariableEditor({
             <OkCancelModal
               onOk={() => {
                 dispatch(submitToReview(sPR.getId()!));
-                store.dispatch(getAll());
+                dispatch(getAll());
               }}
             >
               <p>{i18nValues.global.confirmation.info}</p>

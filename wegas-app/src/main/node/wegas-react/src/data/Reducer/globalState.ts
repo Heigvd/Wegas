@@ -2,7 +2,6 @@ import { produce } from 'immer';
 import { omit } from 'lodash';
 import { Reducer } from 'redux';
 import { IScript, WegasClassNames } from 'wegas-ts-api';
-import { Popup } from '../../Components/PopupManager';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
 import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
@@ -96,7 +95,6 @@ export interface GlobalState {
     defaultRoleId: string;
     roles: Roles;
   };
-  popups: { [id: string]: Popup };
   logLevels: Record<string, LoggerLevel>;
   eventsHandlers: WegasEventHandlers;
 }
@@ -116,7 +114,6 @@ const defaultGlobalState: GlobalState = {
     defaultRoleId: DEFAULT_ROLES.SCENARIO_EDITOR.id,
     roles: DEFAULT_ROLES,
   },
-  popups: {},
   logLevels: {
     default: 'LOG',
   },
@@ -216,14 +213,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         state.roles.defaultRoleId = action.payload.defaultRoleId;
         state.roles.rolesId = action.payload.rolesId;
         return;
-      case ActionType.ADD_POPUP: {
-        state.popups[action.payload.id] = action.payload;
-        return;
-      }
-      case ActionType.REMOVE_POPUP: {
-        state.popups = omit(state.popups, action.payload.id);
-        return;
-      }
 
 
       case ActionType.LOGGER_LEVEL_SET: {

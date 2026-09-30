@@ -1,10 +1,10 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { ITranslatableContent } from 'wegas-ts-api';
 import { flex, flexColumn, flexRow, itemCenter } from '../css/classes';
-import { ActionCreator } from '../data/actions';
 import { translate } from '../data/i18n';
-import { store, useStore } from '../data/Stores/store';
+import { useAppSelector } from '../store/hooks';
+import { popupRemoved, selectPopups } from '../store/slices/popups';
+import { dispatch } from '../store/store';
 import { languagesCTX } from './Contexts/LanguagesProvider';
 import { Button } from './Inputs/Buttons/Button';
 import { themeVar } from './Theme/ThemeVars';
@@ -31,33 +31,10 @@ const popupStyle = css({
   borderColor: themeVar.colors.PrimaryColor,
 });
 
-export interface Popup {
-  /**
-   * message - the message of the popup
-   */
-  message: ITranslatableContent;
-  /**
-   * timestamp - the timestamp when the popup was registered
-   */
-  timestamp: number;
-  /**
-   * duration - the duration of the popup in milliseconds
-   */
-  duration?: number;
-  /**
-   * className - class to apply to the popup
-   */
-  className?: string;
-}
-
-export interface PopupState {
-  popups: { [id: string]: Popup };
-}
-
 export function PopupManager({
   children,
 }: React.PropsWithChildren<UnknownValuesObject>) {
-  const popups = useStore(s => s.global.popups);
+  const popups = useAppSelector(selectPopups);
   const { lang } = React.useContext(languagesCTX);
   return (
     <>
@@ -74,9 +51,7 @@ export function PopupManager({
               </div>
               <Button
                 icon="times"
-                onClick={() =>
-                  store.dispatch(ActionCreator.REMOVE_POPUP({ id }))
-                }
+                onClick={() => dispatch(popupRemoved(id))}
               />
             </div>
           ))}
@@ -85,19 +60,4 @@ export function PopupManager({
       {children}
     </>
   );
-}
-
-export function addPopup(
-  id: string,
-  message: ITranslatableContent,
-  duration?: number,
-  className?: string,
-) {
-  const timestamp = new Date().getTime();
-  if (duration != null) {
-    setTimeout(() => {
-      store.dispatch(ActionCreator.REMOVE_POPUP({ id }));
-    }, duration);
-  }
-  return ActionCreator.ADD_POPUP({ id, message, duration, timestamp, className });
 }

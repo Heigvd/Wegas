@@ -11,13 +11,13 @@ import { cloneDeep } from 'lodash';
 import { defaultLightMode, defaulSelectedThemes as defaultSelectedThemes, defaultTheme, defaultThemes, defaultThemesState, ModeValues, modeClass, SelectedThemes, Theme, ThemeValues, Themes, ThemesState, trainerTheme } from '../../Components/Theme/ThemeVars';
 import { wwarn } from '../../Helper/wegaslog';
 import { IGameModelContent } from 'wegas-ts-api';
-import { addPopup } from '../../Components/PopupManager';
+import { addPopup } from './popups';
 import { createTranslatableContent } from '../../data/i18n';
 import { manageResponseHandler } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { LibraryAPI, NOCONTENTMESSAGE, ServerLibraryType } from '../../API/library.api';
 import { IManagedResponse } from '../../API/rest';
-import { store } from '../../data/Stores/store';
+import { dispatch } from '../store';
 import type { LoadingStatus, RootState } from '../store';
 
 export function libraryToTheme(library: IGameModelContent) {
@@ -137,7 +137,7 @@ async function saveLib(
       return createLib(themeName, newTheme, modeName, libType);
     }
     const message = error instanceof Error ? error.message : String(error);
-    store.dispatch(
+    dispatch(
       addPopup('getThemeError', createTranslatableContent(undefined, message), 10000),
     );
     throw error;
@@ -152,7 +152,7 @@ export const deleteTheme = createAsyncThunk<
   'theme/deleteTheme',
   async (themeName, { rejectWithValue }) => {
     if (themeName === 'default' || themeName === 'trainer') {
-      store.dispatch(
+      dispatch(
         addPopup(
           'deleteThemeError',
           createTranslatableContent(undefined, `The theme "${themeName}" cannot be deleted`),
@@ -196,7 +196,7 @@ export const getSelectedThemes = createAsyncThunk<
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      store.dispatch(
+      dispatch(
         addPopup(
           'getSelectedThemesError',
           createTranslatableContent(undefined, message),
@@ -238,7 +238,7 @@ export const getAllThemes = createAsyncThunk<
       };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      store.dispatch(
+      dispatch(
         addPopup(
           'getAllThemesError',
           createTranslatableContent(undefined, message),
@@ -321,7 +321,7 @@ export const deleteMode = createAsyncThunk<
     const baseMode = newTheme.baseMode;
 
     if (modeName === baseMode) {
-      store.dispatch(
+      dispatch(
         addPopup(
           'deleteBaseModeError',
           createTranslatableContent(undefined, 'You are not allowed to delete base mode'),
@@ -393,7 +393,7 @@ export const resetTheme = createAsyncThunk<
   'theme/resetTheme',
   async (themeName, { rejectWithValue }) => {
     if (!Object.keys(defaultThemes).includes(themeName)) {
-      store.dispatch(
+      dispatch(
         addPopup(
           'resetError',
           createTranslatableContent(undefined, 'You cannot reset a custom theme'),
@@ -440,7 +440,7 @@ export const setSelectedTheme = createAsyncThunk<
   async ({ themeName, contextName }, { getState, rejectWithValue }) => {
     const state = getState().themes;
     if (!Object.keys(state.themes).includes(themeName)) {
-      store.dispatch(
+      dispatch(
         addPopup(
           'selectThemeError',
           createTranslatableContent(undefined, 'You cannot assign a theme that does not exist'),

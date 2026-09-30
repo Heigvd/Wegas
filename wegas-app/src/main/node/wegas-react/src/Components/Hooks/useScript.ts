@@ -57,7 +57,7 @@ import {
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { addPopup } from '../PopupManager';
+import { addPopup, popupRemoved } from '../../store/slices/popups';
 import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
@@ -327,10 +327,10 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.Popups = {
     addPopup: (id, message, duration, className) => {
       if (id != null && message != null) {
-        globalDispatch(addPopup(id, message, duration, className));
+        dispatch(addPopup(id, message, duration, className));
       }
     },
-    removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
+    removePopup: id => dispatch(popupRemoved(id)),
   };
 
   globals.WegasEvents = {

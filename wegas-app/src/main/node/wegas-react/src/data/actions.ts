@@ -1,7 +1,6 @@
 import { IAbstractEntity, IScript, WegasClassNames } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
-import { Popup } from '../Components/PopupManager';
 import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
@@ -66,11 +65,6 @@ export const ActionCreator = {
     updatedEntities: NormalizedData;
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
-
-  ADD_POPUP: (data: Popup & { id: string }) =>
-    createAction(ActionType.ADD_POPUP, data),
-  REMOVE_POPUP: (data: { id: string }) =>
-    createAction(ActionType.REMOVE_POPUP, data),
 
   LOGGER_LEVEL_SET: (payload: { loggerName: string; level: LoggerLevel }) =>
     createAction(ActionType.LOGGER_LEVEL_SET, payload),

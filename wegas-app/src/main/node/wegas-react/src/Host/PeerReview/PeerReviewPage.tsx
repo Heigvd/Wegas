@@ -10,7 +10,7 @@ import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { useOkCancelModal } from '../../Components/Modal';
-import { addPopup } from '../../Components/PopupManager';
+import { addPopup } from '../../store/slices/popups';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
@@ -28,7 +28,7 @@ import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../store/slices/variableDescriptors';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player, Team } from '../../data/selectors';
-import { store, useStore } from '../../data/Stores/store';
+import { useStore } from '../../data/Stores/store';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
@@ -331,7 +331,7 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
       )
         .catch(e => {
           e.json().then((error: WegasErrorMessage) => {
-            store.dispatch(
+            dispatch(
               addPopup(
                 error.message + new Date().getTime(),
                 createTranslatableContent(lang, error.message),
