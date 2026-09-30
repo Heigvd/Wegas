@@ -6,12 +6,6 @@ import { Popup } from '../../Components/PopupManager';
 import { WegasMethodParameter } from '../../Editor/editionConfig';
 import { ActionCreator, StateActions } from '../actions';
 import { ActionType } from '../actionTypes';
-import {
-  EditorLanguageData,
-  EditorLanguagesCode,
-  getSavedLanguage,
-  getUserLanguage,
-} from '../i18n';
 import { commonServerMethods } from '../methods/CommonServerMethods';
 
 interface Roles {
@@ -103,13 +97,6 @@ export interface GlobalState {
     roles: Roles;
   };
   popups: { [id: string]: Popup };
-  languages: {
-    currentEditorLanguageCode: EditorLanguagesCode;
-    /* the languages known by Deepl */
-    translatableLanguages: undefined | 'loading' | string[];
-    /* the languages the user is allowed to edit */
-    editableLanguages: undefined | 'loading' | 'all' | string[];
-  };
   logLevels: Record<string, LoggerLevel>;
   eventsHandlers: WegasEventHandlers;
 }
@@ -130,11 +117,6 @@ const defaultGlobalState: GlobalState = {
     roles: DEFAULT_ROLES,
   },
   popups: {},
-  languages: {
-    currentEditorLanguageCode: 'EN',
-    editableLanguages: undefined,
-    translatableLanguages: undefined,
-  },
   logLevels: {
     default: 'LOG',
   },
@@ -229,9 +211,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
       case ActionType.EDITOR_UNREGISTER_PAGE_LOADER:
         delete state.pageLoaders[action.payload.name];
         return;
-      case ActionType.EDITOR_SET_LANGUAGE:
-        state.languages.currentEditorLanguageCode = action.payload.language;
-        return;
       case ActionType.EDITOR_SET_ROLES:
         state.roles.roles = action.payload.roles;
         state.roles.defaultRoleId = action.payload.defaultRoleId;
@@ -246,15 +225,6 @@ const global: Reducer<Readonly<GlobalState>> = produce(
         return;
       }
 
-      case ActionType.LANGUAGES_EDITON_ALLOWED: {
-        state.languages.editableLanguages = action.payload.editableLanguages;
-        return;
-      }
-      case ActionType.LANGUAGES_TRANSLATION_AVAILABLE: {
-        state.languages.translatableLanguages =
-          action.payload.translatableLanguages;
-        return;
-      }
 
       case ActionType.LOGGER_LEVEL_SET: {
         state.logLevels[action.payload.loggerName] = action.payload.level;
@@ -369,17 +339,4 @@ export function registerPageLoader(name: string, pageId: IScript) {
  */
 export function resetPageLoader() {
   return ActionCreator.EDITOR_RESET_PAGE_LOADER();
-}
-
-export function getEditorLanguage() {
-  const savedLanguage = getSavedLanguage();
-  const userLanguage = getUserLanguage();
-  return ActionCreator.EDITOR_SET_LANGUAGE({
-    language: savedLanguage ? savedLanguage : userLanguage,
-  });
-}
-
-export function setEditorLanguage(lang: EditorLanguagesCode) {
-  window.localStorage.setItem(EditorLanguageData, lang);
-  return ActionCreator.EDITOR_SET_LANGUAGE({ language: lang });
 }

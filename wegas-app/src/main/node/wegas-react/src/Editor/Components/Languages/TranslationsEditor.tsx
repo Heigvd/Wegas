@@ -53,7 +53,7 @@ import { manageResponseHandler } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { GlobalState } from '../../../data/Reducer/globalState';
+import { LanguagesState } from '../../../store/slices/languages';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 
 import { useStore } from '../../../data/Stores/store';
@@ -120,7 +120,7 @@ const inputStyle = css({
 
 function isLanguageEditable(
   languageCode: string,
-  editableLanguages: GlobalState['languages']['editableLanguages'],
+  editableLanguages: LanguagesState['editableLanguages'],
 ) {
   return (
     editableLanguages != null &&

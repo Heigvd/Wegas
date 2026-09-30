@@ -1,6 +1,5 @@
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk, { ThunkAction, ThunkMiddleware } from 'redux-thunk';
-import { Actions } from '..';
 // import '../../API/websocket';
 import { StateActions } from '../actions';
 import { createStoreConnector } from '../connectStore';
@@ -28,7 +27,6 @@ function storeInit() {
   dispatch(getAllVariableInstances());
   dispatch(getAllPages());
   dispatch(getTeams());
-  store.dispatch(Actions.EditorActions.getEditorLanguage());
   dispatch(getGame());
   dispatch(getGameModel(CurrentGM.id!));
 }

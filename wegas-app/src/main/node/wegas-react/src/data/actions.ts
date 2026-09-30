@@ -4,10 +4,9 @@ import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { Popup } from '../Components/PopupManager';
 import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
-import { EditorLanguagesCode } from './i18n';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
-import { GlobalState, LoggerLevel } from './Reducer/globalState';
+import { LoggerLevel } from './Reducer/globalState';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
@@ -44,8 +43,6 @@ export const ActionCreator = {
     createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
   EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
     createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
-  EDITOR_SET_LANGUAGE: (data: { language: EditorLanguagesCode }) =>
-    createAction(ActionType.EDITOR_SET_LANGUAGE, data),
   EDITOR_SET_ROLES: (data: {
     roles: { [id: string]: Role };
     defaultRoleId: string;
@@ -75,12 +72,6 @@ export const ActionCreator = {
   REMOVE_POPUP: (data: { id: string }) =>
     createAction(ActionType.REMOVE_POPUP, data),
 
-  LANGUAGES_TRANSLATION_AVAILABLE: (data: {
-    translatableLanguages: GlobalState['languages']['translatableLanguages'];
-  }) => createAction(ActionType.LANGUAGES_TRANSLATION_AVAILABLE, data),
-  LANGUAGES_EDITON_ALLOWED: (data: {
-    editableLanguages: GlobalState['languages']['editableLanguages'];
-  }) => createAction(ActionType.LANGUAGES_EDITON_ALLOWED, data),
   LOGGER_LEVEL_SET: (payload: { loggerName: string; level: LoggerLevel }) =>
     createAction(ActionType.LOGGER_LEVEL_SET, payload),
 };

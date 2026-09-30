@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { defaultPaddingLeft } from '../../css/classes';
 import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
 import { useStore } from '../../data/Stores/store';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentEditorLanguage } from '../../store/slices/languages';
 import { commonTranslations } from '../../i18n/common/common';
 import {
   internalTranslate,
@@ -64,7 +65,7 @@ export const RoleProvider = React.memo(RoleContext);
 export function useRolesToggler() {
   const availableRoles = useStore(s => s.global.roles.roles);
   const { currentRole, setRole } = React.useContext(roleCTX);
-  const lang = useStore(selectCurrentEditorLanguage);
+  const lang = useAppSelector(selectCurrentEditorLanguage);
   const i18nValues = useInternalTranslate(commonTranslations);
   return {
     label: i18nValues.role,

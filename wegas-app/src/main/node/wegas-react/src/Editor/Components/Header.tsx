@@ -36,11 +36,13 @@ import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import { editorEventRemove } from '../../data/Reducer/editingState';
 import { LoggerLevelValues } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
 import { selectCurrentUser } from '../../store/slices/user';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
-import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
+import {
+  selectCurrentEditorLanguage,
+  setEditorLanguage,
+} from '../../store/slices/languages';
 import { store, useStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -233,12 +235,6 @@ function useLoggerLevelSelector() {
   };
 }
 
-function globalStoreSelector(s: State) {
-  return {
-    userLanguage: selectCurrentEditorLanguage(s),
-  };
-}
-
 function sessionSelector(s: RootState) {
   return {
     user: selectCurrentUser(s),
@@ -253,7 +249,7 @@ export default function Header() {
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
   const gameModel = useGameModel();
-  const { userLanguage } = useStore(globalStoreSelector);
+  const userLanguage = useAppSelector(selectCurrentEditorLanguage);
   const { user, currentPlayerId, currentTeamId } = useAppSelector(
     sessionSelector,
     shallowEqual,
@@ -367,10 +363,8 @@ export default function Header() {
                       label: (
                         <div
                           onClick={() => {
-                            oldDispatch(
-                              Actions.EditorActions.setEditorLanguage(
-                                key as EditorLanguagesCode,
-                              ),
+                            dispatch(
+                              setEditorLanguage(key as EditorLanguagesCode),
                             );
                           }}
                           className={cx(flex, flexRow, itemCenter)}
@@ -378,10 +372,8 @@ export default function Header() {
                           <CheckBox
                             value={userLanguage === key}
                             onChange={() => {
-                              oldDispatch(
-                                Actions.EditorActions.setEditorLanguage(
-                                  key as EditorLanguagesCode,
-                                ),
+                              dispatch(
+                                setEditorLanguage(key as EditorLanguagesCode),
                               );
                             }}
                             label={key + ' : ' + value}

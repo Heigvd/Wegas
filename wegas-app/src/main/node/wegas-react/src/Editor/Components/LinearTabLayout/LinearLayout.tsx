@@ -16,8 +16,9 @@ import {
   mediumPadding,
   noOverflow,
 } from '../../../css/classes';
-import { selectCurrentEditorLanguage } from '../../../data/selectors/Languages';
 import { useStore } from '../../../data/Stores/store';
+import { useAppSelector } from '../../../store/hooks';
+import { selectCurrentEditorLanguage } from '../../../store/slices/languages';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { internalTranslate } from '../../../i18n/internalTranslator';
@@ -989,10 +990,8 @@ export function MainLinearLayout({
   classNames = {},
 }: LinearLayoutProps) {
   const { currentRole } = React.useContext(roleCTX);
-  const { lang, rolesId } = useStore(s => ({
-    lang: selectCurrentEditorLanguage(s),
-    rolesId: s.global.roles.rolesId,
-  }));
+  const lang = useAppSelector(selectCurrentEditorLanguage);
+  const rolesId = useStore(s => s.global.roles.rolesId);
 
   const i18nValues = internalTranslate(commonTranslations, lang);
 
