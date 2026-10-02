@@ -36,7 +36,7 @@ import {
   editorEventRemoved,
 } from '../../store/slices/editorEvents';
 import { AppThunk, dispatch } from '../../store/store';
-import { triggerEventHandlers } from '../actions';
+import { triggerEventHandlers } from '../../Helper/eventHandlers';
 import { VariableDescriptor } from '../selectors';
 import { store } from '../Stores/store';
 

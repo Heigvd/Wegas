@@ -15,11 +15,11 @@ import {
   SWhQuestionInstance,
 } from 'wegas-ts-api';
 import { fileURL } from '../../../API/files.api';
-import { ActionCreator } from '../../../data/actions';
 import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { useStore } from '../../../data/Stores/store';
+import { pageLoaderRegistered } from '../../../store/slices/scriptRegistry';
 import { createScript, isScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import {
@@ -134,8 +134,8 @@ export const wegasComponentActions: WegasComponentActions = {
       : createScript(JSON.stringify(pageId));
 
     if (name != null) {
-      store.dispatch(
-        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+      dispatch(
+        pageLoaderRegistered({
           name,
           pageId: pageIdScript,
         }),

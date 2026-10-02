@@ -66,16 +66,21 @@ import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.d.ts';
 // @ts-ignore
 import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 import * as React from 'react';
-import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
+import { createSelector } from '@reduxjs/toolkit';
+import {
+  buildGlobalServerMethods,
+  selectClientMethods,
+  selectCustomSchemas,
+  selectPageLoaders,
+  selectServerMethods,
+} from '../../store/slices/scriptRegistry';
+import { RootState } from '../../store/store';
 import { deepEqual, useAppSelector } from '../../store/hooks';
 import { selectVariableClasses } from '../../store/slices/variableDescriptors';
 import { useGameModel } from './useGameModel';
-import { useStore } from '../../data/Stores/store';
 import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -155,18 +160,25 @@ export function useGlobalLibs() {
   const gameModel = useGameModel();
   const variableClasses = useAppSelector(selectVariableClasses, deepEqual);
 
-  const libsSelector = React.useCallback(
-    (s: State) => {
-      const globalMethods = s.global.clientMethods;
-      const globalSchemas = s.global.schemas.views;
-      const globalServerMethods = s.global.serverMethods;
+  // Memoized on the registry: the declarations are a large string, rebuilt only
+  // when a script registers something (or the closure deps below change).
+  const libsSelector = React.useMemo(
+    () =>
+      createSelector(
+        [
+          selectClientMethods,
+          (s: RootState) => selectCustomSchemas(s).views,
+          selectServerMethods,
+          selectPageLoaders,
+        ],
+        (globalMethods, globalSchemas, globalServerMethods, pageLoaders) => {
       const currentLanguages = Object.values(gameModel.languages)
         .map(l => `"${l.code}"`)
         .join(' | ');
 
       const allowedPageLoadersType =
-        Object.keys(s.global.pageLoaders).length > 0
-          ? Object.keys(s.global.pageLoaders)
+        Object.keys(pageLoaders).length > 0
+          ? Object.keys(pageLoaders)
               .map(name => `"${name}"`)
               .join('|')
           : 'unknown';
@@ -370,11 +382,12 @@ export function useGlobalLibs() {
         wwarn(e);
         return '';
       }
-    },
+        },
+      ),
     [classes, scriptContext, gameModel.languages, variableClasses],
   );
 
-  const libs = useStore(libsSelector, deepDifferent);
+  const libs = useAppSelector(libsSelector);
 
   return React.useMemo(() => {
     return [

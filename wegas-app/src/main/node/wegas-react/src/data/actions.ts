@@ -1,10 +1,11 @@
-import { IAbstractEntity, IScript, WegasClassNames } from 'wegas-ts-api';
+import { IAbstractEntity } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { getEntityActions } from '../Editor/editionConfig';
 import { ActionType, ActionTypeValues } from './actionTypes';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
+import { triggerEventHandlers } from '../Helper/eventHandlers';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
 import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
@@ -24,33 +25,6 @@ function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
  * Simple action creators.
  */
 export const ActionCreator = {
-  EDITOR_SET_CLIENT_METHOD: (data: ClientMethodPayload) =>
-    createAction(ActionType.EDITOR_SET_CLIENT_METHOD, data),
-  EDITOR_REGISTER_SERVER_GLOBAL_METHOD: (data: ServerGlobalMethodPayload) =>
-    createAction(ActionType.EDITOR_REGISTER_SERVER_GLOBAL_METHOD, data),
-  EDITOR_REGISTER_SERVER_VARIABLE_METHOD: (data: ServerVariableMethodPayload) =>
-    createAction(ActionType.EDITOR_REGISTER_SERVER_VARIABLE_METHOD, data),
-  EDITOR_SET_VARIABLE_SCHEMA: (data: {
-    name: string;
-    schemaFN?: CustomSchemaFN;
-    simpleFilter?: WegasClassNames;
-  }) => createAction(ActionType.EDITOR_SET_VARIABLE_SCHEMA, data),
-  EDITOR_REGISTER_PAGE_LOADER: (data: { name: string; pageId: IScript }) =>
-    createAction(ActionType.EDITOR_REGISTER_PAGE_LOADER, data),
-  EDITOR_RESET_PAGE_LOADER: () =>
-    createAction(ActionType.EDITOR_RESET_PAGE_LOADER, {}),
-  EDITOR_UNREGISTER_PAGE_LOADER: (data: { name: string }) =>
-    createAction(ActionType.EDITOR_UNREGISTER_PAGE_LOADER, data),
-  EDITOR_ADD_EVENT_HANDLER: (data: {
-    id: string;
-    type: keyof WegasEvents;
-    cb: WegasEventHandler;
-  }) => createAction(ActionType.EDITOR_ADD_EVENT_HANDLER, data),
-  EDITOR_REMOVE_EVENT_HANDLER: (data: {
-    id: string;
-    type: WegasEvent['@class'];
-  }) => createAction(ActionType.EDITOR_REMOVE_EVENT_HANDLER, data),
-
   MANAGED_RESPONSE_ACTION: (data: {
     // Nearly empty shells
     deletedEntities: {
@@ -60,6 +34,13 @@ export const ActionCreator = {
     events: WegasEvent[];
   }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
 
+  /**
+   * TEMPORARY bridge, removed with the old store (Phase 5): only wakes up the
+   * old store's `useStore` subscribers when the react-redux scriptRegistry
+   * slice changes. See data/Stores/store.ts.
+   */
+  SCRIPT_REGISTRY_CHANGED: () =>
+    createAction(ActionType.SCRIPT_REGISTRY_CHANGED, {}),
 };
 
 export type StateActions<
@@ -78,14 +59,6 @@ export const closeEditorWhenDeletedVariable = (
   'id' in editing.entity &&
   Object.keys(deletedVariables).includes(String(editing.entity.id)) &&
   dispatch(closeEditor());
-
-export function triggerEventHandlers(event: WegasEvent) {
-  Object.values(store.getState().global.eventsHandlers[event['@class']]).map(
-    handler => {
-      handler(event);
-    },
-  );
-}
 
 export function manageResponseHandler(
   payload: IManagedResponse,

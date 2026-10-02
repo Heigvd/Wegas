@@ -29,7 +29,6 @@ import {
   updateDescriptor,
 } from '../../store/slices/variableDescriptors';
 import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -39,7 +38,8 @@ import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
 import { IconComp, withDefault } from './Views/FontAwesome';
-import { RootState, dispatch } from '../../store/store';
+import { RootState, dispatch, store } from '../../store/store';
+import { selectCustomSchemas } from '../../store/slices/scriptRegistry';
 import { EditingDispatch } from '../../store/localEdition';
 import { customStateEquals, useAppSelector } from '../../store/hooks';
 import {
@@ -209,7 +209,7 @@ export function WindowedEditor<T extends IMergeable>({
   const schema = getConfig(pathEntity);
 
   // First try to get schema from simple filters
-  const customSchemas = store.getState().global.schemas;
+  const customSchemas = selectCustomSchemas(store.getState());
   let customSchema: SimpleSchema | void;
   const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
   if (simpleCustomSchemaName !== undefined) {

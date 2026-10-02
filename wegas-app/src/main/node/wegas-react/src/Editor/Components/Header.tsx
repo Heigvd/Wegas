@@ -29,7 +29,6 @@ import {
   itemCenter,
   itemsTop,
 } from '../../css/classes';
-import { Actions } from '../../data';
 import { reset as resetVariables } from '../../store/slices/variableDescriptors';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import { editorEventRemove } from '../../data/Reducer/editingState';
@@ -40,13 +39,13 @@ import {
 } from '../../store/slices/logLevels';
 import { selectCurrentUser } from '../../store/slices/user';
 import { selectRolesId } from '../../store/slices/roles';
+import { pageLoadersReset } from '../../store/slices/scriptRegistry';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
 import {
   selectCurrentEditorLanguage,
   setEditorLanguage,
 } from '../../store/slices/languages';
-import { store as oldStore } from '../../data/Stores/store';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
@@ -252,7 +251,6 @@ export default function Header() {
     sessionSelector,
     shallowEqual,
   );
-  const oldDispatch = oldStore.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
@@ -431,7 +429,7 @@ export default function Header() {
                 dispatch(
                   resetVariables(),
                 );
-                oldDispatch(Actions.EditorActions.resetPageLoader());
+                dispatch(pageLoadersReset());
               }}
               className={componentMarginRight}
             />

@@ -6,8 +6,7 @@ import {
 } from '../../API/library.api';
 import { useWebsocketEvent } from '../../API/websocket';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { store } from '../../data/Stores/store';
-import { dispatch } from '../../store/store';
+import { dispatch, store } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { getLogger } from '../../Helper/wegaslog';
 import { clearModule } from '../Hooks/sandbox';

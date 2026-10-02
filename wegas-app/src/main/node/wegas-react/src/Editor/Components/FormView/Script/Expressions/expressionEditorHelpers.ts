@@ -3,9 +3,12 @@ import { emptyStatement, Statement } from '@babel/types';
 import { Schema } from 'jsoninput/typings/types';
 import { AvailableSchemas, AvailableViews } from '../..';
 import { schemaProps } from '../../../../../Components/PageComponents/tools/schemaProps';
-import { isServerMethod } from '../../../../../data/Reducer/globalState';
+import {
+  isServerMethod,
+  selectServerMethods,
+} from '../../../../../store/slices/scriptRegistry';
 import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
-import { store } from '../../../../../data/Stores/store';
+import { store } from '../../../../../store/store';
 import {
   getVariableMethodConfig,
   MethodConfig,
@@ -242,7 +245,7 @@ function genGlobalItems<T = string>(
   mode?: ScriptMode,
   decorateFn?: (value: string) => T,
 ): TreeSelectItem<StringOrT<typeof decorateFn, T>>[] {
-  return getServerMethods(store.getState().global.serverMethods)
+  return getServerMethods(selectServerMethods(store.getState()))
     .filter(method =>
       isScriptCondition(mode)
         ? method.returns !== undefined
@@ -258,7 +261,7 @@ function genGlobalItems<T = string>(
 
 function getGlobalMethodConfig(globalMethod: string): MethodsConfig {
   const foundMethod = getServerMethods(
-    store.getState().global.serverMethods,
+    selectServerMethods(store.getState()),
   ).find(method => method.fullName === globalMethod);
   return foundMethod
     ? {

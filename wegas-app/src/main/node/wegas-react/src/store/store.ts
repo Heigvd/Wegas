@@ -28,6 +28,7 @@ import languagesReducer from './slices/languages';
 import popupsReducer from './slices/popups';
 import logLevelsReducer from './slices/logLevels';
 import rolesReducer from './slices/roles';
+import scriptRegistryReducer from './slices/scriptRegistry';
 
 /**
  * New store for react-redux
@@ -55,6 +56,7 @@ export const store = configureStore({
         popups: popupsReducer,
         logLevels: logLevelsReducer,
         roles: rolesReducer,
+        scriptRegistry: scriptRegistryReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
@@ -67,11 +69,21 @@ export const store = configureStore({
             // including functions and class instances, and potentially large or
             // cyclic. Both dev checks walk it deeply on every dispatch, so both are
             // opted out of that branch rather than made to tolerate it.
+            //
+            // `scriptRegistry` holds functions registered by client scripts
+            // (client methods, custom schemas).
             serializableCheck: {
-                ignoredPaths: ['edition', 'editorEvents', 'pageContext'],
+                ignoredPaths: [
+                    'edition',
+                    'editorEvents',
+                    'pageContext',
+                    'scriptRegistry',
+                ],
                 ignoredActions: [
                     'pageContext/setContextValue',
                     'pageContext/setStateValue',
+                    'scriptRegistry/clientMethodSet',
+                    'scriptRegistry/schemaSet',
                 ],
                 ignoredActionPaths: [
                     'payload.config',

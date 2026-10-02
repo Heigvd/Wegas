@@ -14,8 +14,6 @@ import {
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { downloadFile, fileURL } from '../../API/files.api';
-import { Actions } from '../../data';
-import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import {
   createTranslatableContent,
@@ -24,14 +22,13 @@ import {
 } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES, rolesSet } from '../../store/slices/roles';
-import { State } from '../../data/Reducer/reducers';
 import { instantiate } from '../../data/scriptable';
 import {
   GameModel,
   Player,
   VariableDescriptor as VDSelect,
 } from '../../data/selectors';
-import { store as oldStore, useStore } from '../../data/Stores/store';
+import { useStore } from '../../data/Stores/store';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
   getLivePageContext,
@@ -42,7 +39,20 @@ import {
   PageContextValues,
   setContextValue,
 } from '../../store/slices/pageContext';
-import { dispatch, store } from '../../store/store';
+import { dispatch, RootState, store } from '../../store/store';
+import {
+  clientMethodSet,
+  pageLoaderRegistered,
+  schemaSet,
+  selectClientMethods,
+  selectPageLoaders,
+  serverGlobalMethodRegistered,
+  serverVariableMethodRegistered,
+} from '../../store/slices/scriptRegistry';
+import {
+  addEventHandler,
+  removeEventHandler,
+} from '../../Helper/eventHandlers';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
@@ -112,8 +122,6 @@ function getWegasUrl(): string {
   return (location.origin + API_ENDPOINT).replace(/rest\/$/, '');
 }
 
-const globalDispatch = oldStore.dispatch;
-
 type GlobalContexts = FeatureContext & LanguagesContext & ClassesContext;
 
 export function useGlobalContexts(): GlobalContexts {
@@ -129,7 +137,7 @@ export function useGlobalContexts(): GlobalContexts {
   //  }, [featuresContext, languagesContext, classesContext]);
 }
 
-export function setGlobals(globalContexts: GlobalContexts, state: State) {
+export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
   const {
     lang,
     selectLang,
@@ -144,7 +152,7 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   const player = Player.selectCurrent();
   const gameModel = GameModel.selectCurrent();
   const teams = Object.values(store.getState().teams.entities);
-  const pageLoaders = state.global.pageLoaders;
+  const pageLoaders = selectPageLoaders(state);
 
   const splayer = instantiate(player);
 
@@ -213,8 +221,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
         {},
       ),
     setPageLoader: (name, pageId) =>
-      globalDispatch(
-        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+      dispatch(
+        pageLoaderRegistered({
           name,
           pageId: createScript(JSON.stringify(pageId)),
         }),
@@ -243,14 +251,14 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
       array != null &&
       method != null
     ) {
-      globalDispatch(
-        Actions.EditorActions.setClientMethod(
+      dispatch(
+        clientMethodSet({
           name,
           parameters,
-          types,
-          array as keyof ArrayedTypeMap,
+          returnTypes: types,
+          returnStyle: array as keyof ArrayedTypeMap,
           method,
-        ),
+        }),
       );
     }
   };
@@ -259,7 +267,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.ClientMethods = {
     addMethod: addMethod,
     getMethod: (name: string) => {
-      return state.global.clientMethods[name]
+      // read fresh: the method may have been added after these globals were set
+      return selectClientMethods(store.getState())[name]
         .method as () => WegasScriptEditorReturnType;
     },
   };
@@ -269,10 +278,11 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
     method,
     schema,
   ) => {
-    globalDispatch(
-      Actions.EditorActions.registerServerMethod(objects, method, {
-        ...schema,
-        '@class': 'ServerGlobalMethod',
+    dispatch(
+      serverGlobalMethodRegistered({
+        objects,
+        method,
+        schema: { ...schema, '@class': 'ServerGlobalMethod' },
       }),
     );
   };
@@ -284,14 +294,14 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
     returns,
     serverCode,
   ) => {
-    globalDispatch(
-      Actions.EditorActions.registerVariableMethod(
+    dispatch(
+      serverVariableMethodRegistered({
         variableClass,
         label,
-        parameter,
+        parameters: parameter,
         returns,
         serverCode,
-      ),
+      }),
     );
   };
 
@@ -308,12 +318,10 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
       schemaFN: CustomSchemaFN,
       simpleFilter?: WegasClassNames,
     ) => {
-      globalDispatch(
-        Actions.EditorActions.setSchema(name, schemaFN, simpleFilter),
-      );
+      dispatch(schemaSet({ name, schemaFN, simpleFilter }));
     },
     removeSchema: (name: string) => {
-      globalDispatch(Actions.EditorActions.setSchema(name));
+      dispatch(schemaSet({ name }));
     },
   };
 
@@ -336,25 +344,12 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.WegasEvents = {
     addEventHandler: (id, type, cb) => {
       if (id != null && type != null && cb != null) {
-        if (state.global.eventsHandlers[type][id] == null) {
-          globalDispatch(
-            ActionCreator.EDITOR_ADD_EVENT_HANDLER({
-              id,
-              type,
-              cb: cb as unknown as WegasEventHandler,
-            }),
-          );
-        }
+        addEventHandler(type, id, cb as unknown as WegasEventHandler);
       }
     },
     removeEventHandler: (id, type) => {
       if (id != null && type != null) {
-        7;
-        if (state.global.eventsHandlers[type][id] != null) {
-          globalDispatch(
-            ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
-          );
-        }
+        removeEventHandler(type, id);
       }
     },
   };
@@ -811,9 +806,11 @@ export function useScript<T>(
     isFirstRun.current = true;
   }, [fn]);
 
-  const returnValue = useStore(s => {
+  // Still subscribed through the old store (Phase 4), but the globals come from
+  // the react-redux store, which holds all the state.
+  const returnValue = useStore(() => {
     //ref +state.reloading
-    setGlobals(globalContexts, s);
+    setGlobals(globalContexts, store.getState());
 
     const returnValue = fn();
     if (isFirstRun.current) {
