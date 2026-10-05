@@ -28,12 +28,11 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { GameModel, Player, Team } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
@@ -75,9 +74,11 @@ export default function PeerReviewVariableEditor({
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
-  const reviewState = useStore(() =>
-    sPR?.getInstance(Player.self()).getReviewState(),
+  const getReviewState = React.useCallback(
+    () => sPR?.getInstance(Player.self()).getReviewState(),
+    [sPR],
   );
+  const reviewState = useDataSelector(getReviewState);
   const variableToReview = instantiate(
     findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
   );
@@ -86,10 +87,16 @@ export default function PeerReviewVariableEditor({
     variableToReview?.getInstance(Player.self()).getId(),
   );
 
-  const storeValue = useStore(
-    () => variableToReview?.getValue(Player.self()),
-    deepDifferent,
+  // Resolved inside rather than from variableToReview, which is a new object on
+  // every render and would make the callback unstable.
+  const getStoreValue = React.useCallback(
+    () =>
+      instantiate(
+        findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
+      )?.getValue(Player.self()),
+    [sPR],
   );
+  const storeValue = useDataSelector(getStoreValue, deepEqual);
 
   const [value, setValue] = React.useState<string | number | undefined>(
     storeValue,

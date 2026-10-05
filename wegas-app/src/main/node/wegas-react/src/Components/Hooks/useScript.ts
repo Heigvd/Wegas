@@ -28,7 +28,7 @@ import {
   Player,
   VariableDescriptor as VDSelect,
 } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { deepEqual, useDataSelector } from '../../store/hooks';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
   getLivePageContext,
@@ -129,12 +129,10 @@ export function useGlobalContexts(): GlobalContexts {
   const languagesContext = React.useContext(languagesCTX);
   const classesContext = React.useContext(classesCTX);
 
-  return { ...featuresContext, ...languagesContext, ...classesContext };
-
-  //
-  //  return React.useMemo(() => {
-  //    return { ...featuresContext, ...languagesContext, ...classesContext };
-  //  }, [featuresContext, languagesContext, classesContext]);
+  // Stable while the contexts are: useScript keys its evaluation on it
+  return React.useMemo(() => {
+    return { ...featuresContext, ...languagesContext, ...classesContext };
+  }, [featuresContext, languagesContext, classesContext]);
 }
 
 export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
@@ -806,9 +804,11 @@ export function useScript<T>(
     isFirstRun.current = true;
   }, [fn]);
 
-  // Still subscribed through the old store (Phase 4), but the globals come from
-  // the react-redux store, which holds all the state.
-  const returnValue = useStore(() => {
+  // Re-evaluated when a data slice changes or a dependency changes (see
+  // useDataSelector), and may run during render: setGlobals then writes the
+  // sandbox globals during render. Harmless without concurrent rendering.
+  // TODO Phase 4b: set the globals once per data change, not per script.
+  const evaluate = React.useCallback(() => {
     //ref +state.reloading
     setGlobals(globalContexts, store.getState());
 
@@ -832,7 +832,8 @@ export function useScript<T>(
     }
 
     return fn();
-  }, deepDifferent);
+  }, [fn, globalContexts]);
+  const returnValue = useDataSelector(evaluate, deepEqual);
 
   return returnValue as any;
 }

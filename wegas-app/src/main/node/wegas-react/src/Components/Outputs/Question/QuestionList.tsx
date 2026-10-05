@@ -33,7 +33,6 @@ import { read } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
 import { Player } from '../../../data/selectors';
 import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
 import {
   IconComp,
   Icons,
@@ -62,8 +61,8 @@ import {
   questionInfo,
 } from './Question';
 import { entityIs } from '../../../data/entities';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { dispatch } from '../../../store/store';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -257,10 +256,8 @@ function QuestionLabelAnswerIndicator({
 }: {
   questionD: IQuestionDescriptor;
 }) {
-  const question: QuestionInfo = useStore(
-    questionInfo(questionD),
-    deepDifferent,
-  );
+  const getInfo = React.useMemo(() => questionInfo(questionD), [questionD]);
+  const question: QuestionInfo = useDataSelector(getInfo, deepEqual);
 
   const firstReply = question.choicesI.find(c => (c?.replies || []).length > 0);
   const firstChoice = question.choicesD.find(
@@ -488,7 +485,7 @@ export default function QuestionList({
     };
   }, [questionList]);
 
-  const entities = useStore(entitiesSelector);
+  const entities = useDataSelector(entitiesSelector);
 
   React.useEffect(() => {
     if (autoOpenFirst && entities?.questions?.length > 0) {

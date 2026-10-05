@@ -9,7 +9,6 @@ import {
   LanguagesAPI,
 } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import {
   useEditableLanguages,
@@ -56,8 +55,11 @@ import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { LanguagesState } from '../../../store/slices/languages';
 import { GameModel, VariableDescriptor } from '../../../data/selectors';
 
-import { useStore } from '../../../data/Stores/store';
-import { deepEqual, useAppSelector } from '../../../store/hooks';
+import {
+  deepEqual,
+  useAppSelector,
+  useDataSelector,
+} from '../../../store/hooks';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -818,7 +820,7 @@ function LanguagesVisitor({
     [itemId],
   );
 
-  const { item } = useStore(itemSelector, deepDifferent);
+  const { item } = useDataSelector(itemSelector, deepEqual);
   const editing = useAppSelector(editionSelector);
 
   React.useEffect(() => {
@@ -1101,7 +1103,7 @@ export function TranslationEditor() {
     };
   }, [parentId]);
 
-  const { parentIds } = useStore(translationSelector, deepDifferent);
+  const { parentIds } = useDataSelector(translationSelector, deepEqual);
   const root = useGameModel();
   const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);

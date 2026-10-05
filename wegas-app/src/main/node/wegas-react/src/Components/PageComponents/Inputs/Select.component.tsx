@@ -4,7 +4,7 @@ import { entityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
 import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -72,13 +72,14 @@ function PlayerSelectInput({
     context,
   );
 
-  const value = useStore(() => {
+  const getValue = React.useCallback(() => {
     const v =
       descriptor != null && typeof descriptor === 'object'
         ? descriptor.getValue(Player.self())
         : descriptor;
     return v == undefined ? '' : v;
-  });
+  }, [descriptor]);
+  const value = useDataSelector(getValue);
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);

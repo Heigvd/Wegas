@@ -44,7 +44,7 @@ import {
 import { instantiate } from '../../../data/scriptable';
 import { Player, Team } from '../../../data/selectors';
 import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
@@ -521,7 +521,7 @@ function ReviewEditor({
 }: ReviewEditorProps) {
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
 
-  const rev = useStore(() => {
+  const getRev = React.useCallback(() => {
     const reviewed = peerReview
       .getReviewed()
       .find(r => r.getId() === reviewState.review.getId());
@@ -533,19 +533,23 @@ function ReviewEditor({
       toReview?.getEntity() ||
       reviewState.review.getEntity()
     );
-  });
+  }, [peerReview, reviewState]);
+  const rev = useDataSelector(getRev);
 
-  const given = useStore(() =>
-    instantiate(
-      VariableDescriptorSelector.findByName<
-        ITextDescriptor | INumberDescriptor
-      >(
-        VariableDescriptorSelector.select<IPeerReviewDescriptor>(
-          peerReview.getParentId(),
-        )?.toReviewName,
+  const getGiven = React.useCallback(
+    () =>
+      instantiate(
+        VariableDescriptorSelector.findByName<
+          ITextDescriptor | INumberDescriptor
+        >(
+          VariableDescriptorSelector.select<IPeerReviewDescriptor>(
+            peerReview.getParentId(),
+          )?.toReviewName,
+        ),
       ),
-    ),
-  )?.getValue(Player.self());
+    [peerReview],
+  );
+  const given = useDataSelector(getGiven)?.getValue(Player.self());
 
   const isReviewDispatched =
     reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
@@ -672,7 +676,11 @@ export default function PeerReviewTreeViewDisplay({
 }: PeerReviewTreeViewDisplayProps) {
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
-  const sPRinstance = useStore(() => sPR?.getInstance(Player.self()));
+  const getSPRinstance = React.useCallback(
+    () => sPR?.getInstance(Player.self()),
+    [sPR],
+  );
+  const sPRinstance = useDataSelector(getSPRinstance);
 
   const [carretState, setCarretState] = React.useState<CarretState>({
     reviews: false,

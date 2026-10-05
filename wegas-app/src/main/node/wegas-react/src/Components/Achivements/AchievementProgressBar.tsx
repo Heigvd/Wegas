@@ -2,7 +2,7 @@ import * as React from 'react';
 import { css } from '@emotion/css';
 import { themeVar } from '../Theme/ThemeVars';
 import { all } from '../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../data/Stores/store';
+import { useDataSelector } from '../../store/hooks';
 import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 
@@ -80,7 +80,7 @@ export function ProgressBar({
       );
   }, [quest]);
 
-  const stats = useStore(getQuestStats);
+  const stats = useDataSelector(getQuestStats);
 
   const percent = stats.total > 0 ? (stats.current / stats.total) * 100 : 0;
 

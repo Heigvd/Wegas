@@ -28,7 +28,7 @@ import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../store/slices/variableDescriptors';
 import { instantiate } from '../../data/scriptable';
 import { Game, GameModel, Player, Team } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { useDataSelector } from '../../store/hooks';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
@@ -238,7 +238,8 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const [data, setData] = React.useState<IData>();
   const [nextStep, setNextStep] =
     React.useState<PeerReviewStateSelector>('Dispatch');
-  const spr = useStore(() => instantiate(peerReview));
+  const getSpr = React.useCallback(() => instantiate(peerReview), [peerReview]);
+  const spr = useDataSelector(getSpr);
   const { showModal, OkCancelModal } = useOkCancelModal();
 
   const i18nValues = useInternalTranslate(peerReviewTranslations);

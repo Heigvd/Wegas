@@ -83,9 +83,7 @@ interface WhQuestionInfo {
  * Query subtree / instance about a QuestionDescriptor
  *
  * Reads descriptors (via `select`) and instances (via `getInstance`) from the
- * react-redux store imperatively, but is still subscribed through the old store's
- * `useStore`: it only re-renders when the old store dispatches, which
- * manageResponseHandler does after updating the new store (see data/actions.ts).
+ * store imperatively, so subscribe to it with useDataSelector.
  */
 export function whQuestionInfo(question: IWhQuestionDescriptor) {
   return function (): WhQuestionInfo {

@@ -22,7 +22,7 @@ import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { readMessage } from '../../store/slices/variableInstances';
 import { instantiate } from '../../data/scriptable';
 import { Player } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { useDataSelector } from '../../store/hooks';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
@@ -286,7 +286,7 @@ export function InboxDisplay({
     });
   }, [inbox]);
 
-  const messages = useStore(messagesSelector);
+  const messages = useDataSelector(messagesSelector);
   const i18nComponentValues = useInternalPlayerLangTranslate(
     componentsTranslations,
   );

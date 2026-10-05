@@ -18,7 +18,8 @@ import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
 import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
+import { useCallback } from 'react';
+import { useDataSelector } from '../../../store/hooks';
 import { pageLoaderRegistered } from '../../../store/slices/scriptRegistry';
 import { createScript, isScript } from '../../../Helper/wegasEntites';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
@@ -693,7 +694,7 @@ export function useComputeUnreadCount(
     string | number | object[] | UnreadCountDescriptorTypes
   >(unreadCountVariableScript, context);
 
-  const infoBeamMessage = useStore(() => {
+  const getInfoBeamMessage = useCallback(() => {
     let infoBeamMessage: string | number;
     if (typeof scriptReturn === 'number') {
       infoBeamMessage = scriptReturn;
@@ -708,7 +709,8 @@ export function useComputeUnreadCount(
       infoBeamMessage = extractUnreadCount(scriptReturn);
     }
     return infoBeamMessage === 0 ? undefined : infoBeamMessage;
-  });
+  }, [scriptReturn]);
+  const infoBeamMessage = useDataSelector(getInfoBeamMessage);
 
   return infoBeamMessage
     ? {

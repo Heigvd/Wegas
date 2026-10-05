@@ -5,7 +5,9 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
+import { createSelector } from '@reduxjs/toolkit';
 import { isEqual } from 'lodash-es';
+import * as React from 'react';
 import { shallowEqual, TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from './store';
 
@@ -71,3 +73,53 @@ export const customStateEquals = <T,>(a: T, b: T): boolean => {
         return false;
     }
 };
+
+/**
+ * The slices that client scripts and the imperative data helpers (getInstance,
+ * Player.self(), VariableDescriptor.select, scriptable getValue()...) read.
+ * Stable reference until one of them changes.
+ *
+ * UI state (edition, pageEditor, search, popups...) is deliberately left out:
+ * it changes on every hover or keystroke and no data read depends on it.
+ */
+export const selectDataVersion = createSelector(
+    [
+        (s: RootState) => s.user,
+        (s: RootState) => s.players,
+        (s: RootState) => s.teams,
+        (s: RootState) => s.games,
+        (s: RootState) => s.gameModels,
+        (s: RootState) => s.variableDescriptors,
+        (s: RootState) => s.variableInstances,
+        (s: RootState) => s.pages,
+        (s: RootState) => s.scriptRegistry,
+    ],
+    (...slices) => slices,
+);
+
+/**
+ * Subscribe to a value computed through the imperative data helpers, which read
+ * the store themselves instead of taking a state argument.
+ *
+ * `compute` runs again only when a data slice changes (see selectDataVersion)
+ * or when `compute` itself changes, so it MUST be stable: wrap it in
+ * useCallback / useMemo. The component re-renders only when the result changes
+ * according to `isEqual` (default shallowEqual).
+ *
+ * `isEqual` returns true when the values are EQUAL, like useAppSelector's
+ * equality functions -- not deepDifferent / shallowDifferent.
+ *
+ * Prefer a plain useAppSelector selector when the value can be read from its
+ * state argument.
+ */
+export function useDataSelector<R>(
+    compute: () => R,
+    isEqual: (a: R, b: R) => boolean = shallowEqual,
+): R {
+    const selector = React.useMemo(
+        // the cached result is returned for as long as the data version is unchanged
+        () => createSelector([selectDataVersion], () => compute()),
+        [compute],
+    );
+    return useAppSelector(selector, isEqual);
+}

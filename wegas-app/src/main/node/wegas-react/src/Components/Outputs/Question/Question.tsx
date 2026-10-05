@@ -10,8 +10,7 @@ import {
 import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
@@ -39,9 +38,7 @@ export const questionStyle = cx(
  * @param question QuestionDescriptor to query
  *
  * Reads descriptors (via `select`) and instances (via `getInstance`) from the
- * react-redux store imperatively, but is still subscribed through the old store's
- * `useStore`: it only re-renders when the old store dispatches, which
- * manageResponseHandler does after updating the new store (see data/actions.ts).
+ * store imperatively, so subscribe to it with useDataSelector.
  */
 export function questionInfo(question: IQuestionDescriptor) {
   return function (): QuestionInfo {
@@ -73,7 +70,8 @@ export function ConnectedSimpleQuestionDisplay({
   entity,
   ...options
 }: ConnectedSimpleQuestionDisplayProps) {
-  const state = useStore(questionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => questionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   if (state.questionD == null) {
     return null;
   }
@@ -95,7 +93,8 @@ export function ConnectedWhQuestionDisplay({
   readOnly,
   editMode,
 }: ConnectedWhQuestionDisplay) {
-  const state = useStore(whQuestionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => whQuestionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   return (
     <WhQuestionDisplay
       {...state}

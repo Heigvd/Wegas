@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player, VariableDescriptor } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
-import { useAppSelector } from '../../store/hooks';
+import { useAppSelector, useDataSelector } from '../../store/hooks';
 import { IVariableDescriptor, IPlayer } from 'wegas-ts-api';
 import { instantiate } from '../../data/scriptable';
 import { RootState } from '../../store/store';
@@ -20,7 +19,7 @@ export function useVariableDescriptor<D extends IVariableDescriptor>(
     () => VariableDescriptor.findByName<D>(name),
     [name],
   );
-  return useStore(getDescriptor);
+  return useDataSelector(getDescriptor);
 }
 /**
  * Hook, connect with a VariableInstance

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { IScript, SStringDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
 import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -68,10 +68,12 @@ function PlayerStringInput({
 
   const text = useScript<SStringDescriptor | string>(script, context);
 
-  const value = useStore(
+  const getValue = React.useCallback(
     () =>
       (typeof text === 'object' ? text.getValue(Player.self()) : text) || '',
+    [text],
   );
+  const value = useDataSelector(getValue);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);

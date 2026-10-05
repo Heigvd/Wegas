@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
 import { all } from '../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../data/Stores/store';
+import { useDataSelector } from '../../store/hooks';
 import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { IconComp } from '../../Editor/Components/Views/FontAwesome';
@@ -23,7 +23,7 @@ export function AchievementExhibition({ quest }: AchievementExhibitionProps) {
       .map(ad => ({ d: ad, i: getInstance(ad) as IAchievementInstance }));
   }, [quest]);
 
-  const achievements = useStore(getData);
+  const achievements = useDataSelector(getData);
 
   return (
     <div>
