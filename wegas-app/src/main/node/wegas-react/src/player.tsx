@@ -11,15 +11,16 @@ import { importPageComponents } from './Components/PageComponents/tools/componen
 import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
-import './data/Stores/store';
 import { Player } from './Editor/Components/Player';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
 import { PopupManager } from './Components/PopupManager';
 import { store } from './store/store'
+import { bootstrap } from './store/bootstrap';
 import { Provider } from 'react-redux'
 import { ErrorBoundary } from "./Components/ErrorBoundary";
 
 importPageComponents();
+bootstrap();
 
 function mount() {
   const root = createRoot(document.getElementById('root')!);

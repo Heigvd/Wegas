@@ -38,7 +38,6 @@ import {
 import { AppThunk, dispatch } from '../../store/store';
 import { triggerEventHandlers } from '../../Helper/eventHandlers';
 import { VariableDescriptor } from '../selectors';
-import { store } from '../Stores/store';
 
 /* ------------------------------------------------------------------------- *
  * Re-exports
@@ -218,22 +217,20 @@ export function saveEditor(
           ),
         );
       case 'File':
-        return store.dispatch(() => {
-          return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
-            .then((res: IAbstractContentDescriptor) => {
-              if (selectUpdatedEntity) {
-                // the scope that opened the file re-selects it: used to be
-                // hard-coded to the global editing store, so a file saved from
-                // a nested form re-selected in the main editor
-                scopedDispatch(editFile(res));
-              }
-              editMode.cb && editMode.cb(res);
-            })
-            .catch((res: Error) => {
-              // events are global only, never route them through a local scope
-              dispatch(editorErrorEvent(res.message));
-            });
-        });
+        return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
+          .then((res: IAbstractContentDescriptor) => {
+            if (selectUpdatedEntity) {
+              // the scope that opened the file re-selects it: used to be
+              // hard-coded to the global editing store, so a file saved from
+              // a nested form re-selected in the main editor
+              scopedDispatch(editFile(res));
+            }
+            editMode.cb && editMode.cb(res);
+          })
+          .catch((res: Error) => {
+            // events are global only, never route them through a local scope
+            dispatch(editorErrorEvent(res.message));
+          });
     }
   };
 }

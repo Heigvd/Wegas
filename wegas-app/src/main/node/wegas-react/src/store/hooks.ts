@@ -18,8 +18,8 @@ export { shallowEqual };
  *
  * NOTE the orientation: react-redux equality functions return true when the
  * values are EQUAL (skip the re-render). This is the opposite of the
- * `deepDifferent` / `shallowDifferent` predicates the old store's useStore
- * takes, so those must never be passed to useAppSelector.
+ * `deepDifferent` / `shallowDifferent` predicates (storeHookFactory), so those
+ * must never be passed to useAppSelector or useDataSelector.
  */
 export const deepEqual = <T,>(a: T, b: T): boolean => isEqual(a, b);
 

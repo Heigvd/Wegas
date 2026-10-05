@@ -1,51 +1,29 @@
-import { IAbstractEntity } from 'wegas-ts-api';
 import { IManagedResponse } from '../API/rest';
 import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
 import { getEntityActions } from '../Editor/editionConfig';
-import { ActionType, ActionTypeValues } from './actionTypes';
 import { discriminant, normalizeData, NormalizedData } from './normalize';
 import { closeEditor } from './Reducer/editingState';
 import { triggerEventHandlers } from '../Helper/eventHandlers';
 import { VariableDescriptorState } from '../store/slices/variableDescriptors';
-import { store } from './Stores/store';
 import { AppDispatch, dispatch } from '../store/store';
 import { Edition } from '../store/slices/edition';
 import { updatePlayers } from '../store/slices/players';
 import { updateTeams } from '../store/slices/teams';
 import { managedResponseReceived } from '../store/actions';
 
-function createAction<T extends ActionTypeValues, P>(type: T, payload: P) {
-  return {
-    type,
-    payload,
-  };
+/**
+ * What manageResponseHandler returns. No reducer handles it: the response has
+ * already been applied to the store when it is returned. It only exists so the
+ * `dispatch(manageResponseHandler(...))` call sites keep working.
+ * TODO return void and unwrap those call sites (editing doc follow-up #14).
+ */
+export interface ManagedResponseHandledAction {
+  type: 'managedResponse/handled';
 }
 
-/**
- * Simple action creators.
- */
-export const ActionCreator = {
-  MANAGED_RESPONSE_ACTION: (data: {
-    // Nearly empty shells
-    deletedEntities: {
-      [K in keyof NormalizedData]: { [id: string]: IAbstractEntity };
-    };
-    updatedEntities: NormalizedData;
-    events: WegasEvent[];
-  }) => createAction(ActionType.MANAGED_RESPONSE_ACTION, data),
-
-  /**
-   * TEMPORARY bridge, removed with the old store (Phase 5): only wakes up the
-   * old store's `useStore` subscribers when the react-redux scriptRegistry
-   * slice changes. See data/Stores/store.ts.
-   */
-  SCRIPT_REGISTRY_CHANGED: () =>
-    createAction(ActionType.SCRIPT_REGISTRY_CHANGED, {}),
+const managedResponseHandled: ManagedResponseHandledAction = {
+  type: 'managedResponse/handled',
 };
-
-export type StateActions<
-  A extends keyof typeof ActionCreator = keyof typeof ActionCreator,
-> = ReturnType<typeof ActionCreator[A]>;
 
 // TOOLS
 
@@ -109,14 +87,9 @@ export function manageResponseHandler(
     }
   }
 
-  const managedValuesOnly = {
+  const managedValues = {
     deletedEntities,
     updatedEntities,
-    events: [] as WegasEvent[],
-  };
-
-  const managedValues = {
-    ...managedValuesOnly,
     events:
       payload.events?.map(event => {
         const timedEvent: WegasEvent = {
@@ -130,11 +103,6 @@ export function manageResponseHandler(
       }) || [],
   };
 
-  // The new store MUST be updated before the old one. Redux notifies subscribers
-  // synchronously, and old-store `useStore` selectors read migrated slices
-  // (instances, players, teams...) straight from the new store. Dispatching to the
-  // old store first would let those selectors latch a one-tick-stale value with
-  // nothing left to re-notify them.
   dispatch(
     updatePlayers({
       updated: updatedEntities.players,
@@ -149,15 +117,9 @@ export function manageResponseHandler(
     }),
   );
 
-  // new store: entity slices (games, gameModels, variableDescriptors,
-  // variableInstances...), plus the editorEvents slice which owns the events
+  // entity slices (games, gameModels, variableDescriptors, variableInstances...),
+  // plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
 
-  // old store: global
-  store.dispatch(ActionCreator.MANAGED_RESPONSE_ACTION(managedValues));
-
-  // The events are already in the editorEvents slice, so the action returned for
-  // old-store callers never carries them. The local edition scope gets no
-  // MANAGED_RESPONSE_ACTION either: it holds only an edition, and would ignore it.
-  return ActionCreator.MANAGED_RESPONSE_ACTION(managedValuesOnly);
+  return managedResponseHandled;
 }

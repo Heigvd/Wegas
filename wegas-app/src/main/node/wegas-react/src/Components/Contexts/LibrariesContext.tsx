@@ -14,7 +14,6 @@ import { manageResponseHandler } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { GameModel } from '../../data/selectors';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { store as oldStore } from '../../data/Stores/store';
 import { dispatch, store } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
@@ -911,7 +910,7 @@ export function LibrariesLoader(
 
         error = error == null && exceptionsFound.length > 0 ? 'UNKNOWN' : error;
         // Dispatch the rest of the response to the main store
-        oldStore.dispatch(manageResponseHandler(newManagedResponse));
+        manageResponseHandler(newManagedResponse);
 
         // Manage localy the error
         if (error != null) {
@@ -1055,7 +1054,7 @@ export function LibrariesLoader(
           }
 
           // Dispatch the rest of the response to the main store
-          oldStore.dispatch(manageResponseHandler(newManagedResponse));
+          manageResponseHandler(newManagedResponse);
         });
       }
     },

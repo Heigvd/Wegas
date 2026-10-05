@@ -8,7 +8,6 @@ import { get as getPage } from '../store/slices/pages';
 import { manageResponseHandler } from '../data/actions';
 import { entityIs } from '../data/entities';
 import { editorEvent } from '../data/Reducer/editingState';
-import { store } from '../data/Stores/store';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
@@ -267,7 +266,6 @@ class WebSocketListener {
                 .updatedEntities,
               events: [],
             },
-            store.dispatch,
           ),
         );
       // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
@@ -284,7 +282,6 @@ class WebSocketListener {
               updatedEntities: [],
               events: [],
             },
-            store.dispatch,
           ),
         );
       case 'OutdatedEntitiesEvent': {

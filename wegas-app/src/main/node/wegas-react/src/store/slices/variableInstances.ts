@@ -33,7 +33,10 @@ import { InboxAPI } from '../../API/inbox.api';
 import { QuestionDescriptorAPI } from '../../API/questionDescriptor.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import { VariableInstanceAPI } from '../../API/variableInstance.api';
-import { manageResponseHandler, StateActions } from '../../data/actions';
+import {
+  ManagedResponseHandledAction,
+  manageResponseHandler,
+} from '../../data/actions';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player } from '../../data/selectors';
 import { createScript } from '../../Helper/wegasEntites';
@@ -210,7 +213,7 @@ export default variableInstancesSlice.reducer;
  */
 export function getEvents(
   eventInboxInstance: IEventInboxInstance,
-): AppThunk<Promise<StateActions | void>> {
+): AppThunk<Promise<ManagedResponseHandledAction | void>> {
   return function (dispatch, getState) {
     dispatch(setEventLoading(eventInboxInstance.id!));
     return VariableInstanceAPI.getEvents(eventInboxInstance).then(res =>
@@ -222,7 +225,7 @@ export function getEvents(
 
 export function updateInstance(
   variableInstance: IVariableInstance,
-): AppThunk<Promise<StateActions | void>> {
+): AppThunk<Promise<ManagedResponseHandledAction | void>> {
   return function (dispatch, getState) {
     const gameModelId = selectCurrentGameModelId();
     return VariableInstanceAPI.update(variableInstance, gameModelId).then(res =>

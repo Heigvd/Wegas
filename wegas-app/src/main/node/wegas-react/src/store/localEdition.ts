@@ -63,8 +63,8 @@ export function useLocalEdition(): {
       // never the app store -- same as the local editingStore it replaces. It is
       // what makes a nested form's selection independent, and it is why a
       // local-scope thunk's inner `dispatch(manageResponseHandler(...))` is
-      // harmless: manageResponseHandler updates the app and old stores itself,
-      // and the MANAGED_RESPONSE_ACTION it returns is simply ignored here.
+      // harmless: manageResponseHandler updates the app store itself, and the
+      // no-op action it returns is simply ignored here.
       rawDispatch(action);
       return action;
     };

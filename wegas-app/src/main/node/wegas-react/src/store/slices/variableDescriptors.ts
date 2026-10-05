@@ -18,7 +18,10 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
-import { manageResponseHandler, StateActions } from '../../data/actions';
+import {
+  ManagedResponseHandledAction,
+  manageResponseHandler,
+} from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import { deleteState, editVariable } from '../../data/Reducer/editingState';
 import { Game, Player } from '../../data/selectors';
@@ -63,7 +66,7 @@ export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-): AppThunk<Promise<StateActions | void>> {
+): AppThunk<Promise<ManagedResponseHandledAction | void>> {
   return function (dispatch, getState) {
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
@@ -85,7 +88,7 @@ export function updateDescriptor(
 export function duplicateDescriptor(
   variableDescriptor: IVariableDescriptor,
   path?: (number | string)[],
-): AppThunk<Promise<StateActions | void>> {
+): AppThunk<Promise<ManagedResponseHandledAction | void>> {
   if (path == null || path.length === 0) {
     return function (dispatch, getState) {
       return VariableDescriptorAPI.duplicate(

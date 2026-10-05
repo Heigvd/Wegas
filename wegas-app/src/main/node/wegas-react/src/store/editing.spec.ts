@@ -10,9 +10,9 @@
  * The two slices that replaced the old editingStore.
  *
  * The tests build a store from the two reducers with the same middleware options
- * as store/store.ts rather than importing it: the real store pulls in the
- * old-store graph and wegas-ts-api, which ships untranspiled ESM that jest is
- * not set up for. tsc covers the real reducer-map composition.
+ * as store/store.ts rather than importing it: the real store pulls in the app
+ * graph (API/rest...) and wegas-ts-api, which ships untranspiled ESM that jest
+ * is not set up for. tsc covers the real reducer-map composition.
  */
 import { configureStore } from '@reduxjs/toolkit';
 import editionReducer, {
@@ -141,7 +141,7 @@ describe('edition reducer driven standalone (as useLocalEdition does)', () => {
     expect(opened.current).toBeDefined();
 
     for (const action of [
-      { type: 'MANAGED_RESPONSE_ACTION', payload: { events: [] } },
+      { type: 'managedResponse/handled' },
       { type: 'editorEvents/editorEventAdded', payload: ev(1) },
       { type: 'initStatuses/setInitStatus', payload: { key: 'games' } },
       { type: '@@redux/INIT' },

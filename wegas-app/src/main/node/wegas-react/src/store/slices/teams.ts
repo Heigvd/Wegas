@@ -69,8 +69,8 @@ export async function changePlayerLanguage(codeLang: string) {
     CurrentPlayerId,
     codeLang,
   );
-  // manageResponseHandler already dispatches to the old store and fans the
-  // payload out to this one, so its returned action needs no further dispatch.
+  // manageResponseHandler applies the response to the store itself, so its
+  // returned no-op action needs no dispatch.
   manageResponseHandler(res);
 }
 
