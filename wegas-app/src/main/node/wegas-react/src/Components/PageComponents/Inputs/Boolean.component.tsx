@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -63,7 +63,7 @@ function PlayerBoolean({
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
   const getValue = React.useCallback(
-    () => (typeof bool === 'object' ? bool.getValue(Player.self()) : bool),
+    () => (typeof bool === 'object' ? bool.getValue(selfPlayer()) : bool),
     [bool],
   );
   const value = useDataSelector(getValue);

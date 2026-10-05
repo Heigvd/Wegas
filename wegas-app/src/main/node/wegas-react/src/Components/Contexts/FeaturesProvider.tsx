@@ -2,7 +2,7 @@ import * as React from 'react';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { CheckBox } from '../Inputs/Boolean/CheckBox';
-import {GameModel} from "../../data/selectors";
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
 
 const availableFeatures: FeatureLevel[] = ['ADVANCED', 'INTERNAL'];
 
@@ -79,7 +79,7 @@ function FeaturesContext({
   }, [listener]);
 
   React.useEffect(() => {
-    if (GameModel.selectCurrent().type === 'MODEL') {
+    if (selectCurrentGameModel().type === 'MODEL') {
       toggleFeature('MODELER');
     }
   }, []);

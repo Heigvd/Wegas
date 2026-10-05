@@ -21,7 +21,7 @@ import {
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { createVariable } from '../../../store/editionThunks';
-import { VariableDescriptor } from '../../../data/selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -252,7 +252,7 @@ export function CTree({
       }
 
       const { edit } = getEntityActions(variable!)
-      scopedDispatch(edit(VariableDescriptor.select(variableId)!, subPath));
+      scopedDispatch(edit(selectDescriptor(variableId)!, subPath));
     },
     [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );
@@ -311,7 +311,7 @@ export function CTree({
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+        const parent = selectDescriptor<IPeerReviewDescriptor>(
           variable.parentId,
         );
 

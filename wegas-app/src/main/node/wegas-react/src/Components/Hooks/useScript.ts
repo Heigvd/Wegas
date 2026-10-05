@@ -23,11 +23,9 @@ import {
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
 import { DEFAULT_ROLES, rolesSet } from '../../store/slices/roles';
 import { instantiate } from '../../data/scriptable';
-import {
-  GameModel,
-  Player,
-  VariableDescriptor as VDSelect,
-} from '../../data/selectors';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { findDescriptorByName, selectDescriptor } from '../../store/slices/variableDescriptors';
 import { deepEqual, useDataSelector } from '../../store/hooks';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
@@ -146,8 +144,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
     classes,
   } = globalContexts;
 
-  const player = Player.selectCurrent();
-  const gameModel = GameModel.selectCurrent();
+  const player = selectCurrentPlayer();
+  const gameModel = selectCurrentGameModel();
   const teams = Object.values(store.getState().teams.entities);
   const pageLoaders = selectPageLoaders(state);
 
@@ -168,13 +166,13 @@ export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
-      const iDesc = VDSelect.findByName<T>(name);
+      const iDesc = findDescriptorByName<T>(name);
       if (iDesc) {
         return instantiate(iDesc) as ScriptableEntity<T> | undefined;
       }
     },
     select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
-      const iDesc = VDSelect.select<IVariableDescriptor>(id);
+      const iDesc = selectDescriptor<IVariableDescriptor>(id);
       if (iDesc) {
         return instantiate(iDesc) as unknown as T | undefined;
       }

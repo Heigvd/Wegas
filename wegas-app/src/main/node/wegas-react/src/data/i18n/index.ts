@@ -1,4 +1,5 @@
-import { Player, GameModel } from '../selectors';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
 import { ITranslatableContent, STranslatableContent } from 'wegas-ts-api';
 import { entityIs } from '../entities';
 
@@ -124,11 +125,11 @@ export function translate(
     return '';
   }
 
-  const lang = langArg ? langArg : Player.selectCurrent().lang;
+  const lang = langArg ? langArg : selectCurrentPlayer().lang;
 
   const availableLanguages = availableLanguagesArg
     ? availableLanguagesArg
-    : orderGameModelLanguages(GameModel.selectCurrent().languages);
+    : orderGameModelLanguages(selectCurrentGameModel().languages);
 
   // Make sure to have a map of ITranslation
   const translations =

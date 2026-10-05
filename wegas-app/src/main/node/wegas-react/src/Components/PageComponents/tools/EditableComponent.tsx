@@ -152,9 +152,7 @@ const asynExecute = createEditingAction(
             assembleStateAndContext(context),
           );
 
-          dispatch(
-            manageResponseHandler(result, dispatch, selectEdition(getState())),
-          );
+          manageResponseHandler(result, dispatch, selectEdition(getState()));
         }
       } else if (k === 'localScriptEval') {
         const result = wegasComponentActions.localScriptEval({

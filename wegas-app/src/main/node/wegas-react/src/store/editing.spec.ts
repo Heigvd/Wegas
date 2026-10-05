@@ -141,7 +141,6 @@ describe('edition reducer driven standalone (as useLocalEdition does)', () => {
     expect(opened.current).toBeDefined();
 
     for (const action of [
-      { type: 'managedResponse/handled' },
       { type: 'editorEvents/editorEventAdded', payload: ev(1) },
       { type: 'initStatuses/setInitStatus', payload: { key: 'games' } },
       { type: '@@redux/INIT' },

@@ -1,4 +1,4 @@
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 import { FindAndReplacePayload } from '../Editor/Components/FindAndReplace';
 import { IManagedResponse, managedModeRequest, rest } from './rest';
 
@@ -8,8 +8,8 @@ const FIND_AND_REPLACE_BASE = 'FindAndReplace';
 const GAME_MODEL_URL = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined
-      ? GameModel != null
-        ? GameModel.selectCurrent().id!
+      ? selectCurrentGameModel != null
+        ? selectCurrentGameModel().id!
         : CurrentGM.id!
       : gameModelId
   }/`;

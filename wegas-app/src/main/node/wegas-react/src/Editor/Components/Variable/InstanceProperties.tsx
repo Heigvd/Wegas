@@ -19,7 +19,7 @@ import {
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
 import { Edition, VariableEdition } from '../../../store/slices/edition';
 import { updateInstance } from '../../../store/slices/variableInstances';
-import { VariableDescriptor } from '../../../data/selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { commonTranslations } from '../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -99,7 +99,7 @@ export function InstanceProperties({
   const instance = instances.find(i => i.id === selectedInstance?.id);
 
   const descriptor = isEditingVariable(editing)
-    ? VariableDescriptor.select(editing.entity.id)
+    ? selectDescriptor(editing.entity.id)
     : undefined;
 
   const getInstances = React.useCallback((descriptor?: IVariableDescriptor) => {

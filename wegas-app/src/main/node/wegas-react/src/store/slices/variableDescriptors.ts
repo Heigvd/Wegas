@@ -7,6 +7,7 @@
  */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { produce } from 'immer';
+import { isMatch } from 'lodash-es';
 import {
   IPeerReviewDescriptor,
   IReview,
@@ -18,13 +19,11 @@ import {
   PeerReviewStateSelector,
 } from '../../API/peerReview.api';
 import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
-import {
-  ManagedResponseHandledAction,
-  manageResponseHandler,
-} from '../managedResponse';
-import { entityIs } from '../../data/entities';
+import { manageResponseHandler } from '../managedResponse';
+import { entityIs, varIsList } from '../../data/entities';
 import { deleteState, editVariable } from '../editionThunks';
-import { Game, Player } from '../../data/selectors';
+import { selectCurrentGame } from './game';
+import { selectCurrentPlayer } from './players';
 import { deepRemove } from '../../data/updateUtils';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';
 import { managedResponseReceived } from '../actions';
@@ -66,19 +65,17 @@ export function updateDescriptor(
   variableDescriptor: IVariableDescriptor,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-): AppThunk<Promise<ManagedResponseHandledAction | void>> {
+): AppThunk<Promise<void>> {
   return function (dispatch, getState) {
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.update(gameModelId, variableDescriptor).then(
       res => {
-        dispatch(
-          manageResponseHandler(
-            res,
-            dispatch,
-            selectEdition(getState()),
-            selectUpdatedEntity,
-            selectPath,
-          ),
+        manageResponseHandler(
+          res,
+          dispatch,
+          selectEdition(getState()),
+          selectUpdatedEntity,
+          selectPath,
         );
       },
     );
@@ -88,16 +85,14 @@ export function updateDescriptor(
 export function duplicateDescriptor(
   variableDescriptor: IVariableDescriptor,
   path?: (number | string)[],
-): AppThunk<Promise<ManagedResponseHandledAction | void>> {
+): AppThunk<Promise<void>> {
   if (path == null || path.length === 0) {
     return function (dispatch, getState) {
       return VariableDescriptorAPI.duplicate(
         currentGameModelId(),
         variableDescriptor,
       ).then(res =>
-        dispatch(
-          manageResponseHandler(res, dispatch, selectEdition(getState())),
-        ),
+        manageResponseHandler(res, dispatch, selectEdition(getState())),
       );
     };
   } else {
@@ -167,9 +162,7 @@ export function moveDescriptor(
       index,
       parent,
     ).then(res => {
-      return dispatch(
-        manageResponseHandler(res, dispatch, selectEdition(getState())),
-      );
+      return manageResponseHandler(res, dispatch, selectEdition(getState()));
     });
   };
 }
@@ -185,7 +178,7 @@ export function createDescriptor(
       variableDescriptor,
       parent,
     ).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())));
+      manageResponseHandler(res, dispatch, selectEdition(getState()));
       // Assume entity[0] is what we just created.
       return dispatch(
         editVariable(res.updatedEntities[0] as IVariableDescriptor),
@@ -214,9 +207,7 @@ export function deleteDescriptor(
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
       res =>
-        dispatch(
-          manageResponseHandler(res, dispatch, selectEdition(getState())),
-        ),
+        manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -225,9 +216,7 @@ export function reset(): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.reset(gameModelId).then(res => {
-      const r = dispatch(
-        manageResponseHandler(res, dispatch, selectEdition(getState())),
-      );
+      const r = manageResponseHandler(res, dispatch, selectEdition(getState()));
       // unmount and remount effects
       unmountEffects();
       runEffects();
@@ -240,7 +229,7 @@ export function getByIds(ids: number[]): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.getByIds(ids, gameModelId).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+      manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -253,10 +242,10 @@ export function setPRState(
     return PeerReviewDescriptorAPI.setState(
       currentGameModelId(),
       peerReviewId,
-      Game.selectCurrent().id!,
+      selectCurrentGame().id!,
       state,
     ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+      manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -266,9 +255,9 @@ export function submitToReview(peerReviewId: number): AppThunk {
     return PeerReviewDescriptorAPI.submitToReview(
       currentGameModelId(),
       peerReviewId,
-      Player.selectCurrent().id!,
+      selectCurrentPlayer().id!,
     ).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+      manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -276,7 +265,7 @@ export function submitToReview(peerReviewId: number): AppThunk {
 export function asynchSaveReview(review: IReview) {
   return PeerReviewDescriptorAPI.saveReview(
     currentGameModelId(),
-    Player.selectCurrent().id!,
+    selectCurrentPlayer().id!,
     review,
   );
 }
@@ -284,7 +273,7 @@ export function asynchSaveReview(review: IReview) {
 export function saveReview(review: IReview): AppThunk {
   return function (dispatch, getState) {
     return asynchSaveReview(review).then(res =>
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState()))),
+      manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -293,10 +282,10 @@ export function submitReview(review: IReview, cb?: () => void): AppThunk {
   return function (dispatch, getState) {
     return PeerReviewDescriptorAPI.submitReview(
       currentGameModelId(),
-      Player.selectCurrent().id!,
+      selectCurrentPlayer().id!,
       review,
     ).then(res => {
-      dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())));
+      manageResponseHandler(res, dispatch, selectEdition(getState()));
       cb && cb();
     });
   };
@@ -357,3 +346,143 @@ const variableDescriptorsSlice = createSlice({
 });
 
 export default variableDescriptorsSlice.reducer;
+
+/* ------------------------------------------------------------------ *
+ * Selectors
+ *
+ * Dual-use: called without a state they read the store synchronously
+ * (imperative callers, client scripts); passed a state they are plain
+ * selectors, usable in useAppSelector.
+ * ------------------------------------------------------------------ */
+
+/**
+ * The variableDescriptor with this id, or the list of them for a list of ids.
+ */
+export function selectDescriptor<
+  T extends IVariableDescriptor = IVariableDescriptor,
+>(id?: number | null, state?: RootState): Readonly<T> | undefined;
+export function selectDescriptor<
+  T extends IVariableDescriptor = IVariableDescriptor,
+>(id: number[], state?: RootState): (Readonly<T> | undefined)[];
+export function selectDescriptor<
+  T extends IVariableDescriptor = IVariableDescriptor,
+>(id?: number | number[] | null, state: RootState = store.getState()) {
+  if (id == null) {
+    return;
+  }
+  if (Array.isArray(id)) {
+    return id.map(i => state.variableDescriptors[i] as T);
+  }
+  return state.variableDescriptors[id] as T;
+}
+
+/**
+ * The first variableDescriptor whose `key` equals `value`.
+ */
+export function firstDescriptor<T extends IVariableDescriptor>(
+  key: keyof T,
+  value: unknown,
+): Readonly<T> | undefined {
+  const state = store.getState();
+  for (const vd in state.variableDescriptors) {
+    const s = state.variableDescriptors[vd] as T;
+    if (s && s[key] === value) {
+      return s;
+    }
+  }
+}
+
+/**
+ * Cache for findDescriptorByName: name -> id
+ */
+const descriptorNameIdCache = new Map<string, number>();
+
+/**
+ * The variableDescriptor with this name. Ids are cached by name for faster
+ * subsequent calls.
+ */
+export function findDescriptorByName<T extends IVariableDescriptor>(
+  name?: string,
+) {
+  if (name === undefined) {
+    return undefined;
+  }
+  const id = descriptorNameIdCache.get(name);
+  if (typeof id === 'number') {
+    const descriptor = selectDescriptor<T>(id);
+    // Check if descriptor still exists and has the right name.
+    if (descriptor != null && descriptor.name === name) {
+      return descriptor;
+    }
+    descriptorNameIdCache.delete(name);
+  }
+  const descriptor = firstDescriptor<T>('name', name);
+  if (descriptor != null && descriptor.id != null) {
+    descriptorNameIdCache.set(name, descriptor.id!);
+  }
+  return descriptor;
+}
+
+/**
+ * The first variableDescriptor matching the shape `o`.
+ */
+export function firstMatchingDescriptor<T extends IVariableDescriptor>(
+  o: Partial<T>,
+): Readonly<T> | undefined {
+  const state = store.getState();
+  for (const vd in state.variableDescriptors) {
+    const s = state.variableDescriptors[vd] as T;
+    if (isMatch(s, o)) {
+      return s;
+    }
+  }
+}
+
+/**
+ * Every variableDescriptor whose `key` equals `value`.
+ */
+export function allDescriptors<T extends IVariableDescriptor>(
+  key: keyof T,
+  value: unknown,
+) {
+  const ret = [];
+  const state = store.getState();
+  for (const vd in state.variableDescriptors) {
+    const s = state.variableDescriptors[vd] as T;
+    if (s && s[key] === value) {
+      ret.push(s);
+    }
+  }
+  return ret;
+}
+
+/**
+ * The variableDescriptors nested in a parent descriptor, at any depth,
+ * optionally only those of the given classes.
+ */
+export function flattenDescriptors<
+  T extends IVariableDescriptor,
+  E extends T['@class'][] = T['@class'][],
+>(ld: IParentDescriptor | undefined, ...cls: E) {
+  if (ld === undefined) {
+    return [];
+  }
+  const ret: T[] = [];
+  const state = store.getState();
+
+  ld.itemsIds.forEach(id => {
+    const descriptor = state.variableDescriptors[id];
+    if (cls.length > 0) {
+      if (descriptor !== undefined && cls.includes(descriptor['@class'])) {
+        ret.push(descriptor as T);
+      }
+    } else if (descriptor !== undefined) {
+      ret.push(descriptor as T);
+    }
+
+    if (varIsList(descriptor)) {
+      ret.push(...flattenDescriptors<T, E>(descriptor, ...cls));
+    }
+  });
+  return ret;
+}

@@ -26,8 +26,11 @@ import {
   getAll,
 } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
-import { GameModel, Player, Team } from '../../../data/selectors';
-import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { selfPlayer } from '../../../data/scriptable';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../../store/slices/players';
+import { selectCurrentTeam } from '../../../store/slices/teams';
+import { findDescriptorByName } from '../../../store/slices/variableDescriptors';
 import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -75,16 +78,16 @@ export default function PeerReviewVariableEditor({
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const getReviewState = React.useCallback(
-    () => sPR?.getInstance(Player.self()).getReviewState(),
+    () => sPR?.getInstance(selfPlayer()).getReviewState(),
     [sPR],
   );
   const reviewState = useDataSelector(getReviewState);
   const variableToReview = instantiate(
-    findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
+    findDescriptorByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
   );
 
   const waitingState = useLiveUpdate(
-    variableToReview?.getInstance(Player.self()).getId(),
+    variableToReview?.getInstance(selfPlayer()).getId(),
   );
 
   // Resolved inside rather than from variableToReview, which is a new object on
@@ -92,8 +95,8 @@ export default function PeerReviewVariableEditor({
   const getStoreValue = React.useCallback(
     () =>
       instantiate(
-        findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
-      )?.getValue(Player.self()),
+        findDescriptorByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
+      )?.getValue(selfPlayer()),
     [sPR],
   );
   const storeValue = useDataSelector(getStoreValue, deepEqual);
@@ -114,7 +117,7 @@ export default function PeerReviewVariableEditor({
       }
       timer.current = setTimeout(() => {
         asyncRunLoadedScript(
-          GameModel.selectCurrent().id!,
+          selectCurrentGameModel().id!,
           `Variable.find(gameModel,"${variableToReview?.getName()}").setValue(self,${
             val == null
               ? ''
@@ -122,7 +125,7 @@ export default function PeerReviewVariableEditor({
               ? JSON.stringify(val)
               : val
           })`,
-          Player.selectCurrent(),
+          selectCurrentPlayer(),
           undefined,
         )
           .catch(e => {
@@ -150,7 +153,7 @@ export default function PeerReviewVariableEditor({
       if (variableToReview != null && val != null) {
         dispatch(
           liveEdition(
-            `private-Team-${Team.selectCurrent().id!}`,
+            `private-Team-${selectCurrentTeam().id!}`,
             produce((variable: INumberInstance | ITextInstance) => {
               if (entityIs(variable, 'NumberInstance')) {
                 variable.value = Number(val);
@@ -162,7 +165,7 @@ export default function PeerReviewVariableEditor({
                 );
               }
               return variable;
-            })(variableToReview.getInstance(Player.self()).getEntity()),
+            })(variableToReview.getInstance(selfPlayer()).getEntity()),
           ),
         );
       }

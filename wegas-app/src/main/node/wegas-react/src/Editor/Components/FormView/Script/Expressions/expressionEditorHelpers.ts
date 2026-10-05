@@ -7,7 +7,7 @@ import {
   isServerMethod,
   selectServerMethods,
 } from '../../../../../store/slices/scriptRegistry';
-import { VariableDescriptor as VDSelect } from '../../../../../data/selectors';
+import { findDescriptorByName } from '../../../../../store/slices/variableDescriptors';
 import { store } from '../../../../../store/store';
 import {
   getVariableMethodConfig,
@@ -580,7 +580,7 @@ export function generateSchema(
       case 'variable':
         configArg = {
           type: expression.type,
-          value: VDSelect.findByName(expression.variableName),
+          value: findDescriptorByName(expression.variableName),
           mode,
         };
         break;

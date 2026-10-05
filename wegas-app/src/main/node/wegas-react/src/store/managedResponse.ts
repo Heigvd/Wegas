@@ -10,20 +10,6 @@ import { updatePlayers } from './slices/players';
 import { updateTeams } from './slices/teams';
 import { managedResponseReceived } from './actions';
 
-/**
- * What manageResponseHandler returns. No reducer handles it: the response has
- * already been applied to the store when it is returned. It only exists so the
- * `dispatch(manageResponseHandler(...))` call sites keep working.
- * TODO return void and unwrap those call sites (editing doc follow-up #14).
- */
-export interface ManagedResponseHandledAction {
-  type: 'managedResponse/handled';
-}
-
-const managedResponseHandled: ManagedResponseHandledAction = {
-  type: 'managedResponse/handled',
-};
-
 // TOOLS
 
 export const closeEditorWhenDeletedVariable = (
@@ -37,6 +23,13 @@ export const closeEditorWhenDeletedVariable = (
   Object.keys(deletedVariables).includes(String(editing.entity.id)) &&
   dispatch(closeEditor());
 
+/**
+ * Apply a managed-mode response (REST or websocket) to the store: update the
+ * entity slices, log its events, and reconcile the caller's edition scope.
+ *
+ * Call it directly, it dispatches everything itself: there is nothing to
+ * dispatch with its result.
+ */
 export function manageResponseHandler(
   payload: IManagedResponse,
   /**
@@ -49,7 +42,7 @@ export function manageResponseHandler(
   localEditing?: Edition,
   selectUpdatedEntity: boolean = true,
   selectPath?: (string | number)[],
-) {
+): void {
   const deletedEntities = normalizeData(payload.deletedEntities);
   const updatedEntities = normalizeData(payload.updatedEntities);
 
@@ -119,6 +112,4 @@ export function manageResponseHandler(
   // entity slices (games, gameModels, variableDescriptors, variableInstances...),
   // plus the editorEvents slice which owns the events
   dispatch(managedResponseReceived(managedValues));
-
-  return managedResponseHandled;
 }

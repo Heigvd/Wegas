@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
 import { themeVar } from '../Theme/ThemeVars';
-import { all } from '../../data/selectors/VariableDescriptorSelector';
+import { allDescriptors } from '../../store/slices/variableDescriptors';
 import { useDataSelector } from '../../store/hooks';
 import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
@@ -57,7 +57,7 @@ export function ProgressBar({
   displayValue,
 }: ProgressBarProps) {
   const getQuestStats = React.useCallback(() => {
-    const ads = all(
+    const ads = allDescriptors(
       '@class',
       'AchievementDescriptor',
     ) as IAchievementDescriptor[];

@@ -5,7 +5,7 @@ import {
   LibraryAPI,
 } from '../../API/library.api';
 import { useWebsocketEvent } from '../../API/websocket';
-import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
+import { useIsReadyForClientScript } from '../../store/slices/initStatus';
 import { dispatch, store } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { getLogger } from '../../Helper/wegaslog';

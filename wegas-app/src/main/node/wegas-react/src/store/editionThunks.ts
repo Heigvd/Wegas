@@ -23,7 +23,7 @@ import {
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
 import { FileAPI } from '../API/files.api';
-import { VariableDescriptor } from '../data/selectors';
+import { selectDescriptor } from './slices/variableDescriptors';
 import { AvailableViews } from '../Editor/Components/FormView';
 import {
   discardUnsavedChanges,
@@ -193,7 +193,7 @@ export function saveEditor(
         return scopedDispatch(
           createDescriptor(
             value as IVariableDescriptor,
-            VariableDescriptor.select(editMode.parentId) as
+            selectDescriptor(editMode.parentId) as
               | IParentDescriptor
               | undefined,
           ),

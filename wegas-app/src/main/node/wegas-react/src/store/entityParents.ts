@@ -2,22 +2,24 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013-2021 School of Management and Engineering Vaud, Comem, MEI
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-
 import { get, isMatch } from 'lodash-es';
-import { discriminant } from '../normalize';
-import {
-  Game,
-  GameModel,
-  Player,
-  Team,
-  VariableDescriptor,
-  VariableInstance,
-} from '../selectors';
 import { IAbstractEntity } from 'wegas-ts-api';
-import { entityIs } from '../entities';
+import { entityIs } from '../data/entities';
+import { discriminant } from '../data/normalize';
+import { selectGame } from './slices/game';
+import { selectGameModel } from './slices/gameModel';
+import { selectPlayer } from './slices/players';
+import { selectTeam } from './slices/teams';
+import { selectDescriptor } from './slices/variableDescriptors';
+import { selectInstance } from './slices/variableInstances';
+
+/**
+ * Walk up the entity tree (parentType / parentId) across every entity slice.
+ * Not in a slice because it reads them all.
+ */
 
 function findNearestParentInFormVal<
   T extends IAbstractEntity = IAbstractEntity,
@@ -68,17 +70,17 @@ export function getParent<T extends IAbstractEntity = IAbstractEntity>(
   if (val.parentType) {
     switch (discriminant({ '@class': val.parentType })) {
       case 'variableDescriptors':
-        return VariableDescriptor.select(val.parentId) as unknown as T;
+        return selectDescriptor(val.parentId) as unknown as T;
       case 'variableInstances':
-        return VariableInstance.select(val.parentId) as unknown as T;
+        return selectInstance(val.parentId) as unknown as T;
       case 'gameModels':
-        return GameModel.select(val.parentId!) as unknown as T;
+        return selectGameModel(val.parentId!) as unknown as T;
       case 'games':
-        return Game.select(val.parentId!) as unknown as T;
+        return selectGame(val.parentId!) as unknown as T;
       case 'teams':
-        return Team.select(val.parentId!) as unknown as T;
+        return selectTeam(val.parentId!) as unknown as T;
       case 'players':
-        return Player.select(val.parentId!) as unknown as T;
+        return selectPlayer(val.parentId!) as unknown as T;
     }
     return undefined;
   }

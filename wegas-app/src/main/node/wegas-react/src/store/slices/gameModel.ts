@@ -12,7 +12,7 @@ import { manageResponseHandler } from '../managedResponse';
 import { managedResponseReceived } from '../actions';
 import { selectEdition } from './edition';
 import { setInitStatus } from './initStatus';
-import { AppThunk, dispatch, RootState, store } from '../../store/store';
+import { AppThunk, RootState, store } from '../../store/store';
 
 export interface GameModelState {
   /** Immutable, seeded from the server-injected CurrentGM global. */
@@ -33,7 +33,7 @@ export const getGameModel = createAsyncThunk(
   async (gameModelId: number, thunkAPI) => {
     const res = await GameModelApi.get(gameModelId);
 
-    dispatch(manageResponseHandler(res));
+    manageResponseHandler(res);
     thunkAPI.dispatch(setInitStatus({ key: 'gameModel', status: true }));
   },
 );
@@ -48,14 +48,14 @@ export function liveEdition<T extends IMergeable>(
 ): AppThunk {
   return async (dispatch, getState) => {
     const res = await GameModelApi.liveEdition(channel, entity)
-    dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())))
+    manageResponseHandler(res, dispatch, selectEdition(getState()))
   };
 }
 
 export function createExtraTestPlayer(gameModelId: number): AppThunk {
   return async (dispatch, getState) => {
     const res = await GameModelApi.createExtraTestPlayer(gameModelId)
-    dispatch(manageResponseHandler(res, dispatch, selectEdition(getState())))
+    manageResponseHandler(res, dispatch, selectEdition(getState()))
   };
 }
 
@@ -108,3 +108,21 @@ export const selectCurrentGameModelId = (
 
 export const { editGameModel, editLanguage } = gameModelSlice.actions;
 export default gameModelSlice.reducer;
+
+/* ------------------------------------------------------------------ *
+ * Selectors
+ *
+ * Dual-use: called without a state they read the store synchronously
+ * (imperative callers, client scripts); passed a state they are plain
+ * selectors, usable in useAppSelector.
+ * ------------------------------------------------------------------ */
+
+/** The current game model. */
+export function selectCurrentGameModel(state: RootState = store.getState()) {
+  return state.gameModels.entities[state.gameModels.currentGameModelId];
+}
+
+/** The game model with this id. */
+export function selectGameModel(id: number, state: RootState = store.getState()) {
+  return state.gameModels.entities[id];
+}

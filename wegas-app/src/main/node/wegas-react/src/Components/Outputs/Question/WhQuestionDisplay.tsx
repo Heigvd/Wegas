@@ -21,7 +21,7 @@ import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -87,9 +87,9 @@ interface WhQuestionInfo {
  */
 export function whQuestionInfo(question: IWhQuestionDescriptor) {
   return function (): WhQuestionInfo {
-    const questionD = select<IWhQuestionDescriptor>(question.id)!;
+    const questionD = selectDescriptor<IWhQuestionDescriptor>(question.id)!;
     const choicesD = questionD.itemsIds
-      .map(id => select<IWhChoiceDescriptor>(id))
+      .map(id => selectDescriptor<IWhChoiceDescriptor>(id))
       .filter(function (
         entity: IWhChoiceDescriptor | undefined,
       ): entity is IWhChoiceDescriptor {

@@ -22,7 +22,9 @@ import {
   duplicateDescriptor,
   updateDescriptor,
 } from '../../store/slices/variableDescriptors';
-import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
+import { getParent } from '../../store/entityParents';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectDescriptor } from '../../store/slices/variableDescriptors';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -87,12 +89,12 @@ function getVisibility(
     if (inheritedValue) {
       return inheritedValue;
     }
-    let p = Helper.getParent(entity);
+    let p = getParent(entity);
     while (p) {
       if ('visibility' in p) {
         return (p as any).visibility as VISIBILITY;
       }
-      p = Helper.getParent(p);
+      p = getParent(p);
     }
     return defaultValue;
   }
@@ -169,7 +171,7 @@ function _overrideSchema(
 }
 
 export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
-  const gameModel = GameModel.selectCurrent();
+  const gameModel = selectCurrentGameModel();
   if (gameModel.type === 'SCENARIO') {
     return _overrideSchema(cloneDeep(schema), entity);
   }
@@ -407,7 +409,7 @@ export function getEntity(editionState?: Readonly<Edition>) {
     case 'File':
       return editionState.entity;
     case 'VariableFSM': {
-      return VariableDescriptor.select(editionState.entity.id);
+      return selectDescriptor(editionState.entity.id);
     }
     default:
       return undefined;
@@ -523,7 +525,7 @@ function VariableEditionPanel({
       if (entity != null) {
         if (editing?.type === 'VariableCreate') {
           if (editing.subtype === 'Choice') {
-            const parent = VariableDescriptor.select<IChoiceDescriptor>(
+            const parent = selectDescriptor<IChoiceDescriptor>(
               editing.parentId,
             );
             if (parent) {
@@ -542,7 +544,7 @@ function VariableEditionPanel({
               return;
             }
           } else {
-            const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+            const parent = selectDescriptor<IPeerReviewDescriptor>(
               editing.parentId,
             );
             if (parent && entityIs(entity, 'EvaluationDescriptor', true)) {

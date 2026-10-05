@@ -42,8 +42,9 @@ import {
   submitReview,
 } from '../../../store/slices/variableDescriptors';
 import { instantiate } from '../../../data/scriptable';
-import { Player, Team } from '../../../data/selectors';
-import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
+import { selfPlayer } from '../../../data/scriptable';
+import { selectCurrentTeam } from '../../../store/slices/teams';
+import { findDescriptorByName, selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -283,7 +284,7 @@ function EvalutationEditor({
     (val: string | number) => {
       if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
         dispatch(
-          liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
+          liveEdition(`private-Team-${selectCurrentTeam().id!}`, {
             ...iEvaluation.getEntity(),
             value: val,
           }),
@@ -539,17 +540,17 @@ function ReviewEditor({
   const getGiven = React.useCallback(
     () =>
       instantiate(
-        VariableDescriptorSelector.findByName<
+        findDescriptorByName<
           ITextDescriptor | INumberDescriptor
         >(
-          VariableDescriptorSelector.select<IPeerReviewDescriptor>(
+          selectDescriptor<IPeerReviewDescriptor>(
             peerReview.getParentId(),
           )?.toReviewName,
         ),
       ),
     [peerReview],
   );
-  const given = useDataSelector(getGiven)?.getValue(Player.self());
+  const given = useDataSelector(getGiven)?.getValue(selfPlayer());
 
   const isReviewDispatched =
     reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
@@ -677,7 +678,7 @@ export default function PeerReviewTreeViewDisplay({
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
   const getSPRinstance = React.useCallback(
-    () => sPR?.getInstance(Player.self()),
+    () => sPR?.getInstance(selfPlayer()),
     [sPR],
   );
   const sPRinstance = useDataSelector(getSPRinstance);

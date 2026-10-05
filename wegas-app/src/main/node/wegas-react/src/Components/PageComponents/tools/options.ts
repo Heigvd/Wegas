@@ -16,8 +16,9 @@ import {
 } from 'wegas-ts-api';
 import { fileURL } from '../../../API/files.api';
 import { runScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
-import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
+import { selfPlayer } from '../../../data/scriptable';
+import { selectCurrentPlayer } from '../../../store/slices/players';
+import { findDescriptorByName } from '../../../store/slices/variableDescriptors';
 import { useCallback } from 'react';
 import { useDataSelector } from '../../../store/hooks';
 import { pageLoaderRegistered } from '../../../store/slices/scriptRegistry';
@@ -169,7 +170,7 @@ export const wegasComponentActions: WegasComponentActions = {
   },
   impactVariable: props => {
     try {
-      dispatch(runScript(props.impact, Player.selectCurrent()));
+      dispatch(runScript(props.impact, selectCurrentPlayer()));
     } catch (error) {
       wwarn(error);
     }
@@ -193,7 +194,7 @@ export const wegasComponentActions: WegasComponentActions = {
   printVariable: props => {
     //TODO : Discuss that with Maxence
     wlog('Not implemented yet');
-    wlog(findByName(props.variableName));
+    wlog(findDescriptorByName(props.variableName));
   },
 };
 
@@ -619,7 +620,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
   if (!descriptor) {
     return 0;
   } else {
-    const instance = descriptor?.getInstance(Player.self());
+    const instance = descriptor?.getInstance(selfPlayer());
 
     if (!instance) {
       return 0;
@@ -651,7 +652,7 @@ function extractUnreadCount(descriptor?: UnreadCountDescriptorTypes): number {
             return 1;
           } else {
             // non-cbx must have 0 reply
-            return descriptor.isReplied(Player.self()) ? 0 : 1;
+            return descriptor.isReplied(selfPlayer()) ? 0 : 1;
           }
         }
       } else if (instance instanceof SWhQuestionInstance) {

@@ -27,7 +27,10 @@ import {
 import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../store/slices/variableDescriptors';
 import { instantiate } from '../../data/scriptable';
-import { Game, GameModel, Player, Team } from '../../data/selectors';
+import { selectCurrentGame } from '../../store/slices/game';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { selectTeam } from '../../store/slices/teams';
 import { useDataSelector } from '../../store/hooks';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -186,8 +189,8 @@ function globalPRStatus(
   let globalStatus: PeerReviewStatus;
   if (overviewState != null) {
     for (const teamId in overviewState) {
-      const team = Team.select(Number(teamId));
-      const game = Game.selectCurrent();
+      const team = selectTeam(Number(teamId));
+      const game = selectCurrentGame();
       const overviewTeam = overviewState[teamId];
       let teamStatus: PeerReviewTeamStatus = 'N/A';
       if (
@@ -246,8 +249,8 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const getData = React.useCallback(() => {
     let mounted = true;
     VariableDescriptorAPI.runScript(
-      GameModel.selectCurrent().id!,
-      Player.selectCurrent().id!,
+      selectCurrentGameModel().id!,
+      selectCurrentPlayer().id!,
       createScript(
         `ReviewHelper.summarize("${peerReview.name}")`,
         'JavaScript',
@@ -325,9 +328,9 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const changeStatus = React.useCallback(
     (prNewStatus: PeerReviewStateSelector) => {
       PeerReviewDescriptorAPI.setStateUnmanaged(
-        GameModel.selectCurrent().id!,
+        selectCurrentGameModel().id!,
         peerReview.id!,
-        Game.selectCurrent().id!,
+        selectCurrentGame().id!,
         prNewStatus,
       )
         .catch(e => {

@@ -257,33 +257,25 @@ class WebSocketListener {
     // see : websocketFacade.java , EntityUpdatedEvent.java
     switch (event) {
       case 'EntityUpdatedEvent':
-        return dispatch(
-          manageResponseHandler(
-            {
-              '@class': 'ManagedResponse',
-              deletedEntities: [],
-              updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
-                .updatedEntities,
-              events: [],
-            },
-          ),
-        );
+        return manageResponseHandler({
+          '@class': 'ManagedResponse',
+          deletedEntities: [],
+          updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
+            .updatedEntities,
+          events: [],
+        });
       // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
       case 'EntityDestroyedEvent':
-        return dispatch(
-          manageResponseHandler(
-            {
-              '@class': 'ManagedResponse',
-              deletedEntities: (
-                data as {
-                  deletedEntities: DestroyedEntity[];
-                }
-              ).deletedEntities,
-              updatedEntities: [],
-              events: [],
-            },
-          ),
-        );
+        return manageResponseHandler({
+          '@class': 'ManagedResponse',
+          deletedEntities: (
+            data as {
+              deletedEntities: DestroyedEntity[];
+            }
+          ).deletedEntities,
+          updatedEntities: [],
+          events: [],
+        });
       case 'OutdatedEntitiesEvent': {
         const { updatedEntities } = data as OutdatedEntitiesEvent;
 

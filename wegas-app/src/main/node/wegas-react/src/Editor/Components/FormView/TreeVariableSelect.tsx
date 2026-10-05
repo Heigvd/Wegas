@@ -11,7 +11,7 @@ import {
 import { flex, flexRow, grow, itemCenter } from '../../../css/classes';
 import { varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { VariableDescriptor } from '../../../data/selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import { deepEqual, useDataSelector } from '../../../store/hooks';
 import {
@@ -56,7 +56,7 @@ export function genVarItems<T = string>(
   function mapItem(
     i: number,
   ): TreeSelectItem<StringOrT<typeof decorateFn, T>> | undefined {
-    const item = VariableDescriptor.select(i);
+    const item = selectDescriptor(i);
     if (item == null) {
       return undefined;
     }

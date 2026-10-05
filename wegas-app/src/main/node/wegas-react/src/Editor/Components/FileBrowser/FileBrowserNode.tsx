@@ -24,7 +24,7 @@ import {
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
 import { editFile } from '../../../store/editionThunks';
-import { GameModel } from '../../../data/selectors';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {
   formatFileSize,
@@ -117,8 +117,8 @@ const sortFiles = (
 
 const gameModelDependsOnModel = () => {
   return (
-    GameModel.selectCurrent().type === 'SCENARIO' &&
-    GameModel.selectCurrent().basedOnId !== null
+    selectCurrentGameModel().type === 'SCENARIO' &&
+    selectCurrentGameModel().basedOnId !== null
   );
 };
 

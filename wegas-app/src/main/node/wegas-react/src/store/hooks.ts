@@ -76,7 +76,7 @@ export const customStateEquals = <T,>(a: T, b: T): boolean => {
 
 /**
  * The slices that client scripts and the imperative data helpers (getInstance,
- * Player.self(), VariableDescriptor.select, scriptable getValue()...) read.
+ * selfPlayer(), selectDescriptor, scriptable getValue()...) read.
  * Stable reference until one of them changes.
  *
  * UI state (edition, pageEditor, search, popups...) is deliberately left out:

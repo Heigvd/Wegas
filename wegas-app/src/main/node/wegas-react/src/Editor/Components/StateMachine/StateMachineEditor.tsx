@@ -30,7 +30,7 @@ import {
   getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
 import { editStateMachine, saveEditor } from '../../../store/editionThunks';
-import { VariableDescriptor } from '../../../data/selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { Edition, selectEdition } from '../../../store/slices/edition';
 import { SearchState, selectSearch } from '../../../store/slices/search';
 import { RootState, dispatch, store } from '../../../store/store';
@@ -229,7 +229,7 @@ export function StateMachineEditor<
       };
 
       const oldFSM = cloneDeep(
-        VariableDescriptor.select(newCurrentState.parentId!)!,
+        selectDescriptor(newCurrentState.parentId!)!,
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
@@ -446,7 +446,7 @@ export function editingStateSelector(state: RootState) {
       s.editing.type === 'Variable')
   ) {
     editedVariable = s.editing.entity as IFSMDescriptor | IDialogueDescriptor;
-    const lastFSM = VariableDescriptor.select(s.editing.entity.id) as
+    const lastFSM = selectDescriptor(s.editing.entity.id) as
       | IFSMDescriptor
       | IDialogueDescriptor;
     if (!shallowIs(editedVariable, lastFSM)) {

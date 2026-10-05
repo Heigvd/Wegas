@@ -3,7 +3,7 @@ import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
 import { runScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -75,7 +75,7 @@ function PlayerSelectInput({
   const getValue = React.useCallback(() => {
     const v =
       descriptor != null && typeof descriptor === 'object'
-        ? descriptor.getValue(Player.self())
+        ? descriptor.getValue(selfPlayer())
         : descriptor;
     return v == undefined ? '' : v;
   }, [descriptor]);

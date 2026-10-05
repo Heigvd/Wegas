@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
-import { all } from '../../data/selectors/VariableDescriptorSelector';
+import { allDescriptors } from '../../store/slices/variableDescriptors';
 import { useDataSelector } from '../../store/hooks';
 import { IAchievementDescriptor, IAchievementInstance } from 'wegas-ts-api';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
@@ -18,7 +18,7 @@ export interface AchievementExhibitionProps {
 
 export function AchievementExhibition({ quest }: AchievementExhibitionProps) {
   const getData = React.useCallback(() => {
-    return (all('@class', 'AchievementDescriptor') as IAchievementDescriptor[])
+    return (allDescriptors('@class', 'AchievementDescriptor') as IAchievementDescriptor[])
       .filter(ad => ad.quest === quest)
       .map(ad => ({ d: ad, i: getInstance(ad) as IAchievementInstance }));
   }, [quest]);

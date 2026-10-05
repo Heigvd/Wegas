@@ -21,7 +21,7 @@ import {
   secondaryButtonStyle,
 } from '../../../css/classes';
 import { manageResponseHandler } from '../../../store/managedResponse';
-import { GameModel } from '../../../data/selectors';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
 import { dispatch } from '../../../store/store';
 import { editGameModel, editLanguage } from '../../../store/slices/gameModel';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -69,7 +69,7 @@ function moveLanguage(
     dispatch(
       editGameModel({
         gameModel,
-        gameModelId: GameModel.selectCurrent().id!,
+        gameModelId: selectCurrentGameModel().id!,
       }),
     );
   }
@@ -219,7 +219,7 @@ export default function LanguageEditor() {
                         dispatch(
                           editLanguage({
                             gameModelLanguage,
-                            gameModelId: GameModel.selectCurrent().id!,
+                            gameModelId: selectCurrentGameModel().id!,
                           }),
                         );
                       })
@@ -236,13 +236,12 @@ export default function LanguageEditor() {
                             .map(event => parseEvent(event).message)
                             .join('\n'),
                         );
-                        dispatch(manageResponseHandler({
-                            '@class': 'ManagedResponse',
-                            deletedEntities,
-                            updatedEntities,
-                            events: [],
-                          }),
-                        );
+                        manageResponseHandler({
+                          '@class': 'ManagedResponse',
+                          deletedEntities,
+                          updatedEntities,
+                          events: [],
+                        });
                       },
                     );
                   }

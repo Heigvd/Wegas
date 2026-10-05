@@ -53,7 +53,8 @@ import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
 import { LanguagesState } from '../../../store/slices/languages';
-import { GameModel, VariableDescriptor } from '../../../data/selectors';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 
 import {
   deepEqual,
@@ -426,19 +427,19 @@ function TranslatableContentView({
       onSave={() => {
         LanguagesAPI.updateTranslation(translationObject).then(res => {
           setValue(languageCode)(undefined);
-          dispatch(manageResponseHandler(res));
+          manageResponseHandler(res);
         });
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
         LanguagesAPI.outdateTranslations(translationObject).then(res => {
-          dispatch(manageResponseHandler(res));
+          manageResponseHandler(res);
         });
       }}
       onOutdate={outdate => {
         LanguagesAPI.setTranslationStatus(translationObject, !outdate).then(
           res => {
-            dispatch(manageResponseHandler(res));
+            manageResponseHandler(res);
           },
         );
       }}
@@ -540,7 +541,7 @@ function ScriptView({
   selectedLanguages,
   showOptions,
 }: ScriptViewProps) : JSX.Element {
-  const parentDescriptor = VariableDescriptor.select(value.parentId!)!;
+  const parentDescriptor = selectDescriptor(value.parentId!)!;
   const parentSchema = (getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
@@ -808,7 +809,7 @@ function LanguagesVisitor({
 
   const itemSelector = React.useCallback(() => {
     return {
-      item: VariableDescriptor.select(itemId),
+      item: selectDescriptor(itemId),
     };
   }, [itemId]);
 
@@ -1029,7 +1030,7 @@ function TranslationHeader({
                   language.code,
                 ).then(res => {
                   resetLanguage(language.code);
-                  dispatch(manageResponseHandler(res));
+                  manageResponseHandler(res);
                 });
               } else if (
                 item.type === 'CLEAR_OUTDATED' ||
@@ -1050,7 +1051,7 @@ function TranslationHeader({
             onClick={() => {
               LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
                 resetLanguage(language.code);
-                dispatch(manageResponseHandler(res));
+                manageResponseHandler(res);
               });
             }}
             className={cx(itemCenter, css({ padding: 0 }))}
@@ -1096,7 +1097,7 @@ export function TranslationEditor() {
     const parentIds: number[] = [];
     while (newParentId != null) {
       parentIds.push(newParentId);
-      newParentId = VariableDescriptor.select(newParentId)?.parentId;
+      newParentId = selectDescriptor(newParentId)?.parentId;
     }
     return {
       parentIds,
@@ -1223,7 +1224,7 @@ export function TranslationEditor() {
                         dispatch(
                           editGameModel({
                             gameModel: res,
-                            gameModelId: GameModel.selectCurrent().id!,
+                            gameModelId: selectCurrentGameModel().id!,
                           }),
                         ),
                       );
@@ -1299,14 +1300,14 @@ export function TranslationEditor() {
                       languageAction.language,
                       languageAction.sourceLanguage,
                     ).then(res => {
-                      dispatch(manageResponseHandler(res));
+                      manageResponseHandler(res);
                     });
                   } else {
                     LanguagesAPI.clearTranslations(
                       languageAction.language,
                       languageAction.type === 'CLEAR_OUTDATED',
                     ).then(res => {
-                      dispatch(manageResponseHandler(res));
+                      manageResponseHandler(res);
                     });
                   }
 

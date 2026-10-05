@@ -1,11 +1,9 @@
 import { translate } from '../i18n';
-import {
-  VariableDescriptor,
-  VariableInstance,
-  GameModel,
-  Player,
-  Team,
-} from '../selectors';
+import { selectGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer, selectPlayer } from '../../store/slices/players';
+import { selectTeam } from '../../store/slices/teams';
+import { selectDescriptor } from '../../store/slices/variableDescriptors';
+import { firstMatchingInstance, selectInstance } from '../../store/slices/variableInstances';
 import {
   ITranslatableContent,
   IVariableDescriptor,
@@ -59,11 +57,11 @@ export function editorTitle({
 
 export function getParent(vd: IVariableDescriptor): IParentDescriptor {
   if (vd.parentType!.endsWith('Descriptor')) {
-    return VariableDescriptor.select(
+    return selectDescriptor(
       vd.parentId,
     ) as unknown as IParentDescriptor;
   }
-  return GameModel.select(vd.parentId!);
+  return selectGameModel(vd.parentId!);
 }
 
 /**
@@ -99,7 +97,7 @@ export function getInstance<I extends IVariableInstance>(
   state?: RootState,
 ): Readonly<I> | undefined {
   type IorUndef = Readonly<I> | undefined;
-  const player = self != null ? self : Player.selectCurrent();
+  const player = self != null ? self : selectCurrentPlayer();
   const variableDescriptor = '@class' in vd ? vd : vd.getEntity();
   const scopeType = variableDescriptor.scopeType;
   const parentId = variableDescriptor.id;
@@ -113,7 +111,7 @@ export function getInstance<I extends IVariableInstance>(
 
   const id = instancesCache.get(cacheKey);
   if (typeof id === 'number') {
-    const instance = VariableInstance.select<I>(id, state);
+    const instance = selectInstance<I>(id, state);
     // Check if instance still exists and has the right parentId and scopeKey.
     if (instance != null) {
       return instance;
@@ -121,7 +119,7 @@ export function getInstance<I extends IVariableInstance>(
     instancesCache.delete(cacheKey);
   }
 
-  const instance = VariableInstance.firstMatch<IVariableInstance>(
+  const instance = firstMatchingInstance<IVariableInstance>(
     {
       parentId,
       scopeKey,
@@ -137,18 +135,18 @@ export function getInstance<I extends IVariableInstance>(
 export function getScopeEntity(
   vi: Readonly<{ parentId?: number | null; scopeKey?: number | null }>,
 ): IPlayer | ITeam | IGameModel | undefined {
-  const vd = VariableDescriptor.select(vi.parentId);
+  const vd = selectDescriptor(vi.parentId);
   if (vd == null || vi.scopeKey == null) {
     return undefined;
   }
 
   switch (vd.scopeType) {
     case 'PlayerScope':
-      return Player.select(vi.scopeKey);
+      return selectPlayer(vi.scopeKey);
     case 'TeamScope':
-      return Team.select(vi.scopeKey);
+      return selectTeam(vi.scopeKey);
     case 'GameModelScope':
-      return GameModel.select(vi.scopeKey);
+      return selectGameModel(vi.scopeKey);
   }
 }
 
@@ -156,6 +154,6 @@ export function getItems<T = SVariableDescriptor<SVariableInstance>>(
   itemsIds: number[],
 ): Readonly<T[]> {
   return itemsIds
-    .map(itemId => instantiate(VariableDescriptor.select(itemId)))
+    .map(itemId => instantiate(selectDescriptor(itemId)))
     .filter(items => items != null) as unknown as Readonly<T[]>;
 }

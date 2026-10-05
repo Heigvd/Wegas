@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -63,7 +63,7 @@ function PlayerTextInput({
   const placeholderText = useScript<string>(placeholder, context);
 
   const getValue = React.useCallback(
-    () => (typeof text === 'object' ? text.getValue(Player.self()) : text),
+    () => (typeof text === 'object' ? text.getValue(selfPlayer()) : text),
     [text],
   );
   const value = useDataSelector(getValue) || '';

@@ -9,7 +9,7 @@ import {
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
@@ -42,9 +42,9 @@ export const questionStyle = cx(
  */
 export function questionInfo(question: IQuestionDescriptor) {
   return function (): QuestionInfo {
-    const questionD = select<IQuestionDescriptor>(question.id);
+    const questionD = selectDescriptor<IQuestionDescriptor>(question.id);
     const choicesD = questionD?.itemsIds
-      .map(id => select<IChoiceDescriptor>(id))
+      .map(id => selectDescriptor<IChoiceDescriptor>(id))
       .filter(function (
         entity: IChoiceDescriptor | undefined,
       ): entity is IChoiceDescriptor {

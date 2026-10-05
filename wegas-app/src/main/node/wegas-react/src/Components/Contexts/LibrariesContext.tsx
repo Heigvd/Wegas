@@ -12,8 +12,8 @@ import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
 import { manageResponseHandler } from '../../store/managedResponse';
 import { entityIs } from '../../data/entities';
-import { GameModel } from '../../data/selectors';
-import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { useIsReadyForClientScript } from '../../store/slices/initStatus';
 import { dispatch, store } from '../../store/store';
 import { setInitStatus } from '../../store/slices/initStatus';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
@@ -1148,7 +1148,7 @@ export function LibrariesLoader(
 
 export function isEditAllowed(library?: LibraryWithStatus): boolean {
   return (
-    GameModel.selectCurrent().type !== 'SCENARIO' ||
+    selectCurrentGameModel().type !== 'SCENARIO' ||
     library?.persisted.visibility === 'PRIVATE' ||
     library?.persisted.visibility === 'INHERITED'
   );
@@ -1176,6 +1176,6 @@ export const isVisibilityAllowed = (
   return (
     visibility === 'PRIVATE' ||
     visibility === library.persisted.visibility ||
-    GameModel.selectCurrent().type === 'MODEL'
+    selectCurrentGameModel().type === 'MODEL'
   );
 };

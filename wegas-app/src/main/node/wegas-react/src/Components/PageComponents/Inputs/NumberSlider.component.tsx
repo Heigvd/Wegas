@@ -3,7 +3,7 @@ import * as React from 'react';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
 import { entityIs } from '../../../data/entities';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -79,7 +79,7 @@ function PlayerNumberSlider({
   const getValue = React.useCallback(
     () =>
       entityIs(number, 'NumberDescriptor')
-        ? (number as SNumberDescriptor).getValue(Player.self())
+        ? (number as SNumberDescriptor).getValue(selfPlayer())
         : (number as NumberSliderNumber).value,
     [number],
   );

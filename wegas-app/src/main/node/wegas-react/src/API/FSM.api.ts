@@ -1,5 +1,6 @@
 import { managedModeRequest } from './rest';
-import { GameModel, Player } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
+import { selectCurrentPlayer } from '../store/slices/players';
 
 export const FSM_BASE = (
   stateMachineId: number,
@@ -7,9 +8,9 @@ export const FSM_BASE = (
   playerId?: number,
 ) =>
   `GameModel/${
-    gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
+    gameModelId === undefined ? selectCurrentGameModel().id! : gameModelId
   }/VariableDescriptor/StateMachine/${stateMachineId}/Player/${
-    playerId === undefined ? Player.selectCurrent().id! : playerId
+    playerId === undefined ? selectCurrentPlayer().id! : playerId
   }/`;
 
 /**StateMachine

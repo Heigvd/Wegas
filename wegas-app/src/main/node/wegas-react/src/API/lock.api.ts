@@ -1,4 +1,7 @@
-import { GameModel, Team, Player, Game } from '../data/selectors';
+import { selectCurrentGame } from '../store/slices/game';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
+import { selectCurrentPlayer } from '../store/slices/players';
+import { selectCurrentTeam } from '../store/slices/teams';
 import { rest } from './rest';
 /*
 GET     /Wegas/rest/GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Locks
@@ -20,26 +23,26 @@ export const LockAPIFactory = (gameModelId?: number) => {
       return rest(
         `/GameModel/${
           gameModelId === undefined
-            ? GameModel != null
-              ? GameModel.selectCurrent().id!
+            ? selectCurrentGameModel != null
+              ? selectCurrentGameModel().id!
               : CurrentGM.id!
             : gameModelId
         }/Game/${
           gameId === undefined
-            ? Game != null
-              ? Game.selectCurrent().id!
+            ? selectCurrentGame != null
+              ? selectCurrentGame().id!
               : CurrentGame.id!
             : gameId
         }/Team/${
           teamId === undefined
-            ? Team != null
-              ? Team.selectCurrent().id!
+            ? selectCurrentTeam != null
+              ? selectCurrentTeam().id!
               : CurrentTeamId
             : teamId
         }/Player/${
           playerId === undefined
-            ? Player != null
-              ? Player.selectCurrent().id!
+            ? selectCurrentPlayer != null
+              ? selectCurrentPlayer().id!
               : CurrentPlayerId
             : playerId
         }/Locks`,
