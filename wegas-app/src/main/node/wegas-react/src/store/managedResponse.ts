@@ -1,15 +1,14 @@
 import { IManagedResponse } from '../API/rest';
-import { shallowDifferent } from '../Components/Hooks/storeHookFactory';
+import { shallowIs } from '../Helper/shallowIs';
 import { getEntityActions } from '../Editor/editionConfig';
-import { discriminant, normalizeData, NormalizedData } from './normalize';
-import { closeEditor } from './Reducer/editingState';
+import { discriminant, normalizeData, NormalizedData } from '../data/normalize';
+import { closeEditor, Edition } from './slices/edition';
 import { triggerEventHandlers } from '../Helper/eventHandlers';
-import { VariableDescriptorState } from '../store/slices/variableDescriptors';
-import { AppDispatch, dispatch } from '../store/store';
-import { Edition } from '../store/slices/edition';
-import { updatePlayers } from '../store/slices/players';
-import { updateTeams } from '../store/slices/teams';
-import { managedResponseReceived } from '../store/actions';
+import { VariableDescriptorState } from './slices/variableDescriptors';
+import { AppDispatch, dispatch } from './store';
+import { updatePlayers } from './slices/players';
+import { updateTeams } from './slices/teams';
+import { managedResponseReceived } from './actions';
 
 /**
  * What manageResponseHandler returns. No reducer handles it: the response has
@@ -74,7 +73,7 @@ export function manageResponseHandler(
       if (
         selectUpdatedEntity &&
         updatedEntity &&
-        shallowDifferent(updatedEntity, currentEditingEntity)
+        !shallowIs(updatedEntity, currentEditingEntity)
       ) {
         const { edit } = getEntityActions(updatedEntity);
         const newPath =

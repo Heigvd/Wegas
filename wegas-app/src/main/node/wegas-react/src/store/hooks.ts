@@ -14,12 +14,12 @@ import type { AppDispatch, RootState } from './store';
 export { shallowEqual };
 
 /**
- * Deep equality, for use as useAppSelector's 2nd argument.
+ * Deep equality, for use as the 2nd argument of useAppSelector,
+ * useDataSelector or usePageComponentStore.
  *
- * NOTE the orientation: react-redux equality functions return true when the
- * values are EQUAL (skip the re-render). This is the opposite of the
- * `deepDifferent` / `shallowDifferent` predicates (storeHookFactory), so those
- * must never be passed to useAppSelector or useDataSelector.
+ * Equality functions return true when the values are EQUAL (skip the
+ * re-render). Never pass a negated one (`(a, b) => !isEqual(a, b)`): the hook
+ * would then keep a stale value whenever it changes.
  */
 export const deepEqual = <T,>(a: T, b: T): boolean => isEqual(a, b);
 
@@ -106,8 +106,8 @@ export const selectDataVersion = createSelector(
  * useCallback / useMemo. The component re-renders only when the result changes
  * according to `isEqual` (default shallowEqual).
  *
- * `isEqual` returns true when the values are EQUAL, like useAppSelector's
- * equality functions -- not deepDifferent / shallowDifferent.
+ * `isEqual` returns true when the values are EQUAL (shallowEqual, deepEqual),
+ * like useAppSelector's equality functions.
  *
  * Prefer a plain useAppSelector selector when the value can be read from its
  * state argument.

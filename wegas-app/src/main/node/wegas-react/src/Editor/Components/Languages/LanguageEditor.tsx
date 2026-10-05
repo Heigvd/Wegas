@@ -20,7 +20,7 @@ import {
   itemCenter,
   secondaryButtonStyle,
 } from '../../../css/classes';
-import { manageResponseHandler } from '../../../data/actions';
+import { manageResponseHandler } from '../../../store/managedResponse';
 import { GameModel } from '../../../data/selectors';
 import { dispatch } from '../../../store/store';
 import { editGameModel, editLanguage } from '../../../store/slices/gameModel';

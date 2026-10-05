@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { deepEqual } from '../../../store/hooks';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
   ComponentType,
@@ -240,7 +240,7 @@ export default function ComponentPalette() {
       Object.entries(s)
         .filter(([, component]) => component.obsoleteComponent == null)
         .map(([k]) => k),
-    deepDifferent,
+    deepEqual,
   );
   return (
     <div className={cx(flex, flexColumn, expandBoth, autoScroll)}>

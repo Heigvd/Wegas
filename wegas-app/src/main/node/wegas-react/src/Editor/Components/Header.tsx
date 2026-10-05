@@ -31,7 +31,6 @@ import {
 } from '../../css/classes';
 import { reset as resetVariables } from '../../store/slices/variableDescriptors';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import { editorEventRemove } from '../../data/Reducer/editingState';
 import {
   loggerLevelSet,
   LoggerLevelValues,
@@ -55,7 +54,10 @@ import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
 import { dispatch, RootState, store } from '../../store/store';
-import { selectEditorEvents } from '../../store/slices/editorEvents';
+import {
+  editorEventRemoved,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
 import { selectCurrentPlayerId } from '../../store/slices/players';
 import { selectCurrentTeamId } from '../../store/slices/teams';
 
@@ -169,7 +171,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
-                  dispatch(editorEventRemove(event.timestamp));
+                  dispatch(editorEventRemoved({ timestamp: event.timestamp }));
                 }}
               />
             </div>

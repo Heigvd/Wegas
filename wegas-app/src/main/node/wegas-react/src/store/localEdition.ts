@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 import * as React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction } from '@reduxjs/toolkit';
 import editionReducer, {
   Edition,
   initialEditionState,

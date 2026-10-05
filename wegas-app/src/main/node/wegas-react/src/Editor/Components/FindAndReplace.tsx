@@ -13,7 +13,7 @@ import {
   flexColumn,
 } from '../../css/classes';
 import { findAndReplaceStyle } from '../../css/findAndReplace';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { AvailableSchemas } from './FormView';
 
 const findAndReplaceSchema: {

@@ -17,7 +17,7 @@ import {
   mediumPadding,
 } from '../../../css/classes';
 import { getScopeEntity } from '../../../data/methods/VariableDescriptorMethods';
-import { Edition, VariableEdition } from '../../../data/Reducer/editingState';
+import { Edition, VariableEdition } from '../../../store/slices/edition';
 import { updateInstance } from '../../../store/slices/variableInstances';
 import { VariableDescriptor } from '../../../data/selectors';
 import { commonTranslations } from '../../../i18n/common/common';

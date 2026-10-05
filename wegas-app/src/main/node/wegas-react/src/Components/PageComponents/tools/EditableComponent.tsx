@@ -7,7 +7,7 @@ import {
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { manageResponseHandler } from '../../../data/actions';
+import { manageResponseHandler } from '../../../store/managedResponse';
 import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
 import { selectEdition } from '../../../store/slices/edition';
 import { getLivePageContext } from '../../../store/pageContextState';

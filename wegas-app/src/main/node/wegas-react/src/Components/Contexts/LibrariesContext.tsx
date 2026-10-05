@@ -10,7 +10,7 @@ import {
 } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { entityIs } from '../../data/entities';
 import { GameModel } from '../../data/selectors';
 import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';

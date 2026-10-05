@@ -18,8 +18,8 @@ import type { RootState } from '../store';
 /* ------------------------------------------------------------------------- *
  * Types
  *
- * Moved from data/Reducer/editingState.ts so the slice does not import back
- * into data/ (which would close an import cycle through data/actions.ts).
+ * Kept here, not with the thunks (store/editionThunks.ts), so the slice imports
+ * nothing that imports the store back.
  * ------------------------------------------------------------------------- */
 
 export interface EditionState {

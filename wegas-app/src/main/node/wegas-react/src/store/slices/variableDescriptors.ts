@@ -21,9 +21,9 @@ import { VariableDescriptorAPI } from '../../API/variableDescriptor.api';
 import {
   ManagedResponseHandledAction,
   manageResponseHandler,
-} from '../../data/actions';
+} from '../managedResponse';
 import { entityIs } from '../../data/entities';
-import { deleteState, editVariable } from '../../data/Reducer/editingState';
+import { deleteState, editVariable } from '../editionThunks';
 import { Game, Player } from '../../data/selectors';
 import { deepRemove } from '../../data/updateUtils';
 import { runEffects, unmountEffects } from '../../Helper/pageEffectsManager';

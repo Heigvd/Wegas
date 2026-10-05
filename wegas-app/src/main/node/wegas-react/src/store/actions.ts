@@ -16,7 +16,7 @@ import type { NormalizedData } from '../data/normalize';
  * Managed-mode response, fanned out to the slices.
  *
  * Dispatched by the managed-response funnel (manageResponseHandler in
- * data/actions.ts) for every REST and websocket update. Slices pick only the
+ * store/managedResponse.ts) for every REST and websocket update. Slices pick only the
  * entity keys they own (e.g. `games`, `gameModels`) in their extraReducers.
  *
  * `events` carries the server-side events of the response (exceptions, script

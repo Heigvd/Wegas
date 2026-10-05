@@ -23,7 +23,7 @@ import {
   textCenter,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { editFile } from '../../../data/Reducer/editingState';
+import { editFile } from '../../../store/editionThunks';
 import { GameModel } from '../../../data/selectors';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {

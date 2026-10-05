@@ -20,11 +20,7 @@ import {
 } from '../../../css/classes';
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  createVariable,
-  Edition,
-  VariableEdition,
-} from '../../../data/Reducer/editingState';
+import { createVariable } from '../../../store/editionThunks';
 import { VariableDescriptor } from '../../../data/selectors';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { wwarn } from '../../../Helper/wegaslog';
@@ -43,7 +39,11 @@ import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
 import { RootState, dispatch } from '../../../store/store';
 import { shallowEqual, useAppSelector } from '../../../store/hooks';
-import { selectEdition } from '../../../store/slices/edition';
+import {
+  Edition,
+  selectEdition,
+  VariableEdition,
+} from '../../../store/slices/edition';
 import { selectSearch } from '../../../store/slices/search';
 
 const nodeStyle = css({

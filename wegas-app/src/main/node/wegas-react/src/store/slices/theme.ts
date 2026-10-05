@@ -13,7 +13,7 @@ import { wwarn } from '../../Helper/wegaslog';
 import { IGameModelContent } from 'wegas-ts-api';
 import { addPopup } from './popups';
 import { createTranslatableContent } from '../../data/i18n';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../managedResponse';
 import { entityIs } from '../../data/entities';
 import { LibraryAPI, NOCONTENTMESSAGE, ServerLibraryType } from '../../API/library.api';
 import { IManagedResponse } from '../../API/rest';

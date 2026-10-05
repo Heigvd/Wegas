@@ -8,7 +8,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
 import { GameModelApi } from '../../API/gameModel.api';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../managedResponse';
 import { managedResponseReceived } from '../actions';
 import { selectEdition } from './edition';
 import { setInitStatus } from './initStatus';

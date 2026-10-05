@@ -1,13 +1,12 @@
 import { cx } from '@emotion/css';
 import { deepClone } from 'fast-json-patch';
-import { noop } from 'lodash-es';
+import { isEqual, noop } from 'lodash-es';
 import * as React from 'react';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
 } from 'wegas-ts-api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import {
   PageComponent,
   usePageComponentStore,
@@ -227,7 +226,7 @@ export function moveComponent(
 ) {
   const sourceIndex: number | undefined = sourcePath.slice(-1)[0];
   const samePages = sourcePageId === destPageId;
-  const samePath = !deepDifferent(sourcePath.slice(0, -1), destPath);
+  const samePath = isEqual(sourcePath.slice(0, -1), destPath);
   const deleteIndex =
     samePages && samePath && sourceIndex >= destIndex
       ? sourceIndex + 1

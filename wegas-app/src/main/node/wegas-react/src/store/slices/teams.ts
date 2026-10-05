@@ -8,7 +8,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../managedResponse';
 import { dispatch, RootState, store } from '../store';
 
 export interface TeamsState {

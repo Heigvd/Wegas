@@ -1,5 +1,5 @@
 //import { omit, pick } from 'lodash-es';
-import { manageResponseHandler } from '../data/actions';
+import { manageResponseHandler } from '../store/managedResponse';
 import { entityIs } from '../data/entities';
 import {
   deleteDescriptor,

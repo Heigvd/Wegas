@@ -13,7 +13,7 @@ import {
     justifyStart, textJustify,
 } from '../css/classes';
 import { classNameOrEmpty } from '../Helper/className';
-import { deepDifferent } from './Hooks/storeHookFactory';
+import { isEqual } from 'lodash-es';
 import { themeVar } from './Theme/ThemeVars';
 
 const displayClassName = 'wegas-entity-chooser__display';
@@ -128,7 +128,7 @@ function LabelGenerator<E extends IAbstractEntity>(
       mobile={props.mobile}
       onClick={() => {
         props.setEntity((oldEntity: E) => {
-          if (deepDifferent(props.entity, oldEntity)) {
+          if (!isEqual(props.entity, oldEntity)) {
             return props.entity;
           } else {
             return props.mobile ? null : oldEntity;

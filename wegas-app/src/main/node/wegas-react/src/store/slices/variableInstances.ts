@@ -36,7 +36,7 @@ import { VariableInstanceAPI } from '../../API/variableInstance.api';
 import {
   ManagedResponseHandledAction,
   manageResponseHandler,
-} from '../../data/actions';
+} from '../managedResponse';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { Player } from '../../data/selectors';
 import { createScript } from '../../Helper/wegasEntites';

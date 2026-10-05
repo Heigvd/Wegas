@@ -16,13 +16,7 @@ import { mediumPadding } from '../../css/classes';
 import { searchDeep } from '../../store/slices/search';
 import { entityIs, entityIsPersisted } from '../../data/entities';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
-import {
-  Edition,
-  editorEventRead,
-  isEditingVariable,
-  saveEditor,
-  VariableEdition,
-} from '../../data/Reducer/editingState';
+import { saveEditor } from '../../store/editionThunks';
 import {
   deleteDescriptor,
   duplicateDescriptor,
@@ -43,11 +37,17 @@ import { selectCustomSchemas } from '../../store/slices/scriptRegistry';
 import { EditingDispatch } from '../../store/localEdition';
 import { customStateEquals, useAppSelector } from '../../store/hooks';
 import {
+  Edition,
   editionChanges,
   instanceEditor,
+  isEditingVariable,
   selectEdition,
+  VariableEdition,
 } from '../../store/slices/edition';
-import { selectEditorEvents } from '../../store/slices/editorEvents';
+import {
+  editorEventRead,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -287,7 +287,7 @@ export function parseEvent(
   event: WegasEvent,
   scopedDispatch: EditingDispatch = dispatch,
 ) {
-  const onRead = () => scopedDispatch(editorEventRead(event.timestamp));
+  const onRead = () => scopedDispatch(editorEventRead({ timestamp: event.timestamp }));
   switch (event['@class']) {
     case 'ClientEvent':
       return { message: event.error, onRead };

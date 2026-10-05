@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import JSONForm, { Schema } from 'jsoninput';
 import * as React from 'react';
 import { DropMenu } from '../../Components/DropMenu';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { isEqual } from 'lodash-es';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
@@ -130,8 +130,8 @@ export function Form<T>({
   }, [entity]);
 
   if (
-    deepDifferent(entity, oldReceivedEntity.current) &&
-    deepDifferent(entity, val)
+    !isEqual(entity, oldReceivedEntity.current) &&
+    !isEqual(entity, val)
   ) {
     // entity is different than previous one and is different than the one being editing
     // it means its a brand new entity
@@ -140,7 +140,7 @@ export function Form<T>({
   }
 
   const saveForm = () => {
-    if(deepDifferent(val, entity)){
+    if(!isEqual(val, entity)){
       if (form.current != null) {
         const validation = form.current.validate();
         if (validation.length) {
@@ -190,7 +190,7 @@ export function Form<T>({
                   icon="save"
                   chipStyle
                   tooltip={i18nValues.save}
-                  disabled={!deepDifferent(val, entity)}
+                  disabled={isEqual(val, entity)}
                   onClick={() => {saveForm();}}
                   className={expandHeight}
                 />

@@ -5,8 +5,7 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import { configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { AnyAction } from 'redux';
+import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import announcementReducer from './slices/announcement';
 import initStatusReducer from './slices/initStatus';
 import playersReducer from './slices/players';

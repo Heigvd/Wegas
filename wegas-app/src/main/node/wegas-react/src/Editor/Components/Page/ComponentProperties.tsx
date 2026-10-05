@@ -1,7 +1,7 @@
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { omit, pick } from 'lodash-es';
 import * as React from 'react';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { deepEqual } from '../../../store/hooks';
 import {
   AbsoluteItemLayoutProps,
   defaultAbsoluteLayoutPropsKeys,
@@ -277,7 +277,7 @@ export function ComponentProperties({
       ) as Schema<BaseView>,
       label,
     };
-  }, deepDifferent);
+  }, deepEqual);
 
   // customize schema
   // Then try to get schema from complex filters

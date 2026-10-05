@@ -17,7 +17,8 @@ import {
   flexBetween,
   flexRow,
 } from '../../../css/classes';
-import { createVariable, Edition } from '../../../data/Reducer/editingState';
+import { createVariable } from '../../../store/editionThunks';
+import { Edition } from '../../../store/slices/edition';
 import { moveDescriptor } from '../../../store/slices/variableDescriptors';
 import { useAppSelector } from '../../../store/hooks';
 import {

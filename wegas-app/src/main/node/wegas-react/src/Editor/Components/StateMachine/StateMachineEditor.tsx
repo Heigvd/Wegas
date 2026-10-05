@@ -18,7 +18,7 @@ import {
 } from '../../../Components/FlowChart/FlowChart';
 import { StateProcessComponent } from '../../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../../Components/FlowChart/TransitionFlowLineComponent';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { shallowIs } from '../../../Helper/shallowIs';
 import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { grow, mediumPadding } from '../../../css/classes';
@@ -29,13 +29,9 @@ import {
   editorLabel,
   getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  Edition,
-  editStateMachine,
-  saveEditor,
-} from '../../../data/Reducer/editingState';
+import { editStateMachine, saveEditor } from '../../../store/editionThunks';
 import { VariableDescriptor } from '../../../data/selectors';
-import { selectEdition } from '../../../store/slices/edition';
+import { Edition, selectEdition } from '../../../store/slices/edition';
 import { SearchState, selectSearch } from '../../../store/slices/search';
 import { RootState, dispatch, store } from '../../../store/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
@@ -453,7 +449,7 @@ export function editingStateSelector(state: RootState) {
     const lastFSM = VariableDescriptor.select(s.editing.entity.id) as
       | IFSMDescriptor
       | IDialogueDescriptor;
-    if (shallowDifferent(editedVariable, lastFSM)) {
+    if (!shallowIs(editedVariable, lastFSM)) {
       editedVariable = lastFSM;
     }
     editPath = s.editing.path;

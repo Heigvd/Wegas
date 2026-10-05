@@ -68,7 +68,6 @@ import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { addPopup, popupRemoved } from '../../store/slices/popups';
-import { deepDifferent } from './storeHookFactory';
 
 import { globals } from './sandbox';
 
@@ -759,7 +758,7 @@ export function useScript<T>(
   const isFirstRun = React.useRef(true);
 
   const newContext = React.useMemo(() => {
-    if (deepDifferent(context, oldContext.current)) {
+    if (!isEqual(context, oldContext.current)) {
       oldContext.current = context;
       return context;
     } else {
@@ -856,32 +855,6 @@ export function useClientScript<T>(
   return useScript<T>(script, context, catchCB, {
       injectReturn: !!clientScript?.returnType
   });
-}
-*/
-/**
- * Hook, execute a script locally.
- * @param script code to execute
- * @returns Last expression or LocalEvalError in case it errors.
- */
-/* UNUSED
-export function useUnsafeScript<T>(
-  script?: string | IScript,
-  context?: {
-    [name: string]: unknown;
-  },
-): T extends WegasScriptEditorReturnType ? T : unknown {
-  const globalContexts = useGlobalContexts();
-
-  const fn = React.useCallback(
-    () => clientScriptEval<T>(script, context, undefined, undefined),
-    [script, context],
-  );
-  const returnValue = useStore(s => {
-    setGlobals(globalContexts, s);
-    return fn();
-  }, deepDifferent);
-
-  return returnValue;
 }
 */
 /* UNUSED

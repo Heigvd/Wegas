@@ -48,7 +48,7 @@ import {
 } from '../../../css/classes';
 import { RootState, dispatch } from '../../../store/store';
 import { editGameModel } from '../../../store/slices/gameModel';
-import { manageResponseHandler } from '../../../data/actions';
+import { manageResponseHandler } from '../../../store/managedResponse';
 import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
