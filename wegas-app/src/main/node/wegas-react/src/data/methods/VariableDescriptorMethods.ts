@@ -97,7 +97,7 @@ export function getInstance<I extends IVariableInstance>(
   state?: RootState,
 ): Readonly<I> | undefined {
   type IorUndef = Readonly<I> | undefined;
-  const player = self != null ? self : selectCurrentPlayer();
+  const player = self ?? selectCurrentPlayer();
   const variableDescriptor = '@class' in vd ? vd : vd.getEntity();
   const scopeType = variableDescriptor.scopeType;
   const parentId = variableDescriptor.id;

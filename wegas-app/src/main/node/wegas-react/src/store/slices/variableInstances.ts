@@ -250,7 +250,7 @@ export const asyncRunScript = async (
   player?: IPlayer,
   context?: IVariableDescriptor,
 ) => {
-  const p = player != null ? player : selectCurrentPlayer();
+  const p = player ?? selectCurrentPlayer();
   if (p.id == null) {
     throw Error('Missing persisted player');
   }
@@ -289,7 +289,7 @@ export async function asyncRunLoadedScript(
   currentDescriptor?: IVariableDescriptor,
   payload?: { [key: string]: unknown },
 ) {
-  const p = player != null ? player : selectCurrentPlayer();
+  const p = player ?? selectCurrentPlayer();
   if (p.id == null) {
     throw Error('Missing persisted player');
   }
@@ -331,7 +331,7 @@ export function read(
 ): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = selectCurrentGameModelId();
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
@@ -348,7 +348,7 @@ export const selectAndValidate = createEditingAction(
     getState,
   ) => {
     const gameModelId = selectCurrentGameModelId();
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
@@ -367,7 +367,7 @@ export function selectChoice(
 ): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = selectCurrentGameModelId();
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (p.id == null) {
       throw Error('Missing persisted player');
     }
@@ -381,7 +381,7 @@ export function selectChoice(
 export function cancelReply(reply: IReply, player?: IPlayer): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = selectCurrentGameModelId();
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (p.id == null || !reply) {
       throw Error('Missing persisted player');
     }
@@ -399,7 +399,7 @@ export function toggleReply(
   choice: IChoiceDescriptor,
   player?: IPlayer,
 ): AppThunk {
-  const p = player != null ? player : selectCurrentPlayer();
+  const p = player ?? selectCurrentPlayer();
 
   const ci = getInstance<IChoiceInstance>(choice, p);
   const reply = ci?.replies.find(r => r.choiceName === choice.name);
@@ -417,7 +417,7 @@ export function validateQuestion(
 ): AppThunk {
   return function (dispatch, getState) {
     const gameModelId = selectCurrentGameModelId();
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     const instance = getInstance<IQuestionInstance | IWhQuestionInstance>(
       question,
     );
@@ -438,7 +438,7 @@ export function validateQuestion(
 
 export function readMessage(message: IMessage, player?: IPlayer): AppThunk {
   return function (dispatch, getState) {
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (message.id == null) {
       throw Error('Missing message id');
     }
@@ -456,7 +456,7 @@ export function readMessages(
   player?: IPlayer,
 ): AppThunk {
   return function (dispatch, getState) {
-    const p = player != null ? player : selectCurrentPlayer();
+    const p = player ?? selectCurrentPlayer();
     if (inbox.id == null) {
       throw Error('Missing message id');
     }
