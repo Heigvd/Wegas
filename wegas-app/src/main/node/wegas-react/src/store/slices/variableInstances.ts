@@ -567,12 +567,12 @@ export function allInstances<T extends IVariableInstance>(
   value: ValueOf<T>,
   state: RootState = store.getState(),
 ) {
-  const ret = [];
+  const matches: T[] = [];
   for (const vi in state.variableInstances.instances) {
     const s = state.variableInstances.instances[vi] as T;
     if (s && s[key] === value) {
-      ret.push(s);
+      matches.push(s);
     }
   }
-  return ret;
+  return matches;
 }
