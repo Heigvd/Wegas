@@ -23,27 +23,19 @@ export const LockAPIFactory = (gameModelId?: number) => {
       return rest(
         `/GameModel/${
           gameModelId === undefined
-            ? selectCurrentGameModel != null
-              ? selectCurrentGameModel().id!
-              : CurrentGM.id!
+            ? selectCurrentGameModel()?.id ?? CurrentGM.id!
             : gameModelId
         }/Game/${
           gameId === undefined
-            ? selectCurrentGame != null
-              ? selectCurrentGame().id!
-              : CurrentGame.id!
+            ? selectCurrentGame()?.id ?? CurrentGame.id!
             : gameId
         }/Team/${
           teamId === undefined
-            ? selectCurrentTeam != null
-              ? selectCurrentTeam().id!
-              : CurrentTeamId
+            ? selectCurrentTeam()?.id ?? CurrentTeamId
             : teamId
         }/Player/${
           playerId === undefined
-            ? selectCurrentPlayer != null
-              ? selectCurrentPlayer().id!
-              : CurrentPlayerId
+            ? selectCurrentPlayer()?.id ?? CurrentPlayerId
             : playerId
         }/Locks`,
       );

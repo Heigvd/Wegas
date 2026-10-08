@@ -8,9 +8,7 @@ const FIND_AND_REPLACE_BASE = 'FindAndReplace';
 const GAME_MODEL_URL = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined
-      ? selectCurrentGameModel != null
-        ? selectCurrentGameModel().id!
-        : CurrentGM.id!
+      ? selectCurrentGameModel()?.id ?? CurrentGM.id!
       : gameModelId
   }/`;
 

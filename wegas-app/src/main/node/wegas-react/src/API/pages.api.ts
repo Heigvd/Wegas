@@ -4,9 +4,7 @@ import { selectCurrentGameModel } from '../store/slices/gameModel';
 const PAGE_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined
-      ? selectCurrentGameModel != null
-        ? selectCurrentGameModel().id!
-        : CurrentGM.id!
+      ? selectCurrentGameModel()?.id ?? CurrentGM.id!
       : gameModelId
   }/Page/`;
 
