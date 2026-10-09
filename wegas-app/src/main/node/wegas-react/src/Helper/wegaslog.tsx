@@ -64,9 +64,7 @@ function currentLevel(name: string): LoggerLevel {
 function getLogger(name: string): Logger {
   const logger = loggers[name];
   if (logger == null) {
-    // Deferred for the same reason, and because loggers are often created
-    // during a render (useLogger), where dispatching would update other
-    // components mid-render.
+    // Prevent dispatch before store init
     queueMicrotask(() => dispatch(loggerRegistered(name)));
 
     const getLevel = () => currentLevel(name);
