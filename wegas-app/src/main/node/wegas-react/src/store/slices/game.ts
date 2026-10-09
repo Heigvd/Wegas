@@ -10,7 +10,6 @@ import { IGame } from 'wegas-ts-api';
 import { RootState, store } from '../store';
 import { GameAPI } from '../../API/games.api';
 import { managedResponseReceived } from '../actions';
-import { setInitStatus } from './initStatus';
 
 export interface GameState {
   /** Immutable, seeded from the server-injected CurrentGame global. */
@@ -26,11 +25,8 @@ const initialState: GameState = {
 /**
  * Fetch the current game.
  */
-export const getGame = createAsyncThunk('game/fetch', async (_, thunkAPI) => {
-  const game = await GameAPI.get(CurrentGame.id!);
-  thunkAPI.dispatch(setInitStatus({ key: 'game', status: true }));
-
-  return game;
+export const getGame = createAsyncThunk('game/fetch', async () => {
+  return await GameAPI.get(CurrentGame.id!);
 });
 
 const gameSlice = createSlice({

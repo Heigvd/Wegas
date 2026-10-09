@@ -9,6 +9,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { useAppSelector } from '../hooks';
 import type { RootState } from '../store';
 import { getTeams } from './teams';
+import { getGame } from './game';
 
 export type InitStateKey =
   | 'variables'
@@ -48,9 +49,13 @@ const initStatusSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(getTeams.fulfilled, state => {
-      state.teams = true;
-    });
+    builder
+      .addCase(getTeams.fulfilled, state => {
+        state.teams = true;
+      })
+      .addCase(getGame.fulfilled, state => {
+        state.game = true;
+      });
   },
 });
 
