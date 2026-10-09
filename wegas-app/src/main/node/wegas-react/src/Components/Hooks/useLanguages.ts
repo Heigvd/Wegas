@@ -1,59 +1,39 @@
-import { LanguagesAPI } from '../../API/languages.api';
-import { ActionCreator } from '../../data/actions';
-import { store, useStore } from '../../data/Stores/store';
-import { deepDifferent } from './storeHookFactory';
+import * as React from 'react';
+import { useAppSelector } from '../../store/hooks';
+import {
+  fetchEditableLanguages,
+  fetchTranslatableLanguages,
+  selectEditableLanguages,
+  selectTranslatableLanguages,
+} from '../../store/slices/languages';
+import { dispatch } from '../../store/store';
 
+/**
+ * The languages known by Deepl, fetched on first use.
+ */
 export function useTranslatableLanguages() {
-  const availableLanguages = useStore(
-    s => s.global.languages.translatableLanguages,
-    deepDifferent,
-  );
+  const translatableLanguages = useAppSelector(selectTranslatableLanguages);
 
-  if (availableLanguages == null) {
-    store.dispatch(
-      ActionCreator.LANGUAGES_TRANSLATION_AVAILABLE({
-        translatableLanguages: 'loading',
-      }),
-    );
-    LanguagesAPI.getAvailableLanguages().then(res => {
-      store.dispatch(
-        ActionCreator.LANGUAGES_TRANSLATION_AVAILABLE({
-          translatableLanguages: res,
-        }),
-      );
-    });
-  }
+  React.useEffect(() => {
+    if (translatableLanguages === undefined) {
+      dispatch(fetchTranslatableLanguages());
+    }
+  }, [translatableLanguages]);
 
-  return availableLanguages;
+  return translatableLanguages;
 }
 
+/**
+ * The languages the user is allowed to edit, fetched on first use.
+ */
 export function useEditableLanguages() {
-  const editableLanguages = useStore(
-    s => s.global.languages.editableLanguages,
-    deepDifferent,
-  );
+  const editableLanguages = useAppSelector(selectEditableLanguages);
 
-  if (editableLanguages == null) {
-    store.dispatch(
-      ActionCreator.LANGUAGES_EDITON_ALLOWED({
-        editableLanguages: 'loading',
-      }),
-    );
-    LanguagesAPI.getEditableLanguages().then(res => {
-      if (res.length === 1 && res[0] === '*') {
-        store.dispatch(
-          ActionCreator.LANGUAGES_EDITON_ALLOWED({
-            editableLanguages: 'all',
-          }),
-        );
-      } else {
-        store.dispatch(
-          ActionCreator.LANGUAGES_EDITON_ALLOWED({
-            editableLanguages: res,
-          }),
-        );
-      }
-    });
-  }
+  React.useEffect(() => {
+    if (editableLanguages === undefined) {
+      dispatch(fetchEditableLanguages());
+    }
+  }, [editableLanguages]);
+
   return editableLanguages;
 }

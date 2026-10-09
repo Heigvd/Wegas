@@ -4,7 +4,7 @@ import { VariableContext } from '.';
 import {
   editorLabel,
 } from '../../../data/methods/VariableDescriptorMethods';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
+import { findDescriptorByName } from '../../../store/slices/variableDescriptors';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
 import Select from './Select';
@@ -45,7 +45,7 @@ function EntityArrayFieldSelect(props: IEntityArrayFieldSelectProps) {
   const context = props.context || {};
   const { field, returnAttr, name, ...restView } = props.view;
   const computedEntity = context.variableName
-    ? VariableDescriptor.findByName(context.variableName)
+    ? findDescriptorByName(context.variableName)
     : props.formValue;
   if (!computedEntity) {
     return <pre>No computed entity found</pre>;

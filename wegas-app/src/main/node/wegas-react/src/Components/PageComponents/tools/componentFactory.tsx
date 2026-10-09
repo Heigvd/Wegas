@@ -1,8 +1,5 @@
-import { produce } from 'immer';
 import { omit } from 'lodash-es';
 import * as React from 'react';
-import { applyMiddleware, compose, createStore, Reducer } from 'redux';
-import thunk, { ThunkMiddleware } from 'redux-thunk';
 import {
   IVariableDescriptor,
   WegasClassNameAndScriptableTypes,
@@ -12,7 +9,7 @@ import { setInitStatus } from '../../../store/slices/initStatus';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { IconComponentType } from '../../../Editor/Components/Page/ComponentIcon';
 import { Icon } from '../../../Editor/Components/Views/FontAwesome';
-import { useAnyStore } from '../../Hooks/storeHookFactory';
+import { shallowEqual } from '../../../store/hooks';
 import {
   DropZones,
   PageComponentProps,
@@ -196,43 +193,27 @@ export interface PageComponentsState {
   [name: string]: PageComponent;
 }
 
-const PageComponentActionTypes = {
-  ADD_COMPONENT: 'AddComponent',
-};
+/* ------------------------------------------------------------------ *
+ * Registry
+ *
+ * Every page component registers itself once, while its module loads (see
+ * importPageComponents), and the registry never changes afterwards. That is
+ * all this needs: a snapshot replaced on each registration, plus listeners.
+ * Not redux state: entries are React components, and nothing ever dispatches
+ * anything else here.
+ * ------------------------------------------------------------------ */
 
-function createAction<T extends ValueOf<typeof PageComponentActionTypes>, P>(
-  type: T,
-  payload: P,
-) {
-  return {
-    type,
-    payload,
+let registry: Readonly<PageComponentsState> = {};
+const registryListeners = new Set<() => void>();
+
+function subscribeRegistry(listener: () => void) {
+  registryListeners.add(listener);
+  return () => {
+    registryListeners.delete(listener);
   };
 }
 
-export const PageComponentActionCreator = {
-  ADD_COMPONENT: (componentName: string, component: PageComponent) =>
-    createAction(PageComponentActionTypes.ADD_COMPONENT, {
-      componentName,
-      component,
-    }),
-};
-
-type PageComponentAction<
-  A extends keyof typeof PageComponentActionCreator = keyof typeof PageComponentActionCreator,
-> = ReturnType<typeof PageComponentActionCreator[A]>;
-
-const pageComponentReducer: Reducer<
-  Readonly<PageComponentsState>,
-  PageComponentAction
-> = produce((state: PageComponentsState, action: PageComponentAction) => {
-  switch (action.type) {
-    case PageComponentActionTypes.ADD_COMPONENT: {
-      state[action.payload.componentName] = action.payload.component;
-      break;
-    }
-  }
-}, {});
+const getRegistry = () => registry;
 
 /**
  * importPageComponents will import all pages component in the project. This function must be called in the entry file.
@@ -255,18 +236,6 @@ export const importPageComponents = () => {
     dispatch(setInitStatus({ key: 'components', status: true }));
   });
 };
-
-const composeEnhancers: typeof compose =
-  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-export const componentsStore = createStore(
-  pageComponentReducer,
-  composeEnhancers(
-    applyMiddleware(
-      thunk as ThunkMiddleware<PageComponentsState, PageComponentAction>,
-    ),
-  ),
-);
 
 type ComponentFactoryParameters<
   P extends WegasComponentProps,
@@ -292,16 +261,43 @@ type ComponentFactoryParameters<
       });
 
 /**
- * Hook, connect to store. Update if the selectors returns something different, as defined by shouldUpdate.
- * @param selector Select a specific part of the store
- * @param shouldUpdate Will update the component if this function returns true.
- * Default to ref comparing values returned from selector
+ * Hook, subscribe to the page component registry. Re-renders when the selected
+ * value changes according to `isEqual` (default shallowEqual).
+ *
+ * `isEqual` returns true when the values are EQUAL (shallowEqual, deepEqual),
+ * like useAppSelector's equality functions.
  */
 export function usePageComponentStore<R>(
   selector: (state: PageComponentsState) => R,
-  shouldUpdate?: (oldValue: R, newValue: R) => boolean,
-) {
-  return useAnyStore(selector, shouldUpdate, componentsStore);
+  isEqual: (a: R, b: R) => boolean = shallowEqual,
+): R {
+  // The last selection: returned again while the registry and the selector are
+  // unchanged (useSyncExternalStore requires a cached snapshot), and while a
+  // new selection is equal to it, so consumers keep a stable reference.
+  const last = React.useRef<{
+    registry: PageComponentsState;
+    selector: typeof selector;
+    value: R;
+  }>();
+
+  const getSelection = () => {
+    const current = getRegistry();
+    const previous = last.current;
+    if (
+      previous &&
+      previous.registry === current &&
+      previous.selector === selector
+    ) {
+      return previous.value;
+    }
+    const next = selector(current);
+    const value =
+      previous && isEqual(previous.value, next) ? previous.value : next;
+    last.current = { registry: current, selector, value };
+    return value;
+  };
+
+  return React.useSyncExternalStore(subscribeRegistry, getSelection);
 }
 
 export function pageComponentFactory<
@@ -335,7 +331,8 @@ export type PageComponentFactorySchemas = ReturnType<
 export const registerComponent: (
   component: PageComponent,
 ) => void = component => {
-  componentsStore.dispatch(
-    PageComponentActionCreator.ADD_COMPONENT(component.componentId, component),
-  );
+  registry = { ...registry, [component.componentId]: component };
+  for (const listener of [...registryListeners]) {
+    listener();
+  }
 };

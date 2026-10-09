@@ -12,7 +12,6 @@ import {
   useRolesToggler,
 } from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
@@ -30,18 +29,22 @@ import {
   itemCenter,
   itemsTop,
 } from '../../css/classes';
-import { Actions } from '../../data';
 import { reset as resetVariables } from '../../store/slices/variableDescriptors';
-import { ActionCreator } from '../../data/actions';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
-import { editorEventRemove } from '../../data/Reducer/editingState';
-import { LoggerLevelValues } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
+import {
+  loggerLevelSet,
+  LoggerLevelValues,
+  selectLogLevels,
+} from '../../store/slices/logLevels';
 import { selectCurrentUser } from '../../store/slices/user';
+import { selectRolesId } from '../../store/slices/roles';
+import { pageLoadersReset } from '../../store/slices/scriptRegistry';
 import { useGameModel } from '../../Components/Hooks/useGameModel';
 import { createExtraTestPlayer } from '../../store/slices/gameModel';
-import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
-import { store, useStore } from '../../data/Stores/store';
+import {
+  selectCurrentEditorLanguage,
+  setEditorLanguage,
+} from '../../store/slices/languages';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
@@ -50,8 +53,11 @@ import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
-import { dispatch, RootState } from '../../store/store';
-import { selectEditorEvents } from '../../store/slices/editorEvents';
+import { dispatch, RootState, store } from '../../store/store';
+import {
+  editorEventRemoved,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
 import { selectCurrentPlayerId } from '../../store/slices/players';
 import { selectCurrentTeamId } from '../../store/slices/teams';
 
@@ -165,7 +171,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
-                  dispatch(editorEventRemove(event.timestamp));
+                  dispatch(editorEventRemoved({ timestamp: event.timestamp }));
                 }}
               />
             </div>
@@ -182,12 +188,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 }
 
 function useLoggerLevelSelector() {
-  const currentLevels = useStore(
-    state => state.global.logLevels,
-    shallowDifferent,
-  );
-
-  const oldDispatch = store.dispatch;
+  const currentLevels = useAppSelector(selectLogLevels);
 
   return {
     value: 'logger',
@@ -202,8 +203,8 @@ function useLoggerLevelSelector() {
             label: (
               <div
                 onClick={() => {
-                  oldDispatch(
-                    ActionCreator.LOGGER_LEVEL_SET({
+                  dispatch(
+                    loggerLevelSet({
                       loggerName: loggerName,
                       level: currentLevel !== value ? value : 'OFF',
                     }),
@@ -216,8 +217,8 @@ function useLoggerLevelSelector() {
                   value={value === currentLevel}
                   label={value}
                   onChange={(v: boolean) => {
-                    oldDispatch(
-                      ActionCreator.LOGGER_LEVEL_SET({
+                    dispatch(
+                      loggerLevelSet({
                         loggerName: loggerName,
                         level: v ? value : 'OFF',
                       }),
@@ -230,12 +231,6 @@ function useLoggerLevelSelector() {
         }),
       };
     }),
-  };
-}
-
-function globalStoreSelector(s: State) {
-  return {
-    userLanguage: selectCurrentEditorLanguage(s),
   };
 }
 
@@ -253,12 +248,11 @@ export default function Header() {
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
   const gameModel = useGameModel();
-  const { userLanguage } = useStore(globalStoreSelector);
+  const userLanguage = useAppSelector(selectCurrentEditorLanguage);
   const { user, currentPlayerId, currentTeamId } = useAppSelector(
     sessionSelector,
     shallowEqual,
   );
-  const oldDispatch = store.dispatch;
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
@@ -367,10 +361,8 @@ export default function Header() {
                       label: (
                         <div
                           onClick={() => {
-                            oldDispatch(
-                              Actions.EditorActions.setEditorLanguage(
-                                key as EditorLanguagesCode,
-                              ),
+                            dispatch(
+                              setEditorLanguage(key as EditorLanguagesCode),
                             );
                           }}
                           className={cx(flex, flexRow, itemCenter)}
@@ -378,10 +370,8 @@ export default function Header() {
                           <CheckBox
                             value={userLanguage === key}
                             onChange={() => {
-                              oldDispatch(
-                                Actions.EditorActions.setEditorLanguage(
-                                  key as EditorLanguagesCode,
-                                ),
+                              dispatch(
+                                setEditorLanguage(key as EditorLanguagesCode),
                               );
                             }}
                             label={key + ' : ' + value}
@@ -400,7 +390,7 @@ export default function Header() {
                       onClick={() => {
                         removeLayoutInLocal(
                           mainLayoutId,
-                          store.getState().global.roles.rolesId,
+                          selectRolesId(store.getState()),
                           currentRole,
                         );
                         window.location.reload();
@@ -441,7 +431,7 @@ export default function Header() {
                 dispatch(
                   resetVariables(),
                 );
-                oldDispatch(Actions.EditorActions.resetPageLoader());
+                dispatch(pageLoadersReset());
               }}
               className={componentMarginRight}
             />

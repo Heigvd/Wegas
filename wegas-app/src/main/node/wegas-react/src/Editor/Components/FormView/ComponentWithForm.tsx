@@ -5,7 +5,7 @@ import { fullscreenCTX } from '../../../Components/Contexts/FullscreenContext';
 import { IconButton } from '../../../Components/Inputs/Buttons/IconButton';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { autoScroll, flex, grow, halfOpacity } from '../../../css/classes';
-import { Edition } from '../../../data/Reducer/editingState';
+import { Edition } from '../../../store/slices/edition';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { EditingDispatch, useLocalEdition } from '../../../store/localEdition';
 import { closeEditor, selectEdition } from '../../../store/slices/edition';

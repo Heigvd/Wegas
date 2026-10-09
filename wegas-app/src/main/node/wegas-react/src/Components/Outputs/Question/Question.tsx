@@ -9,9 +9,8 @@ import {
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
@@ -38,17 +37,14 @@ export const questionStyle = cx(
  * Query subtree / instance about a QuestionDescriptor
  * @param question QuestionDescriptor to query
  *
- * Reads descriptors from the new store (via `select`) but instances from the old
- * one (via `getInstance`), so it must stay subscribed through the old store's
- * `useStore` until `variableInstances` migrates — `useAppSelector` would not see
- * instance updates. Both reads are fresh because manageResponseHandler updates
- * the new store before the old one dispatches (see data/actions.ts).
+ * Reads descriptors (via `select`) and instances (via `getInstance`) from the
+ * store imperatively, so subscribe to it with useDataSelector.
  */
 export function questionInfo(question: IQuestionDescriptor) {
   return function (): QuestionInfo {
-    const questionD = select<IQuestionDescriptor>(question.id);
+    const questionD = selectDescriptor<IQuestionDescriptor>(question.id);
     const choicesD = questionD?.itemsIds
-      .map(id => select<IChoiceDescriptor>(id))
+      .map(id => selectDescriptor<IChoiceDescriptor>(id))
       .filter(function (
         entity: IChoiceDescriptor | undefined,
       ): entity is IChoiceDescriptor {
@@ -74,7 +70,8 @@ export function ConnectedSimpleQuestionDisplay({
   entity,
   ...options
 }: ConnectedSimpleQuestionDisplayProps) {
-  const state = useStore(questionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => questionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   if (state.questionD == null) {
     return null;
   }
@@ -96,7 +93,8 @@ export function ConnectedWhQuestionDisplay({
   readOnly,
   editMode,
 }: ConnectedWhQuestionDisplay) {
-  const state = useStore(whQuestionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => whQuestionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   return (
     <WhQuestionDisplay
       {...state}

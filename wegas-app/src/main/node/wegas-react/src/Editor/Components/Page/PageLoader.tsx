@@ -7,7 +7,7 @@ import { PageDeserializer } from '../../../Components/PageComponents/tools/PageD
 import { themeCTX, ThemeProvider } from '../../../Components/Theme/Theme';
 import { SelectedThemes } from '../../../Components/Theme/ThemeVars';
 import { expandBoth, flex } from '../../../css/classes';
-import { useIsReadyForPageDisplay } from '../../../data/selectors/InitStatusesSelector';
+import { useIsReadyForPageDisplay } from '../../../store/slices/initStatus';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';

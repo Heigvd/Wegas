@@ -7,9 +7,9 @@
  */
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IGame } from 'wegas-ts-api';
+import { RootState, store } from '../store';
 import { GameAPI } from '../../API/games.api';
 import { managedResponseReceived } from '../actions';
-import { setInitStatus } from './initStatus';
 
 export interface GameState {
   /** Immutable, seeded from the server-injected CurrentGame global. */
@@ -25,11 +25,8 @@ const initialState: GameState = {
 /**
  * Fetch the current game.
  */
-export const getGame = createAsyncThunk('game/fetch', async (_, thunkAPI) => {
-  const game = await GameAPI.get(CurrentGame.id!);
-  thunkAPI.dispatch(setInitStatus({ key: 'game', status: true }));
-
-  return game;
+export const getGame = createAsyncThunk('game/fetch', async () => {
+  return await GameAPI.get(CurrentGame.id!);
 });
 
 const gameSlice = createSlice({
@@ -57,3 +54,21 @@ const gameSlice = createSlice({
 });
 
 export default gameSlice.reducer;
+
+/* ------------------------------------------------------------------ *
+ * Selectors
+ *
+ * Dual-use: called without a state they read the store synchronously
+ * (imperative callers, client scripts); passed a state they are plain
+ * selectors, usable in useAppSelector.
+ * ------------------------------------------------------------------ */
+
+/** The game with this id. */
+export function selectGame(id: number, state: RootState = store.getState()) {
+  return state.games.entities[id];
+}
+
+/** The current game. */
+export function selectCurrentGame(state: RootState = store.getState()) {
+  return state.games.entities[state.games.currentGameId];
+}

@@ -6,7 +6,7 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
-import { editStateMachine, editVariable } from '../data/Reducer/editingState';
+import { editStateMachine, editVariable } from '../store/editionThunks';
 import { wwarn } from '../Helper/wegaslog';
 import { AvailableSchemas, AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';

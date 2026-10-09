@@ -14,8 +14,6 @@ import {
 } from 'wegas-ts-api';
 import { APIScriptMethods } from '../../API/clientScriptHelper';
 import { downloadFile, fileURL } from '../../API/files.api';
-import { Actions } from '../../data';
-import { ActionCreator } from '../../data/actions';
 import { entityIs } from '../../data/entities';
 import {
   createTranslatableContent,
@@ -23,15 +21,15 @@ import {
   translate,
 } from '../../data/i18n';
 import { getItems } from '../../data/methods/VariableDescriptorMethods';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
+import { DEFAULT_ROLES, rolesSet } from '../../store/slices/roles';
 import { instantiate } from '../../data/scriptable';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
 import {
-  GameModel,
-  Player,
-  VariableDescriptor as VDSelect,
-} from '../../data/selectors';
-import { store as oldStore, useStore } from '../../data/Stores/store';
+  findDescriptorByName,
+  selectDescriptor,
+} from '../../store/slices/variableDescriptors';
+import { deepEqual, useDataSelector } from '../../store/hooks';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
   getLivePageContext,
@@ -42,7 +40,20 @@ import {
   PageContextValues,
   setContextValue,
 } from '../../store/slices/pageContext';
-import { dispatch, store } from '../../store/store';
+import { dispatch, RootState, store } from '../../store/store';
+import {
+  clientMethodSet,
+  pageLoaderRegistered,
+  schemaSet,
+  selectClientMethods,
+  selectPageLoaders,
+  serverGlobalMethodRegistered,
+  serverVariableMethodRegistered,
+} from '../../store/slices/scriptRegistry';
+import {
+  addEventHandler,
+  removeEventHandler,
+} from '../../Helper/eventHandlers';
 import { registerEffect, useRef } from '../../Helper/pageEffectsManager';
 import { createLRU, visitDSF } from '../../Helper/tools';
 import { createScript } from '../../Helper/wegasEntites';
@@ -57,8 +68,7 @@ import {
 import { LanguagesContext, languagesCTX } from '../Contexts/LanguagesProvider';
 import { PageComponentContext } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
-import { addPopup } from '../PopupManager';
-import { deepDifferent } from './storeHookFactory';
+import { addPopup, popupRemoved } from '../../store/slices/popups';
 
 import { globals } from './sandbox';
 
@@ -112,8 +122,6 @@ function getWegasUrl(): string {
   return (location.origin + API_ENDPOINT).replace(/rest\/$/, '');
 }
 
-const globalDispatch = oldStore.dispatch;
-
 type GlobalContexts = FeatureContext & LanguagesContext & ClassesContext;
 
 export function useGlobalContexts(): GlobalContexts {
@@ -121,15 +129,12 @@ export function useGlobalContexts(): GlobalContexts {
   const languagesContext = React.useContext(languagesCTX);
   const classesContext = React.useContext(classesCTX);
 
-  return { ...featuresContext, ...languagesContext, ...classesContext };
-
-  //
-  //  return React.useMemo(() => {
-  //    return { ...featuresContext, ...languagesContext, ...classesContext };
-  //  }, [featuresContext, languagesContext, classesContext]);
+  return React.useMemo(() => {
+    return { ...featuresContext, ...languagesContext, ...classesContext };
+  }, [featuresContext, languagesContext, classesContext]);
 }
 
-export function setGlobals(globalContexts: GlobalContexts, state: State) {
+export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
   const {
     lang,
     selectLang,
@@ -141,10 +146,10 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
     classes,
   } = globalContexts;
 
-  const player = Player.selectCurrent();
-  const gameModel = GameModel.selectCurrent();
+  const player = selectCurrentPlayer();
+  const gameModel = selectCurrentGameModel();
   const teams = Object.values(store.getState().teams.entities);
-  const pageLoaders = state.global.pageLoaders;
+  const pageLoaders = selectPageLoaders(state);
 
   const splayer = instantiate(player);
 
@@ -163,13 +168,13 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   // Variable class
   globals.Variable = {
     find: <T extends IVariableDescriptor>(_gm: unknown, name: string) => {
-      const iDesc = VDSelect.findByName<T>(name);
+      const iDesc = findDescriptorByName<T>(name);
       if (iDesc) {
         return instantiate(iDesc) as ScriptableEntity<T> | undefined;
       }
     },
     select: <T extends SVariableDescriptor>(_gm: unknown, id: number) => {
-      const iDesc = VDSelect.select<IVariableDescriptor>(id);
+      const iDesc = selectDescriptor<IVariableDescriptor>(id);
       if (iDesc) {
         return instantiate(iDesc) as unknown as T | undefined;
       }
@@ -213,8 +218,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
         {},
       ),
     setPageLoader: (name, pageId) =>
-      globalDispatch(
-        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+      dispatch(
+        pageLoaderRegistered({
           name,
           pageId: createScript(JSON.stringify(pageId)),
         }),
@@ -243,14 +248,14 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
       array != null &&
       method != null
     ) {
-      globalDispatch(
-        Actions.EditorActions.setClientMethod(
+      dispatch(
+        clientMethodSet({
           name,
           parameters,
-          types,
-          array as keyof ArrayedTypeMap,
+          returnTypes: types,
+          returnStyle: array as keyof ArrayedTypeMap,
           method,
-        ),
+        }),
       );
     }
   };
@@ -259,7 +264,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.ClientMethods = {
     addMethod: addMethod,
     getMethod: (name: string) => {
-      return state.global.clientMethods[name]
+      // read fresh: the method may have been added after these globals were set
+      return selectClientMethods(store.getState())[name]
         .method as () => WegasScriptEditorReturnType;
     },
   };
@@ -269,10 +275,11 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
     method,
     schema,
   ) => {
-    globalDispatch(
-      Actions.EditorActions.registerServerMethod(objects, method, {
-        ...schema,
-        '@class': 'ServerGlobalMethod',
+    dispatch(
+      serverGlobalMethodRegistered({
+        objects,
+        method,
+        schema: { ...schema, '@class': 'ServerGlobalMethod' },
       }),
     );
   };
@@ -284,14 +291,14 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
     returns,
     serverCode,
   ) => {
-    globalDispatch(
-      Actions.EditorActions.registerVariableMethod(
+    dispatch(
+      serverVariableMethodRegistered({
         variableClass,
         label,
-        parameter,
+        parameters: parameter,
         returns,
         serverCode,
-      ),
+      }),
     );
   };
 
@@ -308,12 +315,10 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
       schemaFN: CustomSchemaFN,
       simpleFilter?: WegasClassNames,
     ) => {
-      globalDispatch(
-        Actions.EditorActions.setSchema(name, schemaFN, simpleFilter),
-      );
+      dispatch(schemaSet({ name, schemaFN, simpleFilter }));
     },
     removeSchema: (name: string) => {
-      globalDispatch(Actions.EditorActions.setSchema(name));
+      dispatch(schemaSet({ name }));
     },
   };
 
@@ -327,34 +332,21 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
   globals.Popups = {
     addPopup: (id, message, duration, className) => {
       if (id != null && message != null) {
-        globalDispatch(addPopup(id, message, duration, className));
+        dispatch(addPopup(id, message, duration, className));
       }
     },
-    removePopup: id => globalDispatch(ActionCreator.REMOVE_POPUP({ id })),
+    removePopup: id => dispatch(popupRemoved(id)),
   };
 
   globals.WegasEvents = {
     addEventHandler: (id, type, cb) => {
       if (id != null && type != null && cb != null) {
-        if (state.global.eventsHandlers[type][id] == null) {
-          globalDispatch(
-            ActionCreator.EDITOR_ADD_EVENT_HANDLER({
-              id,
-              type,
-              cb: cb as unknown as WegasEventHandler,
-            }),
-          );
-        }
+        addEventHandler(type, id, cb as unknown as WegasEventHandler);
       }
     },
     removeEventHandler: (id, type) => {
       if (id != null && type != null) {
-        7;
-        if (state.global.eventsHandlers[type][id] != null) {
-          globalDispatch(
-            ActionCreator.EDITOR_REMOVE_EVENT_HANDLER({ id, type }),
-          );
-        }
+        removeEventHandler(type, id);
       }
     },
   };
@@ -425,8 +417,8 @@ export function setGlobals(globalContexts: GlobalContexts, state: State) {
 
   globals.Roles = {
     setRoles: (roles, defaultRoleId, rolesId) => {
-      globalDispatch(
-        ActionCreator.EDITOR_SET_ROLES({
+      dispatch(
+        rolesSet({
           roles: { ...roles, ...DEFAULT_ROLES },
           defaultRoleId: defaultRoleId as string,
           rolesId,
@@ -766,7 +758,7 @@ export function useScript<T>(
   const isFirstRun = React.useRef(true);
 
   const newContext = React.useMemo(() => {
-    if (deepDifferent(context, oldContext.current)) {
+    if (!isEqual(context, oldContext.current)) {
       oldContext.current = context;
       return context;
     } else {
@@ -811,9 +803,13 @@ export function useScript<T>(
     isFirstRun.current = true;
   }, [fn]);
 
-  const returnValue = useStore(s => {
+  // Re-evaluated when a data slice changes or a dependency changes (see
+  // useDataSelector), and may run during render: setGlobals then writes the
+  // sandbox globals during render. Harmless without concurrent rendering.
+  // TODO Phase 4b: set the globals once per data change, not per script.
+  const evaluate = React.useCallback(() => {
     //ref +state.reloading
-    setGlobals(globalContexts, s);
+    setGlobals(globalContexts, store.getState());
 
     const returnValue = fn();
     if (isFirstRun.current) {
@@ -835,7 +831,8 @@ export function useScript<T>(
     }
 
     return fn();
-  }, deepDifferent);
+  }, [fn, globalContexts]);
+  const returnValue = useDataSelector(evaluate, deepEqual);
 
   return returnValue as any;
 }
@@ -858,32 +855,6 @@ export function useClientScript<T>(
   return useScript<T>(script, context, catchCB, {
       injectReturn: !!clientScript?.returnType
   });
-}
-*/
-/**
- * Hook, execute a script locally.
- * @param script code to execute
- * @returns Last expression or LocalEvalError in case it errors.
- */
-/* UNUSED
-export function useUnsafeScript<T>(
-  script?: string | IScript,
-  context?: {
-    [name: string]: unknown;
-  },
-): T extends WegasScriptEditorReturnType ? T : unknown {
-  const globalContexts = useGlobalContexts();
-
-  const fn = React.useCallback(
-    () => clientScriptEval<T>(script, context, undefined, undefined),
-    [script, context],
-  );
-  const returnValue = useStore(s => {
-    setGlobals(globalContexts, s);
-    return fn();
-  }, deepDifferent);
-
-  return returnValue;
 }
 */
 /* UNUSED

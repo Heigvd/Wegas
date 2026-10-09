@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript, SFSMDescriptor } from 'wegas-ts-api';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { useLocalEdition } from '../../../store/localEdition';
 import {
   ComponentWithForm,
@@ -44,7 +44,7 @@ export default function PlayerStateMachine({
   const titleText = useScript<string>(title, context);
   const FSM = useScript<SFSMDescriptor>(stateMachine, context);
   const descriptor = FSM?.getEntity();
-  const instance = FSM?.getInstance(Player.self()).getEntity();
+  const instance = FSM?.getInstance(selfPlayer()).getEntity();
 
 
   return descriptor == null || instance == null ? (

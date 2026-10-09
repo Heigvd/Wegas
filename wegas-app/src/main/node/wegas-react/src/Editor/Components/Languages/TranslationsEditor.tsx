@@ -9,7 +9,6 @@ import {
   LanguagesAPI,
 } from '../../../API/languages.api';
 import { DropMenu } from '../../../Components/DropMenu';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
 import {
   useEditableLanguages,
@@ -49,15 +48,19 @@ import {
 } from '../../../css/classes';
 import { RootState, dispatch } from '../../../store/store';
 import { editGameModel } from '../../../store/slices/gameModel';
-import { manageResponseHandler } from '../../../data/actions';
+import { manageResponseHandler } from '../../../store/managedResponse';
 import { entityIs } from '../../../data/entities';
 import { unsafeTranslate } from '../../../data/i18n';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { GlobalState } from '../../../data/Reducer/globalState';
-import { GameModel, VariableDescriptor } from '../../../data/selectors';
+import { LanguagesState } from '../../../store/slices/languages';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 
-import { useStore } from '../../../data/Stores/store';
-import { deepEqual, useAppSelector } from '../../../store/hooks';
+import {
+  deepEqual,
+  useAppSelector,
+  useDataSelector,
+} from '../../../store/hooks';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -120,7 +123,7 @@ const inputStyle = css({
 
 function isLanguageEditable(
   languageCode: string,
-  editableLanguages: GlobalState['languages']['editableLanguages'],
+  editableLanguages: LanguagesState['editableLanguages'],
 ) {
   return (
     editableLanguages != null &&
@@ -424,19 +427,19 @@ function TranslatableContentView({
       onSave={() => {
         LanguagesAPI.updateTranslation(translationObject).then(res => {
           setValue(languageCode)(undefined);
-          dispatch(manageResponseHandler(res));
+          manageResponseHandler(res);
         });
       }}
       onValueChange={setValue(languageCode)}
       onOutdateOthers={() => {
         LanguagesAPI.outdateTranslations(translationObject).then(res => {
-          dispatch(manageResponseHandler(res));
+          manageResponseHandler(res);
         });
       }}
       onOutdate={outdate => {
         LanguagesAPI.setTranslationStatus(translationObject, !outdate).then(
           res => {
-            dispatch(manageResponseHandler(res));
+            manageResponseHandler(res);
           },
         );
       }}
@@ -538,7 +541,7 @@ function ScriptView({
   selectedLanguages,
   showOptions,
 }: ScriptViewProps) : JSX.Element {
-  const parentDescriptor = VariableDescriptor.select(value.parentId!)!;
+  const parentDescriptor = selectDescriptor(value.parentId!)!;
   const parentSchema = (getEditionConfig(parentDescriptor)) as {
     properties: { [key: string]: { view: { mode: ScriptMode } } };
   };
@@ -806,7 +809,7 @@ function LanguagesVisitor({
 
   const itemSelector = React.useCallback(() => {
     return {
-      item: VariableDescriptor.select(itemId),
+      item: selectDescriptor(itemId),
     };
   }, [itemId]);
 
@@ -818,7 +821,7 @@ function LanguagesVisitor({
     [itemId],
   );
 
-  const { item } = useStore(itemSelector, deepDifferent);
+  const { item } = useDataSelector(itemSelector, deepEqual);
   const editing = useAppSelector(editionSelector);
 
   React.useEffect(() => {
@@ -1027,7 +1030,7 @@ function TranslationHeader({
                   language.code,
                 ).then(res => {
                   resetLanguage(language.code);
-                  dispatch(manageResponseHandler(res));
+                  manageResponseHandler(res);
                 });
               } else if (
                 item.type === 'CLEAR_OUTDATED' ||
@@ -1048,7 +1051,7 @@ function TranslationHeader({
             onClick={() => {
               LanguagesAPI.batchUpdateTranslations(editedValues).then(res => {
                 resetLanguage(language.code);
-                dispatch(manageResponseHandler(res));
+                manageResponseHandler(res);
               });
             }}
             className={cx(itemCenter, css({ padding: 0 }))}
@@ -1094,14 +1097,14 @@ export function TranslationEditor() {
     const parentIds: number[] = [];
     while (newParentId != null) {
       parentIds.push(newParentId);
-      newParentId = VariableDescriptor.select(newParentId)?.parentId;
+      newParentId = selectDescriptor(newParentId)?.parentId;
     }
     return {
       parentIds,
     };
   }, [parentId]);
 
-  const { parentIds } = useStore(translationSelector, deepDifferent);
+  const { parentIds } = useDataSelector(translationSelector, deepEqual);
   const root = useGameModel();
   const languages = root.languages;
   const i18nValues = useInternalTranslate(languagesTranslations);
@@ -1221,7 +1224,7 @@ export function TranslationEditor() {
                         dispatch(
                           editGameModel({
                             gameModel: res,
-                            gameModelId: GameModel.selectCurrent().id!,
+                            gameModelId: selectCurrentGameModel().id!,
                           }),
                         ),
                       );
@@ -1297,14 +1300,14 @@ export function TranslationEditor() {
                       languageAction.language,
                       languageAction.sourceLanguage,
                     ).then(res => {
-                      dispatch(manageResponseHandler(res));
+                      manageResponseHandler(res);
                     });
                   } else {
                     LanguagesAPI.clearTranslations(
                       languageAction.language,
                       languageAction.type === 'CLEAR_OUTDATED',
                     ).then(res => {
-                      dispatch(manageResponseHandler(res));
+                      manageResponseHandler(res);
                     });
                   }
 

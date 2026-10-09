@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 import * as React from 'react';
-import { AnyAction } from 'redux';
+import { AnyAction } from '@reduxjs/toolkit';
 import editionReducer, {
   Edition,
   initialEditionState,
@@ -61,10 +61,9 @@ export function useLocalEdition(): {
       }
       // A plain action dispatched into this scope reaches only this scope,
       // never the app store -- same as the local editingStore it replaces. It is
-      // what makes a nested form's selection independent, and it is why a
-      // local-scope thunk's inner `dispatch(manageResponseHandler(...))` is
-      // harmless: manageResponseHandler updates the app and old stores itself,
-      // and the MANAGED_RESPONSE_ACTION it returns is simply ignored here.
+      // what makes a nested form's selection independent. A local-scope
+      // thunk's manageResponseHandler(...) call updates the app store itself,
+      // and reconciles this scope through the dispatch it is given.
       rawDispatch(action);
       return action;
     };

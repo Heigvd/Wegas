@@ -10,7 +10,7 @@ import {
   defaultPadding,
 } from '../../../css/classes';
 import { FlexList } from '../../../Components/Layouts/FlexList';
-import { GameModel } from '../../../data/selectors';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -151,7 +151,7 @@ export default function ModelPropagator({ gameModel }: ModelPropagatorProps) {
   const [loading, setLoading] = React.useState<boolean>(false);
 
   const gameModelId =
-    gameModel.id === undefined ? GameModel.selectCurrent().id! : gameModel.id;
+    gameModel.id === undefined ? selectCurrentGameModel().id! : gameModel.id;
 
   const onOpen = React.useCallback(() => {
     showModal();

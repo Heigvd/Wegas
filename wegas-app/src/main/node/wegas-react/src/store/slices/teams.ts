@@ -8,8 +8,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ITeam } from 'wegas-ts-api';
 import { TeamAPI } from '../../API/teams.api';
-import { manageResponseHandler } from '../../data/actions';
-import { dispatch, RootState, store } from '../store';
+import { manageResponseHandler } from '../managedResponse';
+import { RootState, store } from '../store';
 
 export interface TeamsState {
   /** Immutable, seeded from the server-injected CurrentTeamId global. */
@@ -57,7 +57,7 @@ export const getTeams = createAsyncThunk('teams/getAll', async () => {
  */
 export async function updateTeam(team: ITeam) {
   const res = await TeamAPI.update(CurrentGM.id!, CurrentGame.id!, team);
-  dispatch(manageResponseHandler(res));
+  manageResponseHandler(res);
 }
 
 /**
@@ -69,8 +69,6 @@ export async function changePlayerLanguage(codeLang: string) {
     CurrentPlayerId,
     codeLang,
   );
-  // manageResponseHandler already dispatches to the old store and fans the
-  // payload out to this one, so its returned action needs no further dispatch.
   manageResponseHandler(res);
 }
 
@@ -103,3 +101,21 @@ export const selectCurrentTeamId = (state: RootState = store.getState()) =>
 
 export const { updateTeams } = teamsSlice.actions;
 export default teamsSlice.reducer;
+
+/* ------------------------------------------------------------------ *
+ * Selectors
+ *
+ * Dual-use: called without a state they read the store synchronously
+ * (imperative callers, client scripts); passed a state they are plain
+ * selectors, usable in useAppSelector.
+ * ------------------------------------------------------------------ */
+
+/** The team with this id. */
+export function selectTeam(id: number, state: RootState = store.getState()) {
+  return state.teams.entities[id];
+}
+
+/** The current team. */
+export function selectCurrentTeam(state: RootState = store.getState()) {
+  return state.teams.entities[state.teams.currentTeamId];
+}

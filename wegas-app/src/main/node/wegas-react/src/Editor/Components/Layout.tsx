@@ -7,9 +7,11 @@ import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { expandWidth } from '../../css/classes';
 import { translate } from '../../data/i18n';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { useStore } from '../../data/Stores/store';
 import { shallowEqual, useAppSelector } from '../../store/hooks';
+import {
+  DEFAULT_ROLES,
+  selectRoleAvailableTabs,
+} from '../../store/slices/roles';
 import { RootState } from '../../store/store';
 import { selectPeerReviewDescriptors } from '../../store/slices/variableDescriptors';
 import { visitIndex } from '../../Helper/pages';
@@ -243,10 +245,9 @@ export default function Layout() {
     content: <PeerReviewPage peerReview={peerReview} />,
   }));
 
-  const allowedPages = useStore(s => {
-    const role = s.global.roles.roles[currentRole];
-    return role == null || role.availableTabs;
-  });
+  const allowedPages = useAppSelector(s =>
+    selectRoleAvailableTabs(s, currentRole),
+  );
 
   const allLayoutPages =
     [

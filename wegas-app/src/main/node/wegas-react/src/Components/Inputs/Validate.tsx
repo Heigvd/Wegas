@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
 import { runLoadedScript } from '../../store/slices/variableInstances';
-import { Player } from '../../data/selectors';
+import { selectCurrentPlayer } from '../../store/slices/players';
 import { usePageContext } from '../../store/pageContextState';
 import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
@@ -177,7 +177,7 @@ export function useOnCancelAction(
       dispatch(
         runLoadedScript(
           server,
-          Player.selectCurrent(),
+          selectCurrentPlayer(),
           undefined,
           assembleStateAndContext(context, state),
         ),

@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
 import { runLoadedScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selectCurrentPlayer } from '../../../store/slices/players';
 import { PAGE_LOADER_DEFAULT_ID } from '../../../Editor/Components/Page/PageLoader';
 import { safeClientScriptEval } from '../../Hooks/useScript';
 import {
@@ -98,7 +98,7 @@ function PlayerModal({
             dispatch(
               runLoadedScript(
                 server,
-                Player.selectCurrent(),
+                selectCurrentPlayer(),
                 undefined,
                 assembleStateAndContext(context),
               ),

@@ -66,3 +66,21 @@ export const selectCurrentPlayerId = (state: RootState = store.getState()) =>
 
 export const { updatePlayers } = playersSlice.actions;
 export default playersSlice.reducer;
+
+/* ------------------------------------------------------------------ *
+ * Selectors
+ *
+ * Dual-use: called without a state they read the store synchronously
+ * (imperative callers, client scripts); passed a state they are plain
+ * selectors, usable in useAppSelector.
+ * ------------------------------------------------------------------ */
+
+/** The player with this id. */
+export function selectPlayer(id: number, state: RootState = store.getState()) {
+  return state.players.entities[id];
+}
+
+/** The current player. */
+export function selectCurrentPlayer(state: RootState = store.getState()) {
+  return state.players.entities[state.players.currentPlayerId];
+}

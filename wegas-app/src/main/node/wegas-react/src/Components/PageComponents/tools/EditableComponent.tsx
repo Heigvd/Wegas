@@ -7,7 +7,7 @@ import {
   hoverColorInsetShadow,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { manageResponseHandler } from '../../../data/actions';
+import { manageResponseHandler } from '../../../store/managedResponse';
 import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
 import { selectEdition } from '../../../store/slices/edition';
 import { getLivePageContext } from '../../../store/pageContextState';
@@ -56,7 +56,6 @@ import { OptionsState } from './OptionsComponent';
 import { dispatch } from '../../../store/store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { createEditingAction } from '../../../store/localEdition';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 const childDropZoneIntoCSS = {
   '&>*>*>.component-dropzone-into': {
@@ -153,9 +152,7 @@ const asynExecute = createEditingAction(
             assembleStateAndContext(context),
           );
 
-          dispatch(
-            manageResponseHandler(result, dispatch, selectEdition(getState())),
-          );
+          manageResponseHandler(result, dispatch, selectEdition(getState()));
         }
       } else if (k === 'localScriptEval') {
         const result = wegasComponentActions.localScriptEval({

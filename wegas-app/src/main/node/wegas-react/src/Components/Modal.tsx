@@ -15,8 +15,12 @@ import {
   pointer,
   secondaryButtonStyle,
 } from '../css/classes';
-import { isEditingVariable, saveEditor } from '../data/Reducer/editingState';
-import { editionHighlight, selectEdition } from '../store/slices/edition';
+import { saveEditor } from '../store/editionThunks';
+import {
+  editionHighlight,
+  isEditingVariable,
+  selectEdition,
+} from '../store/slices/edition';
 import { store, dispatch } from '../store/store';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import { CTreeProps } from '../Editor/Components/Variable/CTree';

@@ -21,7 +21,7 @@ import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -82,17 +82,14 @@ interface WhQuestionInfo {
 /**
  * Query subtree / instance about a QuestionDescriptor
  *
- * Reads descriptors from the new store (via `select`) but instances from the old
- * one (via `getInstance`), so it must stay subscribed through the old store's
- * `useStore` until `variableInstances` migrates — `useAppSelector` would not see
- * instance updates. Both reads are fresh because manageResponseHandler updates
- * the new store before the old one dispatches (see data/actions.ts).
+ * Reads descriptors (via `select`) and instances (via `getInstance`) from the
+ * store imperatively, so subscribe to it with useDataSelector.
  */
 export function whQuestionInfo(question: IWhQuestionDescriptor) {
   return function (): WhQuestionInfo {
-    const questionD = select<IWhQuestionDescriptor>(question.id)!;
+    const questionD = selectDescriptor<IWhQuestionDescriptor>(question.id)!;
     const choicesD = questionD.itemsIds
-      .map(id => select<IWhChoiceDescriptor>(id))
+      .map(id => selectDescriptor<IWhChoiceDescriptor>(id))
       .filter(function (
         entity: IWhChoiceDescriptor | undefined,
       ): entity is IWhChoiceDescriptor {

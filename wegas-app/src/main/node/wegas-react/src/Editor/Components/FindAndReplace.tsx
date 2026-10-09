@@ -13,8 +13,7 @@ import {
   flexColumn,
 } from '../../css/classes';
 import { findAndReplaceStyle } from '../../css/findAndReplace';
-import { manageResponseHandler } from '../../data/actions';
-import { store } from '../../data/Stores/store';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { AvailableSchemas } from './FormView';
 
 const findAndReplaceSchema: {
@@ -178,7 +177,7 @@ export default function FindAndReplace() {
             setResult('<h4 class="find-result-empty">No results</h4>');
           }
           if (!state.pretend) {
-            store.dispatch(manageResponseHandler(v));
+            manageResponseHandler(v);
           }
         });
     }

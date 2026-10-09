@@ -3,7 +3,6 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import { isEqual } from 'lodash-es';
 import * as React from 'react';
 import { IScript, IVariableDescriptor } from 'wegas-ts-api';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import {
   inputStyle,
@@ -12,9 +11,9 @@ import {
 import { flex, flexRow, grow, itemCenter } from '../../../css/classes';
 import { varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import { VariableDescriptor } from '../../../data/selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { useGameModel } from '../../../Components/Hooks/useGameModel';
-import { useStore } from '../../../data/Stores/store';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import {
   createScript,
   scriptableClassNameToClassFilter,
@@ -57,7 +56,7 @@ export function genVarItems<T = string>(
   function mapItem(
     i: number,
   ): TreeSelectItem<StringOrT<typeof decorateFn, T>> | undefined {
-    const item = VariableDescriptor.select(i);
+    const item = selectDescriptor(i);
     if (item == null) {
       return undefined;
     }
@@ -327,7 +326,7 @@ export function TreeVariableSelect(
     return list;
   }, [gameModel.itemsIds, props.view.returnType, props.value]);
 
-  const varItems = useStore(genCb, deepDifferent);
+  const varItems = useDataSelector(genCb, deepEqual);
 
   const filteredItems: TreeSelectItem<string>[] = props.view.items
     ? [

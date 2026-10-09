@@ -1,3 +1,10 @@
+/**
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
+ * Licensed under the MIT License
+ */
 import { Immutable, produce } from 'immer';
 import { Schema } from 'jsoninput';
 import {
@@ -15,12 +22,9 @@ import {
   IVariableDescriptor,
   IWhQuestionDescriptor,
 } from 'wegas-ts-api';
-import {
-  createDescriptor,
-  updateDescriptor,
-} from '../../store/slices/variableDescriptors';
-import { FileAPI } from '../../API/files.api';
-import { AvailableViews } from '../../Editor/Components/FormView';
+import { FileAPI } from '../API/files.api';
+import { selectDescriptor } from './slices/variableDescriptors';
+import { AvailableViews } from '../Editor/Components/FormView';
 import {
   discardUnsavedChanges,
   fileEdit,
@@ -29,44 +33,25 @@ import {
   variableCreate,
   VariableCreateEdition,
   variableEdit,
-} from '../../store/slices/edition';
+} from './slices/edition';
+import { editorErrorEvent } from './slices/editorEvents';
 import {
-  editorEventAdded,
-  editorEventRead as editorEventReadAction,
-  editorEventRemoved,
-} from '../../store/slices/editorEvents';
-import { AppThunk, dispatch } from '../../store/store';
-import { triggerEventHandlers } from '../actions';
-import { VariableDescriptor } from '../selectors';
-import { store } from '../Stores/store';
+  createDescriptor,
+  updateDescriptor,
+} from './slices/variableDescriptors';
+import { AppThunk, dispatch } from './store';
 
-/* ------------------------------------------------------------------------- *
- * Re-exports
+/**
+ * Edition thunks: open entities in the editor and save them.
  *
- * The edition state itself now lives in store/slices/edition. These keep the
- * existing import sites working; new code should import from the slice.
- * ------------------------------------------------------------------------- */
-
-export type {
-  Edition,
-  EditionSliceState,
-  EditionState,
-  FileEdition,
-  VariableCreateEdition,
-  VariableEdition,
-} from '../../store/slices/edition';
-export {
-  closeEditor,
-  discardUnsavedChanges,
-  isEditingVariable,
-} from '../../store/slices/edition';
-
-/* ------------------------------------------------------------------------- *
- * Thunks
+ * Not in the edition slice because they reach into the variableDescriptors
+ * slice, which imports some of them back. A sibling module is safe:
+ * store/store.ts does not import it, so nothing cycles through the store.
  *
- * They live here rather than in the slice because they reach into
- * VariableDescriptorActions, which imports the store back.
- * ------------------------------------------------------------------------- */
+ * Every thunk dispatches through the `scopedDispatch` it receives, so it runs
+ * in the edition scope that dispatched it (main editor or a nested form, see
+ * store/localEdition).
+ */
 
 /**
  * Edit VariableDescriptor
@@ -101,9 +86,7 @@ export function deleteState<T extends IFSMDescriptor | IDialogueDescriptor>(
       }
     })(stateMachine);
 
-    return scopedDispatch(
-      updateDescriptor(newStateMachine),
-    );
+    return scopedDispatch(updateDescriptor(newStateMachine));
   };
 }
 
@@ -120,9 +103,7 @@ export function deleteTransition<
       transitions.splice(transitionIndex, 1);
     })(stateMachine);
 
-    return scopedDispatch(
-      updateDescriptor(newStateMachine),
-    );
+    return scopedDispatch(updateDescriptor(newStateMachine));
   };
 }
 
@@ -212,54 +193,26 @@ export function saveEditor(
         return scopedDispatch(
           createDescriptor(
             value as IVariableDescriptor,
-            VariableDescriptor.select(editMode.parentId) as
+            selectDescriptor(editMode.parentId) as
               | IParentDescriptor
               | undefined,
           ),
         );
       case 'File':
-        return store.dispatch(() => {
-          return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
-            .then((res: IAbstractContentDescriptor) => {
-              if (selectUpdatedEntity) {
-                // the scope that opened the file re-selects it: used to be
-                // hard-coded to the global editing store, so a file saved from
-                // a nested form re-selected in the main editor
-                scopedDispatch(editFile(res));
-              }
-              editMode.cb && editMode.cb(res);
-            })
-            .catch((res: Error) => {
-              // events are global only, never route them through a local scope
-              dispatch(editorErrorEvent(res.message));
-            });
-        });
+        return FileAPI.updateMetadata(value as IAbstractContentDescriptor)
+          .then((res: IAbstractContentDescriptor) => {
+            if (selectUpdatedEntity) {
+              // the scope that opened the file re-selects it: used to be
+              // hard-coded to the global editing store, so a file saved from
+              // a nested form re-selected in the main editor
+              scopedDispatch(editFile(res));
+            }
+            editMode.cb && editMode.cb(res);
+          })
+          .catch((res: Error) => {
+            // events are global only, never route them through a local scope
+            dispatch(editorErrorEvent(res.message));
+          });
     }
   };
-}
-
-/* ------------------------------------------------------------------------- *
- * Events
- * ------------------------------------------------------------------------- */
-
-export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
-  const event: WegasEvent = {
-    ...anyEvent,
-    timestamp: new Date().getTime(),
-    unread: true,
-  };
-  triggerEventHandlers(event);
-  return editorEventAdded(event);
-}
-
-export function editorErrorEvent(error: string) {
-  return editorEvent({ '@class': 'ClientEvent', error });
-}
-
-export function editorEventRemove(timestamp: number) {
-  return editorEventRemoved({ timestamp });
-}
-
-export function editorEventRead(timestamp: number) {
-  return editorEventReadAction({ timestamp });
 }

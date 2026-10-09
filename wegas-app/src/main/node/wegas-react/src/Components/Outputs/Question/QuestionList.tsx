@@ -31,9 +31,8 @@ import { createTranslatableContent } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
 import { read } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
-import { flatten } from '../../../data/selectors/VariableDescriptorSelector';
-import { useStore } from '../../../data/Stores/store';
+import { selectCurrentPlayer } from '../../../store/slices/players';
+import { flattenDescriptors } from '../../../store/slices/variableDescriptors';
 import {
   IconComp,
   Icons,
@@ -62,8 +61,8 @@ import {
   questionInfo,
 } from './Question';
 import { entityIs } from '../../../data/entities';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { dispatch } from '../../../store/store';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 
 const labelStyle = css({
   fontWeight: 'bold',
@@ -257,10 +256,8 @@ function QuestionLabelAnswerIndicator({
 }: {
   questionD: IQuestionDescriptor;
 }) {
-  const question: QuestionInfo = useStore(
-    questionInfo(questionD),
-    deepDifferent,
-  );
+  const getInfo = React.useMemo(() => questionInfo(questionD), [questionD]);
+  const question: QuestionInfo = useDataSelector(getInfo, deepEqual);
 
   const firstReply = question.choicesI.find(c => (c?.replies || []).length > 0);
   const firstChoice = question.choicesD.find(
@@ -299,7 +296,7 @@ function QuestionChooser(
   const handleClick = () => {
     props.onClick();
     if (!props.disabled) {
-      const player = instantiate(Player.selectCurrent());
+      const player = instantiate(selectCurrentPlayer());
       const questionDescriptor = instantiate(props.entity);
       const questionInstance = questionDescriptor.getInstance(player);
 
@@ -339,7 +336,7 @@ function customLabelStyle(
   e: IWhQuestionDescriptor | IQuestionDescriptor,
 ): string | undefined {
   try {
-    const player = instantiate(Player.selectCurrent());
+    const player = instantiate(selectCurrentPlayer());
     const isUnread = instantiate(e).getInstance(player).isUnread();
     const isReplied = instantiate(e).isReplied(player);
 
@@ -471,7 +468,7 @@ export default function QuestionList({
 }: QuestionListProps) {
   const entitiesSelector = React.useCallback(() => {
     return {
-      questions: flatten<IQuestionDescriptor | IWhQuestionDescriptor>(
+      questions: flattenDescriptors<IQuestionDescriptor | IWhQuestionDescriptor>(
         questionList.getEntity(),
         'QuestionDescriptor',
         'WhQuestionDescriptor',
@@ -484,15 +481,15 @@ export default function QuestionList({
         }
         return false;
       }),
-      player: Player.selectCurrent(),
+      player: selectCurrentPlayer(),
     };
   }, [questionList]);
 
-  const entities = useStore(entitiesSelector);
+  const entities = useDataSelector(entitiesSelector);
 
   React.useEffect(() => {
     if (autoOpenFirst && entities?.questions?.length > 0) {
-      const player = instantiate(Player.selectCurrent());
+      const player = instantiate(selectCurrentPlayer());
       const questionDescriptor = instantiate(entities.questions[0]);
       const questionInstance = questionDescriptor.getInstance(player);
 
