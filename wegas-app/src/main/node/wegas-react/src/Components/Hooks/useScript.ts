@@ -25,7 +25,10 @@ import { DEFAULT_ROLES, rolesSet } from '../../store/slices/roles';
 import { instantiate } from '../../data/scriptable';
 import { selectCurrentGameModel } from '../../store/slices/gameModel';
 import { selectCurrentPlayer } from '../../store/slices/players';
-import { findDescriptorByName, selectDescriptor } from '../../store/slices/variableDescriptors';
+import {
+  findDescriptorByName,
+  selectDescriptor,
+} from '../../store/slices/variableDescriptors';
 import { deepEqual, useDataSelector } from '../../store/hooks';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
@@ -126,7 +129,6 @@ export function useGlobalContexts(): GlobalContexts {
   const languagesContext = React.useContext(languagesCTX);
   const classesContext = React.useContext(classesCTX);
 
-  // Stable while the contexts are: useScript keys its evaluation on it
   return React.useMemo(() => {
     return { ...featuresContext, ...languagesContext, ...classesContext };
   }, [featuresContext, languagesContext, classesContext]);
