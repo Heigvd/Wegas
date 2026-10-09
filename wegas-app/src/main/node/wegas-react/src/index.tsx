@@ -1,6 +1,7 @@
 /* global module*/
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
+import { store } from './store/store';
 import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { FeaturesProvider } from './Components/Contexts/FeaturesProvider';
@@ -18,9 +19,8 @@ import { ErrorBoundary } from './Components/ErrorBoundary';
 import './Editor/Components/FormView/index';
 import Layout from './Editor/Components/Layout';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
-import { store } from "./store/store";
 import { bootstrap } from './store/bootstrap';
-import { Provider } from "react-redux";
+import { Provider } from 'react-redux';
 
 importPageComponents();
 bootstrap();
@@ -56,7 +56,7 @@ function mount() {
           </FeaturesProvider>
         </AuthorizationProvider>
       </Provider>
-    </ErrorBoundary>
+    </ErrorBoundary>,
   );
 }
 mount();
