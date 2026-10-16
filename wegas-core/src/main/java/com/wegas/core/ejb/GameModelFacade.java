@@ -291,6 +291,9 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         // merge recusrsively and bypass visibility restriction
         gameModel.deepMergeForce(newVersion);
 
+        // flush so revive listeners querying by name see newly created descriptors (see create)
+        variableDescriptorFacade.flush();
+
         // revive descriptor & propagate default instances
         variableDescriptorFacade.reviveItems(gameModel, gameModel, false);
 

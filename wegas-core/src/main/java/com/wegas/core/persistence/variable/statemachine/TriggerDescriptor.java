@@ -346,11 +346,17 @@ public class TriggerDescriptor extends AbstractStateMachineDescriptor<TriggerSta
             this.triggerEvent = null;
         }
 
+        // DependsOn: only apply when set, as this method runs twice for a trigger created by a
+        // patch (merge callback then @PrePersist): a 2nd run must not wipe deps nor reset strategy
         Transition transition = this.getStates().get(1L).getInternalTransitions().get(0);
-        transition.setDependsOnStrategy(this.dependsOnStrategy == null ? DependsOnStrategy.AUTO : this.dependsOnStrategy);
-        transition.setDependencies(this.dependencies == null ? new HashSet() : this.dependencies);
-        this.dependsOnStrategy = null;
-        this.dependencies = null;
+        if (this.dependsOnStrategy != null) {
+            transition.setDependsOnStrategy(this.dependsOnStrategy);
+            this.dependsOnStrategy = null;
+        }
+        if (this.dependencies != null) {
+            transition.setDependencies(this.dependencies);
+            this.dependencies = null;
+        }
 
         // Impact
         if (this.postTriggerEvent != null) {
