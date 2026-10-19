@@ -206,8 +206,7 @@ export function deleteDescriptor(
     }
     const gameModelId = currentGameModelId();
     return VariableDescriptorAPI.delete(gameModelId, variableDescriptor).then(
-      res =>
-        manageResponseHandler(res, dispatch, selectEdition(getState())),
+      res => manageResponseHandler(res, dispatch, selectEdition(getState())),
     );
   };
 }
@@ -408,7 +407,7 @@ export function findDescriptorByName<T extends IVariableDescriptor>(
     return undefined;
   }
   const id = descriptorNameIdCache.get(name);
-  if (typeof id === 'number') {
+  if (id !== undefined) {
     const descriptor = selectDescriptor<T>(id);
     // Check if descriptor still exists and has the right name.
     if (descriptor != null && descriptor.name === name) {
@@ -463,14 +462,14 @@ export function allDescriptors<T extends IVariableDescriptor>(
 export function flattenDescriptors<
   T extends IVariableDescriptor,
   E extends T['@class'][] = T['@class'][],
->(ld: IParentDescriptor | undefined, ...cls: E) {
-  if (ld === undefined) {
+>(parent: IParentDescriptor | undefined, ...cls: E) {
+  if (parent === undefined) {
     return [];
   }
   const ret: T[] = [];
   const state = store.getState();
 
-  ld.itemsIds.forEach(id => {
+  parent.itemsIds.forEach(id => {
     const descriptor = state.variableDescriptors[id];
     if (cls.length > 0) {
       if (descriptor !== undefined && cls.includes(descriptor['@class'])) {

@@ -806,7 +806,6 @@ export function useScript<T>(
   // Re-evaluated when a data slice changes or a dependency changes (see
   // useDataSelector), and may run during render: setGlobals then writes the
   // sandbox globals during render. Harmless without concurrent rendering.
-  // TODO Phase 4b: set the globals once per data change, not per script.
   const evaluate = React.useCallback(() => {
     //ref +state.reloading
     setGlobals(globalContexts, store.getState());
@@ -828,85 +827,15 @@ export function useScript<T>(
           return true;
         }
       });
+      isFirstRun.current = false;
     }
 
-    return fn();
+    return returnValue;
   }, [fn, globalContexts]);
   const returnValue = useDataSelector(evaluate, deepEqual);
 
   return returnValue as any;
 }
-
-/* UNUSED
-export function useClientScript<T>(
-  clientScript?: IClientScript,
-  context?: {
-    [name: string]: unknown;
-  },
-  catchCB?: (e: Error) => void,
-): T | undefined {
-
-  const script: IScript = {
-    "@class": "Script",
-    language: 'TypeScript',
-    content: clientScript?.content || '',
-  };
-
-  return useScript<T>(script, context, catchCB, {
-      injectReturn: !!clientScript?.returnType
-  });
-}
-*/
-/* UNUSED
-export function parseAndRunClientScript(
-  script: string | IScript,
-  context?: {
-    [name: string]: unknown;
-  },
-) {
-  let scriptContent = isScript(script) ? script.content : script;
-
-  const regexStart = /(runClientScript\(["|'|`])/g;
-  const regexEnd = /(["|'|`]\))/g;
-  const simpleVarFindRegex = new RegExp(
-    regexStart.source + `.*` + regexEnd.source,
-  );
-  let matched;
-  let index = 0;
-
-  do {
-    matched = scriptContent.substr(index).match(simpleVarFindRegex);
-    if (matched) {
-      index += matched.index == null ? scriptContent.length : matched.index;
-      const matchedCode = matched[0].replace(regexStart, '').slice(0, -2);
-      let matchedValue = safeClientScriptEval<string>(
-        matchedCode,
-        context,
-        undefined,
-        undefined,
-        undefined,
-      );
-
-      if (typeof matchedValue === 'string') {
-        matchedValue = `"${matchedValue}"`;
-      }
-
-      scriptContent = replace(
-        scriptContent,
-        index,
-        matched[0].length + 1,
-        matchedValue,
-      );
-
-      index += matchedValue?.length || 0;
-    }
-  } while (matched);
-
-  return isScript(script)
-    ? { ...script, content: scriptContent }
-    : scriptContent;
-}
-*/
 export type ContextRef = React.MutableRefObject<
   UnknownValuesObject | undefined
 >;
