@@ -81,6 +81,14 @@ function getVisibility(
     if (inheritedValue) {
       return inheritedValue;
     }
+    if (
+      !entityIsPersisted(entity) &&
+      entityIs(entity, 'VariableDescriptor', true)
+    ) {
+      // New variable: it will be created PRIVATE (server default, same as the legacy editor),
+      // whatever the visibility of the folder it is created in.
+      return defaultValue;
+    }
     let p = Helper.getParent(entity);
     while (p) {
       if ('visibility' in p) {
