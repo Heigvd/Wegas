@@ -23,8 +23,8 @@ import {
   textCenter,
   thinHoverColorInsetShadow,
 } from '../../../css/classes';
-import { editFile } from '../../../data/Reducer/editingState';
-import { GameModel } from '../../../data/selectors';
+import { editFile } from '../../../store/editionThunks';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
 import { classNameOrEmpty } from '../../../Helper/className';
 import {
   formatFileSize,
@@ -117,8 +117,8 @@ const sortFiles = (
 
 const gameModelDependsOnModel = () => {
   return (
-    GameModel.selectCurrent().type === 'SCENARIO' &&
-    GameModel.selectCurrent().basedOnId !== null
+    selectCurrentGameModel().type === 'SCENARIO' &&
+    selectCurrentGameModel().basedOnId !== null
   );
 };
 

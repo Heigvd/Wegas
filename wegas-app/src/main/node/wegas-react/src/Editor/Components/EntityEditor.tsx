@@ -13,23 +13,18 @@ import {
   IVariableDescriptor,
 } from 'wegas-ts-api';
 import { mediumPadding } from '../../css/classes';
-import { Actions } from '../../data';
+import { searchDeep } from '../../store/slices/search';
 import { entityIs, entityIsPersisted } from '../../data/entities';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
-import {
-  Edition,
-  editorEventRead,
-  isEditingVariable,
-  saveEditor,
-  VariableEdition,
-} from '../../data/Reducer/editingState';
+import { saveEditor } from '../../store/editionThunks';
 import {
   deleteDescriptor,
   duplicateDescriptor,
   updateDescriptor,
 } from '../../store/slices/variableDescriptors';
-import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import { store } from '../../data/Stores/store';
+import { getParent } from '../../store/entityParents';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectDescriptor } from '../../store/slices/variableDescriptors';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -39,15 +34,22 @@ import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
 import { IconComp, withDefault } from './Views/FontAwesome';
-import { RootState, dispatch } from '../../store/store';
+import { RootState, dispatch, store } from '../../store/store';
+import { selectCustomSchemas } from '../../store/slices/scriptRegistry';
 import { EditingDispatch } from '../../store/localEdition';
 import { customStateEquals, useAppSelector } from '../../store/hooks';
 import {
+  Edition,
   editionChanges,
   instanceEditor,
+  isEditingVariable,
   selectEdition,
+  VariableEdition,
 } from '../../store/slices/edition';
-import { selectEditorEvents } from '../../store/slices/editorEvents';
+import {
+  editorEventRead,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -87,12 +89,12 @@ function getVisibility(
     if (inheritedValue) {
       return inheritedValue;
     }
-    let p = Helper.getParent(entity);
+    let p = getParent(entity);
     while (p) {
       if ('visibility' in p) {
         return (p as any).visibility as VISIBILITY;
       }
-      p = Helper.getParent(p);
+      p = getParent(p);
     }
     return defaultValue;
   }
@@ -169,7 +171,7 @@ function _overrideSchema(
 }
 
 export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
-  const gameModel = GameModel.selectCurrent();
+  const gameModel = selectCurrentGameModel();
   if (gameModel.type === 'SCENARIO') {
     return _overrideSchema(cloneDeep(schema), entity);
   }
@@ -209,7 +211,7 @@ export function WindowedEditor<T extends IMergeable>({
   const schema = getConfig(pathEntity);
 
   // First try to get schema from simple filters
-  const customSchemas = store.getState().global.schemas;
+  const customSchemas = selectCustomSchemas(store.getState());
   let customSchema: SimpleSchema | void;
   const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
   if (simpleCustomSchemaName !== undefined) {
@@ -287,7 +289,7 @@ export function parseEvent(
   event: WegasEvent,
   scopedDispatch: EditingDispatch = dispatch,
 ) {
-  const onRead = () => scopedDispatch(editorEventRead(event.timestamp));
+  const onRead = () => scopedDispatch(editorEventRead({ timestamp: event.timestamp }));
   switch (event['@class']) {
     case 'ClientEvent':
       return { message: event.error, onRead };
@@ -407,7 +409,7 @@ export function getEntity(editionState?: Readonly<Edition>) {
     case 'File':
       return editionState.entity;
     case 'VariableFSM': {
-      return VariableDescriptor.select(editionState.entity.id);
+      return selectDescriptor(editionState.entity.id);
     }
     default:
       return undefined;
@@ -458,7 +460,7 @@ export function editionActions<T extends IVariableDescriptor>(
         icon: 'search',
         action: (entity: IVariableDescriptor) => {
           if (entityIsPersisted(entity) && entity.name != null) {
-            store.dispatch(Actions.EditorActions.searchDeep(entity.name));
+            dispatch(searchDeep(entity.name));
           }
         },
       });
@@ -523,7 +525,7 @@ function VariableEditionPanel({
       if (entity != null) {
         if (editing?.type === 'VariableCreate') {
           if (editing.subtype === 'Choice') {
-            const parent = VariableDescriptor.select<IChoiceDescriptor>(
+            const parent = selectDescriptor<IChoiceDescriptor>(
               editing.parentId,
             );
             if (parent) {
@@ -542,7 +544,7 @@ function VariableEditionPanel({
               return;
             }
           } else {
-            const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+            const parent = selectDescriptor<IPeerReviewDescriptor>(
               editing.parentId,
             );
             if (parent && entityIs(entity, 'EvaluationDescriptor', true)) {

@@ -26,14 +26,16 @@ import {
   getAll,
 } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
-import { GameModel, Player, Team } from '../../../data/selectors';
-import { findByName } from '../../../data/selectors/VariableDescriptorSelector';
-import { store, useStore } from '../../../data/Stores/store';
+import { selfPlayer } from '../../../data/scriptable';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../../store/slices/players';
+import { selectCurrentTeam } from '../../../store/slices/teams';
+import { findDescriptorByName } from '../../../store/slices/variableDescriptors';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../../i18n/peerReview/peerReview';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { useScript } from '../../Hooks/useScript';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { Button } from '../../Inputs/Buttons/Button';
@@ -41,7 +43,7 @@ import { NumberInput } from '../../Inputs/Number/NumberInput';
 import { NumberSlider } from '../../Inputs/Number/NumberSlider';
 import { useOkCancelModal } from '../../Modal';
 import { HTMLText } from '../../Outputs/HTMLText';
-import { addPopup } from '../../PopupManager';
+import { addPopup } from '../../../store/slices/popups';
 import { themeVar } from '../../Theme/ThemeVars';
 import {
   pageComponentFactory,
@@ -75,21 +77,29 @@ export default function PeerReviewVariableEditor({
   const { lang } = React.useContext(languagesCTX);
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
-  const reviewState = useStore(() =>
-    sPR?.getInstance(Player.self()).getReviewState(),
+  const getReviewState = React.useCallback(
+    () => sPR?.getInstance(selfPlayer()).getReviewState(),
+    [sPR],
   );
+  const reviewState = useDataSelector(getReviewState);
   const variableToReview = instantiate(
-    findByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
+    findDescriptorByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
   );
 
   const waitingState = useLiveUpdate(
-    variableToReview?.getInstance(Player.self()).getId(),
+    variableToReview?.getInstance(selfPlayer()).getId(),
   );
 
-  const storeValue = useStore(
-    () => variableToReview?.getValue(Player.self()),
-    deepDifferent,
+  // Resolved inside rather than from variableToReview, which is a new object on
+  // every render and would make the callback unstable.
+  const getStoreValue = React.useCallback(
+    () =>
+      instantiate(
+        findDescriptorByName<ITextDescriptor | INumberDescriptor>(sPR?.getToReviewName()),
+      )?.getValue(selfPlayer()),
+    [sPR],
   );
+  const storeValue = useDataSelector(getStoreValue, deepEqual);
 
   const [value, setValue] = React.useState<string | number | undefined>(
     storeValue,
@@ -107,7 +117,7 @@ export default function PeerReviewVariableEditor({
       }
       timer.current = setTimeout(() => {
         asyncRunLoadedScript(
-          GameModel.selectCurrent().id!,
+          selectCurrentGameModel().id!,
           `Variable.find(gameModel,"${variableToReview?.getName()}").setValue(self,${
             val == null
               ? ''
@@ -115,12 +125,12 @@ export default function PeerReviewVariableEditor({
               ? JSON.stringify(val)
               : val
           })`,
-          Player.selectCurrent(),
+          selectCurrentPlayer(),
           undefined,
         )
           .catch(e => {
             e.json().then((error: WegasErrorMessage) => {
-              store.dispatch(
+              dispatch(
                 addPopup(
                   error.message + new Date().getTime(),
                   createTranslatableContent(lang, error.message),
@@ -143,7 +153,7 @@ export default function PeerReviewVariableEditor({
       if (variableToReview != null && val != null) {
         dispatch(
           liveEdition(
-            `private-Team-${Team.selectCurrent().id!}`,
+            `private-Team-${selectCurrentTeam().id!}`,
             produce((variable: INumberInstance | ITextInstance) => {
               if (entityIs(variable, 'NumberInstance')) {
                 variable.value = Number(val);
@@ -155,7 +165,7 @@ export default function PeerReviewVariableEditor({
                 );
               }
               return variable;
-            })(variableToReview.getInstance(Player.self()).getEntity()),
+            })(variableToReview.getInstance(selfPlayer()).getEntity()),
           ),
         );
       }
@@ -256,7 +266,7 @@ export default function PeerReviewVariableEditor({
             <OkCancelModal
               onOk={() => {
                 dispatch(submitToReview(sPR.getId()!));
-                store.dispatch(getAll());
+                dispatch(getAll());
               }}
             >
               <p>{i18nValues.global.confirmation.info}</p>

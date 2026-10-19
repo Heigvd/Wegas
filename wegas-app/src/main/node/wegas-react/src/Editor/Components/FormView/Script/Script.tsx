@@ -9,7 +9,7 @@ import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import { flex, grow, secondaryButtonStyle } from '../../../../css/classes';
 import { runScript } from '../../../../store/slices/variableInstances';
-import { Player } from '../../../../data/selectors';
+import { selectCurrentPlayer } from '../../../../store/slices/players';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { wwarn } from '../../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
@@ -104,7 +104,7 @@ export function Script({
     (value: string | IScript) => {
       try {
         dispatch(
-          runScript(value, Player.selectCurrent(), context),
+          runScript(value, selectCurrentPlayer(), context),
         );
         setError(undefined);
       } catch (error) {

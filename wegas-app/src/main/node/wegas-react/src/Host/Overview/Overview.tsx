@@ -9,7 +9,9 @@ import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import { expandWidth, flex, flexBetween, flexRow } from '../../css/classes';
 import { instantiate } from '../../data/scriptable';
-import { Game, GameModel, Player } from '../../data/selectors';
+import { selectCurrentGame } from '../../store/slices/game';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
 import '../../Editor/Components/FormView';
 import { createScript } from '../../Helper/wegasEntites';
 import { commonTranslations } from '../../i18n/common/common';
@@ -221,9 +223,9 @@ export default function Overview({
     setNewData(true);
   });
 
-  const game = Game.selectCurrent();
+  const game = selectCurrentGame();
 
-  const isRealGame = GameModel.selectCurrent().type === 'PLAY';
+  const isRealGame = selectCurrentGameModel().type === 'PLAY';
 
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesTrainer = useInternalTranslate(trainerTranslations);
@@ -258,8 +260,8 @@ export default function Overview({
   const refreshOverview = React.useCallback(() => {
     setNewData(false);
     VariableDescriptorAPI.runScript(
-      GameModel.selectCurrent().id!,
-      Player.selectCurrent().id!,
+      selectCurrentGameModel().id!,
+      selectCurrentPlayer().id!,
       createScript(
         `WegasDashboard.getOverview(${JSON.stringify(dashboardName)});`,
         'JavaScript',
@@ -414,7 +416,7 @@ export default function Overview({
           tooltip={i18nValuesTrainer.exportTeamsData}
           onClick={() => {
             window.open(
-              `${API_ENDPOINT}GameModel/Game/${Game.selectCurrent()
+              `${API_ENDPOINT}GameModel/Game/${selectCurrentGame()
                 .id!}/ExportMembers.xlsx`,
               '_blank',
             );

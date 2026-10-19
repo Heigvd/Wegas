@@ -2,8 +2,8 @@ import React from 'react';
 import { SNumberDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
 import { entityIs } from '../../../data/entities';
-import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
+import { selfPlayer } from '../../../data/scriptable';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -54,9 +54,11 @@ function PlayerNumberInput({
   const number = useScript<SNumberDescriptor | number>(script, context);
   const placeholderText = useScript<string>(placeholder, context);
 
-  const value = useStore(() =>
-    typeof number === 'object' ? number.getValue(Player.self()) : number,
+  const getValue = React.useCallback(
+    () => (typeof number === 'object' ? number.getValue(selfPlayer()) : number),
+    [number],
   );
+  const value = useDataSelector(getValue);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 

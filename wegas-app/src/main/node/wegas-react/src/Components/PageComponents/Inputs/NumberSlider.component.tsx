@@ -3,8 +3,8 @@ import * as React from 'react';
 import { IScript, SNumberDescriptor } from 'wegas-ts-api';
 import { runScript } from '../../../store/slices/variableInstances';
 import { entityIs } from '../../../data/entities';
-import { Player } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
+import { selfPlayer } from '../../../data/scriptable';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -76,11 +76,14 @@ function PlayerNumberSlider({
   );
   const placeholderText = useScript<string>(placeholder, context);
 
-  const value = useStore(() =>
-    entityIs(number, 'NumberDescriptor')
-      ? (number as SNumberDescriptor).getValue(Player.self())
-      : (number as NumberSliderNumber).value,
+  const getValue = React.useCallback(
+    () =>
+      entityIs(number, 'NumberDescriptor')
+        ? (number as SNumberDescriptor).getValue(selfPlayer())
+        : (number as NumberSliderNumber).value,
+    [number],
   );
+  const value = useDataSelector(getValue);
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
 

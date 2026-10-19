@@ -1,5 +1,5 @@
 //import { omit, pick } from 'lodash-es';
-import { manageResponseHandler } from '../data/actions';
+import { manageResponseHandler } from '../store/managedResponse';
 import { entityIs } from '../data/entities';
 import {
   deleteDescriptor,
@@ -19,7 +19,7 @@ import { dispatch } from '../store/store';
 export const APIScriptMethods: APIMethodsClass = {
   createVariable: (gameModelId, variable, parent, callback) => {
     VariableDescriptorAPI.post(gameModelId, variable, parent).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         //callback(getNewVariable(variable, res));
         callback(
@@ -33,7 +33,7 @@ export const APIScriptMethods: APIMethodsClass = {
   duplicateVariable: (variable, callback) => {
     const gameModelId = selectCurrentGameModelId();
     VariableDescriptorAPI.duplicate(gameModelId, variable).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         callback(
           instantiate<IVariableDescriptor>(
@@ -52,7 +52,7 @@ export const APIScriptMethods: APIMethodsClass = {
       index,
       parent,
     ).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         callback(
           instantiate<IVariableDescriptor>(
@@ -82,7 +82,7 @@ export const APIScriptMethods: APIMethodsClass = {
       { Context: context },
     );
 
-    dispatch(manageResponseHandler(result));
+    manageResponseHandler(result);
 
     return result;
   },

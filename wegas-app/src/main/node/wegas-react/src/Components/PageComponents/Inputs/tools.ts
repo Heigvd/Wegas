@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api';
 import { runLoadedScript } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selectCurrentPlayer } from '../../../store/slices/players';
 import { usePageContext } from '../../../store/pageContextState';
 import { createScript } from '../../../Helper/wegasEntites';
 import { safeClientScriptEval, useScript } from '../../Hooks/useScript';
@@ -87,7 +87,7 @@ export function useOnVariableChange(
         dispatch(
           runLoadedScript(
             server,
-            Player.selectCurrent(),
+            selectCurrentPlayer(),
             undefined,
             assembleStateAndContext(newContext, state),
           ),

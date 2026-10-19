@@ -15,7 +15,7 @@ import {
   itemCenter,
 } from '../../../css/classes';
 import { applyFSMTransition } from '../../../store/slices/variableInstances';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
@@ -69,7 +69,7 @@ export function DialogueDisplay({
   const [waitingUser, setWaitingUser] = React.useState(false);
   const [waitingSystem, setWaitingSystem] = React.useState(false);
 
-  const dialogueInstance = dialogue.getInstance(Player.self());
+  const dialogueInstance = dialogue.getInstance(selfPlayer());
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
 

@@ -1,5 +1,6 @@
 import { IAbstractEntity } from 'wegas-ts-api';
-import { store } from '../data/Stores/store';
+import { store } from '../store/store';
+import { selectSocketId } from '../store/slices/connection';
 
 type ContentType =
   | 'application/json'
@@ -11,7 +12,7 @@ function COMMON_CONFIG(
   contentType?: ContentType,
   managed: boolean = false,
 ): RequestInit {
-  const socket_id = store.getState().global.pusherStatus.socket_id;
+  const socket_id = selectSocketId(store.getState());
 
   let HEADERS;
   if (contentType) {

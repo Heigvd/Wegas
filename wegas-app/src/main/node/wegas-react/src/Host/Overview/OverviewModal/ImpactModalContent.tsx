@@ -21,7 +21,7 @@ import {
   textCenter,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
-import { Game } from '../../../data/selectors';
+import { selectCurrentGame } from '../../../store/slices/game';
 import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
 import { classOrNothing } from '../../../Helper/className';
@@ -123,7 +123,7 @@ export function ImpactModalComputedContent({
         onExit();
       } else {
         asyncRunLoadedScript(
-          Game.selectCurrent().id!,
+          selectCurrentGame().id!,
           functions[index],
           player,
           undefined,
@@ -293,7 +293,7 @@ export function ImpactModalAdvancedContent({
 
   const runScript = React.useCallback(
     (player: Readonly<IPlayer> | undefined) => {
-      asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
+      asyncRunLoadedScript(selectCurrentGame().id!, script, player)
         .then(response => {
           setShowResults(true);
           if (response.events.length > 0) {

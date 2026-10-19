@@ -21,8 +21,8 @@ import {
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
 import { readMessage } from '../../store/slices/variableInstances';
 import { instantiate } from '../../data/scriptable';
-import { Player } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { useDataSelector } from '../../store/hooks';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
@@ -280,13 +280,13 @@ export function InboxDisplay({
   style,
 }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(() => {
-    const messages = getInstance(inbox, Player.selectCurrent())!.messages;
+    const messages = getInstance(inbox, selectCurrentPlayer())!.messages;
     return [...messages].sort((a, b) => {
       return (b.time ?? 0) - (a.time ?? 0);
     });
   }, [inbox]);
 
-  const messages = useStore(messagesSelector);
+  const messages = useDataSelector(messagesSelector);
   const i18nComponentValues = useInternalPlayerLangTranslate(
     componentsTranslations,
   );

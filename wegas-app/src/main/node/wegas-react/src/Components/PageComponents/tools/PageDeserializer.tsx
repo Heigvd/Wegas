@@ -1,11 +1,10 @@
 import { cloneDeep, pick } from 'lodash-es';
 import * as React from 'react';
 import { grow } from '../../../css/classes';
-import { deepEqual, useAppSelector } from '../../../store/hooks';
+import { deepEqual, shallowEqual, useAppSelector } from '../../../store/hooks';
 import { RootState } from '../../../store/store';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { TumbleLoader } from '../../Loader';
 import {
@@ -192,7 +191,7 @@ export function PageDeserializer({
     },
     [wegasComponent],
   );
-  const component = usePageComponentStore(componentSeletor, shallowDifferent);
+  const component = usePageComponentStore(componentSeletor, shallowEqual);
 
   const {
     WegasComponent,

@@ -1,6 +1,6 @@
 import { editorLanguages, EditorLanguagesCode } from '../data/i18n';
-import { selectCurrentEditorLanguage } from '../data/selectors/Languages';
-import { useStore } from '../data/Stores/store';
+import { useAppSelector } from '../store/hooks';
+import { selectCurrentEditorLanguage } from '../store/slices/languages';
 import * as React from 'react';
 import { languagesCTX } from '../Components/Contexts/LanguagesProvider';
 
@@ -27,7 +27,7 @@ export function internalTranslate<Translations>(
 export function useInternalTranslate<Translations>(
   translatableObject: TranslatableObject<Translations>,
 ): Translations {
-  const lang = useStore(selectCurrentEditorLanguage);
+  const lang = useAppSelector(selectCurrentEditorLanguage);
   return internalTranslate(translatableObject, lang);
 }
 

@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { triggerEventHandlers } from '../../Helper/eventHandlers';
 import { managedResponseReceived } from '../actions';
 import type { RootState } from '../store';
 
@@ -63,3 +64,21 @@ export const { editorEventAdded, editorEventRemoved, editorEventRead } =
   editorEventsSlice.actions;
 
 export default editorEventsSlice.reducer;
+
+/**
+ * Log a client-side event: timestamps it, flags it unread, and runs the client
+ * scripts' handlers for its type (WegasEvents.addEventHandler).
+ */
+export function editorEvent(anyEvent: WegasEvents[keyof WegasEvents]) {
+  const event: WegasEvent = {
+    ...anyEvent,
+    timestamp: new Date().getTime(),
+    unread: true,
+  };
+  triggerEventHandlers(event);
+  return editorEventAdded(event);
+}
+
+export function editorErrorEvent(error: string) {
+  return editorEvent({ '@class': 'ClientEvent', error });
+}

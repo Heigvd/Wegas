@@ -18,7 +18,7 @@ import {
 } from '../../../Components/FlowChart/FlowChart';
 import { StateProcessComponent } from '../../../Components/FlowChart/StateProcessComponent';
 import { TransitionFlowLineComponent } from '../../../Components/FlowChart/TransitionFlowLineComponent';
-import { shallowDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { shallowIs } from '../../../Helper/shallowIs';
 import { XYPosition } from '../../../Components/Hooks/useMouseEventDnd';
 import { useOnEditionChangesModal } from '../../../Components/Modal';
 import { grow, mediumPadding } from '../../../css/classes';
@@ -29,15 +29,10 @@ import {
   editorLabel,
   getInstance,
 } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  Edition,
-  editStateMachine,
-  saveEditor,
-} from '../../../data/Reducer/editingState';
-import { State as RState } from '../../../data/Reducer/reducers';
-import { VariableDescriptor } from '../../../data/selectors';
-import { useStore } from '../../../data/Stores/store';
-import { selectEdition } from '../../../store/slices/edition';
+import { editStateMachine, saveEditor } from '../../../store/editionThunks';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
+import { Edition, selectEdition } from '../../../store/slices/edition';
+import { SearchState, selectSearch } from '../../../store/slices/search';
 import { RootState, dispatch, store } from '../../../store/store';
 import { lastKeyboardEvents } from '../../../Helper/keyboardEvents';
 import { createScript } from '../../../Helper/wegasEntites';
@@ -75,7 +70,7 @@ interface StateMachineEditorProps<
 
   localDispatch?: EditingDispatch;
   forceLocalDispatch?: boolean;
-  search?: RState['global']['search'];
+  search?: SearchState;
   title?: string;
   editPath?: (string | number)[] | undefined;
   /**
@@ -234,7 +229,7 @@ export function StateMachineEditor<
       };
 
       const oldFSM = cloneDeep(
-        VariableDescriptor.select(newCurrentState.parentId!)!,
+        selectDescriptor(newCurrentState.parentId!)!,
       ) as IFSMDescriptor;
       oldFSM.states[newCurrentState.index!] = newCurrentState as IState;
 
@@ -451,10 +446,10 @@ export function editingStateSelector(state: RootState) {
       s.editing.type === 'Variable')
   ) {
     editedVariable = s.editing.entity as IFSMDescriptor | IDialogueDescriptor;
-    const lastFSM = VariableDescriptor.select(s.editing.entity.id) as
+    const lastFSM = selectDescriptor(s.editing.entity.id) as
       | IFSMDescriptor
       | IDialogueDescriptor;
-    if (shallowDifferent(editedVariable, lastFSM)) {
+    if (!shallowIs(editedVariable, lastFSM)) {
       editedVariable = lastFSM;
     }
     editPath = s.editing.path;
@@ -477,10 +472,6 @@ export function editingStateSelector(state: RootState) {
   }
 }
 
-export function globalStateSelector(s: RState) {
-  return s.global.search;
-}
-
 interface ConnectedStateMachineEditorProps extends DisabledReadonly {
   localState?: Readonly<Edition> | undefined;
   localDispatch?: EditingDispatch;
@@ -496,7 +487,7 @@ export function ConnectedStateMachineEditor({
   // the selector builds a fresh object, so it needs an equality fn: the app
   // store sees far more actions than the old editing store did
   const editingState = useAppSelector(editingStateSelector, customStateEquals);
-  const search = useStore(globalStateSelector);
+  const search = useAppSelector(selectSearch);
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
   if ('variable' in editingState) {

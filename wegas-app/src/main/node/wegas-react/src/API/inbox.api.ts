@@ -1,5 +1,5 @@
 import { rest, managedModeRequest } from './rest';
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 import { IMessage } from 'wegas-ts-api';
 
 /*
@@ -13,7 +13,7 @@ GET     /Wegas/rest/GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inb
 
 const INBOX_BASE = (gameModelId?: number) =>
   `GameModel/${
-    gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
+    gameModelId === undefined ? selectCurrentGameModel().id! : gameModelId
   }/VariableDescriptor/Inbox/`;
 
 const MESSAGE_BASE = (gameModelId?: number) =>

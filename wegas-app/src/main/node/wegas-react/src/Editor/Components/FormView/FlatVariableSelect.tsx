@@ -4,8 +4,8 @@ import { IVariableDescriptor } from 'wegas-ts-api';
 import { Choices } from '../../../Components/Selector';
 import { entityIs } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import * as GameModel from '../../../data/selectors/GameModel';
-import * as VariableDescriptor from '../../../data/selectors/VariableDescriptorSelector';
+import { selectCurrentGameModel } from '../../../store/slices/gameModel';
+import { firstDescriptor, selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { CommonView } from './commonView';
 import { LabeledView } from './labeled';
 import { default as Select } from './Select';
@@ -41,7 +41,7 @@ function genChoices(
       if (i) {
         if (entityIs(i, 'ListDescriptor')) {
           const newItems = genChoices(
-            VariableDescriptor.select(i.itemsIds),
+            selectDescriptor(i.itemsIds),
             level + 1,
             maxLevel,
             classFilter,
@@ -86,12 +86,12 @@ function FlatVariableSelect(props: IFlatVariableSelectProps) {
   let items: any[];
   if (root) {
     if (!Array.isArray(root)) {
-      items = [VariableDescriptor.first('name', root)];
+      items = [firstDescriptor('name', root)];
     } else {
-      items = root.map(name => [VariableDescriptor.first('name', name)]);
+      items = root.map(name => [firstDescriptor('name', name)]);
     }
   } else {
-    items = VariableDescriptor.select(GameModel.selectCurrent().itemsIds);
+    items = selectDescriptor(selectCurrentGameModel().itemsIds);
   }
 
   const choices = genChoices(

@@ -2,12 +2,11 @@ import { css } from '@emotion/css';
 import * as React from 'react';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { defaultMargin } from '../../css/classes';
-import { manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { asyncRunScript } from '../../store/slices/variableInstances';
-import { Player } from '../../data/selectors';
+import { selectCurrentPlayer } from '../../store/slices/players';
 import { handleError } from './FormView/Script/Script';
 import { TempScriptEditor } from './ScriptEditors/TempScriptEditor';
-import { dispatch } from '../../store/store';
 
 const container = css({ width: '100%' });
 const editor = css({ width: '100%', height: '400px' });
@@ -24,10 +23,10 @@ export default function PlayServer() {
     try {
       setError(undefined);
       setOutput('');
-      asyncRunScript(CurrentGM.id!, script, Player.selectCurrent()).then(
+      asyncRunScript(CurrentGM.id!, script, selectCurrentPlayer()).then(
         result => {
           setOutput(JSON.stringify(result));
-          dispatch(manageResponseHandler(result));
+          manageResponseHandler(result);
         },
       );
     } catch (error) {

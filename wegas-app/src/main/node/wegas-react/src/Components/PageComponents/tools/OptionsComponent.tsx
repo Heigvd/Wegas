@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { State } from '../../../data/Reducer/reducers';
-import { useStore } from '../../../data/Stores/store';
+import { useAppSelector } from '../../../store/hooks';
+import { selectIsLocked } from '../../../store/slices/connection';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { useScript } from '../../Hooks/useScript';
 import { themeCTX } from '../../Theme/Theme';
@@ -102,11 +102,7 @@ export function useOptions(
   const disabled = useScript<boolean>(disableIf, context);
   const hidden = useScript<boolean>(hideIf, context);
   const readOnly = useScript<boolean>(readOnlyIf, context);
-  const lockedSelector = React.useCallback(
-    (s: State) => lock != null && s.global.locks[lock] === true,
-    [lock],
-  );
-  const locked = useStore(lockedSelector);
+  const locked = useAppSelector(s => selectIsLocked(s, lock));
 
   const infoBulletProps =
     useComputeUnreadCount(unreadCount, context) || infoBullet;

@@ -10,7 +10,7 @@ import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { useOkCancelModal } from '../../Components/Modal';
-import { addPopup } from '../../Components/PopupManager';
+import { addPopup } from '../../store/slices/popups';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { Toolbar } from '../../Components/Toolbar';
 import {
@@ -27,8 +27,11 @@ import {
 import { createTranslatableContent, translate } from '../../data/i18n';
 import { updateDescriptor } from '../../store/slices/variableDescriptors';
 import { instantiate } from '../../data/scriptable';
-import { Game, GameModel, Player, Team } from '../../data/selectors';
-import { store, useStore } from '../../data/Stores/store';
+import { selectCurrentGame } from '../../store/slices/game';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { selectTeam } from '../../store/slices/teams';
+import { useDataSelector } from '../../store/hooks';
 import { createScript } from '../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { peerReviewTranslations } from '../../i18n/peerReview/peerReview';
@@ -186,8 +189,8 @@ function globalPRStatus(
   let globalStatus: PeerReviewStatus;
   if (overviewState != null) {
     for (const teamId in overviewState) {
-      const team = Team.select(Number(teamId));
-      const game = Game.selectCurrent();
+      const team = selectTeam(Number(teamId));
+      const game = selectCurrentGame();
       const overviewTeam = overviewState[teamId];
       let teamStatus: PeerReviewTeamStatus = 'N/A';
       if (
@@ -238,15 +241,16 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const [data, setData] = React.useState<IData>();
   const [nextStep, setNextStep] =
     React.useState<PeerReviewStateSelector>('Dispatch');
-  const spr = useStore(() => instantiate(peerReview));
+  const getSpr = React.useCallback(() => instantiate(peerReview), [peerReview]);
+  const spr = useDataSelector(getSpr);
   const { showModal, OkCancelModal } = useOkCancelModal();
 
   const i18nValues = useInternalTranslate(peerReviewTranslations);
   const getData = React.useCallback(() => {
     let mounted = true;
     VariableDescriptorAPI.runScript(
-      GameModel.selectCurrent().id!,
-      Player.selectCurrent().id!,
+      selectCurrentGameModel().id!,
+      selectCurrentPlayer().id!,
       createScript(
         `ReviewHelper.summarize("${peerReview.name}")`,
         'JavaScript',
@@ -324,14 +328,14 @@ export default function PeerReviewPage({ peerReview }: PeerReviewPageProps) {
   const changeStatus = React.useCallback(
     (prNewStatus: PeerReviewStateSelector) => {
       PeerReviewDescriptorAPI.setStateUnmanaged(
-        GameModel.selectCurrent().id!,
+        selectCurrentGameModel().id!,
         peerReview.id!,
-        Game.selectCurrent().id!,
+        selectCurrentGame().id!,
         prNewStatus,
       )
         .catch(e => {
           e.json().then((error: WegasErrorMessage) => {
-            store.dispatch(
+            dispatch(
               addPopup(
                 error.message + new Date().getTime(),
                 createTranslatableContent(lang, error.message),

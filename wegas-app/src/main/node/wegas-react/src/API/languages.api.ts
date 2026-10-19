@@ -1,5 +1,5 @@
 import { IGameModel, IGameModelLanguage } from 'wegas-ts-api';
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 import { managedModeRequest, rest } from './rest';
 
 /*
@@ -43,7 +43,7 @@ interface DeepleTraduction {
 
 const LANGUAGES_BASE = (gameModelId?: number) =>
   `GameModel/${
-    gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
+    gameModelId === undefined ? selectCurrentGameModel().id! : gameModelId
   }/I18n/`;
 
 const LanguagesAPIFactory = (gameModelId?: number) => {

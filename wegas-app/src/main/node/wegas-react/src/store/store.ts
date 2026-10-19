@@ -5,8 +5,7 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import { configureStore, ThunkAction } from '@reduxjs/toolkit';
-import { AnyAction } from 'redux';
+import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import announcementReducer from './slices/announcement';
 import initStatusReducer from './slices/initStatus';
 import playersReducer from './slices/players';
@@ -22,6 +21,13 @@ import pageEditorReducer from './slices/pageEditor';
 import pagesReducer from './slices/pages';
 import themeReducer from './slices/theme';
 import userReducer from './slices/user';
+import connectionReducer from './slices/connection';
+import searchReducer from './slices/search';
+import languagesReducer from './slices/languages';
+import popupsReducer from './slices/popups';
+import logLevelsReducer from './slices/logLevels';
+import rolesReducer from './slices/roles';
+import scriptRegistryReducer from './slices/scriptRegistry';
 
 /**
  * New store for react-redux
@@ -43,6 +49,13 @@ export const store = configureStore({
         pageEditor: pageEditorReducer,
         pages: pagesReducer,
         themes: themeReducer,
+        connection: connectionReducer,
+        search: searchReducer,
+        languages: languagesReducer,
+        popups: popupsReducer,
+        logLevels: logLevelsReducer,
+        roles: rolesReducer,
+        scriptRegistry: scriptRegistryReducer,
     },
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
@@ -55,11 +68,21 @@ export const store = configureStore({
             // including functions and class instances, and potentially large or
             // cyclic. Both dev checks walk it deeply on every dispatch, so both are
             // opted out of that branch rather than made to tolerate it.
+            //
+            // `scriptRegistry` holds functions registered by client scripts
+            // (client methods, custom schemas).
             serializableCheck: {
-                ignoredPaths: ['edition', 'editorEvents', 'pageContext'],
+                ignoredPaths: [
+                    'edition',
+                    'editorEvents',
+                    'pageContext',
+                    'scriptRegistry',
+                ],
                 ignoredActions: [
                     'pageContext/setContextValue',
                     'pageContext/setStateValue',
+                    'scriptRegistry/clientMethodSet',
+                    'scriptRegistry/schemaSet',
                 ],
                 ignoredActionPaths: [
                     'payload.config',

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IGameModelLanguage } from 'wegas-ts-api';
 import { orderGameModelLanguages } from '../../data/i18n';
-import { useCurrentPlayer } from '../../data/selectors/Player';
+import { useCurrentPlayer } from '../../data/scriptable';
 import { changePlayerLanguage } from '../../store/slices/teams';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';

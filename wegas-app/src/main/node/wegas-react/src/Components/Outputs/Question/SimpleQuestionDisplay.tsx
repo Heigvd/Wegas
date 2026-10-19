@@ -15,7 +15,7 @@ import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
 import { selectAndValidate } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
+import { selfPlayer } from '../../../data/scriptable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -121,7 +121,7 @@ function SimpleChoiceDisplay({
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
-  const hasBeenValidated = instantiate(choiceD).hasBeenSelected(Player.self());
+  const hasBeenValidated = instantiate(choiceD).hasBeenSelected(selfPlayer());
 
   const validatedReplies = replies.filter(r => r.validated);
   const canReply =
