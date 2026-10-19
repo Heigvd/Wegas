@@ -140,6 +140,7 @@
         <jakartaPac4jVersion>8.0.1</jakartaPac4jVersion>
 
         <payara.version>6.2024.8</payara.version>
+        <otel.agent.version>2.30.0</otel.agent.version>
 
         <junit.version>4.13.1</junit.version>
         <arquillian.version>1.7.1.Final</arquillian.version>

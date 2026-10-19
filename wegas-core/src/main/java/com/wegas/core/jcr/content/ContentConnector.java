@@ -178,7 +178,7 @@ public class ContentConnector extends JTARepositoryConnector {
         try {
             return this.getNode(absolutePath).getProperty(propertyName);
         } catch (PathNotFoundException ex) {
-            logger.debug("Inexistant property ({}) on Node[{}]", propertyName, absolutePath);
+            logger.debug("Nonexistent property ({}) on Node[{}]", propertyName, absolutePath);
         }
         return null;
     }

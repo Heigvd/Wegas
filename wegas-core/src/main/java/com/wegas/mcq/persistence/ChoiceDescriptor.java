@@ -304,7 +304,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
-     * has the choice been explicitely ignored ?
+     * has the choice been explicitly ignored ?
      * <p>
      * ie. the choice has not been selected and is no longer selectable
      *

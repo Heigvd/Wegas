@@ -117,7 +117,7 @@ interface ComponentFactoryBasicParameters<
    */
   component: React.FunctionComponent<P>;
   /**
-   * The category in wich the component is registered
+   * The category in which the component is registered
    */
   componentType: ComponentType;
   /**

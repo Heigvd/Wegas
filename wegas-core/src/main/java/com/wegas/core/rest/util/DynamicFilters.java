@@ -18,7 +18,7 @@ import jakarta.ws.rs.ext.Provider;
 
 /**
  *
- * Feature-dependant CacheResponseFilter according to method or class "NoCache"
+ * Feature-dependent CacheResponseFilter according to method or class "NoCache"
  * and "MaxCacheAge" annotations.
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)

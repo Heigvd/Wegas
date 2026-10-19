@@ -30,7 +30,7 @@ export interface ValidatorComponentProps {
    */
   validator?: boolean;
   /**
-   * onCancel - will be called if the modiofication is cancelled
+   * onCancel - will be called if the modification is cancelled
    */
   onCancel?: IScript | ClientAndServerAction;
 }

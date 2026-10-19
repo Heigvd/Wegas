@@ -173,7 +173,7 @@ export function PageDeserializer({
 
   const wegasComponent = useAppSelector(wegasComponentSelector, deepEqual);
 
-  const componentSeletor = React.useCallback(
+  const componentSelector = React.useCallback(
     (state: PageComponentsState) => {
       // explicit cast because component maybe undefined
       // TODO: add noUncheckedIndexedAccess (https://www.typescriptlang.org/tsconfig#noUncheckedIndexedAccess)
@@ -191,7 +191,7 @@ export function PageDeserializer({
     },
     [wegasComponent],
   );
-  const component = usePageComponentStore(componentSeletor, shallowEqual);
+  const component = usePageComponentStore(componentSelector, shallowEqual);
 
   const {
     WegasComponent,

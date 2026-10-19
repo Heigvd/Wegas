@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.variable.ModelScoped;
 import java.util.*;
-import java.util.stream.Collectors;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.inject.Inject;

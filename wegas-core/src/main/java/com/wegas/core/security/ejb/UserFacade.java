@@ -569,7 +569,6 @@ public class UserFacade extends BaseFacade<User> {
      */
     public boolean addUserPermission(final User user, final String permission) {
         return user.addPermission(new Permission(permission));
-        //return user.addPermission(this.generatePermisssion(permission));
     }
 
     /**

@@ -24,37 +24,45 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Visitor to import translation from another gameModel.
- * <p>
- * Statuses of new translations is determined by comparing another-language translations.
- * <p>
- * given this structure:
+ *
+ * <p>Statuses of new translations are determined by comparing another-language translations.
+ *
+ * <p>Given this structure:
+ *
  * <table>
+ * <caption>Translation status resolution</caption>
  * <thead>
  * <tr>
- * <th colspan="4">Target GameModel
- * <th colspan="2">Reference GameModel
+ * <th colspan="4">Target GameModel</th>
+ * <th colspan="2">Reference GameModel</th>
+ * </tr>
  * <tr>
- * <th>EN
- * <th>Before FR
- * <th>After FR
- * <th>FR status
- * <th>EN
- * <th>FR
+ * <th>EN</th>
+ * <th>Before FR</th>
+ * <th>After FR</th>
+ * <th>FR status</th>
+ * <th>EN</th>
+ * <th>FR</th>
+ * </tr>
+ * </thead>
  * <tbody>
  * <tr>
- * <td>Hello
- * <td>
- * <td>Bonjour
- * <td>up to date
- * <td>Hello
- * <td>Bonjour
+ * <td>Hello</td>
+ * <td></td>
+ * <td>Bonjour</td>
+ * <td>up to date</td>
+ * <td>Hello</td>
+ * <td>Bonjour</td>
+ * </tr>
  * <tr>
- * <td>Hi
- * <td>
- * <td>Bonjour
- * <td>outdated
- * <td>Hello
- * <td>Bonjour
+ * <td>Hi</td>
+ * <td></td>
+ * <td>Bonjour</td>
+ * <td>outdated</td>
+ * <td>Hello</td>
+ * <td>Bonjour</td>
+ * </tr>
+ * </tbody>
  * </table>
  *
  * @author maxence

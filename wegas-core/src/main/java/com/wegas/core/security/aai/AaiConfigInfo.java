@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.aai;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 
 /**

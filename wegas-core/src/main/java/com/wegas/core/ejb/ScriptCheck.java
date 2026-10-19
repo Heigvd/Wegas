@@ -51,7 +51,7 @@ public class ScriptCheck {
      * @param player  the player the script should run for
      * @param context
      *
-     * @return Exception the exception found in script or null if none occured
+     * @return Exception the exception found in script or null if none occurred
      */
     public WegasScriptException validate(Script script, Player player, VariableDescriptor context) {
         //ScriptContext ctx = scriptFacade.instantiateScriptContext(player, script.getLanguage());
@@ -66,7 +66,7 @@ public class ScriptCheck {
      * @param script   the script
      * @param playerId the player's id, needed to set up Java env.
      *
-     * @return Exception the exception found in script or null if none occured
+     * @return Exception the exception found in script or null if none occurred
      */
     private WegasScriptException rollbackEval(Script script, Player player, VariableDescriptor context) {
 

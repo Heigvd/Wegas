@@ -205,7 +205,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                             /*
                              * Since each entity which has been returned by the rest method is
                              * included within updatedEntities list by default, make sure to not
-                             * include thoses which where destroyed
+                             * include those which were destroyed
                              */
                             if (updatedEntities.contains(ae)) {
                                 updatedEntities.remove(ae);
