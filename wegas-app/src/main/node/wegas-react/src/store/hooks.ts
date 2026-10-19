@@ -6,7 +6,6 @@
  * Licensed under the MIT License
  */
 import { createSelector } from '@reduxjs/toolkit';
-import { isEqual } from 'lodash-es';
 import * as React from 'react';
 import { shallowEqual, TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from './store';
@@ -21,7 +20,7 @@ export { shallowEqual };
  * re-render). Never pass a negated one (`(a, b) => !isEqual(a, b)`): the hook
  * would then keep a stale value whenever it changes.
  */
-export const deepEqual = <T,>(a: T, b: T): boolean => isEqual(a, b);
+export { isEqual as deepEqual } from 'lodash-es';
 
 // pre-typed hooks. Use these throughout the app instead of the bare
 // react-redux useDispatch / useSelector.
