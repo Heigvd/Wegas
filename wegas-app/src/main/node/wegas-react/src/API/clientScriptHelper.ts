@@ -1,27 +1,25 @@
 //import { omit, pick } from 'lodash-es';
-import { manageResponseHandler } from '../data/actions';
+import { manageResponseHandler } from '../store/managedResponse';
 import { entityIs } from '../data/entities';
 import {
   deleteDescriptor,
   updateDescriptor,
-} from '../data/Reducer/VariableDescriptorReducer';
+} from '../store/slices/variableDescriptors';
 import {
   asyncRunLoadedScript,
   updateInstance,
-} from '../data/Reducer/VariableInstanceReducer';
+} from '../store/slices/variableInstances';
 import { instantiate } from '../data/scriptable';
-import { editingStore } from '../data/Stores/editingStore';
-import { store } from '../data/Stores/store';
+import { selectCurrentGameModelId } from '../store/slices/gameModel';
 import { IManagedResponse } from './rest';
 import { UtilsAPI } from './utils.api';
 import { VariableDescriptorAPI } from './variableDescriptor.api';
-
-const dispatch = editingStore.dispatch;
+import { dispatch } from '../store/store';
 
 export const APIScriptMethods: APIMethodsClass = {
   createVariable: (gameModelId, variable, parent, callback) => {
     VariableDescriptorAPI.post(gameModelId, variable, parent).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         //callback(getNewVariable(variable, res));
         callback(
@@ -33,9 +31,9 @@ export const APIScriptMethods: APIMethodsClass = {
     });
   },
   duplicateVariable: (variable, callback) => {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     VariableDescriptorAPI.duplicate(gameModelId, variable).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         callback(
           instantiate<IVariableDescriptor>(
@@ -47,14 +45,14 @@ export const APIScriptMethods: APIMethodsClass = {
   },
   moveVariable: (variable, parent, index, callback) => {
     // dispatch(moveDescriptor(variable, index, parent))
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
     return VariableDescriptorAPI.move(
       gameModelId,
       variable,
       index,
       parent,
     ).then(res => {
-      dispatch(manageResponseHandler(res));
+      manageResponseHandler(res);
       if (callback) {
         callback(
           instantiate<IVariableDescriptor>(
@@ -74,7 +72,7 @@ export const APIScriptMethods: APIMethodsClass = {
   deleteVariable: variable => dispatch(deleteDescriptor(variable)),
   updateInstance: instance => dispatch(updateInstance(instance)),
   runScript: async (script, context): Promise<IManagedResponse> => {
-    const gameModelId = store.getState().global.currentGameModelId;
+    const gameModelId = selectCurrentGameModelId();
 
     const result = await asyncRunLoadedScript(
       gameModelId,
@@ -84,7 +82,7 @@ export const APIScriptMethods: APIMethodsClass = {
       { Context: context },
     );
 
-    dispatch(manageResponseHandler(result));
+    manageResponseHandler(result);
 
     return result;
   },

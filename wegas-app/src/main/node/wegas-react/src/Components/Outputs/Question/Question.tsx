@@ -9,15 +9,13 @@ import {
 } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { State } from '../../../data/Reducer/reducers';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
-import { store, useStore } from '../../../data/Stores/store';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
+import { deepEqual, useDataSelector } from '../../../store/hooks';
 import { CbxQuestionDisplay } from './CbxQuestion';
 import { SimpleQuestionDisplay } from './SimpleQuestionDisplay';
 import { WhQuestionDisplay, whQuestionInfo } from './WhQuestionDisplay';
 import { defaultEntityDisplay } from '../../EntityChooser';
+import { dispatch } from '../../../store/store';
 
 export interface QuestionInfo {
   questionD?: Readonly<IQuestionDescriptor>;
@@ -38,12 +36,15 @@ export const questionStyle = cx(
 /**
  * Query subtree / instance about a QuestionDescriptor
  * @param question QuestionDescriptor to query
+ *
+ * Reads descriptors (via `select`) and instances (via `getInstance`) from the
+ * store imperatively, so subscribe to it with useDataSelector.
  */
 export function questionInfo(question: IQuestionDescriptor) {
-  return function (s: Readonly<State>): QuestionInfo {
-    const questionD = select<IQuestionDescriptor>(question.id);
+  return function (): QuestionInfo {
+    const questionD = selectDescriptor<IQuestionDescriptor>(question.id);
     const choicesD = questionD?.itemsIds
-      .map(id => s.variableDescriptors[id])
+      .map(id => selectDescriptor<IChoiceDescriptor>(id))
       .filter(function (
         entity: IChoiceDescriptor | undefined,
       ): entity is IChoiceDescriptor {
@@ -69,22 +70,15 @@ export function ConnectedSimpleQuestionDisplay({
   entity,
   ...options
 }: ConnectedSimpleQuestionDisplayProps) {
-  const state = useStore(questionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => questionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   if (state.questionD == null) {
     return null;
   }
   return state.questionD.cbx ? (
-    <CbxQuestionDisplay
-      {...state}
-      dispatch={editingStore.dispatch}
-      {...options}
-    />
+    <CbxQuestionDisplay {...state} dispatch={dispatch} {...options} />
   ) : (
-    <SimpleQuestionDisplay
-      {...state}
-      dispatch={editingStore.dispatch}
-      {...options}
-    />
+    <SimpleQuestionDisplay {...state} dispatch={dispatch} {...options} />
   );
 }
 
@@ -99,11 +93,12 @@ export function ConnectedWhQuestionDisplay({
   readOnly,
   editMode,
 }: ConnectedWhQuestionDisplay) {
-  const state = useStore(whQuestionInfo(entity), deepDifferent);
+  const getInfo = React.useMemo(() => whQuestionInfo(entity), [entity]);
+  const state = useDataSelector(getInfo, deepEqual);
   return (
     <WhQuestionDisplay
       {...state}
-      dispatch={store.dispatch}
+      dispatch={dispatch}
       disabled={disabled}
       readOnly={readOnly}
       editMode={editMode}

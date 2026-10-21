@@ -11,11 +11,13 @@ import {
   flexRow,
   stretch,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import {
+  deleteDescriptor,
+  updateDescriptor,
+} from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent } from '../../../data/i18n';
 import { IWhChoiceDescriptor } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { editingStore } from '../../../data/Stores/editingStore';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { componentsTranslations } from '../../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
@@ -29,6 +31,7 @@ import { TumbleLoader } from '../../Loader';
 import { themeVar } from '../../Theme/ThemeVars';
 import { HTMLText } from '../HTMLText';
 import { buttonFactory, handleStyle } from './QuestionList';
+import { dispatch } from '../../../store/store';
 
 export const choiceContainerStyle = css({
   position: 'relative',
@@ -228,8 +231,8 @@ export function ChoiceDisplay({
       },
     )(descriptor);
 
-    editingStore.dispatch(
-      Actions.VariableDescriptorActions.updateDescriptor(newChoice),
+    dispatch(
+      updateDescriptor(newChoice),
     );
     setEditing(false);
   }, [descriptor, lang, values]);
@@ -403,8 +406,8 @@ export function ChoiceDisplay({
           <Trash
             onClick={e => {
               e.stopPropagation();
-              editingStore.dispatch(
-                Actions.VariableDescriptorActions.deleteDescriptor(descriptor),
+              dispatch(
+                deleteDescriptor(descriptor),
               );
             }}
           />

@@ -1,21 +1,26 @@
 import * as React from 'react';
 import { IAbstractEntity, IGameModelContent } from 'wegas-ts-api';
-import { Actions } from '../data';
-import { manageResponseHandler } from '../data/actions';
+import { getByIds as getDescriptorsByIds } from '../store/slices/variableDescriptors';
+import { getByIds } from '../store/slices/variableInstances';
+import { get as getPage } from '../store/slices/pages';
+import { manageResponseHandler } from '../store/managedResponse';
 import { entityIs } from '../data/entities';
-import { editorEvent } from '../data/Reducer/editingState';
-import { updatePusherStatus, WegasStatus } from '../data/Reducer/globalState';
-import { editingStore } from '../data/Stores/editingStore';
-import { store } from '../data/Stores/store';
-import {
-  deleteTheme,
-  getThemeDispatch,
-  libraryToTheme,
-  themeActionCreator,
-} from '../data/Stores/themeStore';
+import { editorEvent } from '../store/slices/editorEvents';
 import { werror, wwarn } from '../Helper/wegaslog';
 import { LibraryAPI } from './library.api';
 import { DestroyedEntity } from './rest';
+import {
+  deleteTheme,
+  libraryToTheme,
+  updateTheme,
+} from '../store/slices/theme';
+import { dispatch } from '../store/store';
+import {
+  lockChanged,
+  pusherStatusChanged,
+  serverStatusChanged,
+  WegasStatus,
+} from '../store/slices/connection';
 
 const CHANNEL_PREFIX = {
   Admin: 'private-Admin',
@@ -103,7 +108,7 @@ const webSocketEvents = [
   'EntityDestroyedEvent',
   'CustomEvent',
   'PageUpdate',
-  'LibraryUpdate-Theme', // TODO
+  'LibraryUpdate-Theme',
   'LibraryUpdate-SelectedThemes', // TODO
   'LibraryDestroy-Theme', // TODO
   'LibraryDestroy-SelectedThemes', // TODO
@@ -121,7 +126,7 @@ const webSocketEvents = [
 
 export type WebSocketEvent = ValueOf<typeof webSocketEvents>;
 
-interface OutadatedEntitesEvent {
+interface OutdatedEntitiesEvent {
   '@class': 'OutdatedEntitiesEvent';
   updatedEntities: { type: WegasClassNames; id: number }[];
 }
@@ -179,7 +184,12 @@ class WebSocketListener {
         ) => {
           this.status = state.current;
           this.socketId = this.socket!.connection.socket_id;
-          store.dispatch(updatePusherStatus(state.current, this.socketId));
+          dispatch(
+            pusherStatusChanged({
+              status: state.current,
+              socket_id: this.socketId,
+            }),
+          );
         },
       );
       const channels = [
@@ -206,7 +216,7 @@ class WebSocketListener {
           //pusher events
           return;
         }
-        this.eventReveived(processed.event as WebSocketEvent, processed.data);
+        this.eventReceived(processed.event as WebSocketEvent, processed.data);
       });
     this.socket?.channels;
   }
@@ -231,7 +241,7 @@ class WebSocketListener {
     }
   }
 
-  private eventReveived(event: WebSocketEvent, data: unknown) {
+  private eventReceived(event: WebSocketEvent, data: unknown) {
     let eventFound = false;
     // Dispatch outisde managed events
     if (this.events[event] !== undefined) {
@@ -245,37 +255,27 @@ class WebSocketListener {
     // see : websocketFacade.java , EntityUpdatedEvent.java
     switch (event) {
       case 'EntityUpdatedEvent':
-        return editingStore.dispatch(
-          manageResponseHandler(
-            {
-              '@class': 'ManagedResponse',
-              deletedEntities: [],
-              updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
-                .updatedEntities,
-              events: [],
-            },
-            store.dispatch,
-          ),
-        );
+        return manageResponseHandler({
+          '@class': 'ManagedResponse',
+          deletedEntities: [],
+          updatedEntities: (data as { updatedEntities: IAbstractEntity[] })
+            .updatedEntities,
+          events: [],
+        });
       // {updatedEntities:{"@class":IAbstractEntity["@class"];id:number}[]}
       case 'EntityDestroyedEvent':
-        return editingStore.dispatch(
-          manageResponseHandler(
-            {
-              '@class': 'ManagedResponse',
-              deletedEntities: (
-                data as {
-                  deletedEntities: DestroyedEntity[];
-                }
-              ).deletedEntities,
-              updatedEntities: [],
-              events: [],
-            },
-            store.dispatch,
-          ),
-        );
+        return manageResponseHandler({
+          '@class': 'ManagedResponse',
+          deletedEntities: (
+            data as {
+              deletedEntities: DestroyedEntity[];
+            }
+          ).deletedEntities,
+          updatedEntities: [],
+          events: [],
+        });
       case 'OutdatedEntitiesEvent': {
-        const { updatedEntities } = data as OutadatedEntitesEvent;
+        const { updatedEntities } = data as OutdatedEntitiesEvent;
 
         const toUpdate: { instances: number[]; descriptors: number[] } = {
           instances: [],
@@ -299,14 +299,12 @@ class WebSocketListener {
         }
 
         if (toUpdate.instances.length > 0) {
-          editingStore.dispatch(
-            Actions.VariableInstanceActions.getByIds(toUpdate.instances),
-          );
+          dispatch(getByIds(toUpdate.instances));
         }
 
         if (toUpdate.descriptors.length > 0) {
-          editingStore.dispatch(
-            Actions.VariableDescriptorActions.getByIds(toUpdate.descriptors),
+          dispatch(
+            getDescriptorsByIds(toUpdate.descriptors),
           );
         }
 
@@ -316,36 +314,31 @@ class WebSocketListener {
         const themeName = String(data);
         LibraryAPI.getLibrary('Theme', themeName).then(
           (library: IGameModelContent) => {
-            getThemeDispatch()(
-              themeActionCreator.UPDATE_THEME(
-                themeName,
-                libraryToTheme(library),
-              ),
+            dispatch(
+              updateTheme({
+                themeName: themeName,
+                theme: libraryToTheme(library),
+              }),
             );
           },
         );
         return;
       }
       case 'LibraryDestroy-Theme': {
-        getThemeDispatch()(deleteTheme(String(data)));
+        dispatch(deleteTheme(String(data)));
         return;
       }
       case 'CustomEvent':
-        return editingStore.dispatch(editorEvent(data as CustomEvent));
+        return dispatch(editorEvent(data as CustomEvent));
       case 'PageUpdate':
-        store.dispatch(Actions.PageActions.get(data as string));
+        dispatch(getPage(data as string));
         return;
       case 'LockEvent':
-        store.dispatch(Actions.EditorActions.setLock(data as LockEventData));
+        dispatch(lockChanged(data as LockEventData));
         return;
-      case 'LifeCycleEvent': {
-        store.dispatch(
-          Actions.EditorActions.updateServerStatus(
-            (data as LifeCycleEventData).status,
-          ),
-        );
+      case 'LifeCycleEvent':
+        dispatch(serverStatusChanged((data as LifeCycleEventData).status));
         return;
-      }
       default:
         if (!eventFound) {
           werror(`Event [${event}] unchecked`);

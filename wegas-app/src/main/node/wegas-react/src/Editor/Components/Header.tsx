@@ -12,7 +12,6 @@ import {
   useRolesToggler,
 } from '../../Components/Contexts/RoleProvider';
 import { DropMenu } from '../../Components/DropMenu';
-import { shallowDifferent } from '../../Components/Hooks/storeHookFactory';
 import { CheckBox } from '../../Components/Inputs/Boolean/CheckBox';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { InfoBullet } from '../../Components/PageComponents/tools/InfoBullet';
@@ -30,26 +29,37 @@ import {
   itemCenter,
   itemsTop,
 } from '../../css/classes';
-import { Actions } from '../../data';
-import { ActionCreator } from '../../data/actions';
+import { reset as resetVariables } from '../../store/slices/variableDescriptors';
 import { editorLanguages, EditorLanguagesCode } from '../../data/i18n';
 import {
-  EditingState,
-  editorEventRemove,
-} from '../../data/Reducer/editingState';
-import { LoggerLevelValues } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
-import { GameModel, Global } from '../../data/selectors';
-import { selectCurrentEditorLanguage } from '../../data/selectors/Languages';
-import { editingStore, useEditingStore } from '../../data/Stores/editingStore';
-import { store, useStore } from '../../data/Stores/store';
+  loggerLevelSet,
+  LoggerLevelValues,
+  selectLogLevels,
+} from '../../store/slices/logLevels';
+import { selectCurrentUser } from '../../store/slices/user';
+import { selectRolesId } from '../../store/slices/roles';
+import { pageLoadersReset } from '../../store/slices/scriptRegistry';
+import { useGameModel } from '../../Components/Hooks/useGameModel';
+import { createExtraTestPlayer } from '../../store/slices/gameModel';
+import {
+  selectCurrentEditorLanguage,
+  setEditorLanguage,
+} from '../../store/slices/languages';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
+import { shallowEqual, useAppSelector } from '../../store/hooks';
 import { mainLayoutId } from '../layouts';
 import { parseEvent } from './EntityEditor';
 import { removeLayoutInLocal } from './LinearTabLayout/LinearLayout';
 import ModelPropagator from './Modeler/ModelPropagation';
 import { FontAwesome, IconComp } from './Views/FontAwesome';
+import { dispatch, RootState, store } from '../../store/store';
+import {
+  editorEventRemoved,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
+import { selectCurrentPlayerId } from '../../store/slices/players';
+import { selectCurrentTeamId } from '../../store/slices/teams';
 
 /*const transparentDropDownButton = css({
   backgroundColor: 'transparent',
@@ -109,15 +119,11 @@ const headerElementsStyle = css({
   },
 });
 
-function wegasEventSelector(s: EditingState) {
-  return s.events;
-}
-
 // May be moved in a proper file to allow wider usage
 // interface NotificationMenuProps {}
 function NotificationMenu({ className, style }: ClassStyleId) {
   const i18nValues = useInternalTranslate(commonTranslations);
-  const wegasEvents = useEditingStore(wegasEventSelector);
+  const wegasEvents = useAppSelector(selectEditorEvents);
   const [receivedEvents, setReceivedEvents] = React.useState<number[]>([]);
 
   const unreadEvents = wegasEvents.filter(event => event.unread);
@@ -165,7 +171,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
                 icon="times"
                 onClick={e => {
                   e.stopPropagation();
-                  editingStore.dispatch(editorEventRemove(event.timestamp));
+                  dispatch(editorEventRemoved({ timestamp: event.timestamp }));
                 }}
               />
             </div>
@@ -182,12 +188,7 @@ function NotificationMenu({ className, style }: ClassStyleId) {
 }
 
 function useLoggerLevelSelector() {
-  const currentLevels = useStore(
-    state => state.global.logLevels,
-    shallowDifferent,
-  );
-
-  const dispatch = store.dispatch;
+  const currentLevels = useAppSelector(selectLogLevels);
 
   return {
     value: 'logger',
@@ -203,7 +204,7 @@ function useLoggerLevelSelector() {
               <div
                 onClick={() => {
                   dispatch(
-                    ActionCreator.LOGGER_LEVEL_SET({
+                    loggerLevelSet({
                       loggerName: loggerName,
                       level: currentLevel !== value ? value : 'OFF',
                     }),
@@ -217,7 +218,7 @@ function useLoggerLevelSelector() {
                   label={value}
                   onChange={(v: boolean) => {
                     dispatch(
-                      ActionCreator.LOGGER_LEVEL_SET({
+                      loggerLevelSet({
                         loggerName: loggerName,
                         level: v ? value : 'OFF',
                       }),
@@ -233,13 +234,11 @@ function useLoggerLevelSelector() {
   };
 }
 
-function globalStoreSelector(s: State) {
+function sessionSelector(s: RootState) {
   return {
-    gameModel: GameModel.selectCurrent(),
-    user: Global.selectCurrentUser(),
-    userLanguage: selectCurrentEditorLanguage(s),
-    currentPlayerId: s.global.currentPlayerId,
-    currentTeamId: s.global.currentTeamId,
+    user: selectCurrentUser(s),
+    currentPlayerId: selectCurrentPlayerId(s),
+    currentTeamId: selectCurrentTeamId(s),
   };
 }
 
@@ -248,26 +247,27 @@ export default function Header() {
   const { currentRole } = React.useContext(roleCTX);
   const i18nValues = useInternalTranslate(commonTranslations);
   const [showHeader, setShowHeader] = React.useState(true);
-  const { gameModel, user, userLanguage, currentPlayerId, currentTeamId } =
-    useStore(globalStoreSelector);
-  const dispatch = store.dispatch;
+  const gameModel = useGameModel();
+  const userLanguage = useAppSelector(selectCurrentEditorLanguage);
+  const { user, currentPlayerId, currentTeamId } = useAppSelector(
+    sessionSelector,
+    shallowEqual,
+  );
   const featuresToggler = useFeatures();
   const roleToggler = useRolesToggler();
   const langSelector = useLangToggler();
   const loggerLevelTogglers = useLoggerLevelSelector();
   const authorizationTogglers = useAuthorizations();
 
-  const teams = useStore(s => {
-    return Object.values(s.teams);
-  }, shallowDifferent);
+  const teams = useAppSelector(s => {
+    return Object.values(s.teams.entities);
+  }, shallowEqual);
 
   const createExtraTestPlayerItem: DropMenuItem<unknown> = {
     label: (
       <div
         onClick={() => {
-          editingStore.dispatch(
-            Actions.GameModelActions.createExtraTestPlayer(gameModel.id!),
-          );
+          dispatch(createExtraTestPlayer(gameModel.id!));
         }}
       >
         {i18nValues.header.addExtraTestPlayer}
@@ -362,22 +362,16 @@ export default function Header() {
                         <div
                           onClick={() => {
                             dispatch(
-                              Actions.EditorActions.setEditorLanguage(
-                                key as EditorLanguagesCode,
-                              ),
+                              setEditorLanguage(key as EditorLanguagesCode),
                             );
                           }}
                           className={cx(flex, flexRow, itemCenter)}
                         >
                           <CheckBox
-                            value={
-                              userLanguage === key
-                            }
+                            value={userLanguage === key}
                             onChange={() => {
                               dispatch(
-                                Actions.EditorActions.setEditorLanguage(
-                                  key as EditorLanguagesCode,
-                                ),
+                                setEditorLanguage(key as EditorLanguagesCode),
                               );
                             }}
                             label={key + ' : ' + value}
@@ -396,7 +390,7 @@ export default function Header() {
                       onClick={() => {
                         removeLayoutInLocal(
                           mainLayoutId,
-                          store.getState().global.roles.rolesId,
+                          selectRolesId(store.getState()),
                           currentRole,
                         );
                         window.location.reload();
@@ -434,10 +428,10 @@ export default function Header() {
               label={i18nValues.restart}
               icon={'redo'}
               onClick={() => {
-                editingStore.dispatch(
-                  Actions.VariableDescriptorActions.reset(),
+                dispatch(
+                  resetVariables(),
                 );
-                dispatch(Actions.EditorActions.resetPageLoader());
+                dispatch(pageLoadersReset());
               }}
               className={componentMarginRight}
             />

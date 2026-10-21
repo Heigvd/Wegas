@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { store } from '../../../data/Stores/store';
+import { store } from '../../../store/store';
 import {
   computeProps,
   createComponent,

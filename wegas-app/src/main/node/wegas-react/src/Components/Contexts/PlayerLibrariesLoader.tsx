@@ -5,9 +5,9 @@ import {
   LibraryAPI,
 } from '../../API/library.api';
 import { useWebsocketEvent } from '../../API/websocket';
-import { ActionCreator } from '../../data/actions';
-import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { store } from '../../data/Stores/store';
+import { useIsReadyForClientScript } from '../../store/slices/initStatus';
+import { dispatch, store } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { getLogger } from '../../Helper/wegaslog';
 import { clearModule } from '../Hooks/sandbox';
 import {
@@ -44,8 +44,8 @@ export default function PlayerLibrariesLoader(
           setClientScripts(libraries);
 
           // initial client script evaluation done !
-          store.dispatch(
-            ActionCreator.INIT_STATE_SET('clientScriptsEvaluationDone', true),
+          dispatch(
+            setInitStatus({ key: 'clientScriptsEvaluationDone', status: true }),
           );
         })
         .catch(() => {

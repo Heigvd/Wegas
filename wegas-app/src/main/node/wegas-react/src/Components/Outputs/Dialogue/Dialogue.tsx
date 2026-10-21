@@ -14,14 +14,14 @@ import {
   halfOpacity,
   itemCenter,
 } from '../../../css/classes';
-import { applyFSMTransition } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
+import { applyFSMTransition } from '../../../store/slices/variableInstances';
+import { selfPlayer } from '../../../data/scriptable';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { themeVar } from '../../Theme/ThemeVars';
 import { DialogueChoice } from './DialogueChoice';
 import { DialogueEntry } from './DialogueEntry';
 import { WaitingLoader } from './WaitingLoader';
+import { dispatch } from '../../../store/store';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // styles
@@ -69,7 +69,7 @@ export function DialogueDisplay({
   const [waitingUser, setWaitingUser] = React.useState(false);
   const [waitingSystem, setWaitingSystem] = React.useState(false);
 
-  const dialogueInstance = dialogue.getInstance(Player.self());
+  const dialogueInstance = dialogue.getInstance(selfPlayer());
   const history = dialogueInstance.getTransitionHistory();
   const dialogueStates = dialogue.getStates();
 
@@ -182,7 +182,7 @@ export function DialogueDisplay({
               label={transition.getActionText()}
               onClick={() => {
                 setWaitingUser(true);
-                editingStore.dispatch(
+                dispatch(
                   applyFSMTransition(
                     dialogue.getEntity(),
                     transition.getEntity(),

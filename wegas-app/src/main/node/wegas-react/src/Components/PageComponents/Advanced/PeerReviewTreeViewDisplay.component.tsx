@@ -35,17 +35,17 @@ import {
 } from '../../../css/classes';
 import { entityIs, scriptableEntityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
-import { liveEdition } from '../../../data/Reducer/gameModel';
+import { liveEdition } from '../../../store/slices/gameModel';
 import {
   asynchSaveReview,
   saveReview,
   submitReview,
-} from '../../../data/Reducer/VariableDescriptorReducer';
+} from '../../../store/slices/variableDescriptors';
 import { instantiate } from '../../../data/scriptable';
-import { Player, Team } from '../../../data/selectors';
-import * as VariableDescriptorSelector from '../../../data/selectors/VariableDescriptorSelector';
-import { editingStore } from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { selfPlayer } from '../../../data/scriptable';
+import { selectCurrentTeam } from '../../../store/slices/teams';
+import { findDescriptorByName, selectDescriptor } from '../../../store/slices/variableDescriptors';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { useInternalPlayerLangTranslate } from '../../../i18n/internalTranslator';
 import { PeerReviewTranslations } from '../../../i18n/peerReview/definitions';
@@ -70,6 +70,7 @@ import {
 } from '../tools/componentFactory';
 import { WegasComponentProps } from '../tools/EditableComponent';
 import { schemaProps } from '../tools/schemaProps';
+import { dispatch } from '../../../store/store';
 
 const prPhaseComponentStyle = css({
   minWidth: '120px',
@@ -282,8 +283,8 @@ function EvalutationEditor({
   const onChangeNotify = React.useCallback(
     (val: string | number) => {
       if (iEvaluation.getJSONClassName() === 'TextEvaluationInstance') {
-        editingStore.dispatch(
-          liveEdition(`private-Team-${Team.selectCurrent().id!}`, {
+        dispatch(
+          liveEdition(`private-Team-${selectCurrentTeam().id!}`, {
             ...iEvaluation.getEntity(),
             value: val,
           }),
@@ -413,7 +414,7 @@ function EvalutationsEditor({
         if (type === 'TextEvaluationInstance') {
           asynchSaveReview(modifiedReview.current);
         } else {
-          editingStore.dispatch(saveReview(modifiedReview.current));
+          dispatch(saveReview(modifiedReview.current));
         }
       }, 500);
     },
@@ -442,7 +443,7 @@ function EvalutationsEditor({
       )}
       <OkCancelModal
         onOk={() => {
-          editingStore.dispatch(submitReview(modifiedReview.current));
+          dispatch(submitReview(modifiedReview.current));
         }}
       >
         <p>{i18nValues.global.confirmation.info}</p>
@@ -521,7 +522,7 @@ function ReviewEditor({
 }: ReviewEditorProps) {
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
 
-  const rev = useStore(() => {
+  const getRev = React.useCallback(() => {
     const reviewed = peerReview
       .getReviewed()
       .find(r => r.getId() === reviewState.review.getId());
@@ -533,19 +534,23 @@ function ReviewEditor({
       toReview?.getEntity() ||
       reviewState.review.getEntity()
     );
-  });
+  }, [peerReview, reviewState]);
+  const rev = useDataSelector(getRev);
 
-  const given = useStore(() =>
-    instantiate(
-      VariableDescriptorSelector.findByName<
-        ITextDescriptor | INumberDescriptor
-      >(
-        VariableDescriptorSelector.select<IPeerReviewDescriptor>(
-          peerReview.getParentId(),
-        )?.toReviewName,
+  const getGiven = React.useCallback(
+    () =>
+      instantiate(
+        findDescriptorByName<
+          ITextDescriptor | INumberDescriptor
+        >(
+          selectDescriptor<IPeerReviewDescriptor>(
+            peerReview.getParentId(),
+          )?.toReviewName,
+        ),
       ),
-    ),
-  )?.getValue(Player.self());
+    [peerReview],
+  );
+  const given = useDataSelector(getGiven)?.getValue(selfPlayer());
 
   const isReviewDispatched =
     reviewStatus === 'DISPATCHED' && rev.reviewState === 'DISPATCHED';
@@ -672,7 +677,11 @@ export default function PeerReviewTreeViewDisplay({
 }: PeerReviewTreeViewDisplayProps) {
   const i18nValues = useInternalPlayerLangTranslate(peerReviewTranslations);
   const sPR = useScript<SPeerReviewDescriptor | undefined>(peerReview, context);
-  const sPRinstance = useStore(() => sPR?.getInstance(Player.self()));
+  const getSPRinstance = React.useCallback(
+    () => sPR?.getInstance(selfPlayer()),
+    [sPR],
+  );
+  const sPRinstance = useDataSelector(getSPRinstance);
 
   const [carretState, setCarretState] = React.useState<CarretState>({
     reviews: false,

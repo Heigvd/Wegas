@@ -1,4 +1,5 @@
-import { setReloadingStatus } from '../../data/Stores/pageContextStore';
+import { setReloading } from '../../store/slices/pageContext';
+import { dispatch } from '../../store/store';
 import { clearEffects, runEffects } from '../../Helper/pageEffectsManager';
 import { printWegasScriptError, safeClientScriptEval } from '../Hooks/useScript';
 import { computeLibraryPath } from './LibrariesContext';
@@ -17,8 +18,9 @@ type SetErrorStatusFunc = ((path: string, error: string) => void) | undefined;
  *Execute all client script
  */
 export function execAllScripts(libraries: ILibraries, logger: Logger, setErrorStatus: SetErrorStatusFunc = undefined): void {
-  // set PageStore reloading status to true to prevent usePagesContextStateStore  hooks to be triggered
-  setReloadingStatus(true);
+  // Open the reload window: page-context consumers keep serving the snapshot
+  // taken right now, so nothing re-evaluates against a half-rebuilt context.
+  dispatch(setReloading(true));
   clearEffects();
 
   const scripts : ScriptEntry[] = Object.entries(libraries).map(([name, gmContent]) => ([name, gmContent.content]));
@@ -31,8 +33,8 @@ export function execAllScripts(libraries: ILibraries, logger: Logger, setErrorSt
   });
 
   runEffects();
-  // resumes pagesStore status, hooks will be triggered
-  setReloadingStatus(false);
+  // Close it: consumers pick up the rebuilt context.
+  dispatch(setReloading(false));
 }
 
 function executeClientLibrary(

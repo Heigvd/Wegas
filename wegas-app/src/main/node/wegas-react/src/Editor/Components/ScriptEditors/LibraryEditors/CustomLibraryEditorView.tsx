@@ -35,7 +35,7 @@ import {
   flexColumn,
   globalSelection,
 } from '../../../../css/classes';
-import { GameModel } from '../../../../data/selectors';
+import { selectCurrentGameModel } from '../../../../store/slices/gameModel';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { MessageString } from '../../MessageString';
@@ -470,7 +470,7 @@ export function CustomLibraryEditorView({
           duration={5000}
           onLabelVanish={() => setMessage(undefined)}
         />
-        <TreeView rootId={String(GameModel.selectCurrent().id)}>
+        <TreeView rootId={String(selectCurrentGameModel().id)}>
           {nodes}
         </TreeView>
       </ReflexElement>

@@ -3,13 +3,12 @@ import { css } from '@emotion/css';
 import { produce } from 'immer';
 import Form from 'jsoninput';
 import { WidgetProps } from 'jsoninput/typings/types';
-import { isArray, pick } from 'lodash-es';
+import { isArray, isEqual, pick } from 'lodash-es';
 import { editor } from 'monaco-editor';
 import * as React from 'react';
-import { deepDifferent } from '../../../../../Components/Hooks/storeHookFactory';
+import { useGameModel } from '../../../../../Components/Hooks/useGameModel';
 import { themeVar } from '../../../../../Components/Theme/ThemeVars';
-import { State } from '../../../../../data/Reducer/reducers';
-import { useStore } from '../../../../../data/Stores/store';
+import { useAppSelector } from '../../../../../store/hooks';
 import { MessageString } from '../../../MessageString';
 import { TempScriptEditor } from '../../../ScriptEditors/TempScriptEditor';
 import { CommonView, CommonViewContainer } from '../../commonView';
@@ -48,10 +47,6 @@ interface ExpressionEditorState {
   softError?: string[];
 }
 
-function getRootLevelVariableIds(s: State) {
-  return s.gameModels[s.global.currentGameModelId].itemsIds;
-}
-
 /**
  * Should be done by looking at json files and prevent selection from variables without methods
  */
@@ -81,13 +76,13 @@ function setFormState(state: ExpressionEditorState, action: FormStateActions) {
     switch (action.type) {
       case 'SET_IF_DEF': {
         const { attributes, error, schema } = action.payload;
-        if (attributes != null && deepDifferent(attributes, state.attributes)) {
+        if (attributes != null && !isEqual(attributes, state.attributes)) {
           state.attributes = attributes;
         }
-        if (error != null && deepDifferent(error, state.error)) {
+        if (error != null && !isEqual(error, state.error)) {
           state.error = error;
         }
-        if (schema != null && deepDifferent(schema, state.schema)) {
+        if (schema != null && !isEqual(schema, state.schema)) {
           state.schema = schema;
         }
         break;
@@ -151,11 +146,19 @@ export function ExpressionEditor({
     }
   }, [error, softError, setError]);
 
-  const variablesItems = useStore(s => {
-    return genVarItems(getRootLevelVariableIds(s), selectableFn, undefined, value =>
-      makeItems(value, 'variable'),
-    );
-  }, deepDifferent);
+  const gameModel = useGameModel();
+  // genVarItems reads the variable descriptors internally (non-reactively), so we
+  // subscribe to them and keep variableDescriptors as an explicit trigger dependency
+  // to recompute the items whenever a descriptor changes.
+  const variableDescriptors = useAppSelector(s => s.variableDescriptors);
+  const variablesItems = React.useMemo(
+    () =>
+      genVarItems(gameModel.itemsIds, selectableFn, undefined, value =>
+        makeItems(value, 'variable'),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [gameModel.itemsIds, variableDescriptors],
+  );
 
   const onChange = instantOnChange;
 
@@ -163,7 +166,7 @@ export function ExpressionEditor({
     if (
       !isCodeEqual(codeRef.current, code) ||
       modeRef.current !== mode ||
-      deepDifferent(variablesItemsRef.current, variablesItems)
+      !isEqual(variablesItemsRef.current, variablesItems)
     ) {
       codeRef.current = code;
       modeRef.current = mode;
@@ -357,8 +360,8 @@ export function ExpressionEditor({
           // If type or first expression has changed, keep only type and expression and regenerate schema and send changes
           if (
             currentConfig.type !== newConfig.type ||
-            deepDifferent(currentConfig.expression, newConfig.expression) ||
-            deepDifferent(
+            !isEqual(currentConfig.expression, newConfig.expression) ||
+            !isEqual(
               currentConfig.leftExpression,
               newConfig.leftExpression,
             )
@@ -398,7 +401,7 @@ export function ExpressionEditor({
             })
           }
           // If method has changed, keep only type, expression and method and regenerate schema and send changes
-          else if (deepDifferent(currentConfig.methodId, newConfig.methodId)) {
+          else if (!isEqual(currentConfig.methodId, newConfig.methodId)) {
             const { attributes, schema } = computeState(
               pick(newConfig, [
                 'type',

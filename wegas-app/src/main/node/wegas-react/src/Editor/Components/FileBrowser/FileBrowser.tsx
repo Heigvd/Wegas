@@ -4,9 +4,6 @@ import { IAbstractContentDescriptor } from 'wegas-ts-api';
 import { FileAPI, generateAbsolutePath } from '../../../API/files.api';
 import { DefaultDndProvider } from '../../../Components/Contexts/DefaultDndProvider';
 import { grow, halfOpacity, mediumPadding } from '../../../css/classes';
-import { EditingState } from '../../../data/Reducer/editingState';
-import { useEditingStore } from '../../../data/Stores/editingStore';
-import { StoreDispatch } from '../../../data/Stores/store';
 import { classNameOrEmpty } from '../../../Helper/className';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -15,6 +12,10 @@ import { ComponentWithForm } from '../FormView/ComponentWithForm';
 import { focusTab } from '../LinearTabLayout/LinearLayout';
 import { MessageString } from '../MessageString';
 import { FileBrowserNode, FileBrowserNodeProps } from './FileBrowserNode';
+import { useAppSelector } from '../../../store/hooks';
+import { selectEdition } from '../../../store/slices/edition';
+import { RootState } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 const fileBrowserStyle = css({
   paddingRight: '5px',
@@ -30,7 +31,7 @@ export interface FileBrowserProps extends ClassStyleId, DisabledReadonly {
   onDeleteFile?: FileBrowserNodeProps['onDeleteFile'];
   pickType?: FilePickingType;
   filter?: FileFilter;
-  localDispatch?: StoreDispatch;
+  localDispatch?: EditingDispatch;
 }
 
 export function FileBrowser({
@@ -109,15 +110,16 @@ export function FileBrowser({
   );
 }
 
-function globalFileSelector(state: EditingState) {
-  return state.editing && state.editing.type === 'File' && state.editing.entity;
+function globalFileSelector(state: RootState) {
+  const edition = selectEdition(state);
+  return edition && edition.type === 'File' && edition.entity;
 }
 
 export default function FileBrowserWithMeta({
   disabled,
   readOnly,
 }: DisabledReadonly) {
-  const globalFile = useEditingStore(globalFileSelector);
+  const globalFile = useAppSelector(globalFileSelector);
 
   return (
     <ComponentWithForm disabled={disabled} readOnly={readOnly}>

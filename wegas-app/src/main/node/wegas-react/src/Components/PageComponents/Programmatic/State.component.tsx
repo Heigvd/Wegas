@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { IScript } from 'wegas-ts-api/typings/WegasEntities';
-import { setPagesContextState } from '../../../data/Stores/pageContextStore';
+import { useAppDispatch } from '../../../store/hooks';
+import { setContextValue } from '../../../store/slices/pageContext';
 import { createScript } from '../../../Helper/wegasEntites';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
@@ -43,6 +44,7 @@ function ChildrenDeserializer({
   initialState,
   localState,
 }: ChildrenDeserializerProps<StateProps>) {
+  const dispatch = useAppDispatch();
   const initRef = React.useRef<boolean>(false);
   const exposeAsRef = React.useRef<string>();
 
@@ -79,9 +81,9 @@ function ChildrenDeserializer({
     ) {
       initRef.current = true;
       exposeAsRef.current = exposeAs;
-      setPagesContextState(exposeAs, init);
+      dispatch(setContextValue({ exposeAs, value: init }));
     }
-  }, [exposeAs, init, localState]);
+  }, [dispatch, exposeAs, init, localState]);
 
   if (initialState == null || exposeAs == null) {
     return (

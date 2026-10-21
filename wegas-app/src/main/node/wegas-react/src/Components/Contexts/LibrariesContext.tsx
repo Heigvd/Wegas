@@ -10,11 +10,12 @@ import {
 } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
-import { ActionCreator, manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { entityIs } from '../../data/entities';
-import { GameModel } from '../../data/selectors';
-import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { store } from '../../data/Stores/store';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { useIsReadyForClientScript } from '../../store/slices/initStatus';
+import { dispatch, store } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
   MonacoEditor,
@@ -549,8 +550,8 @@ export function LibrariesLoader(
             wwarn(e);
           }
           // initial client script evaluation done !
-          store.dispatch(
-            ActionCreator.INIT_STATE_SET('clientScriptsEvaluationDone', true),
+          dispatch(
+            setInitStatus({ key: 'clientScriptsEvaluationDone', status: true }),
           );
         })
         .catch(() => {
@@ -909,7 +910,7 @@ export function LibrariesLoader(
 
         error = error == null && exceptionsFound.length > 0 ? 'UNKNOWN' : error;
         // Dispatch the rest of the response to the main store
-        store.dispatch(manageResponseHandler(newManagedResponse));
+        manageResponseHandler(newManagedResponse);
 
         // Manage localy the error
         if (error != null) {
@@ -1053,7 +1054,7 @@ export function LibrariesLoader(
           }
 
           // Dispatch the rest of the response to the main store
-          store.dispatch(manageResponseHandler(newManagedResponse));
+          manageResponseHandler(newManagedResponse);
         });
       }
     },
@@ -1147,7 +1148,7 @@ export function LibrariesLoader(
 
 export function isEditAllowed(library?: LibraryWithStatus): boolean {
   return (
-    GameModel.selectCurrent().type !== 'SCENARIO' ||
+    selectCurrentGameModel().type !== 'SCENARIO' ||
     library?.persisted.visibility === 'PRIVATE' ||
     library?.persisted.visibility === 'INHERITED'
   );
@@ -1175,6 +1176,6 @@ export const isVisibilityAllowed = (
   return (
     visibility === 'PRIVATE' ||
     visibility === library.persisted.visibility ||
-    GameModel.selectCurrent().type === 'MODEL'
+    selectCurrentGameModel().type === 'MODEL'
   );
 };

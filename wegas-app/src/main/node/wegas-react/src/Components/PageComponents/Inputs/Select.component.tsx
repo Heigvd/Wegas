@@ -2,10 +2,9 @@ import * as React from 'react';
 import { IScript, SNumberDescriptor, SStringDescriptor } from 'wegas-ts-api';
 import { entityIs } from '../../../data/entities';
 import { translate } from '../../../data/i18n';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { runScript } from '../../../store/slices/variableInstances';
+import { selfPlayer } from '../../../data/scriptable';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -26,6 +25,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerSelectInputProps extends WegasComponentProps {
   /**
@@ -72,13 +72,14 @@ function PlayerSelectInput({
     context,
   );
 
-  const value = useStore(() => {
+  const getValue = React.useCallback(() => {
     const v =
       descriptor != null && typeof descriptor === 'object'
-        ? descriptor.getValue(Player.self())
+        ? descriptor.getValue(selfPlayer())
         : descriptor;
     return v == undefined ? '' : v;
-  });
+  }, [descriptor]);
+  const value = useDataSelector(getValue);
 
   const { lang } = React.useContext(languagesCTX);
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
@@ -127,7 +128,7 @@ function PlayerSelectInput({
         if (handleOnChange) {
           handleOnChange(newValue);
         } else if (typeof descriptor === 'object') {
-          editingStore.dispatch(
+          dispatch(
             runScript(
               `Variable.find(gameModel,"${descriptor.getName()}").setValue(self, ${
                 entityIs(descriptor, 'NumberDescriptor')

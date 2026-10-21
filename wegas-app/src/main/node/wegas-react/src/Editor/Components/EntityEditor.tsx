@@ -13,26 +13,18 @@ import {
   IVariableDescriptor,
 } from 'wegas-ts-api';
 import { mediumPadding } from '../../css/classes';
-import { Actions } from '../../data';
+import { searchDeep } from '../../store/slices/search';
 import { entityIs, entityIsPersisted } from '../../data/entities';
 import { editorTitle } from '../../data/methods/VariableDescriptorMethods';
+import { saveEditor } from '../../store/editionThunks';
 import {
-  EditingActionCreator,
-  EditingState,
-  Edition,
-  editorEventRead,
-  isEditingVariable,
-  saveEditor,
-  VariableEdition,
-} from '../../data/Reducer/editingState';
-import { updateDescriptor } from '../../data/Reducer/VariableDescriptorReducer';
-import { GameModel, Helper, VariableDescriptor } from '../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-  useEditingStore,
-} from '../../data/Stores/editingStore';
-import { store, StoreDispatch } from '../../data/Stores/store';
+  deleteDescriptor,
+  duplicateDescriptor,
+  updateDescriptor,
+} from '../../store/slices/variableDescriptors';
+import { getParent } from '../../store/entityParents';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { selectDescriptor } from '../../store/slices/variableDescriptors';
 import { deepUpdate } from '../../data/updateUtils';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
@@ -42,6 +34,22 @@ import { FormAction } from './Form';
 import { AvailableViews } from './FormView';
 import { InstanceProperties } from './Variable/InstanceProperties';
 import { IconComp, withDefault } from './Views/FontAwesome';
+import { RootState, dispatch, store } from '../../store/store';
+import { selectCustomSchemas } from '../../store/slices/scriptRegistry';
+import { EditingDispatch } from '../../store/localEdition';
+import { customStateEquals, useAppSelector } from '../../store/hooks';
+import {
+  Edition,
+  editionChanges,
+  instanceEditor,
+  isEditingVariable,
+  selectEdition,
+  VariableEdition,
+} from '../../store/slices/edition';
+import {
+  editorEventRead,
+  selectEditorEvents,
+} from '../../store/slices/editorEvents';
 
 export interface EditorProps<T> extends DisabledReadonly {
   entity?: T;
@@ -55,7 +63,7 @@ export interface EditorProps<T> extends DisabledReadonly {
   };
   onChange?: (newEntity: T) => void;
   highlight?: boolean;
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
 }
 
 type VISIBILITY = 'INTERNAL' | 'PROTECTED' | 'INHERITED' | 'PRIVATE';
@@ -81,12 +89,12 @@ function getVisibility(
     if (inheritedValue) {
       return inheritedValue;
     }
-    let p = Helper.getParent(entity);
+    let p = getParent(entity);
     while (p) {
       if ('visibility' in p) {
         return (p as any).visibility as VISIBILITY;
       }
-      p = Helper.getParent(p);
+      p = getParent(p);
     }
     return defaultValue;
   }
@@ -163,14 +171,9 @@ function _overrideSchema(
 }
 
 export function overrideSchema(entity: any, schema: Schema<AvailableViews>) {
-  const gameModel = GameModel.selectCurrent();
+  const gameModel = selectCurrentGameModel();
   if (gameModel.type === 'SCENARIO') {
     return _overrideSchema(cloneDeep(schema), entity);
-    /*if (gameModel.basedOnId && gameModel.basedOnId >= 0) {
-      // Editing a scenario which depends on a model -> some properties are read-only
-    } else {
-      return _overrideSchema(cloneDeep(schema), entity);
-    }*/
   }
   return schema;
 }
@@ -208,7 +211,7 @@ export function WindowedEditor<T extends IMergeable>({
   const schema = getConfig(pathEntity);
 
   // First try to get schema from simple filters
-  const customSchemas = store.getState().global.schemas;
+  const customSchemas = selectCustomSchemas(store.getState());
   let customSchema: SimpleSchema | void;
   const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
   if (simpleCustomSchemaName !== undefined) {
@@ -284,16 +287,16 @@ export function WindowedEditor<T extends IMergeable>({
  */
 export function parseEvent(
   event: WegasEvent,
-  dispatch: EditingStoreDispatch = editingStore.dispatch,
+  scopedDispatch: EditingDispatch = dispatch,
 ) {
-  const onRead = () => dispatch(editorEventRead(event.timestamp));
+  const onRead = () => scopedDispatch(editorEventRead({ timestamp: event.timestamp }));
   switch (event['@class']) {
     case 'ClientEvent':
       return { message: event.error, onRead };
     case 'ExceptionEvent': {
       if (event.exceptions.length > 0) {
-        // let message = 'Exception : ';
         let message = '';
+
         for (const exception of event.exceptions) {
           switch (exception['@class']) {
             case 'WegasConflictException':
@@ -358,19 +361,25 @@ export function parseEvent(
 
 /**
  * Retrieve error message from stored events
+ *
+ * NOTE: this currently discards parseEvent's result and always returns
+ * undefined, so the form error banner never receives anything. Fixing that means
+ * returning the result -- and keeping the dispatch below on the app store, or the
+ * onRead it builds is inert.
+ *
  * @param state the events stored
- * @param dispatch the dispatcher fn of the
+ * @param scopedDispatch the edition scope to mark the event read in
  * @param index the index of the event
  */
 export function parseEventFromIndex(
   state: Readonly<WegasEvent[]>,
-  dispatch: StoreDispatch = store.dispatch,
+  scopedDispatch: EditingDispatch = dispatch,
   index: number = 0,
 ) {
   if (state.length > index) {
     const currentEvent = state[index];
     if (currentEvent) {
-      parseEvent(currentEvent, dispatch);
+      parseEvent(currentEvent, scopedDispatch);
     }
     return undefined;
   }
@@ -400,7 +409,7 @@ export function getEntity(editionState?: Readonly<Edition>) {
     case 'File':
       return editionState.entity;
     case 'VariableFSM': {
-      return VariableDescriptor.select(editionState.entity.id);
+      return selectDescriptor(editionState.entity.id);
     }
     default:
       return undefined;
@@ -415,7 +424,7 @@ export function editingGotPath(
 
 export function editionActions<T extends IVariableDescriptor>(
   editionState: Edition,
-  dispatch: EditingStoreDispatch,
+  dispatch: EditingDispatch,
 ): FormAction<T>[] {
   const actions: FormAction<T>[] = [];
   if (editionState.type === 'Variable' || editionState.type === 'VariableFSM') {
@@ -425,7 +434,7 @@ export function editionActions<T extends IVariableDescriptor>(
       label: 'Delete',
       action: (entity: IVariableDescriptor, path?: string[]) => {
         dispatch(
-          Actions.VariableDescriptorActions.deleteDescriptor(entity, path),
+          deleteDescriptor(entity, path),
         );
       },
       confirm: true,
@@ -436,7 +445,7 @@ export function editionActions<T extends IVariableDescriptor>(
       icon: 'clone',
       action: (entity: T) => {
         dispatch(
-          Actions.VariableDescriptorActions.duplicateDescriptor(
+          duplicateDescriptor(
             entity,
             editionState.path,
           ),
@@ -451,15 +460,14 @@ export function editionActions<T extends IVariableDescriptor>(
         icon: 'search',
         action: (entity: IVariableDescriptor) => {
           if (entityIsPersisted(entity) && entity.name != null) {
-            store.dispatch(Actions.EditorActions.searchDeep(entity.name));
+            dispatch(searchDeep(entity.name));
           }
         },
       });
       actions.push({
         type: 'ToolboxAction',
         label: 'Instance',
-        action: () =>
-          dispatch(EditingActionCreator.INSTANCE_EDITOR({ open: true })),
+        action: () => dispatch(instanceEditor({ open: true })),
       });
     } else if (editionState.type === 'VariableFSM') {
       if (editionState.path != null && editionState.path.length === 2) {
@@ -488,6 +496,14 @@ export function editionActions<T extends IVariableDescriptor>(
   return actions;
 }
 
+interface VariableFormProps {
+  editing: Edition | undefined;
+  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
+  events: WegasEvent[];
+  readOnly?: boolean;
+  localDispatch: EditingDispatch | undefined;
+}
+
 function VariableEditionPanel({
   editing,
   entity,
@@ -496,18 +512,20 @@ function VariableEditionPanel({
   localDispatch,
   highlightInstance,
 }: VariableFormProps & { highlightInstance: boolean | undefined }) {
+  const scopedDispatch = localDispatch ?? dispatch;
+  const config = React.useMemo(() => editing && getConfig(editing), [editing]);
+
   const path = React.useMemo(
     () => (editingGotPath(editing) ? editing.path : undefined),
     [editing],
   );
-  const config = React.useMemo(() => editing && getConfig(editing), [editing]);
-  const dispatch = localDispatch || editingStore.dispatch;
+
   const update = React.useCallback(
     (entity: IMergeable) => {
       if (entity != null) {
         if (editing?.type === 'VariableCreate') {
           if (editing.subtype === 'Choice') {
-            const parent = VariableDescriptor.select<IChoiceDescriptor>(
+            const parent = selectDescriptor<IChoiceDescriptor>(
               editing.parentId,
             );
             if (parent) {
@@ -516,8 +534,8 @@ function VariableEditionPanel({
               });
               const index = newChoice.results.length - 1;
 
-              dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(
+              scopedDispatch(
+                updateDescriptor(
                   newChoice,
                   true,
                   ['results', String(index)],
@@ -526,7 +544,7 @@ function VariableEditionPanel({
               return;
             }
           } else {
-            const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+            const parent = selectDescriptor<IPeerReviewDescriptor>(
               editing.parentId,
             );
             if (parent && entityIs(entity, 'EvaluationDescriptor', true)) {
@@ -536,8 +554,8 @@ function VariableEditionPanel({
                 v[path].evaluations.push(entity);
               });
               const index = newChoice[path].evaluations.length - 1;
-              dispatch(
-                Actions.VariableDescriptorActions.updateDescriptor(
+              scopedDispatch(
+                updateDescriptor(
                   newChoice,
                   true,
                   [path, 'evaluations', String(index)],
@@ -547,10 +565,10 @@ function VariableEditionPanel({
             }
           }
         }
-        dispatch(saveEditor(entity));
+        scopedDispatch(saveEditor(entity));
       }
     },
-    [dispatch, editing],
+    [scopedDispatch, editing],
   );
 
   if (!editing || !config) {
@@ -563,13 +581,11 @@ function VariableEditionPanel({
         path={path}
         getConfig={config}
         update={update}
-        actions={editionActions(editing, dispatch)}
+        actions={editionActions(editing, scopedDispatch)}
         entity={entity}
         onChange={newEntity => {
-          (localDispatch || editingStore.dispatch)(
-            EditingActionCreator.EDITION_CHANGES({
-              newEntity: newEntity as IAbstractEntity,
-            }),
+          scopedDispatch(
+            editionChanges({ newEntity: newEntity as IAbstractEntity }),
           );
         }}
         error={parseEventFromIndex(events)}
@@ -579,14 +595,6 @@ function VariableEditionPanel({
       />
     </ErrorBoundary>
   );
-}
-
-interface VariableFormProps {
-  editing: Edition | undefined;
-  entity: IAbstractEntity | IAbstractContentDescriptor | undefined;
-  events: WegasEvent[];
-  readOnly?: boolean;
-  localDispatch: EditingStoreDispatch | undefined;
 }
 
 export function VariableForm({
@@ -627,7 +635,7 @@ export function VariableForm({
           <InstanceProperties
             editing={editing}
             events={events}
-            dispatch={localDispatch || editingStore.dispatch}
+            dispatch={localDispatch ?? dispatch}
             highlight={highlightInstance}
             readOnly={readOnly}
           />
@@ -648,15 +656,16 @@ export function VariableForm({
   );
 }
 
-function editionStoreSelector(s: EditingState) {
+function editionStoreSelector(state: RootState) {
+  const editing = selectEdition(state);
   return {
-    editing: s.editing,
-    entity: getEntity(s.editing),
-    events: s.events,
+    editing,
+    entity: getEntity(editing),
+    events: selectEditorEvents(state),
   };
 }
 
 export default function ConnectedVariableForm() {
-  const storeProps = useEditingStore(editionStoreSelector);
+  const storeProps = useAppSelector(editionStoreSelector, customStateEquals);
   return <VariableForm {...storeProps} localDispatch={undefined} />;
 }

@@ -12,6 +12,7 @@ on:
     branches:
       - master
       - dev
+      - redux-refactor
     tags:
       - "v*"
 

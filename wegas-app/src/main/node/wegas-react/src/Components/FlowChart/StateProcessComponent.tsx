@@ -6,7 +6,8 @@ import { block, expandWidth, textCenter } from '../../css/classes';
 import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
 import { instantiate } from '../../data/scriptable';
-import { Player, VariableDescriptor } from '../../data/selectors';
+import { selfPlayer } from '../../data/scriptable';
+import { selectDescriptor } from '../../store/slices/variableDescriptors';
 import {
   StateProcess,
   TransitionFlowLine,
@@ -199,7 +200,7 @@ const dragAndHoverStyle = css({
 });
 
 export function isStateCurrentDefault(state: IAbstractState) {
-  const currentStateId = VariableDescriptor.select<IFSMDescriptor>(
+  const currentStateId = selectDescriptor<IFSMDescriptor>(
     state.parentId,
   )?.defaultInstance.currentStateId;
   return currentStateId === state.index;
@@ -207,9 +208,9 @@ export function isStateCurrentDefault(state: IAbstractState) {
 
 export function isStateCurrent(state: IAbstractState) {
   const currentStateId = instantiate(
-    VariableDescriptor.select<IFSMDescriptor>(state.parentId),
+    selectDescriptor<IFSMDescriptor>(state.parentId),
   )
-    ?.getInstance(Player.self())
+    ?.getInstance(selfPlayer())
     .getCurrentStateId();
   return currentStateId === state.index;
 }

@@ -1,7 +1,8 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { expandBoth } from '../../css/classes';
-import { useThemeStore } from '../../data/Stores/themeStore';
+import { getAllThemes, getSelectedThemes } from '../../store/slices/theme';
+import { shallowEqual, useAppDispatch, useAppSelector } from '../../store/hooks';
 import { defaultThemesState, SelectedThemes, ThemesState } from './ThemeVars';
 
 export interface ThemeComponent {
@@ -30,8 +31,17 @@ export function ThemeProvider({
   modeName,
 }: React.PropsWithChildren<{ contextName: ThemeContext } & ThemeComponent>) {
   const themeRoot = React.useRef<HTMLDivElement>(null);
+  const dispatch = useAppDispatch();
 
-  const themesState = useThemeStore(s => s);
+  // Safe to call from every mount, including PageLoader's nested, frequently
+  // remounted ThemeProvider - the condition on each thunk makes every call
+  // after the first a no-op.
+  React.useEffect(() => {
+    dispatch(getAllThemes());
+    dispatch(getSelectedThemes());
+  }, [dispatch]);
+
+  const themesState = useAppSelector(s => s.themes, shallowEqual);
 
   const className = themeModeClass(themesState, contextName, modeName);
 

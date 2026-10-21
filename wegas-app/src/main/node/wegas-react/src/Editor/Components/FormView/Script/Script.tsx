@@ -8,9 +8,8 @@ import { DropMenu } from '../../../../Components/DropMenu';
 import { IconButton } from '../../../../Components/Inputs/Buttons/IconButton';
 import { themeVar } from '../../../../Components/Theme/ThemeVars';
 import { flex, grow, secondaryButtonStyle } from '../../../../css/classes';
-import { runScript } from '../../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../../data/selectors';
-import { editingStore } from '../../../../data/Stores/editingStore';
+import { runScript } from '../../../../store/slices/variableInstances';
+import { selectCurrentPlayer } from '../../../../store/slices/players';
 import { createScript } from '../../../../Helper/wegasEntites';
 import { wwarn } from '../../../../Helper/wegaslog';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
@@ -21,6 +20,7 @@ import { Labeled, LabeledView } from '../labeled';
 import { parseCodeIntoExpressions } from './Expressions/astManagement';
 import { removeFinalSemicolon } from './Expressions/expressionEditorHelpers';
 import { WyswygScriptEditor } from './WyswygScriptEditor';
+import { dispatch } from '../../../../store/store';
 
 /**
  * Try to extract error message from error
@@ -103,8 +103,8 @@ export function Script({
   const testScript = React.useCallback(
     (value: string | IScript) => {
       try {
-        editingStore.dispatch(
-          runScript(value, Player.selectCurrent(), context),
+        dispatch(
+          runScript(value, selectCurrentPlayer(), context),
         );
         setError(undefined);
       } catch (error) {

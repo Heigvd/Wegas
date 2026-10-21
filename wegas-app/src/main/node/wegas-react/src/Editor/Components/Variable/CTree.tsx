@@ -1,4 +1,5 @@
 import { css, cx } from '@emotion/css';
+import { createSelector } from '@reduxjs/toolkit';
 import { get } from 'lodash-es';
 import * as React from 'react';
 import {
@@ -19,19 +20,8 @@ import {
 } from '../../../css/classes';
 import { entityIs, varIsList } from '../../../data/entities';
 import { editorLabel } from '../../../data/methods/VariableDescriptorMethods';
-import {
-  createVariable,
-  EditingState,
-  Edition,
-  VariableEdition,
-} from '../../../data/Reducer/editingState';
-import { State } from '../../../data/Reducer/reducers';
-import { VariableDescriptor } from '../../../data/selectors';
-import {
-  editingStore,
-  useEditingStore,
-} from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { createVariable } from '../../../store/editionThunks';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { shallowIs } from '../../../Helper/shallowIs';
 import { wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
@@ -47,6 +37,14 @@ import {
 } from './AddMenu';
 import { VariableTreeTitle } from './VariableTreeTitle';
 import { SharedTreeProps, TREEVIEW_ITEM_TYPE } from './VariableTreeView';
+import { RootState, dispatch } from '../../../store/store';
+import { shallowEqual, useAppSelector } from '../../../store/hooks';
+import {
+  Edition,
+  selectEdition,
+  VariableEdition,
+} from '../../../store/slices/edition';
+import { selectSearch } from '../../../store/slices/search';
 
 const nodeStyle = css({
   borderStyle: 'solid',
@@ -86,11 +84,18 @@ export const actionNodeContentStyle = cx(
   }),
 );
 
+type Descriptors = RootState['variableDescriptors'];
+
 /**
  * test a variable and children's editorLabel against a text
  */
-function isMatch(variableId: number, search: string, deep: boolean): boolean {
-  const variable = VariableDescriptor.select(variableId);
+function isMatch(
+  descriptors: Descriptors,
+  variableId: number,
+  search: string,
+  deep: boolean,
+): boolean {
+  const variable = descriptors[variableId];
   if (variable == null) {
     return false;
   }
@@ -106,7 +111,9 @@ function isMatch(variableId: number, search: string, deep: boolean): boolean {
     return true;
   }
   if (varIsList(variable)) {
-    return variable.itemsIds.some(id => isMatch(id, search, deep));
+    return variable.itemsIds.some(id =>
+      isMatch(descriptors, id, search, deep),
+    );
   }
   return false;
 }
@@ -114,13 +121,20 @@ function isMatch(variableId: number, search: string, deep: boolean): boolean {
 /**
  * test a variable and children's editorLabel against a text
  */
-function isOpen(variableId: number, search: string, deep: boolean): boolean {
-  const variable = VariableDescriptor.select(variableId);
+function isOpen(
+  descriptors: Descriptors,
+  variableId: number,
+  search: string,
+  deep: boolean,
+): boolean {
+  const variable = descriptors[variableId];
   if (variable == null) {
     return false;
   }
   if (varIsList(variable)) {
-    return variable.itemsIds.some(id => isMatch(id, search, deep));
+    return variable.itemsIds.some(id =>
+      isMatch(descriptors, id, search, deep),
+    );
   }
   return false;
 }
@@ -161,50 +175,56 @@ export function CTree({
     readOnly: readOnly,
   });
 
-  const globalInfoSelector = React.useCallback(
-    (state: State) => {
-      let variable:
-        | undefined
-        | IVariableDescriptor
-        | IResult
-        | IEvaluationDescriptorContainer =
-        VariableDescriptor.select(variableId);
-      if (Array.isArray(subPath) && subPath.length > 0) {
-        variable = get(variable, subPath) as
-          | IVariableDescriptor
-          | IResult
-          | IEvaluationDescriptorContainer;
-      }
+  // Memoized on the descriptors map and the search state: every tree node runs
+  // this on every dispatch, and a deep search stringifies each variable.
+  const globalInfoSelector = React.useMemo(
+    () =>
+      createSelector(
+        [(state: RootState) => state.variableDescriptors, selectSearch],
+        (descriptors, search) => {
+          let variable:
+            | undefined
+            | IVariableDescriptor
+            | IResult
+            | IEvaluationDescriptorContainer = descriptors[variableId];
+          if (Array.isArray(subPath) && subPath.length > 0) {
+            variable = get(variable, subPath) as
+              | IVariableDescriptor
+              | IResult
+              | IEvaluationDescriptorContainer;
+          }
 
-      return {
-        variable: variable,
-        open: isOpen(
-          variableId,
-          state.global.search.value || '',
-          state.global.search.deep,
-        ),
-        match: isMatch(
-          variableId,
-          state.global.search.value || '',
-          state.global.search.deep,
-        ),
-        searching: state.global.search.value != null,
-      };
-    },
+          return {
+            variable: variable,
+            open: isOpen(
+              descriptors,
+              variableId,
+              search.value || '',
+              search.deep,
+            ),
+            match: isMatch(
+              descriptors,
+              variableId,
+              search.value || '',
+              search.deep,
+            ),
+            searching: search.value != null,
+          };
+        },
+      ),
     [subPath, variableId],
   );
 
   const editingInfoSelector = React.useCallback(
-    (state: EditingState) => {
-      return {
-        editing: isEditing(variableId, subPath, state.editing),
-      };
-    },
+    (state: RootState) => isEditing(variableId, subPath, selectEdition(state)),
     [subPath, variableId],
   );
 
-  const { variable, match, searching, open } = useStore(globalInfoSelector);
-  const { editing } = useEditingStore(editingInfoSelector);
+  const { variable, match, searching, open } = useAppSelector(
+    globalInfoSelector,
+    shallowEqual,
+  );
+  const editing = useAppSelector(editingInfoSelector);
 
   const localEditing = isEditing(variableId, subPath, localState);
 
@@ -216,9 +236,10 @@ export function CTree({
 
   const onClickAction = React.useCallback(
     (e: ModifierKeysEvent) => {
-      let dispatch = editingStore.dispatch;
-      if ((forceLocalDispatch || e.ctrlKey) && localDispatch) {
-        dispatch = localDispatch;
+      let scopedDispatch = dispatch;
+
+      if (localDispatch && (forceLocalDispatch || e.ctrlKey)) {
+        scopedDispatch = localDispatch;
       } else {
         if (
           entityIs(variable, 'FSMDescriptor') ||
@@ -226,12 +247,12 @@ export function CTree({
         ) {
           focusTab(mainLayoutId, 'State Machine');
         }
+
         focusTab(mainLayoutId, 'Variable Properties');
       }
 
       const { edit } = getEntityActions(variable!)
-      dispatch(edit(VariableDescriptor.select(variableId)!, subPath));
-      
+      scopedDispatch(edit(selectDescriptor(variableId)!, subPath));
     },
     [forceLocalDispatch, localDispatch, subPath, variableId, variable],
   );
@@ -244,15 +265,15 @@ export function CTree({
         entityIs(variable, 'QuestionDescriptor') ||
         entityIs(variable, 'WhQuestionDescriptor')
       ) {
-        let dispatch = editingStore.dispatch;
+        let scopedDispatch = dispatch;
 
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(createVariable(i.value, variable));
+        scopedDispatch(createVariable(i.value, variable));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -263,14 +284,15 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'ChoiceDescriptor')) {
-        let dispatch = editingStore.dispatch;
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        let scopedDispatch = dispatch;
+
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        dispatch(createVariable(i.value, variable, 'Choice'));
+        scopedDispatch(createVariable(i.value, variable, 'Choice'));
       }
     },
     [forceLocalDispatch, localDispatch, variable],
@@ -281,34 +303,32 @@ export function CTree({
   >(
     (i, e) => {
       if (entityIs(variable, 'EvaluationDescriptorContainer')) {
-        let dispatch = editingStore.dispatch;
-        if ((e.ctrlKey || forceLocalDispatch) && localDispatch) {
-          dispatch = localDispatch;
+        let scopedDispatch = dispatch;
+
+        if (localDispatch && (e.ctrlKey || forceLocalDispatch)) {
+          scopedDispatch = localDispatch;
         } else {
           focusTab(mainLayoutId, 'Variable Properties');
         }
 
-        const parent = VariableDescriptor.select<IPeerReviewDescriptor>(
+        const parent = selectDescriptor<IPeerReviewDescriptor>(
           variable.parentId,
         );
 
         const path = subPath![0] as 'feedback' | 'fbComments';
-        if (path != null) {
-          switch (path) {
-            case 'fbComments':
-              dispatch(createVariable(i.value, parent, 'Comments'));
-              break;
-            case 'feedback':
-              dispatch(createVariable(i.value, parent, 'Feedback'));
-              break;
-            default:
-              wwarn(
-                'A subpath must was set but it refers to an unknown prop ' +
-                  path,
-              );
-          }
-        } else {
-          wwarn('A subpath must be set but was undefined');
+
+        switch (path) {
+          case 'fbComments':
+            scopedDispatch(createVariable(i.value, parent, 'Comments'));
+            break;
+          case 'feedback':
+            scopedDispatch(createVariable(i.value, parent, 'Feedback'));
+            break;
+          default:
+            path != null
+              ? wwarn(`A subpath was set but refers to an unknown prop ${path}`)
+              : wwarn('A subpath must be set but was undefined');
+            break;
         }
       }
     },

@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import JSONForm, { Schema } from 'jsoninput';
 import * as React from 'react';
 import { DropMenu } from '../../Components/DropMenu';
-import { deepDifferent } from '../../Components/Hooks/storeHookFactory';
+import { isEqual } from 'lodash-es';
 import { Button } from '../../Components/Inputs/Buttons/Button';
 import { ConfirmButton } from '../../Components/Inputs/Buttons/ConfirmButton';
 import { IconButton } from '../../Components/Inputs/Buttons/IconButton';
@@ -19,16 +19,14 @@ import {
   expandHeight,
   grow,
 } from '../../css/classes';
-import { EditingActionCreator } from '../../data/Reducer/editingState';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../data/Stores/editingStore';
 import { wwarn } from '../../Helper/wegaslog';
 import { commonTranslations } from '../../i18n/common/common';
 import { useInternalTranslate } from '../../i18n/internalTranslator';
 import { MessageString } from './MessageString';
 import { Icon, IconComp } from './Views/FontAwesome';
+import { dispatch } from '../../store/store';
+import { EditingDispatch } from '../../store/localEdition';
+import { editionHighlight } from '../../store/slices/edition';
 
 const toolboxButtonStyle = css({
   margin: '0 5px',
@@ -87,7 +85,7 @@ interface EditorProps<T> extends DisabledReadonly {
   onChange?: (newEntity: T) => void;
   label?: React.ReactNode;
   highlight?: boolean;
-  localDispatch: EditingStoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
   error?: {
     message: string;
     onVanish: () => void;
@@ -111,6 +109,7 @@ export function Form<T>({
   error,
 }: EditorProps<T>) {
   const form = React.useRef<JSONForm>(null);
+  const scopedDispatch = localDispatch ?? dispatch;
 
   // keep track of previous received entity props
   const oldReceivedEntity = React.useRef(entity);
@@ -131,8 +130,8 @@ export function Form<T>({
   }, [entity]);
 
   if (
-    deepDifferent(entity, oldReceivedEntity.current) &&
-    deepDifferent(entity, val)
+    !isEqual(entity, oldReceivedEntity.current) &&
+    !isEqual(entity, val)
   ) {
     // entity is different than previous one and is different than the one being editing
     // it means its a brand new entity
@@ -141,7 +140,7 @@ export function Form<T>({
   }
 
   const saveForm = () => {
-    if(deepDifferent(val, entity)){
+    if(!isEqual(val, entity)){
       if (form.current != null) {
         const validation = form.current.validate();
         if (validation.length) {
@@ -191,7 +190,7 @@ export function Form<T>({
                   icon="save"
                   chipStyle
                   tooltip={i18nValues.save}
-                  disabled={!deepDifferent(val, entity)}
+                  disabled={isEqual(val, entity)}
                   onClick={() => {saveForm();}}
                   className={expandHeight}
                 />
@@ -260,9 +259,7 @@ export function Form<T>({
         })}
         onMouseMove={() => {
           if (highlight) {
-            (localDispatch || editingStore.dispatch)(
-              EditingActionCreator.EDITION_HIGHLIGHT({ highlight: false }),
-            );
+            scopedDispatch(editionHighlight({ highlight: false }));
           }
         }}
       >

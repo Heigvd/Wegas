@@ -11,15 +11,11 @@ import {
   itemCenter,
   justifyCenter,
 } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent } from '../../../data/i18n';
-import { selectAndValidate } from '../../../data/Reducer/VariableInstanceReducer';
+import { selectAndValidate } from '../../../store/slices/variableInstances';
 import { instantiate } from '../../../data/scriptable';
-import { Player } from '../../../data/selectors';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
+import { selfPlayer } from '../../../data/scriptable';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import { isActionAllowed } from '../../PageComponents/tools/options';
 import { AddMenu } from './AddMenu';
@@ -33,6 +29,8 @@ import {
   makeMenuFromClass,
 } from './QuestionList';
 import { RepliesDisplay } from './Reply';
+import { dispatch } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 interface AddChoiceMenuProps {
   questionD: IQuestionDescriptor;
@@ -46,8 +44,8 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
     <AddMenu
       items={choices}
       onSelect={item => {
-        editingStore.dispatch(
-          Actions.VariableDescriptorActions.createDescriptor(
+        dispatch(
+          createDescriptor(
             {
               '@class': item.value.descriptor,
               label: createTranslatableContent(lang, ''),
@@ -85,8 +83,8 @@ function AddChoiceButton({ question }: AddChoiceButtonProps) {
       <Plus
         className={cx(editButtonStyle, editButtonBorder)}
         onClick={() => {
-          editingStore.dispatch(
-            Actions.VariableDescriptorActions.createDescriptor(
+          dispatch(
+            createDescriptor(
               {
                 '@class': 'SingleResultChoiceDescriptor',
                 label: createTranslatableContent(lang, ''),
@@ -123,7 +121,7 @@ function SimpleChoiceDisplay({
 }: SimpleChoiceDisplayProps) {
   const { active, replies } = choiceI;
   const { maxReplies } = choiceD;
-  const hasBeenValidated = instantiate(choiceD).hasBeenSelected(Player.self());
+  const hasBeenValidated = instantiate(choiceD).hasBeenSelected(selfPlayer());
 
   const validatedReplies = replies.filter(r => r.validated);
   const canReply =
@@ -154,7 +152,7 @@ function SimpleChoiceDisplay({
 }
 
 interface SimpleQuestionDisplayProps extends QuestionInfo, DisabledReadonly {
-  dispatch: EditingStoreDispatch;
+  dispatch: EditingDispatch;
   editMode?: boolean;
 }
 

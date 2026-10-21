@@ -66,15 +66,21 @@ import entitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasEntities.d.ts';
 // @ts-ignore
 import scriptableEntitiesSrc from '!!raw-loader!wegas-ts-api/typings/WegasScriptableEntities.d.ts.mlib';
 import * as React from 'react';
-import { buildGlobalServerMethods } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
-import { GameModel } from '../../data/selectors';
-import { useStore } from '../../data/Stores/store';
+import { createSelector } from '@reduxjs/toolkit';
+import {
+  buildGlobalServerMethods,
+  selectClientMethods,
+  selectCustomSchemas,
+  selectPageLoaders,
+  selectServerMethods,
+} from '../../store/slices/scriptRegistry';
+import { RootState } from '../../store/store';
+import { deepEqual, useAppSelector } from '../../store/hooks';
+import { selectVariableClasses } from '../../store/slices/variableDescriptors';
+import { useGameModel } from './useGameModel';
 import { MonacoDefinitionsLibrary } from '../../Editor/Components/ScriptEditors/editorHelpers';
 import { wwarn } from '../../Helper/wegaslog';
 import { classesCTX } from '../Contexts/ClassesProvider';
-import { deepDifferent } from './storeHookFactory';
-
 
 const stripRegex = /\/\* STRIP FROM \*\/[\s\S]*?\/\* STRIP TO \*\//gm;
 
@@ -126,7 +132,7 @@ const clientLibs: MonacoDefinitionsLibrary[] = [
   { content: layerStyleTypes, name: 'layerStyleTypes.d' },
   { content: layerSourceTypes, name: 'layerSourceTypes.d' },
   { content: overlayTypes, name: 'overlayTypes.d' },
-  { content: interactionTypes, name: 'olInteractionTypes.d'}
+  { content: interactionTypes, name: 'olInteractionTypes.d' },
 ];
 
 const serverLibs: MonacoDefinitionsLibrary[] = [
@@ -151,33 +157,28 @@ export function useGlobalLibs() {
   const scriptContext = 'Client';
 
   const { classes } = React.useContext(classesCTX);
+  const gameModel = useGameModel();
+  const variableClasses = useAppSelector(selectVariableClasses, deepEqual);
 
-  const libsSelector = React.useCallback(
-    (s: State) => {
-      const variableClasses = Object.values(s.variableDescriptors).reduce<{
-        [variable: string]: { class: string; id: number };
-      }>((newObject, variable) => {
-        if (variable !== undefined && variable.name !== undefined) {
-          newObject[variable.name] = {
-            class: variable['@class'],
-            id: variable.id!,
-          };
-        }
-        return newObject;
-      }, {});
-
-      const globalMethods = s.global.clientMethods;
-      const globalSchemas = s.global.schemas.views;
-      const globalServerMethods = s.global.serverMethods;
-      const currentLanguages = Object.values(
-        GameModel.selectCurrent().languages,
-      )
+  // Memoized on the registry: the declarations are a large string, rebuilt only
+  // when a script registers something (or the closure deps below change).
+  const libsSelector = React.useMemo(
+    () =>
+      createSelector(
+        [
+          selectClientMethods,
+          (s: RootState) => selectCustomSchemas(s).views,
+          selectServerMethods,
+          selectPageLoaders,
+        ],
+        (globalMethods, globalSchemas, globalServerMethods, pageLoaders) => {
+      const currentLanguages = Object.values(gameModel.languages)
         .map(l => `"${l.code}"`)
         .join(' | ');
 
       const allowedPageLoadersType =
-        Object.keys(s.global.pageLoaders).length > 0
-          ? Object.keys(s.global.pageLoaders)
+        Object.keys(pageLoaders).length > 0
+          ? Object.keys(pageLoaders)
               .map(name => `"${name}"`)
               .join('|')
           : 'unknown';
@@ -381,11 +382,12 @@ export function useGlobalLibs() {
         wwarn(e);
         return '';
       }
-    },
-    [classes, scriptContext],
+        },
+      ),
+    [classes, scriptContext, gameModel.languages, variableClasses],
   );
 
-  const libs = useStore(libsSelector, deepDifferent);
+  const libs = useAppSelector(libsSelector);
 
   return React.useMemo(() => {
     return [

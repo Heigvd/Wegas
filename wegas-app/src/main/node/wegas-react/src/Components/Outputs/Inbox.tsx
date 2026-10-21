@@ -19,11 +19,10 @@ import {
   unreadSignalStyle,
 } from '../../css/classes';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
-import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
+import { readMessage } from '../../store/slices/variableInstances';
 import { instantiate } from '../../data/scriptable';
-import { Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
-import { useStore } from '../../data/Stores/store';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { useDataSelector } from '../../store/hooks';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
@@ -39,6 +38,7 @@ import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { translate } from '../../data/i18n';
 import { wwarn } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
+import { dispatch } from '../../store/store';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -158,7 +158,7 @@ function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
   const handleClick = () => {
     props.onClick();
     if (!props.disabled) {
-      editingStore.dispatch(readMessage(message));
+      dispatch(readMessage(message));
     }
   };
 
@@ -280,13 +280,13 @@ export function InboxDisplay({
   style,
 }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(() => {
-    const messages = getInstance(inbox, Player.selectCurrent())!.messages;
+    const messages = getInstance(inbox, selectCurrentPlayer())!.messages;
     return [...messages].sort((a, b) => {
       return (b.time ?? 0) - (a.time ?? 0);
     });
   }, [inbox]);
 
-  const messages = useStore(messagesSelector);
+  const messages = useDataSelector(messagesSelector);
   const i18nComponentValues = useInternalPlayerLangTranslate(
     componentsTranslations,
   );
