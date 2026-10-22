@@ -10,7 +10,6 @@ export type ServerLibraryType =
   | 'ServerScript'
   | 'Theme'
   | 'SelectedThemes';
-export type NewLibErrors = 'NOTNEW' | 'UNKNOWN';
 export interface ILibraries {
   [key: string]: IGameModelContent;
 }

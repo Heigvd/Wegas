@@ -76,6 +76,11 @@ jobs:
     - name: Build with Maven
       run: mvn -B -P release-profile package --file pom.xml
 
+    - name: Static analysis (PMD)
+      run: |
+        mvn -B -pl build-tools install -DskipTests --file pom.xml
+        mvn -B pmd:check --file pom.xml
+
     - name: export cypress failures to filebin.net
       if: ${{ failure() }}
       shell: bash

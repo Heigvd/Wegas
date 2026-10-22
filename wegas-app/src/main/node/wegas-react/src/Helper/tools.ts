@@ -179,15 +179,6 @@ export function arrayRemoveDuplicates(a: unknown[]) {
   });
 }
 
-export function replace(
-  str: string,
-  index: number,
-  length: number,
-  replacement: string,
-) {
-  return str.substr(0, index) + replacement + str.substr(index + length - 1);
-}
-
 interface LruNode<K, V> {
   key: K;
   value: V;
