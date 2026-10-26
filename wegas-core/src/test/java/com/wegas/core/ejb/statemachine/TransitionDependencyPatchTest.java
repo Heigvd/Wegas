@@ -33,11 +33,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.zip.ZipInputStream;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 /**
- * Patching a scenario must keep TransitionDependency refIds (and dependsOn strategy) from the
- * patch.
+ * A zip patch must keep the zip's refIds: TransitionDependency refIds (and dependsOn strategy) as
+ * well as the gameModel refId.
  */
 public class TransitionDependencyPatchTest extends AbstractArquillianTest {
 
@@ -62,6 +63,13 @@ public class TransitionDependencyPatchTest extends AbstractArquillianTest {
             }
         }
         return deps;
+    }
+
+    private byte[] exportZip(GameModel gm) throws Exception {
+        // as in "export (zip)"
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        gameModelFacade.archiveAsExplodedZip(gm.getId()).write(out);
+        return out.toByteArray();
     }
 
     private GameModel patchWith(GameModel target, byte[] zip) throws Exception {
@@ -119,18 +127,40 @@ public class TransitionDependencyPatchTest extends AbstractArquillianTest {
         Map<String, String> sourceDeps = collectDeps(source);
         assertEquals(3, sourceDeps.size());
 
-        // export as in "export (zip)"
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        gameModelFacade.archiveAsExplodedZip(source.getId()).write(out);
-        byte[] zip = out.toByteArray();
+        byte[] zip = exportZip(source);
 
         GameModel target = new GameModel();
         target.setName("empty-target");
         gameModelFacade.createWithDebugGame(target);
 
         // first patch creates the descriptors
-        assertEquals("first patch", sourceDeps, collectDeps(patchWith(target, zip)));
+        GameModel patched = patchWith(target, zip);
+        assertEquals("first patch", sourceDeps, collectDeps(patched));
+        assertEquals("gameModel refId", source.getRefId(), patched.getRefId());
         // second patch updates them
         assertEquals("second patch", sourceDeps, collectDeps(patchWith(target, zip)));
+    }
+
+    @Test
+    public void testPatchModelTakesZipGameModelRefId() throws Exception {
+        GameModel model = new GameModel();
+        model.setName("source-model");
+        model.setType(GameModel.GmType.MODEL);
+        gameModelFacade.createWithDebugGame(model);
+        wegasFactory.createNumberDescriptor(model, model, "x", "x",
+            ModelScoped.Visibility.INHERITED, null, null, 0.0);
+        model = gameModelFacade.find(model.getId());
+
+        // another model, with its own gameModel refId
+        GameModel target = new GameModel();
+        target.setName("target-model");
+        target.setType(GameModel.GmType.MODEL);
+        gameModelFacade.createWithDebugGame(target);
+        target = gameModelFacade.find(target.getId());
+        assertNotEquals(model.getRefId(), target.getRefId());
+
+        GameModel patched = patchWith(target, exportZip(model));
+        assertEquals(GameModel.GmType.MODEL, patched.getType());
+        assertEquals("gameModel refId", model.getRefId(), patched.getRefId());
     }
 }
