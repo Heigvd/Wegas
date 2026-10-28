@@ -6,7 +6,7 @@ import { globals } from '../../../Components/Hooks/sandbox';
 import { Button } from '../../../Components/Inputs/Buttons/Button';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { TabLayout } from '../../../Components/TabLayout/TabLayout';
-import { themeVar } from '../../../Components/Theme/ThemeVars';
+import { themeVar, trainerTheme } from '../../../Components/Theme/ThemeVars';
 import {
   autoMargin,
   autoScroll,
@@ -17,14 +17,13 @@ import {
   flexDistribute,
   flexRow,
   grow,
-  hidden,
   textCenter,
 } from '../../../css/classes';
 import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
 import { Game } from '../../../data/selectors';
 import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
-import { classOrNothing } from '../../../Helper/className';
+import { IconComp } from '../../../Editor/Components/Views/FontAwesome';
 import { wwarn } from '../../../Helper/wegaslog';
 import { tabsLineStyle } from '../../HostLayout';
 import { ActionItem } from '../Overview';
@@ -72,16 +71,142 @@ const errorMessageContainerStyle = css({
   textAlign: 'center',
   height: 'auto',
   color: themeVar.colors.ErrorColor,
-  opacity: 1,
-  transition: 'opacity .5s',
-  '&.hidden': {
-    opacity: 0,
-    height: '0px',
-  },
-  '&.success': {
-    color: themeVar.colors.SuccessColor,
-  },
 });
+
+const successOverlayStyle = css({
+  position: 'absolute',
+  inset: 0,
+  zIndex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: themeVar.dimensions.BorderRadius,
+  backgroundColor: 'rgba(240, 240, 240, 0.85)',
+  color: trainerTheme.values.colors['Primary color'],
+  fontSize: '96px',
+});
+
+type ImpactResult =
+  | { status: 'success' }
+  | { status: 'error'; messages: string[] };
+
+interface ImpactScript {
+  script: string;
+  payload?: UnknownValuesObject;
+}
+
+/**
+ * Runs the scripts one after the other for a single team.
+ * Returns the error messages raised by the server, or undefined if all went well
+ */
+async function runTeamImpact(
+  scripts: ImpactScript[],
+  player: Readonly<IPlayer> | undefined,
+  team: STeam | undefined,
+): Promise<string[] | undefined> {
+  const errors: string[] = [];
+  for (const { script, payload } of scripts) {
+    try {
+      const response = await asyncRunLoadedScript(
+        Game.selectCurrent().id!,
+        script,
+        player,
+        undefined,
+        payload != null ? { team: team?.getEntity(), payload } : undefined,
+      );
+      if (response.events.length > 0) {
+        const exceptionEvent: WegasEvent = {
+          ...response.events[0],
+          timestamp: new Date().getTime(),
+          unread: true,
+        };
+        errors.push(parseEvent(exceptionEvent).message);
+      }
+    } catch (e) {
+      wwarn(e);
+      errors.push(e instanceof Error ? e.message : String(e));
+    }
+  }
+  return errors.length > 0 ? errors : undefined;
+}
+
+/**
+ * Validates the forms, then runs the impact on every targeted team and
+ * exposes the result once all teams are done
+ */
+function useImpactRunner(
+  team: STeam | STeam[] | undefined,
+  onExit: () => void,
+  refreshOverview: () => void,
+) {
+  const [running, setRunning] = React.useState<boolean>(false);
+  const [result, setResult] = React.useState<ImpactResult>();
+
+  const player = Array.isArray(team)
+    ? team.map(t => t?.getPlayers()[0].getEntity())
+    : team?.getPlayers()[0].getEntity();
+
+  React.useEffect(() => {
+    if (result == null) {
+      return;
+    }
+    // Close the modal after a success, hide the errors otherwise
+    const timeout =
+      result.status === 'success'
+        ? setTimeout(onExit, 2000)
+        : setTimeout(() => setResult(undefined), 5000);
+    return () => clearTimeout(timeout);
+  }, [result, onExit]);
+
+  const apply = React.useCallback(
+    (forms: (JSONForm | null)[], scripts: ImpactScript[]) => {
+      const nbInvalid = forms.reduce(
+        (acc, form) => acc + (form?.validate().length ?? 0),
+        0,
+      );
+      if (nbInvalid > 0) {
+        setResult({
+          status: 'error',
+          messages: ['Some values are invalid, impact not applied'],
+        });
+        return;
+      }
+
+      const targets: [Readonly<IPlayer> | undefined, STeam | undefined][] =
+        Array.isArray(team) && Array.isArray(player)
+          ? team.map((t, i) => [player[i], t])
+          : !Array.isArray(team) && !Array.isArray(player)
+          ? [[player, team]]
+          : [];
+
+      setResult(undefined);
+      setRunning(true);
+      Promise.all(targets.map(([p, t]) => runTeamImpact(scripts, p, t))).then(
+        teamErrors => {
+          setRunning(false);
+          refreshOverview();
+          const errored = teamErrors.filter(e => e != null) as string[][];
+          if (errored.length === 0) {
+            setResult({ status: 'success' });
+          } else {
+            const messages = Array.from(
+              new Set(errored.flat().filter(m => m.trim().length > 0)),
+            );
+            if (Array.isArray(team)) {
+              messages.unshift(
+                `a problem occurred in ${errored.length} / ${team.length} teams`,
+              );
+            }
+            setResult({ status: 'error', messages });
+          }
+        },
+      );
+    },
+    [team, player, refreshOverview],
+  );
+
+  return { player, running, result, apply };
+}
 
 interface ImpactModalComputedContentProps {
   team: STeam | STeam[] | undefined;
@@ -97,97 +222,17 @@ export function ImpactModalComputedContent({
   refreshOverview,
 }: ImpactModalComputedContentProps) {
   const [payloads, setPayloads] = React.useState<UnknownValuesObject[]>([]);
+  const forms = React.useRef<(JSONForm | null)[]>([]);
 
-  const [showResults, setShowResults] = React.useState<boolean>(false);
-  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
-  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
-
-  function resetResults(): void {
-    setShowResults(false);
-    setNbTeamErrored(0);
-    setFeedbacks([]);
-  }
-
-  const recursiveScript = React.useCallback(
-    (
-      functions: string[],
-      payloads: UnknownValuesObject[],
-      player: Readonly<IPlayer> | undefined,
-      team: STeam | undefined,
-      onExit: () => void,
-      refreshOverview: () => void,
-      index: number = 0,
-    ) => {
-      if (index >= functions.length) {
-        refreshOverview();
-        onExit();
-      } else {
-        asyncRunLoadedScript(
-          Game.selectCurrent().id!,
-          functions[index],
-          player,
-          undefined,
-          {
-            team: team?.getEntity(),
-            payload: payloads[index],
-          },
-        )
-          .then(response => {
-            setShowResults(true);
-            if (response.events.length > 0) {
-              const exceptionEvent: WegasEvent = {
-                ...response.events[0],
-                timestamp: new Date().getTime(),
-                unread: true,
-              };
-              setNbTeamErrored(value => value + 1);
-              const message = parseEvent(exceptionEvent).message;
-              if (message.trim().length > 0) {
-                setFeedbacks(feedback => {
-                  if (!feedback.includes(message)) {
-                    return feedback.concat(message);
-                  }
-                  return feedback;
-                });
-              }
-              return true;
-            }
-            return false;
-          })
-          .then((errorOccurred: boolean) => {
-            recursiveScript(
-              functions,
-              payloads,
-              player,
-              team,
-              errorOccurred ? () => {} : () => setTimeout(onExit, 2000),
-              refreshOverview,
-              index + 1,
-            );
-          });
-      }
-    },
-    [],
+  const { player, running, result, apply } = useImpactRunner(
+    team,
+    onExit,
+    refreshOverview,
   );
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      resetResults();
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [showResults]);
-
-  const functions = actions.map(({ doFn }) => {
-    return `(${doFn})(team,payload)`;
-  });
-
-  const player = Array.isArray(team)
-    ? team.map(t => t?.getPlayers()[0].getEntity())
-    : team?.getPlayers()[0].getEntity();
 
   return (
     <div className={cx(flex, flexColumn, expandBoth)}>
+      {result?.status === 'success' && <SuccessOverlay />}
       <div className={cx(flex, flexColumn, grow, autoScroll)}>
         {actions.map(({ schemaFn }, index) => {
           const schema = globals.Function(`return (${schemaFn})()`)();
@@ -199,6 +244,9 @@ export function ImpactModalComputedContent({
               <h3 className={subTitleStyle}>{schema.description}</h3>
               <div className={cx(autoScroll, jsonFormStyle, smartLabels)}>
                 <JSONForm
+                  ref={form => {
+                    forms.current[index] = form;
+                  }}
                   value={payloads[index] || {}}
                   schema={schema}
                   onChange={values =>
@@ -213,50 +261,23 @@ export function ImpactModalComputedContent({
           );
         })}
       </div>
-      {showResults && (
-        <DisplayFeedbacks
-          team={team}
-          nbTeamErrored={nbTeamErrored}
-          feedbacks={feedbacks}
-        />
+      {result?.status === 'error' && (
+        <DisplayFeedbacks messages={result.messages} />
       )}
-      <div
-        className={cx(
-          flex,
-          flexRow,
-          flexDistribute,
-          modalButtonsContainer,
-          showResults ? hidden : '',
-        )}
-      >
+      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
         <Button
-          disabled={player == null}
+          disabled={player == null || running}
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
-          onClick={() => {
-            resetResults();
-            if (Array.isArray(team) && Array.isArray(player)) {
-              team.map((t, i) => {
-                recursiveScript(
-                  functions,
-                  payloads,
-                  player[i],
-                  t,
-                  onExit,
-                  refreshOverview,
-                );
-              });
-            } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              recursiveScript(
-                functions,
-                payloads,
-                player,
-                team,
-                onExit,
-                refreshOverview,
-              );
-            }
-          }}
+          onClick={() =>
+            apply(
+              forms.current.slice(0, actions.length),
+              actions.map(({ doFn }, index) => ({
+                script: `(${doFn})(team,payload)`,
+                payload: payloads[index] || {},
+              })),
+            )
+          }
         />
       </div>
     </div>
@@ -280,101 +301,34 @@ export function ImpactModalAdvancedContent({
   refreshOverview,
 }: ImpactModalAdvancedContentProps) {
   const [script, setScript] = React.useState('');
+  const form = React.useRef<JSONForm>(null);
 
-  const [showResults, setShowResults] = React.useState<boolean>(false);
-  const [nbTeamErrored, setNbTeamErrored] = React.useState<number>(0);
-  const [feedbacks, setFeedbacks] = React.useState<string[]>([]);
-
-  function resetResults(): void {
-    setShowResults(false);
-    setNbTeamErrored(0);
-    setFeedbacks([]);
-  }
-
-  const runScript = React.useCallback(
-    (player: Readonly<IPlayer> | undefined) => {
-      asyncRunLoadedScript(Game.selectCurrent().id!, script, player)
-        .then(response => {
-          setShowResults(true);
-          if (response.events.length > 0) {
-            const exceptionEvent: WegasEvent = {
-              ...response.events[0],
-              timestamp: new Date().getTime(),
-              unread: true,
-            };
-            setNbTeamErrored(value => value + 1);
-            const message = parseEvent(exceptionEvent).message;
-            if (message.trim().length > 0) {
-              setFeedbacks(feedback => {
-                if (!feedback.includes(message)) {
-                  return feedback.concat(message);
-                }
-                return feedback;
-              });
-            }
-          } else {
-            setTimeout(() => {
-              onExit();
-              refreshOverview();
-            }, 2000);
-          }
-        });
-    },
-    [script, onExit, refreshOverview, setNbTeamErrored, setFeedbacks],
+  const { player, running, result, apply } = useImpactRunner(
+    team,
+    onExit,
+    refreshOverview,
   );
-
-  React.useEffect(() => {
-    const timeout = setTimeout(() => {
-      resetResults();
-    }, 5000);
-
-    return () => clearTimeout(timeout);
-  }, [showResults]);
-
-  const player = Array.isArray(team)
-    ? team.map(t => t?.getPlayers()[0].getEntity())
-    : team?.getPlayers()[0].getEntity();
 
   return (
     <div className={cx(flex, flexColumn, grow, advancedImpactModalStyle)}>
+      {result?.status === 'success' && <SuccessOverlay />}
       <JSONForm
+        ref={form}
         value={{ script }}
         schema={advancedImpactSchema}
         onChange={({ script }) => {
           setScript(script);
         }}
       />
-      {showResults && (
-        <DisplayFeedbacks
-          team={team}
-          nbTeamErrored={nbTeamErrored}
-          feedbacks={feedbacks}
-        />
+      {result?.status === 'error' && (
+        <DisplayFeedbacks messages={result.messages} />
       )}
-      <div
-        className={cx(
-          flex,
-          flexRow,
-          flexDistribute,
-          modalButtonsContainer,
-          showResults ? hidden : '',
-        )}
-      >
+      <div className={cx(flex, flexRow, flexDistribute, modalButtonsContainer)}>
         <Button
-          disabled={player == null}
+          disabled={player == null || running}
           tooltip={player == null ? 'No player in this team' : 'Apply impact'}
           label="Apply impact"
-          onClick={() => {
-            resetResults();
-            if (Array.isArray(team) && Array.isArray(player)) {
-              team.map((_t, i) => {
-                runScript(player[i]);
-              });
-            } else if (!Array.isArray(team) && !Array.isArray(player)) {
-              runScript(player);
-            }
-            refreshOverview();
-          }}
+          onClick={() => apply([form.current], [{ script }])}
         />
       </div>
     </div>
@@ -452,27 +406,18 @@ export function ImpactModalContent({
   }
 }
 
-function DisplayFeedbacks({
-  team,
-  nbTeamErrored,
-  feedbacks,
-}: {
-  team: ImpactModalComputedContentProps['team'];
-  nbTeamErrored: number;
-  feedbacks: string[];
-}): JSX.Element {
+function SuccessOverlay(): JSX.Element {
   return (
-    <div
-      className={cx(
-        errorMessageContainerStyle,
-        classOrNothing('success', nbTeamErrored < 1),
-      )}
-    >
-      {nbTeamErrored < 1 && <div>Impact successfully applied</div>}
-      {nbTeamErrored > 0 && Array.isArray(team) && (
-        <div>{`a problem occurred in ${nbTeamErrored} / ${team.length} teams`}</div>
-      )}
-      {feedbacks.map((msg: string) => {
+    <div className={successOverlayStyle} title="Impact successfully applied">
+      <IconComp icon="check" />
+    </div>
+  );
+}
+
+function DisplayFeedbacks({ messages }: { messages: string[] }): JSX.Element {
+  return (
+    <div className={errorMessageContainerStyle}>
+      {messages.map((msg: string) => {
         return (
           <div key={msg} className={cx(textCenter, autoMargin)}>
             {msg}
