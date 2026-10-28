@@ -17,11 +17,13 @@ import { schemaProps } from '../tools/schemaProps';
 
 interface PlayerInboxProps extends WegasComponentProps {
   inbox?: IScript;
+  autoOpenFirst?: boolean;
   mobileDisplay?: boolean;
 }
 
 export default function PlayerInbox({
   inbox,
+  autoOpenFirst,
   mobileDisplay,
   context,
   className,
@@ -47,6 +49,7 @@ export default function PlayerInbox({
   return (
     <InboxDisplay
       inbox={descriptor.getEntity()}
+      autoOpenFirst={autoOpenFirst}
       mobileDisplay={mobileDisplay}
       disabled={options.disabled || options.locked}
       readOnly={options.readOnly}
@@ -69,6 +72,10 @@ registerComponent(
         label: 'Mailbox',
         required: true,
         returnType: ['SInboxDescriptor'],
+      }),
+      autoOpenFirst: schemaProps.boolean({
+        label: 'Automatically open first mail',
+        value: false,
       }),
       mobileDisplay: schemaProps.boolean({
         label: 'Allow display to switch to mobile when needed',
