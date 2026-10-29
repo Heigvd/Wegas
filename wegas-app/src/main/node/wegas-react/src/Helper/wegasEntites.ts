@@ -1,12 +1,4 @@
-import { IScript, SVariableDescriptor, WegasClassNames } from 'wegas-ts-api';
-
-export function toScriptableClassName(classes?: WegasClassNames[]) {
-  return classes
-    ? classes.map(c => {
-        return 'S' + c;
-      })
-    : undefined;
-}
+import { IScript, SVariableDescriptor } from 'wegas-ts-api';
 
 export function scriptableClassNameToClassFilter(classes?: string[]) {
   return classes

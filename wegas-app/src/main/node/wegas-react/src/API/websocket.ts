@@ -382,15 +382,6 @@ export const useWebsocketChannel = (channel: string) => {
   return SingletonWebSocket;
 };
 
-export const useWebsocket = (
-  channel: string,
-  event: string,
-  cb: (data: unknown) => void,
-) => {
-  useWebsocketChannel(channel);
-  return useWebsocketEvent(event, cb);
-};
-
 export function useLiveUpdate(
   variableIdToWatch: number | undefined,
   delay: number = 500,
