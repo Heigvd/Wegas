@@ -43,6 +43,7 @@ NB_THREADS="${NB_THREADS:-9}"
 NB_POPULATORS="${NB_POPULATORS:-1}"
 
 HZ_CLUSTER_NAME="${HZ_CLUSTER_NAME:-wegasDev_$(hostname)}"
+HZ_START_PORT="${HZ_START_PORT:-6900}"
 
 HEAP="${HEAP:-2G}"
 
@@ -139,7 +140,7 @@ if [ "${CLUSTER_MODE}" = "DEFAULT" ]; then
     CLUSTERMODE_OPT=""; # no option means multicast
     if [[ $OSTYPE == 'darwin'* ]]; then
       # macOs: multicast does not work...
-      CLUSTERMODE_OPT="--clustermode tcpip:127.0.0.1:6900";
+      CLUSTERMODE_OPT="--clustermode tcpip:127.0.0.1:${HZ_START_PORT}";
     fi
 else
     CLUSTERMODE_OPT="--clustermode ${CLUSTER_MODE}";
@@ -260,7 +261,6 @@ fi
     -Xms${HEAP} -Xmx${HEAP} \
     -Djava.security.egd=file:/dev/urandom \
     ${HAZELCAST_SHUTDOWN_HOOK_OPTION} \
-    -Dhazelcast.startport=6900 \
     -Dfish.payara.tenantcontrol.blocking.disable=true \
     -Djcr.repository.URI=mongodb://${MONGO_HOST}/oak \
     -Dwegas.db.host=${DB_HOST} \
@@ -278,6 +278,7 @@ fi
     ${LOG_PROPERTIES_OPTION} \
     ${CLUSTERMODE_OPT} \
     --clusterName ${HZ_CLUSTER_NAME} \
+    --startport ${HZ_START_PORT} \
     --minhttpthreads ${NB_THREADS} --maxhttpthreads ${NB_THREADS} \
     ${HTTP_PORT_OPTION} \
     ${SSL_PORT_OPTION} \
