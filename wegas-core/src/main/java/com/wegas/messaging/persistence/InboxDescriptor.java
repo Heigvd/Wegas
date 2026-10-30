@@ -27,7 +27,6 @@ import static java.lang.Boolean.FALSE;
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import org.openjdk.nashorn.api.scripting.JSObject;
 
 /**
  *
@@ -74,6 +73,10 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     /**
      *
      * Sugar to be used from scripts.
+     * <p>
+     * Like the following ones, this method takes {@code Object} parameters so that JS
+     * {@code undefined} and i18n objects are handled gracefully (see
+     * {@link InboxInstance#sendMessage(java.lang.Object, java.lang.Object, java.lang.Object)}).
      *
      * @param p       message recipient
      * @param from    sender
@@ -84,7 +87,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @see Message
      */
-    public Message sendMessage(Player p, String from, String subject, String body) {
+    public Message sendMessage(Player p, Object from, Object subject, Object body) {
         return this.getInstance(p).sendMessage(from, subject, body);
     }
 
@@ -104,7 +107,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @see Message
      */
-    public Message sendMessageWithToken(Player p, String from, String subject, String body, String token) {
+    public Message sendMessageWithToken(Player p, Object from, Object subject, Object body, Object token) {
         return this.getInstance(p).sendMessage(from, subject, body, null, token, null);
     }
 
@@ -123,8 +126,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @see Message
      */
-    public Message sendDatedMessage(Player p, String from, String date, String subject, String body) {
-        return this.getInstance(p).sendMessage(from, subject, body, date);
+    public Message sendDatedMessage(Player p, Object from, Object date, Object subject, Object body) {
+        return this.getInstance(p).sendMessage(from, subject, body, date, null, null);
     }
 
     /**
@@ -139,8 +142,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return {@link Message} the sent message
      */
-    public Message sendMessage(Player p, String from, String subject, String body, List<String> attachments) {
-        return this.getInstance(p).sendMessage(from, subject, body, attachments);
+    public Message sendMessage(Player p, Object from, Object subject, Object body, Object attachments) {
+        return this.getInstance(p).sendMessage(from, subject, body, null, null, attachments);
     }
 
     /**
@@ -157,7 +160,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return {@link Message} the sent message
      */
-    public Message sendDatedMessage(Player p, String from, String date, String subject, String body, List<String> attachments) {
+    public Message sendDatedMessage(Player p, Object from, Object date, Object subject, Object body, Object attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, attachments);
     }
 
@@ -178,7 +181,7 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      *
      * @return {@link Message} the sent message
      */
-    public Message sendMessage(Player p, String from, String date, String subject, String body, String token, List<String> attachments) {
+    public Message sendMessage(Player p, Object from, Object date, Object subject, Object body, Object token, Object attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
@@ -231,11 +234,6 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
             ),
             proposal = EmptyArray.class
         ) List<Attachment> attachments) {
-        return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
-    }
-
-    public Message sendMessage(Player p, JSObject from, JSObject date, JSObject subject,
-        JSObject body, String token, List<JSObject> attachments) {
         return this.getInstance(p).sendMessage(from, subject, body, date, token, attachments);
     }
 
