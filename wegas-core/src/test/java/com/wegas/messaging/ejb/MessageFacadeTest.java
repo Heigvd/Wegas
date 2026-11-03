@@ -29,6 +29,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,6 +184,60 @@ public class MessageFacadeTest extends AbstractArquillianTest {
         Message m12 = ii.getMessageBySubject("subject12");
         assertEquals("from12", m12.getFrom().translateOrEmpty(player));
         assertEquals(0, m12.getAttachments().size());
+    }
+
+    private void assertRejected(String script, String expectedError) throws NamingException {
+        try {
+            this.exec(player, script);
+        } catch (Exception ex) {
+            StringBuilder messages = new StringBuilder();
+            for (Throwable t = ex; t != null; t = t.getCause()) {
+                messages.append(t.getMessage()).append('\n');
+            }
+            assertTrue(messages.toString(), messages.toString().contains(expectedError));
+            return;
+        }
+        fail("Script should have been rejected: " + script);
+    }
+
+    /**
+     * Arguments of unexpected types must be rejected with an explicit error instead of producing
+     * a malformed message.
+     */
+    @Test
+    public void testSendMessage_InvalidArguments() throws Exception {
+        InboxDescriptor inbox = new InboxDescriptor();
+        inbox.setName("inbox");
+        inbox.setDefaultInstance(new InboxInstance());
+        variableDescriptorFacade.create(scenario.getId(), inbox);
+
+        String vars = "var inbox = Variable.find(gameModel, 'inbox');"
+            + "var ii = inbox.getInstance(self);";
+
+        assertRejected(vars + "ii.sendMessage('from', {foo: 1}, 'body');",
+            "inbox.sendMessage: \"subject\" must be a text or a translation, got an object without @class");
+        assertRejected(vars + "ii.sendMessage('from', 'subject', function() {});",
+            "\"body\" must be a text or a translation, got a function");
+        assertRejected(vars + "ii.sendMessage('from', 'subject', 'body', 'date', {}, []);",
+            "\"token\" must be a text");
+        assertRejected(vars + "ii.sendMessage('from', 'subject', 'body', 'date', 'file.png');",
+            "\"attachments\" must be an array, got a String");
+        assertRejected(vars + "ii.sendMessage('from', 'subject', 'body', [{foo: 1}]);",
+            "\"attachments[0]\" must be a file path or an attachment, got an object without @class");
+        assertRejected(vars + "ii.sendMessage('from', 'subject', 'body', [{'@class': 'Attachment', file: [1]}]);",
+            "\"attachments[0].file\" must be a text or a translation, got an array");
+        assertRejected(vars + "inbox.sendMessage(self, {'@class': 'Foo'}, 'date', 'subject', 'body', '', []);",
+            "\"from\" must be a text or a translation, got an object of class Foo");
+
+        // still accepted: numbers as text, attachments without file are skipped
+        this.exec(player, vars + "ii.sendMessage(42, 'subject1', 'body', 'date', 't1',"
+            + " [undefined, {'@class': 'Attachment'}, 'att1']);");
+
+        InboxInstance ii = (InboxInstance) variableInstanceFacade.find(inbox.getId(), player);
+        Message m1 = ii.getMessageByToken("t1");
+        assertEquals("42", m1.getFrom().translateOrEmpty(player));
+        assertEquals(1, m1.getAttachments().size());
+        assertEquals("att1", m1.getAttachments().get(0).getFile().translateOrEmpty(player));
     }
 
     /**

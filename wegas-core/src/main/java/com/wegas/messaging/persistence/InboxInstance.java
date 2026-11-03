@@ -14,6 +14,7 @@ import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.EntityComparators;
@@ -196,10 +197,10 @@ public class InboxInstance extends VariableInstance {
 
         final Message msg = new Message();
         msg.setToken(toToken(token));
-        msg.setFrom(toTranslatableContent(from, lang));
-        msg.setSubject(toTranslatableContent(subject, lang));
-        msg.setBody(toTranslatableContent(body, lang));
-        msg.setDate(toTranslatableContent(date, lang));
+        msg.setFrom(toTranslatableContent(from, lang, "from"));
+        msg.setSubject(toTranslatableContent(subject, lang, "subject"));
+        msg.setBody(toTranslatableContent(body, lang, "body"));
+        msg.setDate(toTranslatableContent(date, lang, "date"));
         msg.setAttachments(toAttachments(attachments, lang));
 
         return this.sendMessage(msg);
@@ -228,64 +229,158 @@ public class InboxInstance extends VariableInstance {
             || (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray());
     }
 
-    private static String toToken(Object token) {
-        return isMissing(token) ? null : token.toString();
+    /**
+     * Plain values accepted as text
+     */
+    private static boolean isText(Object o) {
+        return o instanceof CharSequence || o instanceof Number || o instanceof Boolean;
+    }
+
+    /**
+     * @return true if o is a nashorn object with the given "@class"
+     */
+    private static boolean isJSEntity(Object o, String atClass) {
+        return o instanceof JSObject && atClass.equals(((JSObject) o).getMember("@class"));
+    }
+
+    /**
+     * Describe the type of an invalid argument for error messages
+     */
+    private static String describe(Object o) {
+        if (o instanceof ScriptObjectMirror) {
+            ScriptObjectMirror som = (ScriptObjectMirror) o;
+            if (som.isArray()) {
+                return "an array";
+            } else if (som.isFunction()) {
+                return "a function";
+            }
+            Object atClass = som.getMember("@class");
+            return atClass instanceof String ? "an object of class " + atClass : "an object without @class";
+        }
+        return "a " + o.getClass().getSimpleName();
+    }
+
+    private WegasErrorMessage invalidArgument(String field, String expected, Object o) {
+        VariableDescriptor desc = this.findDescriptor();
+        String inboxName = desc != null ? desc.getName() : "inbox";
+        return WegasErrorMessage.error(inboxName + ".sendMessage: \"" + field + "\" must be "
+            + expected + ", got " + describe(o));
+    }
+
+    private void logMissing(String field) {
+        if (loggerbeans.isDebugEnabled()) {
+            VariableDescriptor desc = this.findDescriptor();
+            loggerbeans.debug("{}.sendMessage: {} is missing, replaced by an empty value",
+                desc != null ? desc.getName() : "inbox", field);
+        }
+    }
+
+    private String toToken(Object token) {
+        if (isMissing(token)) {
+            return null;
+        } else if (isText(token)) {
+            return token.toString();
+        }
+        throw invalidArgument("token", "a text", token);
     }
 
     /**
      * Convert a script argument to a brand new TranslatableContent.
      *
-     * @param o    String, nashorn object, TranslatableContent, null or undefined
-     * @param lang language to use for plain strings and missing values
+     * @param o     text, TranslatableContent (java or nashorn), null or undefined
+     * @param lang  language to use for texts and missing values
+     * @param field name of the argument, for logs and error messages
      *
      * @return new TranslatableContent, never null (an empty translation for missing values)
+     *
+     * @throws WegasErrorMessage if o is of any other type
      */
-    private static TranslatableContent toTranslatableContent(Object o, String lang) {
+    private TranslatableContent toTranslatableContent(Object o, String lang, String field) {
         if (isMissing(o)) {
+            logMissing(field);
             return TranslatableContent.build(lang, "");
+        } else if (isText(o)) {
+            return TranslatableContent.build(lang, o.toString());
         } else if (o instanceof TranslatableContent) {
             return TranslatableContent.merger(null, (TranslatableContent) o);
-        } else if (o instanceof JSObject) {
+        } else if (isJSEntity(o, "TranslatableContent")) {
             return TranslatableContent.readFromNashorn((JSObject) o);
-        } else {
-            return TranslatableContent.build(lang, o.toString());
         }
+        throw invalidArgument(field, "a text or a translation", o);
     }
 
     /**
      * Convert a script argument to a brand new list of attachments.
      *
-     * @param o    list or JS array of Strings, nashorn objects or Attachments; null or undefined
-     * @param lang language to use for plain strings
+     * @param o    list or JS array of attachments (see {@link #toAttachment}), null or undefined
+     * @param lang language to use for texts
      *
      * @return new list of attachments, never null
+     *
+     * @throws WegasErrorMessage if o or one of its items is of any other type
      */
-    private static List<Attachment> toAttachments(Object o, String lang) {
-        List<Attachment> atts = new ArrayList<>();
+    private List<Attachment> toAttachments(Object o, String lang) {
         Collection<?> items;
-        if (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray()) {
+        if (isMissing(o)) {
+            logMissing("attachments");
+            items = List.of();
+        } else if (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray()) {
             items = ((ScriptObjectMirror) o).values();
         } else if (o instanceof Collection) {
             items = (Collection<?>) o;
         } else {
-            items = List.of();
+            throw invalidArgument("attachments", "an array", o);
         }
 
+        List<Attachment> attachments = new ArrayList<>();
+        int i = 0;
         for (Object item : items) {
-            if (item instanceof Attachment) {
-                try {
-                    atts.add((Attachment) ((Attachment) item).duplicate());
-                } catch (CloneNotSupportedException ex) {
-                }
-            } else if (item instanceof JSObject) {
-                atts.add(Attachment.readFromNashorn((JSObject) item));
-            } else if (!isMissing(item)) {
-                Attachment a = new Attachment();
-                a.setFile(TranslatableContent.build(lang, item.toString()));
-                atts.add(a);
+            Attachment att = toAttachment(item, lang, "attachments[" + i + "]");
+            if (att != null) {
+                attachments.add(att);
+            }
+            i++;
+        }
+        return attachments;
+    }
+
+    /**
+     * Convert one attachment item to a brand new Attachment.
+     *
+     * @param item  file path (text), Attachment (java or nashorn), null or undefined
+     * @param lang  language to use for texts
+     * @param field name of the item, for logs and error messages
+     *
+     * @return new attachment or null if the item is missing
+     *
+     * @throws WegasErrorMessage if item is of any other type
+     */
+    private Attachment toAttachment(Object item, String lang, String field) {
+        if (isMissing(item)) {
+            logMissing(field);
+            return null;
+        } else if (item instanceof Attachment) {
+            try {
+                return (Attachment) ((Attachment) item).duplicate();
+            } catch (CloneNotSupportedException ex) {
+                throw WegasErrorMessage.error("Unable to copy " + field);
             }
         }
-        return atts;
+
+        Attachment att = new Attachment();
+        if (isText(item)) {
+            att.setFile(TranslatableContent.build(lang, item.toString()));
+        } else if (isJSEntity(item, "Attachment")) {
+            Object file = ((JSObject) item).getMember("file");
+            if (isMissing(file)) {
+                logMissing(field + ".file");
+                return null;
+            }
+            att.setFile(toTranslatableContent(file, lang, field + ".file"));
+        } else {
+            throw invalidArgument(field, "a file path or an attachment", item);
+        }
+        return att;
     }
 
     /**
