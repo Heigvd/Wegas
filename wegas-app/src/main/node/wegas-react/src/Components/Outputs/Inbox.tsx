@@ -209,7 +209,7 @@ function MessageDisplay({ entity, disabled }: MessageDisplayProps) {
   // Mark as read once displayed, whether opened by a click or automatically
   React.useEffect(() => {
     if (!disabled && instantiate(entity).getUnread()) {
-      editingStore.dispatch(readMessage(entity));
+      dispatch(readMessage(entity));
     }
   }, [entity.id, disabled]);
 
