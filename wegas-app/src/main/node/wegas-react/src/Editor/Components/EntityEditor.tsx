@@ -89,6 +89,14 @@ function getVisibility(
     if (inheritedValue) {
       return inheritedValue;
     }
+    if (
+      !entityIsPersisted(entity) &&
+      entityIs(entity, 'VariableDescriptor', true)
+    ) {
+      // New variable: it will be created PRIVATE (server default, same as the legacy editor),
+      // whatever the visibility of the folder it is created in.
+      return defaultValue;
+    }
     let p = getParent(entity);
     while (p) {
       if ('visibility' in p) {
@@ -212,7 +220,7 @@ export function WindowedEditor<T extends IMergeable>({
 
   // First try to get schema from simple filters
   const customSchemas = selectCustomSchemas(store.getState());
-  let customSchema: SimpleSchema | void;
+  let customSchema: SimpleSchema | undefined;
   const simpleCustomSchemaName = customSchemas.filtered[pathEntity['@class']];
   if (simpleCustomSchemaName !== undefined) {
     const nfSchema = customSchemas.views[simpleCustomSchemaName](
