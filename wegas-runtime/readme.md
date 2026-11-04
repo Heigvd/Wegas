@@ -84,7 +84,7 @@ DB_PASSWORD
 ### Jackrabbit backend (MongoDB)
 #### Install
 ```shell
-docker run -p 27017:27017 --name wegas_mongo -d mongo:4.2
+docker run -p 27017:27017 --name wegas_mongo -d mongo:4.4
 ```
 
 ## Configuration
