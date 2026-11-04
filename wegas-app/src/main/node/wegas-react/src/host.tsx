@@ -1,6 +1,7 @@
 /* global module*/
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
+import { store } from './store/store';
 import { AuthorizationProvider } from './Components/Contexts/AuthorizationsProvider';
 import { ClassesProvider } from './Components/Contexts/ClassesProvider';
 import { DefaultDndProvider } from './Components/Contexts/DefaultDndProvider';
@@ -13,15 +14,15 @@ import { PopupManager } from './Components/PopupManager';
 import { ServerStatusManager } from './Components/ServerStatusManager';
 import { ThemeProvider } from './Components/Theme/Theme';
 import './css/global.css';
-import './data/Stores/store';
 import { PageContextProvider } from './Editor/Components/Page/PageEditor';
 import HostLayout from './Host/HostLayout';
 import EventInstanceManager from './Components/Contexts/EventInstanceManager';
-import { store } from "./store/store";
-import { Provider } from "react-redux";
-import { ErrorBoundary } from "./Components/ErrorBoundary";
+import { bootstrap } from './store/bootstrap';
+import { Provider } from 'react-redux';
+import { ErrorBoundary } from './Components/ErrorBoundary';
 
 importPageComponents();
+bootstrap();
 
 function mount() {
   const root = createRoot(document.getElementById('root')!);
@@ -54,7 +55,7 @@ function mount() {
           </FeaturesProvider>
         </AuthorizationProvider>
       </Provider>
-    </ErrorBoundary>
+    </ErrorBoundary>,
   );
 }
 mount();

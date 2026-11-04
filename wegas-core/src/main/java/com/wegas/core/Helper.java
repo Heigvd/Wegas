@@ -682,8 +682,6 @@ public class Helper {
      * @return String token
      */
     public static String genToken(final int length) {
-        //return random.ints(length, 48, 110) // 48-57 [0-9] 58-83 -> 65-90 [A-Z] 84-109 -> 97-122 [a-z]
-        //        .map(i -> (i < 58 ? i : (i > 83 ? i + 13 : i + 7)))
         return random.ints(48, 123) // 48-57 [0-9] 65-90 [A-Z] 97-122 [a-z]
             .filter(i -> (i < 58) || (i > 64 && i < 91) || (i > 96))
             .limit(length)

@@ -16,60 +16,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Wrapper class for SLF4J, used when EclipseLink messages need to be logged through SLF4J.
+ * See <a href="https://github.com/PE-INTERNATIONAL/org.eclipse.persistence.logging.slf4j/blob/master/README.md">the org.eclipse.persistence.logging.slf4j README</a>.
  *
- * https://github.com/PE-INTERNATIONAL/org.eclipse.persistence.logging.slf4j/blob/master/README.md
- * <p>
- * <p>
- * This is a wrapper class for SLF4J. It is used when messages need to be logged through SLF4J.
- * </p>
- * <p>
- * Para usar SLF4j para los logs de EclipseLink configuramos la propiedad
- * <code>eclipselink.logging.logger</code> con el valor
- * <code>org.eclipse.persistence.logging.Slf4jSessionLogger</code>
- * </p>
- * <p>
- * La configuración del nivel de los logs no se realiza en EclipseLink (con la propiedad
- * eclipselink.logging.level), sino en la implementación de SLF4J.
- * <p>
- * Se puede usar el resto de las propiedades de logging de EclipseLink
- * (eclipselink.logging.timestamp, eclipselink.logging.thread, eclipselink.logging.session,
- * eclipselink.logging.connection y eclipselink.logging.parameters) para configurar el formato de
- * salida.
- * <p>
- * Se usan las siguientes categorias de log:
- * <p>
+ * <p>Para usar SLF4J para los logs de EclipseLink configuramos la propiedad
+ * {@code eclipselink.logging.logger} con el valor
+ * {@code org.eclipse.persistence.logging.Slf4jSessionLogger}.
+ *
+ * <p>La configuración del nivel de los logs no se realiza en EclipseLink (con la propiedad
+ * {@code eclipselink.logging.level}), sino en la implementación de SLF4J.
+ *
+ * <p>Se puede usar el resto de las propiedades de logging de EclipseLink
+ * ({@code eclipselink.logging.timestamp}, {@code eclipselink.logging.thread},
+ * {@code eclipselink.logging.session}, {@code eclipselink.logging.connection} y
+ * {@code eclipselink.logging.parameters}) para configurar el formato de salida.
+ *
+ * <p>Se usan las siguientes categorías de log:
  * <ul>
- * <li>org.eclipse.persistence.logging.default
- * <li>org.eclipse.persistence.logging.sql
- * <li>org.eclipse.persistence.logging.transaction
- * <li>org.eclipse.persistence.logging.event
- * <li>org.eclipse.persistence.logging.connection
- * <li>org.eclipse.persistence.logging.query
- * <li>org.eclipse.persistence.logging.cache
- * <li>org.eclipse.persistence.logging.propagation
- * <li>org.eclipse.persistence.logging.sequencing
- * <li>org.eclipse.persistence.logging.ejb
- * <li>org.eclipse.persistence.logging.ejb_or_metadata
- * <li>org.eclipse.persistence.logging.weaver
- * <li>org.eclipse.persistence.logging.properties
- * <li>org.eclipse.persistence.logging.server
+ * <li>org.eclipse.persistence.logging.default</li>
+ * <li>org.eclipse.persistence.logging.sql</li>
+ * <li>org.eclipse.persistence.logging.transaction</li>
+ * <li>org.eclipse.persistence.logging.event</li>
+ * <li>org.eclipse.persistence.logging.connection</li>
+ * <li>org.eclipse.persistence.logging.query</li>
+ * <li>org.eclipse.persistence.logging.cache</li>
+ * <li>org.eclipse.persistence.logging.propagation</li>
+ * <li>org.eclipse.persistence.logging.sequencing</li>
+ * <li>org.eclipse.persistence.logging.ejb</li>
+ * <li>org.eclipse.persistence.logging.ejb_or_metadata</li>
+ * <li>org.eclipse.persistence.logging.weaver</li>
+ * <li>org.eclipse.persistence.logging.properties</li>
+ * <li>org.eclipse.persistence.logging.server</li>
  * </ul>
- * </p>
- * <p>
- * Los niveles de log de EclipseLink y SLF4J son distintos, se realiza la siguiente correspondencia:
- * </p>
+ *
+ * <p>Los niveles de log de EclipseLink y SLF4J son distintos, se realiza la siguiente
+ * correspondencia:
  * <ul>
- * <li>ALL,FINER,FINEST -&gt; TRACE
- * <li>FINE -&gt; DEBUG
- * <li>CONFIG,INFO -&gt; INFO
- * <li>WARNING -&gt; WARN
- * <li>SEVERE -&gt; ERROR
+ * <li>ALL, FINER, FINEST -&gt; TRACE</li>
+ * <li>FINE -&gt; DEBUG</li>
+ * <li>CONFIG, INFO -&gt; INFO</li>
+ * <li>WARNING -&gt; WARN</li>
+ * <li>SEVERE -&gt; ERROR</li>
  * </ul>
- * </p>
- * <p>
  *
  * @author Miguel Angel Sosvilla Luis.
- *
  */
 public class Slf4jSessionLogger extends AbstractSessionLog {
 

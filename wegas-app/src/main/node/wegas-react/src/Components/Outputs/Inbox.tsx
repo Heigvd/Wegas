@@ -19,11 +19,10 @@ import {
   unreadSignalStyle,
 } from '../../css/classes';
 import { getInstance } from '../../data/methods/VariableDescriptorMethods';
-import { readMessage } from '../../data/Reducer/VariableInstanceReducer';
+import { readMessage } from '../../store/slices/variableInstances';
 import { instantiate } from '../../data/scriptable';
-import { Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
-import { useStore } from '../../data/Stores/store';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { useDataSelector } from '../../store/hooks';
 import { componentsTranslations } from '../../i18n/components/components';
 import { useInternalPlayerLangTranslate } from '../../i18n/internalTranslator';
 import {
@@ -39,6 +38,7 @@ import { languagesCTX } from '../Contexts/LanguagesProvider';
 import { translate } from '../../data/i18n';
 import { wwarn } from '../../Helper/wegaslog';
 import { themeVar } from '../Theme/ThemeVars';
+import { dispatch } from '../../store/store';
 
 interface MessageLabelProps {
   message: IMessage;
@@ -154,20 +154,8 @@ function customLabelStyle(m: IMessage): string | undefined {
 }
 
 function MessageChooser(props: EntityChooserLabelProps<IMessage>) {
-  const message = props.entity;
-  const handleClick = () => {
-    props.onClick();
-    if (!props.disabled) {
-      editingStore.dispatch(readMessage(message));
-    }
-  };
-
   return (
-    <DefaultEntityChooserLabel
-      {...props}
-      customLabelStyle={customLabelStyle}
-      onClick={handleClick}
-    >
+    <DefaultEntityChooserLabel {...props} customLabelStyle={customLabelStyle}>
       <div className={cx(flex, flexRow, itemCenter, 'wegas-inbox__choice')}>
         {props.mobile && (
           <FontAwesomeIcon
@@ -209,14 +197,21 @@ function AttachmentsDisplay({ attachments }: AttachmentsDisplayProps) {
   );
 }
 
-interface MessageDisplayProps {
+interface MessageDisplayProps extends DisabledReadonly {
   entity: IMessage;
 }
 
-function MessageDisplay({ entity }: MessageDisplayProps) {
+function MessageDisplay({ entity, disabled }: MessageDisplayProps) {
   const i18nComponentValues = useInternalPlayerLangTranslate(
     componentsTranslations,
   );
+
+  // Mark as read once displayed, whether opened by a click or automatically
+  React.useEffect(() => {
+    if (!disabled && instantiate(entity).getUnread()) {
+      dispatch(readMessage(entity));
+    }
+  }, [entity.id, disabled]);
 
   const subject = useTranslate(entity.subject);
   const date = useTranslate(entity.date);
@@ -268,11 +263,13 @@ function MessageDisplay({ entity }: MessageDisplayProps) {
 
 interface InboxDisplayProps extends DisabledReadonly, ClassStyleId {
   inbox: IInboxDescriptor;
+  autoOpenFirst?: boolean;
   mobileDisplay?: boolean;
 }
 
 export function InboxDisplay({
   inbox,
+  autoOpenFirst,
   disabled,
   readOnly,
   mobileDisplay,
@@ -280,13 +277,13 @@ export function InboxDisplay({
   style,
 }: InboxDisplayProps) {
   const messagesSelector = React.useCallback(() => {
-    const messages = getInstance(inbox, Player.selectCurrent())!.messages;
+    const messages = getInstance(inbox, selectCurrentPlayer())!.messages;
     return [...messages].sort((a, b) => {
       return (b.time ?? 0) - (a.time ?? 0);
     });
   }, [inbox]);
 
-  const messages = useStore(messagesSelector);
+  const messages = useDataSelector(messagesSelector);
   const i18nComponentValues = useInternalPlayerLangTranslate(
     componentsTranslations,
   );
@@ -295,6 +292,7 @@ export function InboxDisplay({
     <EntityChooser
       entities={messages}
       EntityLabel={MessageChooser}
+      autoOpenFirst={autoOpenFirst}
       disabled={disabled}
       readOnly={readOnly}
       noSelectionMessage={i18nComponentValues.inbox.noSelectionMessage}

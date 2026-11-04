@@ -353,7 +353,7 @@ public class WebsocketFacade {
                     List<DestroyedEntity> refreshed = new ArrayList<>();
                     /*
                      * Not possible to find an already destroyed entity, so, in this case (and since
-                     * those informations are sufficient), only id and class name are propagated
+                     * that information is sufficient), only id and class name are propagated
                      */
                     for (AbstractEntity ae : toPropagate) {
                         refreshed.add(new DestroyedEntity(ae));

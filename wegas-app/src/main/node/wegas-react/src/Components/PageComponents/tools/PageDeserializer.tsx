@@ -1,11 +1,10 @@
 import { cloneDeep, pick } from 'lodash-es';
 import * as React from 'react';
 import { grow } from '../../../css/classes';
-import { State } from '../../../data/Reducer/reducers';
-import { useStore } from '../../../data/Stores/store';
+import { deepEqual, shallowEqual, useAppSelector } from '../../../store/hooks';
+import { RootState } from '../../../store/store';
 import { pageCTX } from '../../../Editor/Components/Page/PageEditor';
 import { classNameOrEmpty } from '../../../Helper/className';
-import { deepDifferent, shallowDifferent } from '../../Hooks/storeHookFactory';
 import { useDeepMemo } from '../../Hooks/useDeepMemo';
 import { TumbleLoader } from '../../Loader';
 import {
@@ -157,7 +156,7 @@ export function PageDeserializer({
   const { editMode } = React.useContext(pageCTX);
 
   const wegasComponentSelector = React.useCallback(
-    (s: State) => {
+    (s: RootState) => {
       if (!pageId) {
         return undefined;
       }
@@ -172,9 +171,9 @@ export function PageDeserializer({
     [pageId, realPath],
   );
 
-  const wegasComponent = useStore(wegasComponentSelector, deepDifferent);
+  const wegasComponent = useAppSelector(wegasComponentSelector, deepEqual);
 
-  const componentSeletor = React.useCallback(
+  const componentSelector = React.useCallback(
     (state: PageComponentsState) => {
       // explicit cast because component maybe undefined
       // TODO: add noUncheckedIndexedAccess (https://www.typescriptlang.org/tsconfig#noUncheckedIndexedAccess)
@@ -192,7 +191,7 @@ export function PageDeserializer({
     },
     [wegasComponent],
   );
-  const component = usePageComponentStore(componentSeletor, shallowDifferent);
+  const component = usePageComponentStore(componentSelector, shallowEqual);
 
   const {
     WegasComponent,

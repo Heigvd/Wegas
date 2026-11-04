@@ -18,7 +18,7 @@ import {
   itemStyle,
   justifyDropMenu,
 } from './DropDown';
-import { deepDifferent } from './Hooks/storeHookFactory';
+import { isEqual } from 'lodash-es';
 import { Button } from './Inputs/Buttons/Button';
 import { ConfirmButton } from './Inputs/Buttons/ConfirmButton';
 import { themeVar } from './Theme/ThemeVars';
@@ -275,8 +275,8 @@ export function DropMenu<T, MItem extends DropMenuItem<T>>({
                   selected == null
                     ? false
                     : Array.isArray(selected)
-                    ? !deepDifferent(selected[0], item.value)
-                    : !deepDifferent(selected, item.value);
+                    ? isEqual(selected[0], item.value)
+                    : isEqual(selected, item.value);
 
                 if (Array.isArray(item.items)) {
                   return (

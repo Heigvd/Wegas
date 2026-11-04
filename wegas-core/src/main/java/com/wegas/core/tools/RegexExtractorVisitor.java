@@ -60,21 +60,21 @@ public class RegexExtractorVisitor implements MergeHelper.MergeableVisitor {
         if (!Helper.isNullOrEmpty(content)) {
             Matcher matcher = pattern.matcher(content);
             while (matcher.find()) {
-                List<String> occurences = new ArrayList<>();
+                List<String> occurrences = new ArrayList<>();
                 if (matcher.groupCount() > 0) {
                     // capturing groups
                     for (int i = 0; i < matcher.groupCount(); i++) {
                         String group = matcher.group(i + 1);
                         if (!Helper.isNullOrEmpty(group)) {
-                            occurences.add(matcher.group(i + 1));
+                            occurrences.add(matcher.group(i + 1));
                         }
                     }
                 } else {
                     // no capturing group
-                    occurences.add(matcher.group());
+                    occurrences.add(matcher.group());
                 }
-                if (!occurences.isEmpty()) {
-                    result.add(occurences);
+                if (!occurrences.isEmpty()) {
+                    result.add(occurrences);
                 }
             }
         }

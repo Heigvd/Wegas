@@ -18,7 +18,7 @@ import java.util.Map.Entry;
  */
 /**
  * Used to store Events during run. Prevent passing multiple event transitions
- * with same event if less events where thrown. StateMachineInstance dependant.
+ * with same event if less events were thrown. StateMachineInstance dependent.
  */
 public class StateMachineEventCounter {
 

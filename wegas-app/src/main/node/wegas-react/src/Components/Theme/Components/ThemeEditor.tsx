@@ -5,16 +5,10 @@ import {
   defaultPaddingLeft,
   flex,
 } from '../../../css/classes';
-import {
-  getThemeDispatch,
-  setSelectedTheme,
-  useThemeStore,
-} from '../../../data/Stores/themeStore';
 import { MainLinearLayout } from '../../../Editor/Components/LinearTabLayout/LinearLayout';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { DropMenu } from '../../DropMenu';
-import { deepDifferent } from '../../Hooks/storeHookFactory';
 import { outlineButtonStyle } from '../../Inputs/Buttons/Button';
 import { tabLayoutChildrenClassNames } from '../../TabLayout/tabLayoutStyles';
 import { Toolbar } from '../../Toolbar';
@@ -24,6 +18,8 @@ import { ModeSelector } from './Mode/ModeSelector';
 import Preview from './Preview';
 import { ThemeEdition } from './Theme/ThemeEdition';
 import { ThemeSelector } from './Theme/ThemeSelector';
+import { customStateEquals, useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { setSelectedTheme } from '../../../store/slices/theme';
 
 const THEME_EDITOR_LAYOUT_ID = 'ThemeEditorLayout';
 const addIconStyle = css({
@@ -49,15 +45,15 @@ const themeEditorTabs = [
 
 const themeEditorDefaultLayout = [['Theme'], ['Preview']];
 
-const dispatch = getThemeDispatch();
 
 export default function ThemeEditor() {
-  const { themesKeys, selectedThemes } = useThemeStore(
+  const dispatch = useAppDispatch();
+  const { themesKeys, selectedThemes } = useAppSelector(
     s => ({
-      themesKeys: Object.keys(s.themes),
-      selectedThemes: s.selectedThemes,
+      themesKeys: Object.keys(s.themes.themes),
+      selectedThemes: s.themes.selectedThemes,
     }),
-    deepDifferent,
+    customStateEquals,
   );
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
@@ -97,7 +93,7 @@ export default function ThemeEditor() {
                       label: k,
                     }))}
                     onSelect={({ value }) => {
-                      dispatch(setSelectedTheme(value, k));
+                      dispatch(setSelectedTheme({themeName: value, contextName: k}));
                     }}
                   />
                 </>

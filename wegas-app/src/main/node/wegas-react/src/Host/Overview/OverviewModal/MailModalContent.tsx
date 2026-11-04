@@ -13,7 +13,7 @@ import {
   flexDistribute,
   flexRow,
 } from '../../../css/classes';
-import { Game } from '../../../data/selectors';
+import { selectCurrentGame } from '../../../store/slices/game';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { modalButtonsContainer } from './OverviewModal';
 
@@ -94,7 +94,7 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
     UserAPI.getUserInfo().then(res => {
       const from = res.accounts[0].email;
       TeamAPI.getEmails(
-        Game.selectCurrent().id!,
+        selectCurrentGame().id!,
         Array.isArray(team) ? undefined : team?.getId(),
       ).then(res => {
         if (mounted.current) {
@@ -115,7 +115,7 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
     emails.body === '';
   return emails.to?.length === 0 ? (
     <pre>
-      All the user of this team or the game choosed to hide their e-mail adress
+      All the users of this team or the game chose to hide their e-mail address
     </pre>
   ) : (
     <div className={cx(flex, flexColumn, expandBoth)}>

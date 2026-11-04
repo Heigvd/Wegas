@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import u from 'immer';
+import { produce } from 'immer';
 import { omit } from 'lodash';
 import * as React from 'react';
 import { ReflexContainer, ReflexElement, ReflexSplitter } from 'react-reflex';
@@ -16,8 +16,9 @@ import {
   mediumPadding,
   noOverflow,
 } from '../../../css/classes';
-import { selectCurrentEditorLanguage } from '../../../data/selectors/Languages';
-import { useStore } from '../../../data/Stores/store';
+import { useAppSelector } from '../../../store/hooks';
+import { selectCurrentEditorLanguage } from '../../../store/slices/languages';
+import { selectRolesId } from '../../../store/slices/roles';
 import { wlog, wwarn } from '../../../Helper/wegaslog';
 import { commonTranslations } from '../../../i18n/common/common';
 import { internalTranslate } from '../../../i18n/internalTranslator';
@@ -688,7 +689,7 @@ type TabLayoutsAction =
 const setLayout =
   (layoutId: string, role: string, rolesId: string) =>
   <T extends ManagedLayoutMap>(layouts: T, action: TabLayoutsAction) =>
-    u(layouts, (layouts: ManagedLayoutMap) => {
+    produce(layouts, (layouts: ManagedLayoutMap) => {
       if (action.type === 'RESET') {
         saveLayoutInLocal(layoutId, rolesId, role, action.newLayout);
         return action.newLayout;
@@ -989,10 +990,8 @@ export function MainLinearLayout({
   classNames = {},
 }: LinearLayoutProps) {
   const { currentRole } = React.useContext(roleCTX);
-  const { lang, rolesId } = useStore(s => ({
-    lang: selectCurrentEditorLanguage(s),
-    rolesId: s.global.roles.rolesId,
-  }));
+  const lang = useAppSelector(selectCurrentEditorLanguage);
+  const rolesId = useAppSelector(selectRolesId);
 
   const i18nValues = internalTranslate(commonTranslations, lang);
 

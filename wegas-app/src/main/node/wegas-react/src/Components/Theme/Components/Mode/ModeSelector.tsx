@@ -1,35 +1,31 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexRow, grow } from '../../../../css/classes';
-import {
-  useThemeStore,
-  getThemeDispatch,
-  addNewMode,
-  setBaseMode,
-  setEditedMode,
-  deleteMode,
-} from '../../../../data/Stores/themeStore';
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { Button } from '../../../Inputs/Buttons/Button';
 import { themeVar } from '../../ThemeVars';
 import { AdderSelector } from '../AdderSelector';
+import { shallowEqual, useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { addNewMode, deleteMode, setBaseMode, setEditedMode } from '../../../../store/slices/theme';
 
 interface ModeSelectorProps {
   dropMenuClassName?: string;
   addButtonClassName?: string;
 }
 
+const EMPTY_MODES = {}
+
 export function ModeSelector({
   dropMenuClassName,
   addButtonClassName,
 }: ModeSelectorProps) {
-  const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
-  const dispatch = getThemeDispatch();
+  const { themes, editedThemeName, editedModeName } = useAppSelector(s => s.themes, shallowEqual);
+  const dispatch = useAppDispatch();
 
   const currentTheme = themes[editedThemeName];
-  const currentModes = currentTheme?.modes || {};
+  const currentModes = currentTheme?.modes || EMPTY_MODES;
 
   const i18nValues = useInternalTranslate(editorTabsTranslations);
 
@@ -55,8 +51,8 @@ export function ModeSelector({
                   icon: 'trash',
                 }}
                 tooltip={i18nValues.themeEditor.deleteMode}
-                onClick={sucess => {
-                  if (sucess) {
+                onClick={success => {
+                  if (success) {
                     dispatch(deleteMode(k));
                   }
                 }}

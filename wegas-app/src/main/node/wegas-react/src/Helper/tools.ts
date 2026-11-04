@@ -89,7 +89,7 @@ export function getEntry(object: any, keyPath: string[], lookupKey?: string) {
 
 /**
  * setEntry - allows to set and object entry deep inside the object without the use of brackets [][][]7
- * @returns a new object with the created/modified entry or undefined (no keys or noOverride used and key allready taken)
+ * @returns a new object with the created/modified entry or undefined (no keys or noOverride used and key already taken)
  * @param object any object
  * @param value any value to insert
  * @param keyPath an array of keys to acces entry

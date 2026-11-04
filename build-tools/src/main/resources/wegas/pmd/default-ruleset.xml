@@ -51,7 +51,7 @@ under the License.
     <rule ref="category/java/codestyle.xml/GenericsNaming" />
     <rule ref="category/java/codestyle.xml/IdenticalCatchBranches" />
     <rule ref="category/java/codestyle.xml/LinguisticNaming" />
-    <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions" />:w
+    <rule ref="category/java/codestyle.xml/LocalVariableNamingConventions" />
     <rule ref="category/java/codestyle.xml/MethodNamingConventions" />
     <rule ref="category/java/codestyle.xml/NoPackage" />
     <rule ref="category/java/codestyle.xml/TooManyStaticImports"/>

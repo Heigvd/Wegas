@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Value } from '../Components/Outputs/Value';
 import { themeVar } from '../Components/Theme/ThemeVars';
 import { autoScroll, expandBoth, flex, flexColumn } from '../css/classes';
-//It's really important to import index.ts in order to have the widjets allready registered before using Form
+//It's really important to import index.ts in order to have the widgets already registered before using Form
 import '../Editor/Components/FormView';
 import { ExpressionEditor } from '../Editor/Components/FormView/Script/Expressions/ExpressionEditor';
 import { MessageString } from '../Editor/Components/MessageString';

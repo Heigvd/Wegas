@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { useStore } from '../data/Stores/store';
+import { useAppSelector } from '../store/hooks';
+import { selectServerStatus } from '../store/slices/connection';
 import { commonTranslations } from '../i18n/common/common';
 import { CommonTranslations } from '../i18n/common/definitions';
 import { useInternalTranslate } from '../i18n/internalTranslator';
@@ -35,7 +36,7 @@ function ServerStatusModal({
 export function ServerStatusManager({
   children,
 }: React.PropsWithChildren<UnknownValuesObject>) {
-  const serverStatus = useStore(s => s.global.serverStatus);
+  const serverStatus = useAppSelector(selectServerStatus);
 
   return (
     <>

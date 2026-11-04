@@ -40,6 +40,17 @@ ENV SSL_PORT=443
 ENV WEGAS_PROPERTIES=/var/lib/wegas/wegas.properties
 ENV PATCH_WEGAS_PROPERTIES=false
 
+# OpenTelemetry (opt-in; see OTEL.md). Disabled by default so the image is inert until an
+# operator enables it and points it at a collector.
+ENV OTEL_ENABLED=false
+ENV OTEL_AGENT_JAR=${WORKDIR}/opentelemetry-javaagent.jar
+ENV OTEL_SERVICE_NAME=wegas
+
+# ENV OTEL_EXPORTER_OTLP_ENDPOINT unset to fail loudly if missing in ENV variables
+ENV OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+ENV OTEL_TRACES_EXPORTER=otlp
+ENV OTEL_METRICS_EXPORTER=otlp
+ENV OTEL_LOGS_EXPORTER=none
 
 # Create image
 
@@ -60,6 +71,7 @@ VOLUME /var/lib/wegas/
 COPY as_prebootcmd .
 COPY run .
 COPY payara-micro.current.jar payara-micro.jar
+COPY opentelemetry-javaagent.jar opentelemetry-javaagent.jar
 COPY Wegas.war ROOT.war
 
 RUN chown -R payara:payara .

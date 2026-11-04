@@ -78,7 +78,7 @@ export const editorTabsTranslationsEN = {
     uploading: (nbUploadingFiles: string) =>
       `Uploading ${nbUploadingFiles} files`,
     directory: (directoryName: string) =>
-      `Directory ${directoryName} allready exists`,
+      `Directory ${directoryName} already exists`,
   },
   scripts: {
     scriptNameNotAvailable:

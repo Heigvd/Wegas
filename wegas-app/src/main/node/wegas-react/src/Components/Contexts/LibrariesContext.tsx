@@ -1,5 +1,5 @@
 import { useMonaco } from '@monaco-editor/react';
-import u from 'immer';
+import { produce } from 'immer';
 import { cloneDeep } from 'lodash-es';
 import * as React from 'react';
 import { IGameModelContent } from 'wegas-ts-api';
@@ -10,11 +10,12 @@ import {
 } from '../../API/library.api';
 import { extractExceptions } from '../../API/rest';
 import { useWebsocketEvent } from '../../API/websocket';
-import { ActionCreator, manageResponseHandler } from '../../data/actions';
+import { manageResponseHandler } from '../../store/managedResponse';
 import { entityIs } from '../../data/entities';
-import { GameModel } from '../../data/selectors';
-import { useIsReadyForClientScript } from '../../data/selectors/InitStatusesSelector';
-import { store } from '../../data/Stores/store';
+import { selectCurrentGameModel } from '../../store/slices/gameModel';
+import { useIsReadyForClientScript } from '../../store/slices/initStatus';
+import { dispatch, store } from '../../store/store';
+import { setInitStatus } from '../../store/slices/initStatus';
 import { MessageStringStyle } from '../../Editor/Components/MessageString';
 import {
   MonacoEditor,
@@ -367,7 +368,7 @@ const setLibrariesState = (
   oldState: LibrariesState,
   action: LibraryStateAction,
 ) =>
-  u(oldState, newState => {
+  produce(oldState, newState => {
     contextLogger.info(action.actionType);
     switch (action.actionType) {
       case 'SetUpLibrariesState': {
@@ -422,7 +423,7 @@ const setLibrariesState = (
           newState[libraryPath].modified = false;
           newState[libraryPath].conflict = false;
         }
-        // If the library is updated by the server and the user is allready modifying it, there is a conflict
+        // If the library is updated by the server and the user is already modifying it, there is a conflict
         else {
           if (newState[libraryPath].modified) {
             newState[libraryPath].conflict = true;
@@ -549,8 +550,8 @@ export function LibrariesLoader(
             wwarn(e);
           }
           // initial client script evaluation done !
-          store.dispatch(
-            ActionCreator.INIT_STATE_SET('clientScriptsEvaluationDone', true),
+          dispatch(
+            setInitStatus({ key: 'clientScriptsEvaluationDone', status: true }),
           );
         })
         .catch(() => {
@@ -879,7 +880,7 @@ export function LibrariesLoader(
           });
           addLibrary && addLibrary({ type: 'succes', message: libraryName });
         } else {
-          // If no library is found an error occured
+          // If no library is found an error occurred
           error = 'UNKNOWN';
         }
 
@@ -909,7 +910,7 @@ export function LibrariesLoader(
 
         error = error == null && exceptionsFound.length > 0 ? 'UNKNOWN' : error;
         // Dispatch the rest of the response to the main store
-        store.dispatch(manageResponseHandler(newManagedResponse));
+        manageResponseHandler(newManagedResponse);
 
         // Manage localy the error
         if (error != null) {
@@ -1053,7 +1054,7 @@ export function LibrariesLoader(
           }
 
           // Dispatch the rest of the response to the main store
-          store.dispatch(manageResponseHandler(newManagedResponse));
+          manageResponseHandler(newManagedResponse);
         });
       }
     },
@@ -1147,7 +1148,7 @@ export function LibrariesLoader(
 
 export function isEditAllowed(library?: LibraryWithStatus): boolean {
   return (
-    GameModel.selectCurrent().type !== 'SCENARIO' ||
+    selectCurrentGameModel().type !== 'SCENARIO' ||
     library?.persisted.visibility === 'PRIVATE' ||
     library?.persisted.visibility === 'INHERITED'
   );
@@ -1175,6 +1176,6 @@ export const isVisibilityAllowed = (
   return (
     visibility === 'PRIVATE' ||
     visibility === library.persisted.visibility ||
-    GameModel.selectCurrent().type === 'MODEL'
+    selectCurrentGameModel().type === 'MODEL'
   );
 };

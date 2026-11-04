@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestManager.RequestContext;
 import com.wegas.core.persistence.AcceptInjection;
 import com.wegas.core.persistence.variable.Beanjection;
-import com.wegas.core.persistence.variable.ModelScoped;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.WegasPermission;
 import com.wegas.editor.ValueGenerators.EmptyArray;

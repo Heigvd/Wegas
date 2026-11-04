@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { IScript, STextDescriptor } from 'wegas-ts-api';
-import { runScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { runScript } from '../../../store/slices/variableInstances';
+import { selfPlayer } from '../../../data/scriptable';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -29,6 +28,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerTextInputProps
   extends WegasComponentProps,
@@ -62,10 +62,11 @@ function PlayerTextInput({
   const text = useScript<STextDescriptor | string>(script, context);
   const placeholderText = useScript<string>(placeholder, context);
 
-  const value =
-    useStore(() =>
-      typeof text === 'object' ? text.getValue(Player.self()) : text,
-    ) || '';
+  const getValue = React.useCallback(
+    () => (typeof text === 'object' ? text.getValue(selfPlayer()) : text),
+    [text],
+  );
+  const value = useDataSelector(getValue) || '';
 
   const { handleOnChange } = useOnVariableChange(onVariableChange, context);
   const { handleOnCancel } = useOnCancelAction(onCancel, context);
@@ -81,7 +82,7 @@ function PlayerTextInput({
       if (handleOnChange) {
         handleOnChange(v);
       } else if (typeof textRef.current === 'object') {
-        editingStore.dispatch(
+        dispatch(
           runScript(
             `Variable.find(gameModel,"${textRef.current.getName()}").setValue(self, ${JSON.stringify(
               v,

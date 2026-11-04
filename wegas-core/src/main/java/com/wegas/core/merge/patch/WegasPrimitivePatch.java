@@ -98,9 +98,6 @@ public final class WegasPrimitivePatch extends WegasPatch {
                     PatchMode myMode = this.updateOrOverride(visibility, null);
                     logger.trace("MyMode: {}", myMode);
 
-                    //if (belongsToProtectedGameModel(targetEntity, bypassVisibility) && belongsToProtectedGameModel(, bypassVisibility) && tr ue){
-                    // && visibility stands in protected world ?
-                    //}
                     logger.trace("visibility: {}; cascade: {}", visibility, protectionLevel);
 
                     if (!initOnly || oldTargetValue == null) { // do no overwrite non-null value if initOnly is set

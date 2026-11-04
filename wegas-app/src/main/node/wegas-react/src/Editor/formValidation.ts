@@ -2,7 +2,7 @@
  * Wegas specific Leaf validation for Form
  */
 import { IAbstractEntity } from 'wegas-ts-api/typings/WegasEntities';
-import { findNearestParent } from '../data/selectors/Helper';
+import { findNearestParent } from '../store/entityParents';
 import { validation } from './validation';
 
 type ref = Const | Self | Field;
