@@ -33,6 +33,8 @@ import {
   SSurveyNumberDescriptorImpl,
 } from './impl/SurveyInputDescriptor';
 import { SEventInboxDescriptorImpl } from './impl/EventInboxDescriptor';
+import { useAppSelector } from '../../store/hooks';
+import { selectCurrentPlayer } from '../../store/slices/players';
 
 const factory: WegasApiConnector.ConcretableFactory = {
   AchievementDescriptor: (c, e) => new SAchievementDescriptorImpl(c, e),
@@ -70,4 +72,15 @@ export function instantiate<
   T extends IMergeable | IMergeable[] | MapOf<IMergeable> | null | undefined,
 >(entity: T) {
   return apiConnector.instantiate(entity);
+}
+
+/** The current player, as a scriptable object. */
+export function selfPlayer() {
+  return instantiate(selectCurrentPlayer());
+}
+
+/** The current player, as a scriptable object, re-rendering when it changes. */
+export function useCurrentPlayer() {
+  const player = useAppSelector(selectCurrentPlayer);
+  return instantiate(player);
 }

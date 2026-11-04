@@ -1,17 +1,19 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
-import { IPeerReviewDescriptor } from 'wegas-ts-api';
 import { languagesCTX } from '../../Components/Contexts/LanguagesProvider';
 import { roleCTX } from '../../Components/Contexts/RoleProvider';
 import { MaxiLoader } from '../../Components/MaxiLoader';
 import { TabLayoutComponent } from '../../Components/TabLayout/TabLayout';
 import { themeVar } from '../../Components/Theme/ThemeVars';
 import { expandWidth } from '../../css/classes';
-import { entityIs } from '../../data/entities';
 import { translate } from '../../data/i18n';
-import { DEFAULT_ROLES } from '../../data/Reducer/globalState';
-import { State } from '../../data/Reducer/reducers';
-import { useStore } from '../../data/Stores/store';
+import { shallowEqual, useAppSelector } from '../../store/hooks';
+import {
+  DEFAULT_ROLES,
+  selectRoleAvailableTabs,
+} from '../../store/slices/roles';
+import { RootState } from '../../store/store';
+import { selectPeerReviewDescriptors } from '../../store/slices/variableDescriptors';
 import { visitIndex } from '../../Helper/pages';
 import PeerReviewPage from '../../Host/PeerReview/PeerReviewPage';
 import { mainLayoutId } from '../layouts';
@@ -186,7 +188,7 @@ function filterAllowedInitTabs(initTabs: (string | string[])[], allowedTabs: tru
 }
 
 
-function scenaristPagesSelector(s: State) {
+function scenaristPagesSelector(s: RootState) {
   return s.pages.index
     ? visitIndex(s.pages.index.root, item => item).filter(
         item => item.scenaristPage,
@@ -215,7 +217,10 @@ export default function Layout() {
   const [loading, setLoading] = React.useState(true);
   const { currentRole } = React.useContext(roleCTX);
 
-  const scenaristPages = useStore(scenaristPagesSelector).map(
+  const scenaristPages = useAppSelector(
+    scenaristPagesSelector,
+    shallowEqual,
+  ).map(
     ({ name, id }) => ({
       tabId: name,
       content: (
@@ -230,21 +235,19 @@ export default function Layout() {
     }),
   );
 
-  const peerReviews = useStore(s => {
-    return Object.values(s.variableDescriptors).filter(descriptor =>
-      entityIs(descriptor, 'PeerReviewDescriptor'),
-    ) as IPeerReviewDescriptor[];
-  });
+  const peerReviews = useAppSelector(
+    selectPeerReviewDescriptors,
+    shallowEqual,
+  );
 
   const peerReviewTabs = peerReviews.map<TabLayoutComponent>(peerReview => ({
     tabId: `Peer review ${translate(peerReview?.label, lang)}`,
     content: <PeerReviewPage peerReview={peerReview} />,
   }));
 
-  const allowedPages = useStore(s => {
-    const role = s.global.roles.roles[currentRole];
-    return role == null || role.availableTabs;
-  });
+  const allowedPages = useAppSelector(s =>
+    selectRoleAvailableTabs(s, currentRole),
+  );
 
   const allLayoutPages =
     [

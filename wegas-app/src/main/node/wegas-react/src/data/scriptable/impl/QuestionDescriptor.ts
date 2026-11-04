@@ -1,5 +1,5 @@
 import { getInstance, getItems } from '../../methods/VariableDescriptorMethods';
-import { VariableDescriptor } from '../../selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import {
   IQuestionDescriptor,
   IChoiceDescriptor,
@@ -106,11 +106,11 @@ export function getChoices(
   qd: IQuestionDescriptor | IWhQuestionDescriptor,
 ): Readonly<IChoiceDescriptor>[] | Readonly<IWhChoiceDescriptor>[] {
   if (entityIs(qd, 'QuestionDescriptor')) {
-    return VariableDescriptor.select<IChoiceDescriptor>(qd.itemsIds).filter(
+    return selectDescriptor<IChoiceDescriptor>(qd.itemsIds).filter(
       c => c != null,
     ) as Readonly<IChoiceDescriptor>[];
   } else {
-    return VariableDescriptor.select<IWhChoiceDescriptor>(qd.itemsIds).filter(
+    return selectDescriptor<IWhChoiceDescriptor>(qd.itemsIds).filter(
       c => c != null,
     ) as Readonly<IWhChoiceDescriptor>[];
   }

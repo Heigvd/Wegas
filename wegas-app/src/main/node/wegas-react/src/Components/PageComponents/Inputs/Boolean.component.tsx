@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { IScript, SBooleanDescriptor } from 'wegas-ts-api';
-import { Actions } from '../../../data';
-import { Player } from '../../../data/selectors';
-import { editingStore } from '../../../data/Stores/editingStore';
-import { useStore } from '../../../data/Stores/store';
+import { runScript } from '../../../store/slices/variableInstances';
+import { selfPlayer } from '../../../data/scriptable';
+import { useDataSelector } from '../../../store/hooks';
 import { createFindVariableScript } from '../../../Helper/wegasEntites';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
@@ -22,6 +21,7 @@ import {
   onVariableChangeSchema,
   useOnVariableChange,
 } from './tools';
+import { dispatch } from '../../../store/store';
 
 interface PlayerBooleanProps extends WegasComponentProps {
   /**
@@ -62,9 +62,11 @@ function PlayerBoolean({
 
   const BooleanComponent = type === 'toggler' ? Toggler : CheckBox;
 
-  const value = useStore(() =>
-    typeof bool === 'object' ? bool.getValue(Player.self()) : bool,
+  const getValue = React.useCallback(
+    () => (typeof bool === 'object' ? bool.getValue(selfPlayer()) : bool),
+    [bool],
   );
+  const value = useDataSelector(getValue);
 
   return bool == null ? (
     <UncompleteCompMessage
@@ -85,8 +87,8 @@ function PlayerBoolean({
         if (handleOnChange) {
           handleOnChange(v);
         } else if (typeof bool === 'object') {
-          editingStore.dispatch(
-            Actions.VariableInstanceActions.runScript(
+          dispatch(
+            runScript(
               `Variable.find(gameModel,"${bool.getName()}").setValue(self, ${v});`,
             ),
           );

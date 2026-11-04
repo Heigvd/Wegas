@@ -1,4 +1,4 @@
-import { VariableDescriptor } from '../../selectors';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { instantiate } from '..';
 import { IQuestionDescriptor } from 'wegas-ts-api';
 
@@ -29,7 +29,7 @@ export class SChoiceDescriptorImpl extends SChoiceDescriptor {
     if (this.hasBeenSelected(p)) {
       return false;
     } else {
-      const iqd = VariableDescriptor.select<IQuestionDescriptor>(
+      const iqd = selectDescriptor<IQuestionDescriptor>(
         this.getParentId(),
       );
       if (iqd) {
@@ -92,7 +92,7 @@ export class SSingleResultChoiceDescriptorImpl extends SSingleResultChoiceDescri
     if (this.hasBeenSelected(p)) {
       return false;
     } else {
-      const iqd = VariableDescriptor.select<IQuestionDescriptor>(
+      const iqd = selectDescriptor<IQuestionDescriptor>(
         this.getParentId(),
       );
       if (iqd) {

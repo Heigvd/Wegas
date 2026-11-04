@@ -24,10 +24,9 @@ import { HTMLText } from '../../../Components/Outputs/HTMLText';
 import { isActionAllowed } from '../../../Components/PageComponents/tools/options';
 import { themeVar } from '../../../Components/Theme/ThemeVars';
 import { block, expandWidth, textCenter } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { updateDescriptor } from '../../../store/slices/variableDescriptors';
 import { entityIs } from '../../../data/entities';
 import { createTranslatableContent, translate } from '../../../data/i18n';
-import { EditingStoreDispatch } from '../../../data/Stores/editingStore';
 import { classOrNothing } from '../../../Helper/className';
 import { StateProcess, TransitionFlowLine } from './StateMachineEditor';
 import {featuresCTX, isFeatureEnabled} from "../../../Components/Contexts/FeaturesProvider";
@@ -35,6 +34,7 @@ import {IconComp} from "../Views/FontAwesome";
 import {impactIcon} from "../../../Components/FlowChart/StateProcessComponent";
 import {useInternalTranslate} from "../../../i18n/internalTranslator";
 import { commonTranslations } from '../../../i18n/common/common';
+import { EditingDispatch } from '../../../store/localEdition';
 
 const customFlowLineComponentEditingStyle = css({
   zIndex: 1000,
@@ -58,7 +58,7 @@ const stateBoxContentEditingStyle = css({
 
 export function LiteFlowLineComponentFactory<
   IFSM extends IFSMDescriptor | IDialogueDescriptor,
->(stateMachine: Immutable<IFSM>, dispatch: EditingStoreDispatch) {
+>(stateMachine: Immutable<IFSM>, dispatch: EditingDispatch) {
   function LiteFlowLineComponent({
     startProcess,
     onClick,
@@ -102,7 +102,7 @@ export function LiteFlowLineComponentFactory<
         })(stateMachine);
 
         dispatch(
-          Actions.VariableDescriptorActions.updateDescriptor(newStateMachine),
+          updateDescriptor(newStateMachine),
         );
         setEditing(false);
       },

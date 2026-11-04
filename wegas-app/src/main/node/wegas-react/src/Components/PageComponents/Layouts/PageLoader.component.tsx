@@ -1,9 +1,13 @@
 import { isEqual } from 'lodash';
 import * as React from 'react';
-import { ActionCreator } from '../../../data/actions';
 import { entityIs } from '../../../data/entities';
-import { State } from '../../../data/Reducer/reducers';
-import { store, useStore } from '../../../data/Stores/store';
+import { useAppSelector } from '../../../store/hooks';
+import { selectDefaultPageId } from '../../../store/slices/pages';
+import {
+  pageLoaderRegistered,
+  selectPageLoaders,
+} from '../../../store/slices/scriptRegistry';
+import { dispatch, store } from '../../../store/store';
 import {
   defaultPageCTX,
   pageCTX,
@@ -32,7 +36,7 @@ interface PlayerPageLoaderProps
 
 const defaultPageAsScript = () =>
   createScript(
-    JSON.stringify(store.getState().pages.index?.defaultPageId ?? ''),
+    JSON.stringify(selectDefaultPageId(store.getState()) ?? ''),
     'TypeScript',
   );
 
@@ -49,15 +53,9 @@ function PlayerPageLoader({
 }: PlayerPageLoaderProps) {
   const { pageIdPath } = React.useContext(pageCTX);
 
-  const pageScriptSelector = React.useCallback(
-    (s: State) => {
-      if (name != null) {
-        return s.global.pageLoaders[name];
-      }
-    },
-    [name],
+  let pageScript = useAppSelector(s =>
+    name != null ? selectPageLoaders(s)[name] : undefined,
   );
-  let pageScript = useStore(pageScriptSelector);
 
   const initialSelectedPageIdScript = entityIs(initialSelectedPageId, 'Script')
     ? initialSelectedPageId
@@ -88,8 +86,8 @@ function PlayerPageLoader({
           initialSelectedPageIdScriptRef.current,
         ))
     ) {
-      store.dispatch(
-        ActionCreator.EDITOR_REGISTER_PAGE_LOADER({
+      dispatch(
+        pageLoaderRegistered({
           name,
           pageId: initialSelectedPageIdScript,
         }),

@@ -5,8 +5,29 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import { configureStore } from '@reduxjs/toolkit';
+import { AnyAction, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import announcementReducer from './slices/announcement';
+import initStatusReducer from './slices/initStatus';
+import playersReducer from './slices/players';
+import teamsReducer from './slices/teams';
+import gameReducer from './slices/game';
+import gameModelReducer from './slices/gameModel';
+import editionReducer from './slices/edition';
+import editorEventsReducer from './slices/editorEvents';
+import variableDescriptorsReducer from './slices/variableDescriptors';
+import variableInstancesReducer from './slices/variableInstances';
+import pageContextReducer from './slices/pageContext';
+import pageEditorReducer from './slices/pageEditor';
+import pagesReducer from './slices/pages';
+import themeReducer from './slices/theme';
+import userReducer from './slices/user';
+import connectionReducer from './slices/connection';
+import searchReducer from './slices/search';
+import languagesReducer from './slices/languages';
+import popupsReducer from './slices/popups';
+import logLevelsReducer from './slices/logLevels';
+import rolesReducer from './slices/roles';
+import scriptRegistryReducer from './slices/scriptRegistry';
 
 /**
  * New store for react-redux
@@ -14,7 +35,70 @@ import announcementReducer from './slices/announcement';
 export const store = configureStore({
     reducer: {
         announcements: announcementReducer,
+        initStatuses: initStatusReducer,
+        user: userReducer,
+        players: playersReducer,
+        teams: teamsReducer,
+        games: gameReducer,
+        gameModels: gameModelReducer,
+        edition: editionReducer,
+        editorEvents: editorEventsReducer,
+        variableDescriptors: variableDescriptorsReducer,
+        variableInstances: variableInstancesReducer,
+        pageContext: pageContextReducer,
+        pageEditor: pageEditorReducer,
+        pages: pagesReducer,
+        themes: themeReducer,
+        connection: connectionReducer,
+        search: searchReducer,
+        languages: languagesReducer,
+        popups: popupsReducer,
+        logLevels: logLevelsReducer,
+        roles: rolesReducer,
+        scriptRegistry: scriptRegistryReducer,
     },
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware({
+            // `Edition` holds jsoninput schemas (functions), the FileEdition `cb`
+            // callback and whole entities; WegasEvents hold exception objects. None
+            // of it is serialisable, and deep-scanning a variable descriptor on
+            // every dispatch is expensive on top of that.
+            //
+            // `pageContext` holds values returned by client scripts: any JS value,
+            // including functions and class instances, and potentially large or
+            // cyclic. Both dev checks walk it deeply on every dispatch, so both are
+            // opted out of that branch rather than made to tolerate it.
+            //
+            // `scriptRegistry` holds functions registered by client scripts
+            // (client methods, custom schemas).
+            serializableCheck: {
+                ignoredPaths: [
+                    'edition',
+                    'editorEvents',
+                    'pageContext',
+                    'scriptRegistry',
+                ],
+                ignoredActions: [
+                    'pageContext/setContextValue',
+                    'pageContext/setStateValue',
+                    'scriptRegistry/clientMethodSet',
+                    'scriptRegistry/schemaSet',
+                ],
+                ignoredActionPaths: [
+                    'payload.config',
+                    'payload.cb',
+                    'payload.entity',
+                    'payload.instance',
+                    'payload.newEntity',
+                    'payload.events',
+                    'payload.updatedEntities',
+                    'payload.deletedEntities',
+                ],
+            },
+            immutableCheck: {
+                ignoredPaths: ['edition', 'editorEvents', 'pageContext'],
+            },
+        }),
 });
 
 // Convenience dispatch for use OUTSIDE React (websocket handlers, services...).
@@ -23,6 +107,15 @@ export const dispatch = store.dispatch;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+/**
+ * A thunk running against the single app store.
+ *
+ * Also the type of thunks dispatched into a component-local edition scope: that
+ * scope's dispatch hands them a complete RootState with only `edition` swapped
+ * for its own (see ./localEdition), so they never need to know where they run.
+ */
+export type AppThunk<R = void> = ThunkAction<R, RootState, undefined, AnyAction>;
 
 /**
  * NOT_INITIALIZED: nothing loaded yet (may hold partial data pushed via websocket)

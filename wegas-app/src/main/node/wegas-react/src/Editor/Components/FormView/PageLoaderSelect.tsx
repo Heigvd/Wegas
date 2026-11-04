@@ -3,14 +3,14 @@ import { WidgetProps } from 'jsoninput/typings/types';
 import * as React from 'react';
 import { DropMenu } from '../../../Components/DropMenu';
 import { flex, flexRow, grow } from '../../../css/classes';
-import { State } from '../../../data/Reducer/reducers';
-import { useStore } from '../../../data/Stores/store';
 import {
   isPageLoaderComponent,
   isWegasComponent,
   PageLoaderComponentProps,
   visitComponents,
 } from '../../../Helper/pages';
+import { deepEqual, useAppSelector } from '../../../store/hooks';
+import { RootState } from '../../../store/store';
 import { MessageString } from '../MessageString';
 import { CommonView, CommonViewContainer } from './commonView';
 import { Labeled, LabeledView } from './labeled';
@@ -21,7 +21,7 @@ export interface PageSelectProps extends WidgetProps.BaseProps {
   onChange: (code: string) => void;
 }
 
-function pageLoadersSelector(s: State) {
+function pageLoadersSelector(s: RootState) {
   const loaders: DropMenuItem<{ pageId: string } & PageLoaderComponentProps>[] =
     [];
   Object.entries(s.pages)
@@ -49,7 +49,7 @@ export default function PageLoaderSelect({
   errorMessage,
   value,
 }: PageSelectProps) {
-  const pageLoaders = useStore(pageLoadersSelector);
+  const pageLoaders = useAppSelector(pageLoadersSelector, deepEqual);
 
   const onPageLoaderChange = React.useCallback(
     (value?: string) => {

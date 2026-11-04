@@ -1,5 +1,5 @@
 import { IAbstractContentDescriptor, IGameModelContent } from 'wegas-ts-api';
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 import { managedModeRequest, rest } from './rest';
 
 export const NOCONTENTMESSAGE = 'No content';
@@ -17,7 +17,7 @@ export interface ILibraries {
 
 const LIBRARY_BASE = (libType: ServerLibraryType, gameModelId?: number) =>
   `GameModel/${
-    gameModelId ? gameModelId : GameModel.selectCurrent().id!
+    gameModelId ? gameModelId : selectCurrentGameModel().id!
   }/Library/${libType}`;
 
 export const LibraryAPIFactory = (gameModelId?: number) => {

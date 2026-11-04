@@ -15,12 +15,13 @@ import {
   pointer,
   secondaryButtonStyle,
 } from '../css/classes';
+import { saveEditor } from '../store/editionThunks';
 import {
-  EditingActionCreator,
+  editionHighlight,
   isEditingVariable,
-  saveEditor,
-} from '../data/Reducer/editingState';
-import { editingStore } from '../data/Stores/editingStore';
+  selectEdition,
+} from '../store/slices/edition';
+import { store, dispatch } from '../store/store';
 import { focusTab } from '../Editor/Components/LinearTabLayout/LinearLayout';
 import { CTreeProps } from '../Editor/Components/Variable/CTree';
 import { SharedTreeProps } from '../Editor/Components/Variable/VariableTreeView';
@@ -474,10 +475,10 @@ export function useOnEditionChangesModal(
     e: ModifierKeysEvent,
     onClickAction: (e: ModifierKeysEvent) => void,
   ) {
-    const globalState = editingStore.getState().editing;
+    const globalState = selectEdition(store.getState());
     const localChanges = forceLocalDispatch || e.ctrlKey;
     const state = localChanges ? localState : globalState;
-    const dispatch = localChanges ? localDispatch : editingStore.dispatch;
+    const scopedDispatch = localChanges ? localDispatch : dispatch;
     let pathEntity = state?.newEntity;
 
     if (isEditingVariable(state)) {
@@ -496,8 +497,12 @@ export function useOnEditionChangesModal(
       showModal(
         <EditionModal
           onSaveChanges={() => {
-            if (state != null && state?.newEntity != null && dispatch != null) {
-              dispatch(saveEditor(state?.newEntity));
+            if (
+              state != null &&
+              state?.newEntity != null &&
+              scopedDispatch != null
+            ) {
+              scopedDispatch(saveEditor(state?.newEntity));
               onClickAction(e);
             }
           }}
@@ -505,9 +510,9 @@ export function useOnEditionChangesModal(
             onClickAction(e);
           }}
           onShowChanges={() => {
-            if (dispatch != null) {
-              dispatch(
-                EditingActionCreator.EDITION_HIGHLIGHT({ highlight: true }),
+            if (scopedDispatch != null) {
+              scopedDispatch(
+                editionHighlight({ highlight: true }),
               );
             }
             if (!localChanges) {

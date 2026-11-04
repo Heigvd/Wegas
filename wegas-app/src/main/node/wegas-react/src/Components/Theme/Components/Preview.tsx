@@ -13,7 +13,6 @@ import {
   justifyCenter,
   layoutStyle,
 } from '../../../css/classes';
-import { useThemeStore } from '../../../data/Stores/themeStore';
 import FileBrowser from '../../../Editor/Components/FileBrowser/FileBrowser';
 import { borderBottom } from '../../../Editor/Components/FormView/commonView';
 import { IconComp, icons } from '../../../Editor/Components/Views/FontAwesome';
@@ -33,6 +32,7 @@ import { StandardGauge } from '../../Outputs/StandardGauge';
 import { Selector } from '../../Selector';
 import { Toolbar } from '../../Toolbar';
 import { SelectedThemes } from '../ThemeVars';
+import { useAppSelector } from '../../../store/hooks';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 10;
@@ -73,8 +73,8 @@ export default function Preview() {
   const { numericVar, textVar, booleanVar, iconVar, disabled, readOnly } =
     previewState;
 
-  const previewClassName = useThemeStore(
-    s => s.themes[s.editedThemeName].modeClasses[s.editedModeName],
+  const previewClassName = useAppSelector(
+    s => s.themes.themes[s.themes.editedThemeName].modeClasses[s.themes.editedModeName],
   );
 
   return (

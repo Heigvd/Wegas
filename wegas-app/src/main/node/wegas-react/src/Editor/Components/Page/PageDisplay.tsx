@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import * as React from 'react';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
 import { Toggler } from '../../../Components/Inputs/Boolean/Toggler';
 import { Toolbar } from '../../../Components/Toolbar';
 import {
@@ -10,11 +9,11 @@ import {
   defaultToolboxLabelStyle,
   expandBoth,
 } from '../../../css/classes';
-import { useStore } from '../../../data/Stores/store';
 import { getPageIndexItemFromFolder } from '../../../Helper/pages';
 import { editorTabsTranslations } from '../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { pagesTranslations } from '../../../i18n/pages/pages';
+import { deepEqual, useAppSelector } from '../../../store/hooks';
 import { pageCTX } from './PageEditor';
 import { MAIN_PAGE_EXPOSE_SIZE_AS, PageLoader } from './PageLoader';
 
@@ -68,13 +67,13 @@ function PageEditionToolbar() {
 export default function PageDisplay() {
   const { selectedPageId, loading } = React.useContext(pageCTX);
   const i18nValues = useInternalTranslate(pagesTranslations);
-  const indexPage = useStore(s => {
+  const indexPage = useAppSelector(s => {
     if (s.pages.index) {
       return getPageIndexItemFromFolder(s.pages.index.root, selectedPageId);
     } else {
       return undefined;
     }
-  }, deepDifferent);
+  }, deepEqual);
 
   if (loading) {
     return <pre>{i18nValues.loadingPages}</pre>;
