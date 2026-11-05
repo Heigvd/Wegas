@@ -14,7 +14,6 @@ import ch.albasim.wegas.annotations.WegasExtraProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.i18n.persistence.TranslatableContent;
 import com.wegas.core.i18n.persistence.Translation;
 import com.wegas.core.persistence.EntityComparators;
@@ -197,10 +196,10 @@ public class InboxInstance extends VariableInstance {
 
         final Message msg = new Message();
         msg.setToken(toToken(token));
-        msg.setFrom(toTranslatableContent(from, lang, "from"));
-        msg.setSubject(toTranslatableContent(subject, lang, "subject"));
-        msg.setBody(toTranslatableContent(body, lang, "body"));
-        msg.setDate(toTranslatableContent(date, lang, "date"));
+        msg.setFrom(toTranslatableContent(from, lang, "from", true));
+        msg.setSubject(toTranslatableContent(subject, lang, "subject", true));
+        msg.setBody(toTranslatableContent(body, lang, "body", true));
+        msg.setDate(toTranslatableContent(date, lang, "date", false));
         msg.setAttachments(toAttachments(attachments, lang));
 
         return this.sendMessage(msg);
@@ -244,7 +243,14 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
-     * Describe the type of an invalid argument for error messages
+     * Values {@link #toTranslatableContent} can convert
+     */
+    private static boolean isTranslatable(Object o) {
+        return isText(o) || o instanceof TranslatableContent || isJSEntity(o, "TranslatableContent");
+    }
+
+    /**
+     * Describe the type of an invalid argument for logs
      */
     private static String describe(Object o) {
         if (o instanceof ScriptObjectMirror) {
@@ -260,19 +266,21 @@ public class InboxInstance extends VariableInstance {
         return "a " + o.getClass().getSimpleName();
     }
 
-    private WegasErrorMessage invalidArgument(String field, String expected, Object o) {
+    private String getInboxName() {
         VariableDescriptor desc = this.findDescriptor();
-        String inboxName = desc != null ? desc.getName() : "inbox";
-        return WegasErrorMessage.error(inboxName + ".sendMessage: \"" + field + "\" must be "
-            + expected + ", got " + describe(o));
+        return desc != null ? desc.getName() : "inbox";
     }
 
     private void logMissing(String field) {
         if (loggerbeans.isDebugEnabled()) {
-            VariableDescriptor desc = this.findDescriptor();
             loggerbeans.debug("{}.sendMessage: {} is missing, replaced by an empty value",
-                desc != null ? desc.getName() : "inbox", field);
+                getInboxName(), field);
         }
+    }
+
+    private void logInvalid(String field, String expected, Object o, String fallback) {
+        loggerbeans.warn("{}.sendMessage: \"{}\" must be {}, got {}; {}",
+            getInboxName(), field, expected, describe(o), fallback);
     }
 
     private String toToken(Object token) {
@@ -281,32 +289,36 @@ public class InboxInstance extends VariableInstance {
         } else if (isText(token)) {
             return token.toString();
         }
-        throw invalidArgument("token", "a text", token);
+        logInvalid("token", "a text", token, "ignored");
+        return null;
     }
 
     /**
      * Convert a script argument to a brand new TranslatableContent.
      *
-     * @param o     text, TranslatableContent (java or nashorn), null or undefined
-     * @param lang  language to use for texts and missing values
-     * @param field name of the argument, for logs and error messages
+     * @param o            text, TranslatableContent (java or nashorn), null or undefined
+     * @param lang         language to use for texts and missing values
+     * @param field        name of the argument, for logs
+     * @param logIfMissing log (debug) when o is missing
      *
-     * @return new TranslatableContent, never null (an empty translation for missing values)
-     *
-     * @throws WegasErrorMessage if o is of any other type
+     * @return new TranslatableContent, never null (an empty translation for missing or invalid
+     *         values)
      */
-    private TranslatableContent toTranslatableContent(Object o, String lang, String field) {
+    private TranslatableContent toTranslatableContent(Object o, String lang, String field, boolean logIfMissing) {
         if (isMissing(o)) {
-            logMissing(field);
-            return TranslatableContent.build(lang, "");
+            if (logIfMissing) {
+                logMissing(field);
+            }
         } else if (isText(o)) {
             return TranslatableContent.build(lang, o.toString());
         } else if (o instanceof TranslatableContent) {
             return TranslatableContent.merger(null, (TranslatableContent) o);
         } else if (isJSEntity(o, "TranslatableContent")) {
             return TranslatableContent.readFromNashorn((JSObject) o);
+        } else {
+            logInvalid(field, "a text or a translation", o, "replaced by an empty value");
         }
-        throw invalidArgument(field, "a text or a translation", o);
+        return TranslatableContent.build(lang, "");
     }
 
     /**
@@ -315,21 +327,19 @@ public class InboxInstance extends VariableInstance {
      * @param o    list or JS array of attachments (see {@link #toAttachment}), null or undefined
      * @param lang language to use for texts
      *
-     * @return new list of attachments, never null
-     *
-     * @throws WegasErrorMessage if o or one of its items is of any other type
+     * @return new list of attachments, never null (invalid items are skipped)
      */
     private List<Attachment> toAttachments(Object o, String lang) {
         Collection<?> items;
         if (isMissing(o)) {
-            logMissing("attachments");
             items = List.of();
         } else if (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray()) {
             items = ((ScriptObjectMirror) o).values();
         } else if (o instanceof Collection) {
             items = (Collection<?>) o;
         } else {
-            throw invalidArgument("attachments", "an array", o);
+            logInvalid("attachments", "an array", o, "ignored");
+            items = List.of();
         }
 
         List<Attachment> attachments = new ArrayList<>();
@@ -349,11 +359,9 @@ public class InboxInstance extends VariableInstance {
      *
      * @param item  file path (text), Attachment (java or nashorn), null or undefined
      * @param lang  language to use for texts
-     * @param field name of the item, for logs and error messages
+     * @param field name of the item, for logs
      *
-     * @return new attachment or null if the item is missing
-     *
-     * @throws WegasErrorMessage if item is of any other type
+     * @return new attachment or null if the item is missing or invalid
      */
     private Attachment toAttachment(Object item, String lang, String field) {
         if (isMissing(item)) {
@@ -363,7 +371,8 @@ public class InboxInstance extends VariableInstance {
             try {
                 return (Attachment) ((Attachment) item).duplicate();
             } catch (CloneNotSupportedException ex) {
-                throw WegasErrorMessage.error("Unable to copy " + field);
+                loggerbeans.warn("{}.sendMessage: unable to copy {}; ignored", getInboxName(), field, ex);
+                return null;
             }
         }
 
@@ -375,10 +384,14 @@ public class InboxInstance extends VariableInstance {
             if (isMissing(file)) {
                 logMissing(field + ".file");
                 return null;
+            } else if (!isTranslatable(file)) {
+                logInvalid(field + ".file", "a text or a translation", file, "ignored");
+                return null;
             }
-            att.setFile(toTranslatableContent(file, lang, field + ".file"));
+            att.setFile(toTranslatableContent(file, lang, field + ".file", false));
         } else {
-            throw invalidArgument(field, "a file path or an attachment", item);
+            logInvalid(field, "a file path or an attachment", item, "ignored");
+            return null;
         }
         return att;
     }
