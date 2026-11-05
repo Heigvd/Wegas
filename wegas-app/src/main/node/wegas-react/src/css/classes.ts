@@ -14,14 +14,8 @@ export const grid = css({
 export const block = css({
   display: 'block',
 });
-export const inlineBlock = css({
-  display: 'inline-block',
-});
 export const hidden = css({
   display: 'none',
-});
-export const hiddenImportant = css({
-  display: 'none !important',
 });
 
 // Layout constraints
@@ -38,9 +32,6 @@ export const noOverflow = css({
 });
 export const autoScroll = css({
   overflow: 'auto',
-});
-export const forceScroll = css({
-  overflow: 'scroll',
 });
 export const forceScrollY = css({
   overflowY: 'scroll',
@@ -69,15 +60,8 @@ export const expandWidth = css({
 export const expandHeight = css({
   height: '100%',
 });
-export const shrinkBoth = css({
-  width: 'fit-content',
-  height: 'fit-content',
-});
 export const shrinkWidth = css({
   width: 'fit-content',
-});
-export const shrinkHeight = css({
-  height: 'fit-content',
 });
 
 // Flex
@@ -180,9 +164,6 @@ export const defaultMargin = cx(
 export const autoMargin = css({
   margin: 'auto'
 });
-export const xlPadding = css({
-  padding: '2em',
-});
 export const mediumPadding = css({
   padding: '1.5em',
 });
@@ -216,13 +197,6 @@ export const defaultPadding = cx(
 );
 
 // Components
-export const button = css({
-  color: themeVar.colors.DarkTextColor,
-  ':hover,:focus': {
-    color: themeVar.colors.HoverColor,
-    outline: 'none',
-  },
-});
 
 export const secondaryButtonCSS = {
   '&.wegas-btn': {
@@ -243,9 +217,6 @@ export const localSelection = css({
 });
 export const globalSelection = css({
   backgroundColor: themeVar.colors.HeaderColor,
-});
-export const searchSelection = css({
-  border: '1px solid ' + themeVar.colors.HighlightColor,
 });
 
 // Layout base styles
@@ -326,8 +297,6 @@ export const highlightColorInsetShadowStyle = {
   boxShadow: 'inset 0 0 0 2px var(--colors-highlightcolor)',
 };
 
-export const highlightColorInsetShadow = css(highlightColorInsetShadowStyle);
-
 export const hatchedBackground = css({
   background:
     'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 10px, var(--colors-hovercolor) 10px,  var(--colors-hovercolor) 20px);',
@@ -336,12 +305,6 @@ export const hatchedBackground = css({
 
 export const insideInsetShadow = css({
   boxShadow: 'inset 0 0 8px rgba(0,0,0,0.2)',
-});
-
-export const thinHatchedBackground = css({
-  background:
-    'repeating-Linear-gradient( 45deg, #ffffff80, #ffffff80 5px, var(--colors-hovercolor) 5px,  var(--colors-hovercolor) 10px);',
-  zIndex: 1000,
 });
 
 export const highlightedHatchedBackground = css({
@@ -369,12 +332,6 @@ export const unreadSignalStyle = css({
     backgroundColor: themeVar.colors.PrimaryColor,
     borderRadius: '100%',
   },
-});
-
-export const unreadSpaceStyle = css({
-  minWidth: '30px',
-  display: 'flex',
-  alignItems: 'center',
 });
 
 export const fullScreenContentContainerStyle = css({

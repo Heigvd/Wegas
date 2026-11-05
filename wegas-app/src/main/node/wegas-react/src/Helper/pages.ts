@@ -11,18 +11,6 @@ export function isFolderItem(
   return pageItemIndex != null && pageItemIndex['@class'] === 'Folder';
 }
 
-export function isPageIndex(
-  page?: PageIndex | WegasComponent,
-): page is PageIndex {
-  return (
-    page != null &&
-    'root' in page &&
-    isFolderItem(page.root) &&
-    'defaultPageId' in page &&
-    typeof page.defaultPageId === 'string'
-  );
-}
-
 export function visitIndex<T>(
   item: PageIndexItem,
   visitorFN: (item: PageIndexPage) => T,
