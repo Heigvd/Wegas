@@ -22,11 +22,13 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.editor.ValueGenerators.EmptyArray;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import org.openjdk.nashorn.api.scripting.JSObject;
+import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -118,13 +120,18 @@ public class InboxInstance extends VariableInstance {
     }
 
     /**
+     * Script-facing overloads below take {@code Object} parameters on purpose: a JS {@code undefined}
+     * given to a {@code String} parameter is converted to the "undefined" string by nashorn before
+     * reaching the method, and objects become "[object Object]". Each argument may be a String, a
+     * nashorn object, a {@link TranslatableContent}, null or undefined (which means empty).
+     *
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
      *
      * @return The sent message
      */
-    public Message sendMessage(String from, String subject, String body) {
+    public Message sendMessage(Object from, Object subject, Object body) {
         return this.sendMessage(from, subject, body, null, null, null);
     }
 
@@ -132,141 +139,261 @@ public class InboxInstance extends VariableInstance {
      * @param from    message sender
      * @param subject message subject
      * @param body    message body
-     * @param
-     *                token   ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @param token   ({@link InboxDescriptor#sendMessageWithToken(com.wegas.core.persistence.game.Player, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) here}
      *
      * @return The sent message
      */
-    public Message sendWithToken(String from, String subject, String body, String token) {
+    public Message sendWithToken(Object from, Object subject, Object body, Object token) {
         return this.sendMessage(from, subject, body, null, token, null);
     }
 
     /**
-     * @param from    message sender
-     * @param subject message subject
-     * @param body    message body
-     * @param
-     *                date    ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
+     * Java does not allow both (from, subject, body, date) and (from, subject, body, attachments)
+     * signatures once parameters are {@code Object}. Thus, the fourth argument is considered as
+     * attachments if it's a list or a JS array, and as the date otherwise.
+     *
+     * @param from              message sender
+     * @param subject           message subject
+     * @param body              message body
+     * @param dateOrAttachments either the date ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) here})
+     *                          or the attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(String from, String subject, String body, String date) {
-        return this.sendMessage(from, subject, body, date, null, null);
+    public Message sendMessage(Object from, Object subject, Object body, Object dateOrAttachments) {
+        if (isList(dateOrAttachments)) {
+            return this.sendMessage(from, subject, body, null, null, dateOrAttachments);
+        } else {
+            return this.sendMessage(from, subject, body, dateOrAttachments, null, null);
+        }
     }
 
     /**
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
+     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) here}
      * @param attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(final String from, final String subject, final String body, final List<String> attachments) {
-        return this.sendMessage(from, subject, body, null, null, attachments);
-    }
-
-    /**
-     * @param from        message sender
-     * @param subject     message subject
-     * @param body        message body
-     * @param
-     *                    date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
-     * @param attachments
-     *
-     * @return The sent message
-     */
-    public Message sendMessage(final String from, final String subject, final String body, final String date, final List<String> attachments) {
+    public Message sendMessage(Object from, Object subject, Object body, Object date, Object attachments) {
         return this.sendMessage(from, subject, body, date, null, attachments);
-
     }
 
     /**
      * @param from        message sender
      * @param subject     message subject
      * @param body        message body
-     * @param
-     *                    date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String) here}
-     * @param
-     *                    token       ({@link InboxDescriptor#sendMessage(com.wegas.core.persistence.game.Player, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.lang.String, java.util.List) here}
+     * @param date        ({@link InboxDescriptor#sendDatedMessage(com.wegas.core.persistence.game.Player, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) here}
+     * @param token       ({@link InboxDescriptor#sendMessageWithToken(com.wegas.core.persistence.game.Player, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object) here}
      * @param attachments
      *
      * @return The sent message
      */
-    public Message sendMessage(final String from, final String subject, final String body, final String date, String token, final List<String> attachments) {
+    public Message sendMessage(Object from, Object subject, Object body, Object date, Object token, Object attachments) {
+        String lang = this.getDefaultLang();
+
+        final Message msg = new Message();
+        msg.setToken(toToken(token));
+        msg.setFrom(toTranslatableContent(from, lang, "from", true));
+        msg.setSubject(toTranslatableContent(subject, lang, "subject", true));
+        msg.setBody(toTranslatableContent(body, lang, "body", true));
+        msg.setDate(toTranslatableContent(date, lang, "date", false));
+        msg.setAttachments(toAttachments(attachments, lang));
+
+        return this.sendMessage(msg);
+    }
+
+    /**
+     * @return code of the first language of the game model, "en" if there is none
+     */
+    private String getDefaultLang() {
         VariableDescriptor desc = this.findDescriptor();
-        String lang = "en";
         if (desc != null && desc.getGameModel() != null) {
             List<GameModelLanguage> languages = desc.getGameModel().getRawLanguages();
             if (languages != null && !languages.isEmpty()) {
-                lang = languages.get(0).getCode();
+                return languages.get(0).getCode();
             }
         }
-        return this.sendMessage(new Message(from, subject, body, date, token, attachments, lang));
+        return "en";
+    }
+
+    private static boolean isMissing(Object o) {
+        return o == null || ScriptObjectMirror.isUndefined(o);
+    }
+
+    private static boolean isList(Object o) {
+        return o instanceof List
+            || (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray());
     }
 
     /**
-     * I18n version
-     *
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
-     * @param token
-     * @param attachments
-     *
-     * @return
+     * Plain values accepted as text
      */
-    public Message sendMessage(final TranslatableContent from, final TranslatableContent subject,
-        final TranslatableContent body, final TranslatableContent date,
-        String token, final List<Attachment> attachments) {
-        final Message msg = new Message();
-        msg.setToken(token);
-        msg.setFrom(TranslatableContent.merger(null, from));
-        msg.setSubject(TranslatableContent.merger(null, subject));
-        msg.setBody(TranslatableContent.merger(null, body));
-        msg.setDate(TranslatableContent.merger(null, date));
+    private static boolean isText(Object o) {
+        return o instanceof CharSequence || o instanceof Number || o instanceof Boolean;
+    }
 
-        List<Attachment> atts = new ArrayList<>();
-        for (Attachment att : attachments) {
+    /**
+     * @return true if o is a nashorn object with the given "@class"
+     */
+    private static boolean isJSEntity(Object o, String atClass) {
+        return o instanceof JSObject && atClass.equals(((JSObject) o).getMember("@class"));
+    }
+
+    /**
+     * Values {@link #toTranslatableContent} can convert
+     */
+    private static boolean isTranslatable(Object o) {
+        return isText(o) || o instanceof TranslatableContent || isJSEntity(o, "TranslatableContent");
+    }
+
+    /**
+     * Describe the type of an invalid argument for logs
+     */
+    private static String describe(Object o) {
+        if (o instanceof ScriptObjectMirror) {
+            ScriptObjectMirror som = (ScriptObjectMirror) o;
+            if (som.isArray()) {
+                return "an array";
+            } else if (som.isFunction()) {
+                return "a function";
+            }
+            Object atClass = som.getMember("@class");
+            return atClass instanceof String ? "an object of class " + atClass : "an object without @class";
+        }
+        return "a " + o.getClass().getSimpleName();
+    }
+
+    private String getInboxName() {
+        VariableDescriptor desc = this.findDescriptor();
+        return desc != null ? desc.getName() : "inbox";
+    }
+
+    private void logMissing(String field) {
+        if (loggerbeans.isDebugEnabled()) {
+            loggerbeans.debug("{}.sendMessage: {} is missing, replaced by an empty value",
+                getInboxName(), field);
+        }
+    }
+
+    private void logInvalid(String field, String expected, Object o, String fallback) {
+        loggerbeans.warn("{}.sendMessage: \"{}\" must be {}, got {}; {}",
+            getInboxName(), field, expected, describe(o), fallback);
+    }
+
+    private String toToken(Object token) {
+        if (isMissing(token)) {
+            return null;
+        } else if (isText(token)) {
+            return token.toString();
+        }
+        logInvalid("token", "a text", token, "ignored");
+        return null;
+    }
+
+    /**
+     * Convert a script argument to a brand new TranslatableContent.
+     *
+     * @param o            text, TranslatableContent (java or nashorn), null or undefined
+     * @param lang         language to use for texts and missing values
+     * @param field        name of the argument, for logs
+     * @param logIfMissing log (debug) when o is missing
+     *
+     * @return new TranslatableContent, never null (an empty translation for missing or invalid
+     *         values)
+     */
+    private TranslatableContent toTranslatableContent(Object o, String lang, String field, boolean logIfMissing) {
+        if (isMissing(o)) {
+            if (logIfMissing) {
+                logMissing(field);
+            }
+        } else if (isText(o)) {
+            return TranslatableContent.build(lang, o.toString());
+        } else if (o instanceof TranslatableContent) {
+            return TranslatableContent.merger(null, (TranslatableContent) o);
+        } else if (isJSEntity(o, "TranslatableContent")) {
+            return TranslatableContent.readFromNashorn((JSObject) o);
+        } else {
+            logInvalid(field, "a text or a translation", o, "replaced by an empty value");
+        }
+        return TranslatableContent.build(lang, "");
+    }
+
+    /**
+     * Convert a script argument to a brand new list of attachments.
+     *
+     * @param o    list or JS array of attachments (see {@link #toAttachment}), null or undefined
+     * @param lang language to use for texts
+     *
+     * @return new list of attachments, never null (invalid items are skipped)
+     */
+    private List<Attachment> toAttachments(Object o, String lang) {
+        Collection<?> items;
+        if (isMissing(o)) {
+            items = List.of();
+        } else if (o instanceof ScriptObjectMirror && ((ScriptObjectMirror) o).isArray()) {
+            items = ((ScriptObjectMirror) o).values();
+        } else if (o instanceof Collection) {
+            items = (Collection<?>) o;
+        } else {
+            logInvalid("attachments", "an array", o, "ignored");
+            items = List.of();
+        }
+
+        List<Attachment> attachments = new ArrayList<>();
+        int i = 0;
+        for (Object item : items) {
+            Attachment att = toAttachment(item, lang, "attachments[" + i + "]");
+            if (att != null) {
+                attachments.add(att);
+            }
+            i++;
+        }
+        return attachments;
+    }
+
+    /**
+     * Convert one attachment item to a brand new Attachment.
+     *
+     * @param item  file path (text), Attachment (java or nashorn), null or undefined
+     * @param lang  language to use for texts
+     * @param field name of the item, for logs
+     *
+     * @return new attachment or null if the item is missing or invalid
+     */
+    private Attachment toAttachment(Object item, String lang, String field) {
+        if (isMissing(item)) {
+            logMissing(field);
+            return null;
+        } else if (item instanceof Attachment) {
             try {
-                atts.add((Attachment) att.duplicate());
+                return (Attachment) ((Attachment) item).duplicate();
             } catch (CloneNotSupportedException ex) {
-            }
-        }
-        msg.setAttachments(atts);
-
-        this.sendMessage(msg);
-        return msg;
-    }
-
-    /**
-     * Needed to convert objects from nashorn back to java instances
-     * @param from
-     * @param subject
-     * @param body
-     * @param date
-     * @param token
-     * @param attachments
-     * @return
-     */
-    public Message sendMessage(final JSObject from, final JSObject subject,
-        final JSObject body, final JSObject date,
-        String token, final List<JSObject> attachments) {
-
-        List<Attachment> atts = new ArrayList<>();
-        if (attachments != null && !attachments.isEmpty()) {
-            for (JSObject a : attachments) {
-                atts.add(Attachment.readFromNashorn(a));
+                loggerbeans.warn("{}.sendMessage: unable to copy {}; ignored", getInboxName(), field, ex);
+                return null;
             }
         }
 
-        return this.sendMessage(
-            TranslatableContent.readFromNashorn(from),
-            TranslatableContent.readFromNashorn(subject),
-            TranslatableContent.readFromNashorn(body),
-            TranslatableContent.readFromNashorn(date),
-            token, atts);
+        Attachment att = new Attachment();
+        if (isText(item)) {
+            att.setFile(TranslatableContent.build(lang, item.toString()));
+        } else if (isJSEntity(item, "Attachment")) {
+            Object file = ((JSObject) item).getMember("file");
+            if (isMissing(file)) {
+                logMissing(field + ".file");
+                return null;
+            } else if (!isTranslatable(file)) {
+                logInvalid(field + ".file", "a text or a translation", file, "ignored");
+                return null;
+            }
+            att.setFile(toTranslatableContent(file, lang, field + ".file", false));
+        } else {
+            logInvalid(field, "a file path or an attachment", item, "ignored");
+            return null;
+        }
+        return att;
     }
 
     /**
