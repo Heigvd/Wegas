@@ -288,8 +288,15 @@ public class GameModelFacade extends BaseFacade<GameModel> implements GameModelF
         modelFacade.processLanguages(newVersion, toPatch);
         // ensure variable tree is up to date with newVersion's
         modelFacade.fixVariableTree(newVersion, toPatch, false);
+        // fixVariableTree only aligns SCENARIO targets: make any target (eg. a MODEL) take the patch's refId as well
+        if (!Helper.isNullOrEmpty(newVersion.getRefId())) {
+            gameModel.forceRefId(newVersion.getRefId());
+        }
         // merge recusrsively and bypass visibility restriction
         gameModel.deepMergeForce(newVersion);
+
+        // flush so revive listeners querying by name see newly created descriptors (see create)
+        variableDescriptorFacade.flush();
 
         // revive descriptor & propagate default instances
         variableDescriptorFacade.reviveItems(gameModel, gameModel, false);

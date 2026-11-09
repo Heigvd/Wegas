@@ -746,8 +746,6 @@ public class ModelFacade {
      */
     public void fixVariableTree(GameModel model, List<GameModel> scenarios, boolean ignorePrivate) throws RepositoryException {
         if (model != null) {
-//            if (model.isModel()) {
-            // force all refIds
             for (GameModel scenario : scenarios) {
                 if (scenario.isScenario()) {
                     scenario.forceRefId(model.getRefId());
