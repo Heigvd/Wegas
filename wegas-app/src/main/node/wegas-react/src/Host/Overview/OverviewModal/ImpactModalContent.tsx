@@ -150,6 +150,10 @@ function useImpactRunner(
     ? team.map(t => t?.getPlayers()[0]?.getEntity())
     : team?.getPlayers()[0]?.getEntity();
 
+  // Avoid rerenders
+  const onExitRef = React.useRef(onExit);
+  onExitRef.current = onExit;
+
   React.useEffect(() => {
     if (result == null) {
       return;
@@ -157,10 +161,10 @@ function useImpactRunner(
     // Close the modal after a success, hide the errors otherwise
     const timeout =
       result.status === 'success'
-        ? setTimeout(onExit, 2000)
+        ? setTimeout(() => onExitRef.current(), 2000)
         : setTimeout(() => setResult(undefined), 5000);
     return () => clearTimeout(timeout);
-  }, [result, onExit]);
+  }, [result]);
 
   const apply = React.useCallback(
     (forms: (JSONForm | null)[], scripts: ImpactScript[]) => {
