@@ -104,6 +104,10 @@ async function runTeamImpact(
   player: Readonly<IPlayer> | undefined,
   team: STeam | undefined,
 ): Promise<string[] | undefined> {
+  // Without a player, the server would run the script on the current (trainer) player
+  if (player == null) {
+    return [`No player in team "${team?.getName() ?? ''}"`];
+  }
   const errors: string[] = [];
   for (const { script, payload } of scripts) {
     try {
@@ -143,8 +147,8 @@ function useImpactRunner(
   const [result, setResult] = React.useState<ImpactResult>();
 
   const player = Array.isArray(team)
-    ? team.map(t => t?.getPlayers()[0].getEntity())
-    : team?.getPlayers()[0].getEntity();
+    ? team.map(t => t?.getPlayers()[0]?.getEntity())
+    : team?.getPlayers()[0]?.getEntity();
 
   React.useEffect(() => {
     if (result == null) {
@@ -192,6 +196,9 @@ function useImpactRunner(
             const messages = Array.from(
               new Set(errored.flat().filter(m => m.trim().length > 0)),
             );
+            if (messages.length === 0) {
+              messages.push('Impact failed');
+            }
             if (Array.isArray(team)) {
               messages.unshift(
                 `a problem occurred in ${errored.length} / ${team.length} teams`,
