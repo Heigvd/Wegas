@@ -1,10 +1,9 @@
 import { css, cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexColumn, flexRow, grow, itemCenter } from '../../css/classes';
-import { runLoadedScript } from '../../data/Reducer/VariableInstanceReducer';
-import { Player } from '../../data/selectors';
-import { editingStore } from '../../data/Stores/editingStore';
-import { usePagesContextStateStore } from '../../data/Stores/pageContextStore';
+import { runLoadedScript } from '../../store/slices/variableInstances';
+import { selectCurrentPlayer } from '../../store/slices/players';
+import { usePageContext } from '../../store/pageContextState';
 import { classNameOrEmpty } from '../../Helper/className';
 import { safeClientScriptEval } from '../Hooks/useScript';
 import { ClientAndServerAction } from '../PageComponents/Inputs/tools';
@@ -13,6 +12,7 @@ import { clientAndServerScriptChoices } from '../PageComponents/tools/options';
 import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { themeVar } from '../Theme/ThemeVars';
 import { Button } from './Buttons/Button';
+import { dispatch } from '../../store/store';
 
 const validatorStyle = css({
   backgroundColor: themeVar.colors.HeaderColor,
@@ -165,7 +165,7 @@ export function useOnCancelAction(
     ? onCancel.server
     : undefined;
 
-  const state = usePagesContextStateStore(s => s);
+  const state = usePageContext();
 
   const handleOnCancel = React.useCallback(() => {
     if (client) {
@@ -174,10 +174,10 @@ export function useOnCancelAction(
       });
     }
     if (server) {
-      editingStore.dispatch(
+      dispatch(
         runLoadedScript(
           server,
-          Player.selectCurrent(),
+          selectCurrentPlayer(),
           undefined,
           assembleStateAndContext(context, state),
         ),

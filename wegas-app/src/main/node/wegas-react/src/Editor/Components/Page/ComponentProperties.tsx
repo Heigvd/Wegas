@@ -1,7 +1,7 @@
 import { BaseView, Schema } from 'jsoninput/typings/types';
 import { omit, pick } from 'lodash-es';
 import * as React from 'react';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
+import { deepEqual } from '../../../store/hooks';
 import {
   AbsoluteItemLayoutProps,
   defaultAbsoluteLayoutPropsKeys,
@@ -25,13 +25,15 @@ import {
 } from '../../../Components/PageComponents/tools/options';
 import { schemaProps } from '../../../Components/PageComponents/tools/schemaProps';
 import { defaultPadding, mediumPadding } from '../../../css/classes';
-import { store, StoreDispatch } from '../../../data/Stores/store';
+import { selectCustomSchemas } from '../../../store/slices/scriptRegistry';
+import { store } from '../../../store/store';
 import { findComponent } from '../../../Helper/pages';
 import { commonTranslations } from '../../../i18n/common/common';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
 import { FormAction } from '../Form';
 import { AvailableSchemas } from '../FormView';
 import { pageCTX } from './PageEditor';
+import { EditingDispatch } from '../../../store/localEdition';
 
 /**
  * wegasComponentCommonSchema - defines the minimum schema for every WegasComponent
@@ -54,7 +56,7 @@ interface EditorProps<T = WegasComponentForm> {
     message: string;
     onVanish: () => void;
   };
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
 }
 
 // Importing Form as a Lazy componenet prevents circular import statements
@@ -246,7 +248,7 @@ export interface ComponentPropertiesProps {
   parent?: WegasComponent;
   update?: (variable: WegasComponent) => void;
   actions?: FormAction<WegasComponentForm>[] | undefined;
-  localDispatch: StoreDispatch | undefined;
+  localDispatch: EditingDispatch | undefined;
 }
 
 export function ComponentProperties({
@@ -275,12 +277,12 @@ export function ComponentProperties({
       ) as Schema<BaseView>,
       label,
     };
-  }, deepDifferent);
+  }, deepEqual);
 
   // customize schema
   // Then try to get schema from complex filters
   let customSchema: SimpleSchema | void;
-  const customSchemas = store.getState().global.schemas;
+  const customSchemas = selectCustomSchemas(store.getState());
   for (const schemaName of customSchemas.unfiltered) {
     const nfSchema = customSchemas.views[schemaName](entity, schema);
     if (nfSchema !== undefined) {

@@ -1,5 +1,4 @@
 import { Schema } from 'jsoninput';
-// import { TYPESTRING } from 'jsoninput/typings/types';
 import {
   IAbstractEntity,
   IMergeable,
@@ -7,12 +6,12 @@ import {
   WegasClassNames,
 } from 'wegas-ts-api';
 import { entityIs } from '../data/entities';
-import { editStateMachine, editVariable } from '../data/Reducer/editingState';
-import { EditingThunkResult } from '../data/Stores/editingStore';
+import { editStateMachine, editVariable } from '../store/editionThunks';
 import { wwarn } from '../Helper/wegaslog';
 import { AvailableSchemas, AvailableViews } from './Components/FormView';
 import { Icons } from './Components/Views/FontAwesome';
 import { formValidation } from './formValidation';
+import { AppThunk } from '../store/store';
 
 export type WegasMethodParameter = {
   type: WegasTypeString;
@@ -204,7 +203,7 @@ export interface EActions {
     variable: IAbstractEntity,
     path?: (number | string)[],
     config?: Schema<AvailableViews>,
-  ) => EditingThunkResult;
+  ) => AppThunk;
 }
 
 export function getEntityActions(

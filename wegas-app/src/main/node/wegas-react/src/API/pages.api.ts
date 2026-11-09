@@ -1,12 +1,10 @@
 import { rest } from './rest';
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 
 const PAGE_BASE = (gameModelId?: number) =>
   `GameModel/${
     gameModelId === undefined
-      ? GameModel != null
-        ? GameModel.selectCurrent().id!
-        : CurrentGM.id!
+      ? selectCurrentGameModel()?.id ?? CurrentGM.id!
       : gameModelId
   }/Page/`;
 

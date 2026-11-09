@@ -1,20 +1,14 @@
 import { cx } from '@emotion/css';
 import * as React from 'react';
 import { flex, flexRow, grow } from '../../../../css/classes';
-import {
-  useThemeStore,
-  getThemeDispatch,
-  resetTheme,
-  deleteTheme,
-  setEditedTheme,
-  addNewLib,
-} from '../../../../data/Stores/themeStore';
 import { classNameOrEmpty } from '../../../../Helper/className';
 import { commonTranslations } from '../../../../i18n/common/common';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { ConfirmButton } from '../../../Inputs/Buttons/ConfirmButton';
 import { AdderSelector } from '../AdderSelector';
+import { shallowEqual, useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { addNewLib, deleteTheme, resetTheme, setEditedTheme } from '../../../../store/slices/theme';
 
 interface ThemeSelectorProps {
   dropMenuClassName?: string;
@@ -25,8 +19,8 @@ export function ThemeSelector({
   dropMenuClassName,
   addButtonClassName,
 }: ThemeSelectorProps) {
-  const { themes, editedThemeName } = useThemeStore(s => s);
-  const dispatch = getThemeDispatch();
+  const { themes, editedThemeName} = useAppSelector(s => s.themes, shallowEqual);
+  const dispatch = useAppDispatch();
   const i18nValues = useInternalTranslate(commonTranslations);
   const i18nValuesEditor = useInternalTranslate(editorTabsTranslations);
 
@@ -75,7 +69,7 @@ export function ThemeSelector({
       onSelect={value => {
         dispatch(setEditedTheme(value));
       }}
-      onAccept={value => dispatch(addNewLib(value))}
+      onAccept={value => dispatch(addNewLib({themeName:value}))}
       onError={onError}
       dropMenuClassName={classNameOrEmpty(dropMenuClassName)}
       addButtonClassName={classNameOrEmpty(addButtonClassName)}

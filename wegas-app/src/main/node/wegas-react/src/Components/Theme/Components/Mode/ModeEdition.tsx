@@ -9,25 +9,22 @@ import {
   itemCenter,
   defaultPadding,
 } from '../../../../css/classes';
-import {
-  useThemeStore,
-  getThemeDispatch,
-  setModeValue,
-  setNextMode,
-} from '../../../../data/Stores/themeStore';
 import { borderBottom } from '../../../../Editor/Components/FormView/commonView';
 import { editorTabsTranslations } from '../../../../i18n/editorTabs/editorTabs';
 import { useInternalTranslate } from '../../../../i18n/internalTranslator';
 import { DropMenu } from '../../../DropMenu';
 import { CheckBox } from '../../../Inputs/Boolean/CheckBox';
 import { Toolbar } from '../../../Toolbar';
-import { ThemeValues, ModeValues, Theme } from '../../ThemeVars';
+import { ThemeValues, Theme } from '../../ThemeVars';
 import { ModeValueModifier } from './ModeValueModifier';
+import { shallowEqual } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { ModeValueArg, setModeValue, setNextMode } from '../../../../store/slices/theme';
 
 export function ModeEdition() {
   const i18nValues = useInternalTranslate(editorTabsTranslations);
-  const { themes, editedThemeName, editedModeName } = useThemeStore(s => s);
-  const dispatch = getThemeDispatch();
+  const { themes, editedThemeName, editedModeName } = useAppSelector(s => s.themes, shallowEqual);
+  const dispatch = useAppDispatch();
 
   const [selectedSection, setSelectedSection] = React.useState<
     { [key in keyof ThemeValues]?: boolean }
@@ -41,9 +38,9 @@ export function ModeEdition() {
   const modeValueReducer = React.useCallback(
     (
       old: JSX.Element[],
-      [section]: [keyof ValueOf<ModeValues>, boolean],
+      [section]: [keyof ThemeValues, boolean],
       i: number,
-      a: [keyof ValueOf<ModeValues>, boolean][],
+      a: [keyof ThemeValues, boolean][],
     ) => {
       const values = currentMode?.values || {};
       // const entries = Object.keys(component[section] || {});
@@ -56,8 +53,12 @@ export function ModeEdition() {
             values={values}
             onChange={(k, v) =>
               dispatch(
-                // Type are becomming too complex here. We just have to rely on dev to send good values
-                setModeValue(section, k as never, v as never),
+                // ModeValueModifier's onChange hands over a bare string entry
+                // name, and `section` here is the whole union rather than a
+                // literal, so this cast is what turns that string into the
+                // section's key union. The thunk still rejects a genuinely wrong
+                // {section, key, value} combination from every other call site.
+                setModeValue({ section, key: k, value: v } as ModeValueArg),
               )
             }
           />

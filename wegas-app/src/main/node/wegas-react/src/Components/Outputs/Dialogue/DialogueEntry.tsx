@@ -10,7 +10,7 @@ import {
   grow,
 } from '../../../css/classes';
 import { HTMLText } from '../HTMLText';
-import { Global } from '../../../data/selectors';
+import { selectCurrentUser } from '../../../store/slices/user';
 import { themeVar } from '../../Theme/ThemeVars';
 import { WaitingLoader } from './WaitingLoader';
 import { useTranslate } from '../../Hooks/useTranslate';
@@ -66,7 +66,7 @@ function UserPortrait({
   style,
   id,
 }: UserPortraitProps) {
-  const user = Global.selectCurrentUser();
+  const user = selectCurrentUser();
   return (
     <div className={className} style={style} id={id}>
       {player ? (

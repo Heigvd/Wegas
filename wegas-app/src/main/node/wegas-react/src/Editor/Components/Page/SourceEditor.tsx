@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { deepDifferent } from '../../../Components/Hooks/storeHookFactory';
-import { useStore } from '../../../data/Stores/store';
 import { getPageIndexItemFromFolder } from '../../../Helper/pages';
 import { useInternalTranslate } from '../../../i18n/internalTranslator';
+import { deepEqual, useAppSelector } from '../../../store/hooks';
 import { pagesTranslations } from '../../../i18n/pages/pages';
 import { JSONandJSEditor } from '../ScriptEditors/JSONandJSEditor';
 import { pageCTX, patchPage } from './PageEditor';
 
 export default function SourceEditor() {
   const { loading, selectedPage, selectedPageId } = React.useContext(pageCTX);
-  const indexPage = useStore(
+  const indexPage = useAppSelector(
     s => {
       if (s.pages.index){
         return getPageIndexItemFromFolder(s.pages.index.root, selectedPageId)
@@ -17,7 +16,7 @@ export default function SourceEditor() {
         return undefined
       }
     },
-    deepDifferent,
+    deepEqual,
   );
   const i18nValues = useInternalTranslate(pagesTranslations);
   if (loading) {

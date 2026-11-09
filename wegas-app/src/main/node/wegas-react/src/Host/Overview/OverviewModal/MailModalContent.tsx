@@ -13,7 +13,7 @@ import {
   flexDistribute,
   flexRow,
 } from '../../../css/classes';
-import { Game } from '../../../data/selectors';
+import { selectCurrentGame } from '../../../store/slices/game';
 import { AvailableSchemas } from '../../../Editor/Components/FormView';
 import { modalButtonsContainer } from './OverviewModal';
 
@@ -94,7 +94,7 @@ export function MailModalContent({ team, onExit }: MailModalContentProps) {
     UserAPI.getUserInfo().then(res => {
       const from = res.accounts[0].email;
       TeamAPI.getEmails(
-        Game.selectCurrent().id!,
+        selectCurrentGame().id!,
         Array.isArray(team) ? undefined : team?.getId(),
       ).then(res => {
         if (mounted.current) {

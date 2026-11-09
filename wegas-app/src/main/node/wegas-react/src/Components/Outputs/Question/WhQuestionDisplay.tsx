@@ -10,23 +10,18 @@ import {
   IWhQuestionInstance,
 } from 'wegas-ts-api';
 import { autoMargin, halfOpacity } from '../../../css/classes';
-import { Actions } from '../../../data';
+import { createDescriptor } from '../../../store/slices/variableDescriptors';
 import { createTranslatableContent, translate } from '../../../data/i18n';
 import { getInstance } from '../../../data/methods/VariableDescriptorMethods';
-import { State } from '../../../data/Reducer/reducers';
 import {
   updateInstance,
   validateQuestion,
-} from '../../../data/Reducer/VariableInstanceReducer';
+} from '../../../store/slices/variableInstances';
 import {
   IWhChoiceDescriptor,
   IWhChoiceInstance,
 } from '../../../data/scriptable/impl/QuestionDescriptor';
-import { select } from '../../../data/selectors/VariableDescriptorSelector';
-import {
-  editingStore,
-  EditingStoreDispatch,
-} from '../../../data/Stores/editingStore';
+import { selectDescriptor } from '../../../store/slices/variableDescriptors';
 import { languagesCTX } from '../../Contexts/LanguagesProvider';
 import HTMLEditor from '../../HTML/HTMLEditor';
 import { CheckBox } from '../../Inputs/Boolean/CheckBox';
@@ -43,6 +38,8 @@ import {
 import { questionStyle } from './Question';
 import { QuestionDescription } from './QuestionDescription';
 import { makeMenuFromClass } from './QuestionList';
+import { dispatch } from '../../../store/store';
+import { EditingDispatch } from '../../../store/localEdition';
 
 interface AddChoiceMenuProps {
   questionD: IWhQuestionDescriptor;
@@ -58,8 +55,8 @@ export function AddChoiceMenu({ questionD }: AddChoiceMenuProps) {
     <AddMenu
       items={choices}
       onSelect={item => {
-        editingStore.dispatch(
-          Actions.VariableDescriptorActions.createDescriptor(
+        dispatch(
+          createDescriptor(
             {
               '@class': item.value.descriptor,
               label: createTranslatableContent(lang, 'Réponse'),
@@ -82,11 +79,17 @@ interface WhQuestionInfo {
   choicesI: (Readonly<IWhChoiceInstance> | undefined)[];
 }
 
+/**
+ * Query subtree / instance about a QuestionDescriptor
+ *
+ * Reads descriptors (via `select`) and instances (via `getInstance`) from the
+ * store imperatively, so subscribe to it with useDataSelector.
+ */
 export function whQuestionInfo(question: IWhQuestionDescriptor) {
-  return function (s: Readonly<State>): WhQuestionInfo {
-    const questionD = select<IWhQuestionDescriptor>(question.id)!;
+  return function (): WhQuestionInfo {
+    const questionD = selectDescriptor<IWhQuestionDescriptor>(question.id)!;
     const choicesD = questionD.itemsIds
-      .map(id => s.variableDescriptors[id])
+      .map(id => selectDescriptor<IWhChoiceDescriptor>(id))
       .filter(function (
         entity: IWhChoiceDescriptor | undefined,
       ): entity is IWhChoiceDescriptor {
@@ -198,7 +201,7 @@ function WhChoiceDisplay({
 }
 
 interface WhQuestionDisplayProps extends WhQuestionInfo, DisabledReadonly {
-  dispatch: EditingStoreDispatch;
+  dispatch: EditingDispatch;
   editMode?: boolean;
 }
 

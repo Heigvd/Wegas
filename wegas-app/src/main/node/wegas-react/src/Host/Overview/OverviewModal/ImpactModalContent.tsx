@@ -19,8 +19,8 @@ import {
   grow,
   textCenter,
 } from '../../../css/classes';
-import { asyncRunLoadedScript } from '../../../data/Reducer/VariableInstanceReducer';
-import { Game } from '../../../data/selectors';
+import { asyncRunLoadedScript } from '../../../store/slices/variableInstances';
+import { selectCurrentGame } from '../../../store/slices/game';
 import { parseEvent } from '../../../Editor/Components/EntityEditor';
 import { ReparentableRoot } from '../../../Editor/Components/Reparentable';
 import { IconComp } from '../../../Editor/Components/Views/FontAwesome';

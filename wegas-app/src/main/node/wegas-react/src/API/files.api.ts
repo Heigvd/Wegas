@@ -1,6 +1,6 @@
 import { omit } from 'lodash';
 import { IAbstractContentDescriptor } from 'wegas-ts-api';
-import { GameModel } from '../data/selectors';
+import { selectCurrentGameModel } from '../store/slices/gameModel';
 import { rest } from './rest';
 
 /**
@@ -19,7 +19,7 @@ export function generateAbsolutePath({
 
 export const FILE_BASE = (gameModelId?: number) =>
   `GameModel/${
-    gameModelId === undefined ? GameModel.selectCurrent().id! : gameModelId
+    gameModelId === undefined ? selectCurrentGameModel().id! : gameModelId
   }/File/`;
 
 /**
