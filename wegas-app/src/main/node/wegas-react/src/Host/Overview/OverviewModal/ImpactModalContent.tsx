@@ -112,7 +112,7 @@ async function runTeamImpact(
   for (const { script, payload } of scripts) {
     try {
       const response = await asyncRunLoadedScript(
-        Game.selectCurrent().id!,
+        selectCurrentGame().id!,
         script,
         player,
         undefined,
