@@ -7,15 +7,24 @@
  */
 package com.wegas.core.security.util;
 
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.map.IMap;
 import com.wegas.core.Helper;
+import javax.naming.NamingException;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
+import org.apache.shiro.crypto.CryptoException;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.servlet.Cookie;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * RememberMe manager whose cookie is encrypted with the AES key given by the shiro.cipherKey
+ * property.
+ * <p>
+ * If this property is missing or invalid, a random key is generated and shared through Hazelcast
+ * so that all cluster nodes use the same key.
  *
  * @author maxence
  */
@@ -26,9 +35,21 @@ public final class ShiroRememberManager extends CookieRememberMeManager {
     private static final String CIPHER_KEY_PROPERTY = "shiro.cipherKey";
 
     /**
+     * Hazelcast map holding the cluster-wide generated key
+     */
+    private static final String CLUSTER_KEY_MAP = "hz_shiro_rememberMe";
+
+    private static final String CLUSTER_KEY_ENTRY = "cipherKey";
+
+    /**
      * Size of the generated key, in bits, when none is configured
      */
     private static final int GENERATED_KEY_SIZE = 256;
+
+    /**
+     * true if a valid key is set in shiro.cipherKey; false means the key is shared through Hazelcast
+     */
+    private final boolean useConfiguredKey;
 
     public ShiroRememberManager() {
         super();
@@ -37,19 +58,36 @@ public final class ShiroRememberManager extends CookieRememberMeManager {
         this.getCookie().setSameSite(Cookie.SameSiteOptions.LAX);
         this.getCookie().setMaxAge(Integer.parseInt(Helper.getWegasProperty("shiro.rememberMeDuration", "3600")));
 
-        setCipherKey(resolveCipherKey());
+        byte[] configuredKey = readConfiguredKey();
+        if (configuredKey != null) {
+            this.useConfiguredKey = true;
+            setCipherKey(configuredKey);
+        } else {
+            this.useConfiguredKey = false;
+            // Fail now rather than on each login. Shiro sessions also rely on Hazelcast,
+            // so Wegas would not work without it anyway.
+            getClusterKeyMap();
+        }
+    }
+
+    @Override
+    public byte[] getEncryptionCipherKey() {
+        return useConfiguredKey ? super.getEncryptionCipherKey() : getClusterKey();
+    }
+
+    @Override
+    public byte[] getDecryptionCipherKey() {
+        return useConfiguredKey ? super.getDecryptionCipherKey() : getClusterKey();
     }
 
     /**
-     * Read the AES key used to encrypt the rememberMe cookie from the shiro.cipherKey property.
+     * Read the AES key from the shiro.cipherKey property.
      * <p>
-     * The key must be hex-encoded and 16, 24 or 32 bytes long (AES-128/192/256). If it's
-     * missing or invalid, a random key is generated: rememberMe cookies then won't survive a
-     * restart and won't be shared between cluster nodes.
+     * The key must be hex-encoded and 16, 24 or 32 bytes long (AES-128/192/256).
      *
-     * @return the AES key
+     * @return the key, or null if it's missing or invalid
      */
-    private static byte[] resolveCipherKey() {
+    private static byte[] readConfiguredKey() {
         String hexKey = Helper.getWegasProperty(CIPHER_KEY_PROPERTY, null);
 
         String problem;
@@ -68,10 +106,42 @@ public final class ShiroRememberManager extends CookieRememberMeManager {
             }
         }
 
-        logger.warn("{} {}: using a random {}-bit key. RememberMe cookies will be invalidated on restart"
-            + " and not shared between cluster nodes. Generate a key with `openssl rand -hex 32`.",
+        logger.warn("{} {}: using a random {}-bit key shared through Hazelcast. RememberMe cookies"
+            + " will be invalidated when the whole cluster restarts. Set the same key on every node"
+            + " (e.g. generate it with `openssl rand -hex 32`).",
             CIPHER_KEY_PROPERTY, problem, GENERATED_KEY_SIZE);
+        return null;
+    }
 
-        return new AesCipherService().generateNewKey(GENERATED_KEY_SIZE).getEncoded();
+    /**
+     * Get the cluster-wide key, generating it if no node did it yet.
+     * <p>
+     * The key is read from Hazelcast every time rather than kept in memory: if two nodes start
+     * simultaneously and each generates a key before they find each other, Hazelcast keeps only
+     * one when the clusters merge, and every node must switch to that one.
+     *
+     * @return the key shared by all cluster nodes
+     */
+    private static byte[] getClusterKey() {
+        IMap<String, byte[]> map = getClusterKeyMap();
+        byte[] key = map.get(CLUSTER_KEY_ENTRY);
+        if (key == null) {
+            byte[] newKey = new AesCipherService().generateNewKey(GENERATED_KEY_SIZE).getEncoded();
+            key = map.putIfAbsent(CLUSTER_KEY_ENTRY, newKey);
+            if (key == null) {
+                logger.info("Generated a new cluster-wide rememberMe cipher key");
+                key = newKey;
+            }
+        }
+        return key;
+    }
+
+    private static IMap<String, byte[]> getClusterKeyMap() {
+        try {
+            HazelcastInstance hz = Helper.jndiLookup(Helper.getWegasProperty("hazelcast.jndi_name"), HazelcastInstance.class);
+            return hz.getMap(CLUSTER_KEY_MAP);
+        } catch (NamingException ex) {
+            throw new CryptoException("Unable to get the Hazelcast instance holding the rememberMe cipher key", ex);
+        }
     }
 }
