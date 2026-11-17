@@ -258,11 +258,20 @@ public class ChoiceInstance extends VariableInstance implements ReadableInstance
      */
     public void addReply(Reply reply) {
         reply.setChoiceInstance(this);
+        // Do not call this.replies.add(reply) directly, for the same reason as in removeReply:
+        // on a lazy list which is not loaded yet, EclipseLink only notes the addition for later.
+        // cloneAdd copies the list first, which forces it to load, so the addition is real.
         this.setReplies(ListUtils.cloneAdd(this.getReplies(), reply));
     }
 
     /* package */ void removeReply(Reply reply) {
-        this.replies.remove(reply);
+        // Do not call this.replies.remove(reply) directly. "replies" is a lazy EclipseLink list: if
+        // it is not loaded yet, EclipseLink only notes the removal for later instead of doing it,
+        // and drops that note at commit. Reading the list afterwards may then still show the reply.
+        // Copying the list first (as addReply does) forces it to load, so the removal is real.
+        List<Reply> newReplies = ListUtils.clone(this.getReplies());
+        newReplies.remove(reply);
+        this.replies = newReplies;
     }
 
     /**

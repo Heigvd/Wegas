@@ -296,7 +296,15 @@ public abstract class AbstractArquillianTestMinimal {
     }
 
     protected void wipeEmCache() {
-        this.jpaCacheHelper.requestClearCache();
+        // clearCacheLocal("all") clears the JPA shared cache right now, in the current thread: the
+        // cache is empty when this method returns.
+        //
+        // Do not use jpaCacheHelper.requestClearCache() here, as this method used to do. It only
+        // fires a clustered CDI event, which Payara delivers later from another thread. The cache
+        // was thus wiped at some random point after this method had returned, while the test was
+        // already running, which made some tests fail randomly (e.g.
+        // QuestionDescriptorFacadeTest.testSelectAndCancel, about one run out of twenty).
+        this.jpaCacheHelper.clearCacheLocal("all");
     }
 
     public void logout() {

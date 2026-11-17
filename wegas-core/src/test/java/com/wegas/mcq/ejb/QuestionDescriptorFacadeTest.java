@@ -422,6 +422,39 @@ public class QuestionDescriptorFacadeTest extends AbstractArquillianTest {
         variableDescriptorFacade.remove(question.getId());
     }
 
+    /**
+     * Regression test for a cancelled reply which was still listed in its choice instance.
+     * <p>
+     * It happened when these two things occurred between selecting the choice and cancelling the
+     * reply:
+     * <ol>
+     * <li>the JPA shared cache was cleared, so the choice instance was reloaded from the database
+     * with a lazy list of replies;</li>
+     * <li>that list was read, so the cached choice instance held a loaded list containing the
+     * reply.</li>
+     * </ol>
+     * Cancelling the reply then deleted it from the database, but the choice instance returned by
+     * cancelReply still showed the old list (see the comment in {@code ChoiceInstance.removeReply}).
+     * <p>
+     * {@link #testSelectAndCancel} used to hit this case randomly, as the cache used to be cleared
+     * asynchronously. This test reproduces it on purpose.
+     */
+    @Test
+    public void testSelectAndCancelAfterCacheEviction() throws NamingException {
+        QuestionDescriptor question = createQuestion(scenario.getId(), "question", null);
+        ChoiceDescriptor choice = createChoice(question, "testChoice", null, "result", wegasFactory.createResult("result"));
+
+        final Reply reply = questionDescriptorFacade.selectChoice(choice.getId(), player.getId());
+
+        // evict everything, then reload the choice instance and its replies from the database
+        this.wipeEmCache();
+        assertEquals(1, ((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size());
+
+        final Reply cancelled = questionDescriptorFacade.cancelReply(player.getId(), reply.getId());
+        assertEquals(0, cancelled.getChoiceInstance().getReplies().size());
+        assertEquals(0, ((QuestionInstance) variableInstanceFacade.find(question.getId(), player.getId())).getReplies().size());
+    }
+
     @Test
     public void testResetAndDestroy() throws Exception {
         QuestionDescriptor question = new QuestionDescriptor();
