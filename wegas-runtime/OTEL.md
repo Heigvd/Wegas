@@ -213,3 +213,12 @@ OTEL_LOGS_EXPORTER=none \
 Then generate traffic and look in the SigNoz UI → **Services** for `wegas`.
 Enable metrics/logs later by flipping `OTEL_METRICS_EXPORTER` / `OTEL_LOGS_EXPORTER` to
 `otlp` — no rebuild required.
+
+---
+
+## 7. Related documents
+
+- [OTEL-METRICS-MIGRATION.md](OTEL-METRICS-MIGRATION.md) — plan for moving the five
+  Wegas-specific metrics off Payara's `/metrics` endpoint onto OTel instruments.
+- [OTEL-METRICS-GAPS.md](OTEL-METRICS-GAPS.md) — the JVM/Payara metrics still on `/metrics`
+  that the agent does not cover, and how to port each one.
