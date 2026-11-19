@@ -136,7 +136,7 @@ interface PageDeserializerProps {
   inheritedOptionsState: HeritableOptionsState;
 }
 
-export function PageDeserializer({
+function PageDeserializerComponent({
   pageId,
   path,
   uneditable,
@@ -307,3 +307,14 @@ export function PageDeserializer({
     </ComponentContainer>
   );
 }
+
+/**
+ * Memoized by value: the parents (ForEach, IfElse, State...) rebuild path,
+ * context, dropzones and inheritedOptionsState on each render, so shallow
+ * comparison would never skip. A cell whose props did not change is not
+ * re-rendered when a sibling changes.
+ */
+export const PageDeserializer = React.memo(
+  PageDeserializerComponent,
+  (prevProps, nextProps) => deepEqual(prevProps, nextProps),
+);

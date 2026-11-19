@@ -5,7 +5,8 @@
  * Copyright (c) 2013-2026 School of Management and Engineering Vaud, Comem, MEI
  * Licensed under the MIT License
  */
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, original, PayloadAction } from '@reduxjs/toolkit';
+import { isEqual } from 'lodash-es';
 import type { RootState } from '../store';
 
 /* ------------------------------------------------------------------ *
@@ -55,6 +56,26 @@ const initialState: PageContextState = {
   values: { context: {}, state: {} },
 };
 
+/**
+ * Fix 2 PMG slowdown: true when `map` already holds `value` under `exposeAs` (deep equality).
+ *
+ * Writing an identical value anyway gives the page context a new reference, and
+ * every script of the page depends on it: all of them are re-evaluated for
+ * nothing. A click handler resetting an already reset UI state re-ran ~2,400
+ * scripts on a PMG Gantt page this way.
+ *
+ * `map` must be a plain (non-draft) object: read it from `original(state)`.
+ */
+function holdsSameValue(
+  map: { [exposeAs: string]: unknown } | undefined,
+  exposeAs: string,
+  value: unknown,
+): boolean {
+  const previous = map?.[exposeAs] as { state: unknown } | undefined;
+  // a missing entry is always written, even for an undefined value
+  return previous !== undefined && isEqual(previous.state, value);
+}
+
 /* ------------------------------------------------------------------ *
  * Slice
  * ------------------------------------------------------------------ */
@@ -68,6 +89,10 @@ const pageContextSlice = createSlice({
       action: PayloadAction<{ exposeAs: string; value: unknown }>,
     ) {
       const { exposeAs, value } = action.payload;
+      // fix 2: an identical write keeps the current references
+      if (holdsSameValue(original(state)?.values.context, exposeAs, value)) {
+        return;
+      }
       state.values.context[exposeAs] = { state: value };
     },
     setStateValue(
@@ -75,6 +100,10 @@ const pageContextSlice = createSlice({
       action: PayloadAction<{ exposeAs: string; value: unknown }>,
     ) {
       const { exposeAs, value } = action.payload;
+      // fix 2: an identical write keeps the current references
+      if (holdsSameValue(original(state)?.values.state, exposeAs, value)) {
+        return;
+      }
       state.values.state[exposeAs] = { state: value };
     },
     /**

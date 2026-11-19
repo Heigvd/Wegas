@@ -29,7 +29,11 @@ import {
   findDescriptorByName,
   selectDescriptor,
 } from '../../store/slices/variableDescriptors';
-import { deepEqual, useDataSelector } from '../../store/hooks';
+import {
+  deepEqual,
+  selectDataVersion,
+  useDataSelector,
+} from '../../store/hooks';
 import { selectCurrentUser } from '../../store/slices/user';
 import {
   getLivePageContext,
@@ -71,6 +75,12 @@ import { schemaProps } from '../PageComponents/tools/schemaProps';
 import { addPopup, popupRemoved } from '../../store/slices/popups';
 
 import { globals } from './sandbox';
+import { useDeepMemo } from './useDeepMemo';
+import {
+  GlobalsInputs,
+  isEmptyScriptItem,
+  sameGlobalsInputs,
+} from './scriptHelpers';
 
 import {
   feature,
@@ -134,7 +144,19 @@ export function useGlobalContexts(): GlobalContexts {
   }, [featuresContext, languagesContext, classesContext]);
 }
 
+/**
+ * Inputs of the last setGlobals call. The sandbox globals are a singleton, so
+ * they only need rewriting when these inputs change.
+ */
+let lastGlobalsInputs: GlobalsInputs | undefined;
+
 export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
+  // every global is built from the data slices and from the global contexts
+  const dataVersion = selectDataVersion(state);
+  if (sameGlobalsInputs(lastGlobalsInputs, { globalContexts, dataVersion })) {
+    return;
+  }
+
   const {
     lang,
     selectLang,
@@ -448,6 +470,9 @@ export function setGlobals(globalContexts: GlobalContexts, state: RootState) {
     },
     transformExtent: transformExtentWrapper,
   };
+
+  // recorded last: a setGlobals that throws is retried on the next call
+  lastGlobalsInputs = { globalContexts, dataVersion };
 }
 
 function transformExtentWrapper(
@@ -536,28 +561,25 @@ function transpileToFunction(
 }
 
 export function addSetterToState(state: PageContextValues) {
-  return Object.entries(state.context).reduce((o, [k, s]) => {
+  // filled in place: spreading an accumulator for each key is quadratic
+  const withSetters: Record<string, unknown> = {};
+  for (const [k, s] of Object.entries(state.context)) {
     if (typeof s === 'object' && s !== null && 'state' in s) {
-      return {
-        ...o,
-        [k]: {
-          ...s,
-          setState: (newState: ((oldState: unknown) => unknown) | unknown) => {
-            const newS =
-              typeof newState === 'function'
-                ? newState((s as { state: unknown }).state)
-                : newState;
-            dispatch(setContextValue({ exposeAs: k, value: newS }));
-          },
+      withSetters[k] = {
+        ...s,
+        setState: (newState: ((oldState: unknown) => unknown) | unknown) => {
+          const newS =
+            typeof newState === 'function'
+              ? newState((s as { state: unknown }).state)
+              : newState;
+          dispatch(setContextValue({ exposeAs: k, value: newS }));
         },
       };
     } else {
-      return {
-        ...o,
-        [k]: s,
-      };
+      withSetters[k] = s;
     }
-  }, {});
+  }
+  return withSetters;
 }
 
 const memoClientScriptEval = (() => {
@@ -572,19 +594,19 @@ const memoClientScriptEval = (() => {
     options?: TranspileOptions,
     argValues: unknown[] = [],
   ): T extends WegasScriptEditorReturnType ? T : unknown => {
+    // nothing to run: return before building the sandbox context
+    if (!script || (typeof script !== 'string' && !script.content)) {
+      return undefined as any;
+    }
+
     const currentState = addSetterToState(state || getLivePageContext());
     globals.Context = { ...currentState, ...context };
 
     let scriptAsFunction;
-    if (!script) {
-      return undefined as any;
-    } else if (typeof script === 'string') {
+    if (typeof script === 'string') {
       // scripts provided as string (eg. big clientscripts), are not cached
       scriptAsFunction = transpileToFunction(script, options);
     } else {
-      if (!script.content) {
-        return undefined as any;
-      }
       const scriptKey = `IR_${options?.injectReturn ?? 'nope'}::M_${
         options?.moduleName ?? 'nope'
       }::${script.content}`;
@@ -757,6 +779,10 @@ export function useScript<T>(
 
   const isFirstRun = React.useRef(true);
 
+  // callers often build the script array inline: keep the previous reference
+  // when the content is unchanged, so the evaluation below is not redone
+  const stableScript = useDeepMemo(script);
+
   const newContext = React.useMemo(() => {
     if (!isEqual(context, oldContext.current)) {
       oldContext.current = context;
@@ -778,8 +804,8 @@ export function useScript<T>(
   //    : toStr(script);
 
   const fn = React.useCallback(() => {
-    if (Array.isArray(script)) {
-      return script.map(scriptItem =>
+    if (Array.isArray(stableScript)) {
+      return stableScript.map(scriptItem =>
         safeClientScriptEval<T>(
           scriptItem,
           newContext,
@@ -790,14 +816,14 @@ export function useScript<T>(
       );
     } else {
       return safeClientScriptEval<T>(
-        script,
+        stableScript,
         newContext,
         catchCB,
         state,
         options,
       );
     }
-  }, [script, newContext, state, catchCB, options]);
+  }, [stableScript, newContext, state, catchCB, options]);
 
   React.useEffect(() => {
     isFirstRun.current = true;
@@ -807,6 +833,15 @@ export function useScript<T>(
   // useDataSelector), and may run during render: setGlobals then writes the
   // sandbox globals during render. Harmless without concurrent rendering.
   const evaluate = React.useCallback(() => {
+    // nothing to run: the result is constant, so skip the sandbox setup
+    if (Array.isArray(stableScript)) {
+      if (stableScript.every(isEmptyScriptItem)) {
+        return stableScript.map(() => undefined);
+      }
+    } else if (isEmptyScriptItem(stableScript)) {
+      return undefined;
+    }
+
     //ref +state.reloading
     setGlobals(globalContexts, store.getState());
 
@@ -831,7 +866,7 @@ export function useScript<T>(
     }
 
     return returnValue;
-  }, [fn, globalContexts]);
+  }, [fn, globalContexts, stableScript]);
   const returnValue = useDataSelector(evaluate, deepEqual);
 
   return returnValue as any;

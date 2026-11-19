@@ -62,6 +62,68 @@ describe('pageContext slice', () => {
   });
 
   /* ---------------------------------------------------------------- *
+   * Fix 2: identical writes are no-ops
+   * ---------------------------------------------------------------- */
+
+  it('ignores a write with identical content (fix 2)', () => {
+    let s = reducer(
+      undefined,
+      setContextValue({ exposeAs: 'ui', value: { open: false, items: [1] } }),
+    );
+    s = reducer(
+      s,
+      setStateValue({ exposeAs: 'state_0', value: { open: false, items: [1] } }),
+    );
+
+    // new objects, same content: the state keeps its reference, so no
+    // consumer re-renders nor re-evaluates its scripts
+    const after = reducer(
+      reducer(
+        s,
+        setContextValue({ exposeAs: 'ui', value: { open: false, items: [1] } }),
+      ),
+      setStateValue({ exposeAs: 'state_0', value: { open: false, items: [1] } }),
+    );
+    expect(after).toBe(s);
+  });
+
+  it('still writes when the content differs (fix 2)', () => {
+    const s = reducer(
+      undefined,
+      setContextValue({ exposeAs: 'ui', value: { open: false } }),
+    );
+    const after = reducer(
+      s,
+      setContextValue({ exposeAs: 'ui', value: { open: true } }),
+    );
+
+    expect(after).not.toBe(s);
+    expect(published(after)).not.toBe(published(s));
+    expect(live(after).context.ui).toEqual({ state: { open: true } });
+  });
+
+  it('creates a missing entry even for an undefined value (fix 2)', () => {
+    const s = reducer(
+      undefined,
+      setContextValue({ exposeAs: 'u', value: undefined }),
+    );
+
+    // `Context.u` must exist for `Context.u.state` / `.setState` to work
+    expect(Object.keys(live(s).context)).toEqual(['u']);
+  });
+
+  it('keeps the published reference across a reload rewriting identical values (fix 2)', () => {
+    let s = reducer(undefined, setContextValue({ exposeAs: 'foo', value: { a: 1 } }));
+    const before = published(s);
+
+    s = reducer(s, setReloading(true));
+    s = reducer(s, setContextValue({ exposeAs: 'foo', value: { a: 1 } }));
+    s = reducer(s, setReloading(false));
+
+    expect(published(s)).toBe(before);
+  });
+
+  /* ---------------------------------------------------------------- *
    * The reload window -- the reason this slice is shaped this way
    * ---------------------------------------------------------------- */
 
