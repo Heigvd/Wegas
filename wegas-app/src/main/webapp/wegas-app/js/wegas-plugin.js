@@ -330,6 +330,8 @@ YUI.add('wegas-plugin', function(Y) {
                 displayPath = this.get('displayPath'),
                 title = this.get('title.evaluated'),
                 playerId = Wegas.Facade.Game.get('currentPlayerId'),
+                rootCfg = this.get('root'),
+                hasRootCfg = !!(rootCfg && (rootCfg.content || rootCfg.name || rootCfg.expr)),
                 roots = this.get('root.evaluated'),
                 root = '',
                 printUrl;
@@ -358,7 +360,10 @@ YUI.add('wegas-plugin', function(Y) {
                 displayPath +
                 (title ? '&title=' + encodeURIComponent(title) : '') +
                 '&root=' +
-                encodeURIComponent(root);
+                encodeURIComponent(root) +
+                // A root is configured but resolved to nothing (e.g. no question for the current period):
+                // an empty root alone would make the server print the whole game model.
+                (hasRootCfg && !root ? '&emptyRoot=true' : '');
             window.open(printUrl);
         }
     }, {

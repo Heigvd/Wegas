@@ -39,6 +39,10 @@ import org.slf4j.LoggerFactory;
  *        <b>player</b>="#{the player to print the gameModel for (test player means default values)}"
  *        <b>mode</b>=["editor" | "player"]
  *        <b>root</b>="a variable descriptor name (i.e scriptAlias, vd.getName()) (optional)"
+ *        <b>emptyRoot</b>=["true" | "false"] (optional)
+ *
+ * emptyRoot: when "true" and root is empty, a root was requested but resolved to no
+ *       variable: only the title is printed, instead of the whole game model.
  *
  * mode: indicates whether or not a full export (mode = "editor") or a player
  *       export (mode != "editor") shall be done. Editor mode is only
@@ -96,6 +100,10 @@ public class UIGameModel extends UIComponentBase {
         String title = (String) getAttributes().get("title");
         String defVal = (String) getAttributes().get("defaultValues");
         Boolean displayPath = "true".equals((String) getAttributes().get("displayPath"));
+        boolean emptyRoot = "true".equals((String) getAttributes().get("emptyRoot"));
+        boolean noRoot = root == null || root.isEmpty();
+        // print the whole game model only if no root was requested at all
+        boolean printWholeGameModel = noRoot && !emptyRoot;
         String[] roots;
 
         boolean hasEditRightOnGameModel = SecurityUtils.getSubject()
@@ -150,7 +158,7 @@ public class UIGameModel extends UIComponentBase {
         List<VariableDescriptor> vds;
 
         // unless root is specified, fetch all descriptors
-        if (root == null || root.isEmpty()) {
+        if (printWholeGameModel) {
             vds = gm.getChildVariableDescriptors();
         } else {
             vds = new ArrayList<>();
@@ -172,9 +180,9 @@ public class UIGameModel extends UIComponentBase {
         /*
          * when root is specified, do not print headers and start printing vardesc from root node
          */
-        if (root == null || root.isEmpty()) {
+        if (printWholeGameModel) {
             encodeGameModelHeader(context, writer, gm);
-        } else {
+        } else if (!noRoot) {
             // Fetch all "root" descriptors
             VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
             roots = root.split(",");
