@@ -18,6 +18,7 @@ import java.util.Map;
 import jakarta.faces.component.html.HtmlOutputText;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.context.ResponseWriter;
+import org.apache.commons.text.StringEscapeUtils;
 
 /**
  *
@@ -91,7 +92,7 @@ public class UIHelper {
     public static final String TEXT_ONLY_ONCE = "Only once";
     public static final String TEXT_ON_ENTER_IMPACT = "On Enter Impact";
     public static final String TEXT_PREDECESSORS = "Predecessors";
-    public static final String TEXT_REQUIERMENT_REQUIERMENTS = "Requierments";
+    public static final String TEXT_REQUIREMENTS = "Requirements";
     public static final String TEXT_TEXT = "Text";
     public static final String TEXT_MORAL = "Motivation";
     public static final String TEXT_CONFIDENCE = "Confidence";
@@ -404,7 +405,9 @@ public class UIHelper {
         HtmlOutputText t = new HtmlOutputText();
         t.setStyleClass(style);
         t.setEscape(true);
-        t.setValue(text);
+        // Some texts (labels, subjects) are stored HTML-encoded (eg. "R&amp;D"):
+        // decode them first so they're not escaped twice (which would print "&amp;")
+        t.setValue(StringEscapeUtils.unescapeHtml4(text));
         t.encodeAll(ctx);
         writer.write("\r\n");
 

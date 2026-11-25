@@ -393,7 +393,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.endDiv(writer); // end predecessors div
 
             UIHelper
-                .printText(context, writer, UIHelper.TEXT_REQUIERMENT_REQUIERMENTS, UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
+                .printText(context, writer, UIHelper.TEXT_REQUIREMENTS, UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             writer.startElement("ul", this);
@@ -405,7 +405,7 @@ public class UIVariableDescriptor extends UIComponentBase {
                 writer.endElement("li");
             }
             writer.endElement("ul");
-            UIHelper.endDiv(writer); // end Requierments
+            UIHelper.endDiv(writer); // end Requirements
 
             UIHelper.endDiv(writer); // end main container
         }

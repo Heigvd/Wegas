@@ -356,7 +356,7 @@ YUI.add('wegas-plugin', function(Y) {
                 outputType +
                 '&displayPath=' +
                 displayPath +
-                (title ? '&title=' + title : '') +
+                (title ? '&title=' + encodeURIComponent(title) : '') +
                 '&root=' +
                 encodeURIComponent(root);
             window.open(printUrl);
