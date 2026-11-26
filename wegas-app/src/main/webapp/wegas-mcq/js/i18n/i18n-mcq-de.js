@@ -16,16 +16,16 @@ YUI.add("wegas-i18n-mcq-de", function(Y) {
         mcq: {
             result: "Ergebnis",
             results: "Ergebnissen",
-            noQuestionSelected: "Wählen Sie eine Frage auf der linken Seite aus.",
+            noQuestionSelected: "Wähle eine Frage auf der linken Seite aus.",
             empty: "Zur Zeit sind keine Fragen verfügbar",
             submit: "einreichen",
             answered : "beantwortet",
             unanswered : "",    // Customizable per scenario
             notDone: "",        // Customizable per scenario
-            noReply: "Bitte wählen Sie eine Antwort aus!",
-            notEnoughReply: "Bitte wählen Sie mindestens {{min}} Antworten aus!",
-            maximumReached: "Sie können nicht mehr als {{max}}} Antworten auswählen",
-            conflict: "Ihre Anfrage wurde nicht berücksichtigt, weil einer Ihrer Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />",
+            noReply: "Bitte wähle eine Antwort aus!",
+            notEnoughReply: "Bitte wähle mindestens {{min}} Antworten aus!",
+            maximumReached: "Du kannst nicht mehr als {{max}}} Antworten auswählen",
+            conflict: "Deine Anfrage wurde nicht berücksichtigt, weil einer deiner Teamkollegen die gleiche Operation zur gleichen Zeit versucht hat.<br />",
             possibleChoices: 'Wahlen zu Verfügung: #'
         }
     });

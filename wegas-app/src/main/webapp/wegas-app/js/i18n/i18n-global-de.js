@@ -47,19 +47,19 @@ YUI.add("wegas-i18n-global-de", function(Y) {
             availables: "Sprachen, die den Spielern zur Verfügung stehen"
         },
         errors: {
-            conflict: "Ihre Anfrage kann nicht bearbeitet werden, da bei der Ausführung ein Konflikt aufgetreten ist. Dies bedeutet wahrscheinlich, dass Sie versucht haben, ein Element gleichzeitig mit einem anderen Benutzer zu ändern.",
-            greaterThan: "{{value}} ist  grösser als {{max}}",
+            conflict: "Deine Anfrage kann nicht bearbeitet werden, da bei der Ausführung ein Konflikt aufgetreten ist. Dies bedeutet wahrscheinlich, dass du versucht hast, ein Element gleichzeitig mit einem anderen Benutzer zu ändern.",
+            greaterThan: "{{value}} ist grösser als {{max}}",
             lessThan: "{{value}} ist kleiner als {{min}}",
-            limitReached: "Sie können nich mehr als {{num}} Antworten auswählen",
+            limitReached: "Du kannst nich mehr als {{num}} Antworten auswählen",
             nan: "\"{{value}}\" ist keine Nummer",
             notAPositiveInteger: "\"{{value}}\" ist keine positive ganze Zahl",
             outOfBounds: "{{value}} ist nicht im Intervall [{{min}},{{max}}] enthalten",
             prohibited: "\"{{value}}\" ist nicht erlaubt. Es muss ausgewählt werden aus: {{values}}"
         },
         inbox: {
-            deleteEmailConfirmation: "Sind Sie sicher, dass Sie die E-Mail \"{{subject}}\" dauerhaft löschen wollen?",
+            deleteEmailConfirmation: "Bist du sicher, dass du die E-Mail \"{{subject}}\" dauerhaft löschen willst?",
             noMessages: "Keine E-Mail",
-            noMessageSelected: "Wählen Sie eine E-Mail auf der linken Seite aus."
+            noMessageSelected: "Wähle eine E-Mail auf der linken Seite aus."
         },
         spreadsheet: {
             empty: "Derzeit ist keine Tabelle verfügbar"
