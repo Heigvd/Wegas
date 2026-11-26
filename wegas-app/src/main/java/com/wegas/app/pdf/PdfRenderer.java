@@ -23,6 +23,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
@@ -375,17 +377,40 @@ public class PdfRenderer implements Filter {
             this.cookies = cookies;
         }
 
+        /**
+         * Flying-saucer resolves relative CSS url(...) by plain string concatenation (e.g.
+         * ".../wegas-app/css/" + "../fonts/DejaVuSans.ttf"), leaving "/../" segments in the path.
+         * Servlet 6 containers (Payara 6) reject such non-normalized paths with HTTP 400, so
+         * normalize every resolved URI.
+         */
+        @Override
+        public String resolveURI(String uri) {
+            String resolved = super.resolveURI(uri);
+            if (resolved == null) {
+                return null;
+            }
+            try {
+                return new URI(resolved).normalize().toString();
+            } catch (URISyntaxException ex) {
+                return resolved;
+            }
+        }
+
         @Override
         protected InputStream resolveAndOpenStream(String uri) {
+            String resolved = resolveURI(uri);
+            if (resolved == null) {
+                return null;
+            }
             InputStream is = null;
             try {
-                URL url = new URL(uri);
+                URL url = new URL(resolved);
                 URLConnection uc = url.openConnection();
                 uc.setRequestProperty("Cookie", joinCookies(this.cookies));
                 is = uc.getInputStream();
 
             } catch (IOException ex) {
-                logger.error("Cookie exception", ex);
+                logger.error("PDF renderer failed to load resource {}", resolved, ex);
             }
             return is;
         }
@@ -399,7 +424,7 @@ public class PdfRenderer implements Filter {
          */
         private static String joinCookies(Cookie[] cookies) {
             final String token = "; ";
-            if (cookies.length == 0) {
+            if (cookies == null || cookies.length == 0) {
                 return "";
             }
             StringBuilder sb = new StringBuilder();

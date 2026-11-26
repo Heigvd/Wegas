@@ -165,7 +165,9 @@ const modules = {
     ],
   },
   devServer: {
-    host: 'localhost',
+    // Not 'localhost': Node binds it to [::1] only, but the server-side PDF renderer
+    // (Java, IPv4-first) fetches CSS/images back through this host:port.
+    host: '127.0.0.1',
     port: 3003,
     proxy: {
       '/Wegas': 'http://localhost:8080',
